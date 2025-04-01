@@ -1,4 +1,5 @@
 import React, {useEffect} from 'react'
+import { Link } from 'react-router-dom'
 
 const CareerHeader = () => {
     //   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -66,13 +67,13 @@ const CareerHeader = () => {
                 </button>
                 </div>
                 <div className="flex items-center gap-4">
-                    <button
-                    //   onClick={() => setIsModalOpen(true)}
+                    <Link
+                    to="/career/career-details"
                     className="bg-blue-600 text-white font-medium px-4 py-2 rounded hover:bg-blue-700"
                     aria-current="career"
                     >
                     Add Career
-                    </button>
+                    </Link>
                 </div>
             </nav>
         </header>

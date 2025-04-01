@@ -1,4 +1,5 @@
 import React, {useEffect} from 'react'
+import { Link } from 'react-router-dom';
 
 const NewHeader = () => {
     //   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -66,13 +67,13 @@ const NewHeader = () => {
                 </button>
                 </div>
                 <div className="flex items-center gap-4">
-                    <button
-                    //   onClick={() => setIsModalOpen(true)}
+                    <Link
+                    to="/news/news-details"
                     className="bg-blue-600 text-white font-medium px-4 py-2 rounded hover:bg-blue-700"
                     aria-current="new"
                     >
                     Add News
-                    </button>
+                    </Link>
                 </div>
             </nav>
         </header>

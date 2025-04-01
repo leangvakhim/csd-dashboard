@@ -59,7 +59,7 @@ const EventsFieldBody = () => {
                 <div className="mt-4">
                     {/* First row */}
                     <div className="flex sm:!flex-row flex-col gap-4 items-center py-2 ">
-                        <div className="flex-1">
+                        <div className="flex-1 w-full">
                             <label className="block text-xl font-medium leading-6 text-white-900">
                                 Title
                             </label>
@@ -71,7 +71,7 @@ const EventsFieldBody = () => {
                             </div>
                         </div>
 
-                        <div className="flex-1">
+                        <div className="flex-1 w-full">
                             <label className="block text-xl font-medium leading-6 text-white-900">
                                 Short Title
                             </label>
@@ -100,7 +100,7 @@ const EventsFieldBody = () => {
                         <div className="grid  grid-cols-1 md:!grid-cols-2 items-center gap-4">
                             <div className="">
                                 <label className="block text-xl font-medium leading-6 text-white-900">
-                                    Photo
+                                Image
                                 </label>
                                 <div className="flex items-center justify-center w-full mt-2 border-1">
                                     <label

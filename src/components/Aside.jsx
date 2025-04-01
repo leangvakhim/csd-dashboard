@@ -96,7 +96,7 @@ const Aside = () => {
 
                             <li class="sidebar-item mb-2">
                                 <Link
-                                    to="/new"
+                                    to="/news"
                                     className={`sidebar-link gap-3 px-3 py-2 rounded-md w-full flex items-center ${
                                         location.pathname.startsWith('/new')
                                         ? 'bg-blue-600 text-white'

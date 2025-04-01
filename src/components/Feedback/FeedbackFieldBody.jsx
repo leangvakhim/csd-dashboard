@@ -1,15 +1,12 @@
 import React, { useState } from 'react'
-import FacultyFieldBackground from './FacultyFieldBackground';
-import FacultyFieldInfo from './FacultyFieldInfo';
-import FacultyFieldContactInfo from './FacultyFieldContactInfo';
-import FacultyFieldSocial from './FacultyFieldSocial';
 import MediaLibraryModal from '../MediaLibraryModal';
 import axios from "axios";
 
-const FacultyFieldBody = () => {
+const FeedbackFieldBody = () => {
     const [activeTab, setActiveTab] = useState(1);
     const [isMediaLibraryOpen, setMediaLibraryOpen] = useState(false);
     const [selectedImage, setSelectedImage] = useState("");
+    const [details, setDetails] = useState("");
 
     const openMediaLibrary = () => {
         // setCurrentField(field);
@@ -31,11 +28,10 @@ const FacultyFieldBody = () => {
                         <li>
                             <a
                                 href="javascript:void(0)"
-                                className={`mx-2 inline-block py-1.5 px-6 text-gray-600 hover:text-gray-800 font-medium ${
-                                    activeTab === 1
+                                className={`mx-2 inline-block py-1.5 px-6 text-gray-600 hover:text-gray-800 font-medium ${activeTab === 1
                                         ? 'bg-white rounded-lg text-gray-600'
                                         : 'tablink'
-                                } whitespace-nowrap`}
+                                    } whitespace-nowrap`}
                                 onClick={() => setActiveTab(1)}
                                 role="tab"
                             >
@@ -45,11 +41,10 @@ const FacultyFieldBody = () => {
                         <li>
                             <a
                                 href="javascript:void(0)"
-                                className={`mx-2 inline-block py-1.5 px-6 text-gray-600 hover:text-gray-800 font-medium ${
-                                    activeTab === 2
+                                className={`mx-2 inline-block py-1.5 px-6 text-gray-600 hover:text-gray-800 font-medium ${activeTab === 2
                                         ? 'bg-white rounded-lg text-gray-600'
                                         : 'tablink'
-                                } whitespace-nowrap`}
+                                    } whitespace-nowrap`}
                                 onClick={() => setActiveTab(2)}
                                 role="tab"
                             >
@@ -60,40 +55,40 @@ const FacultyFieldBody = () => {
                 </div>
                 <div className="mt-3">
                     {/* First row */}
-                    <div className="flex flex-row gap-4 py-2 mb-1">
-                        <div className="flex-1">
+                    <div className="flex flex-col sm:!flex-row items-center gap-4 py-2 mb-1">
+                        <div className="flex-1 w-full">
                             <label className="block text-xl font-medium leading-6 text-white-900">
-                            Full name
+                                Full name
                             </label>
                             <div className="mt-2">
-                            <input
-                                type="text"
-                                className="block w-full !border-gray-200 border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
-                            />
+                                <input
+                                    type="text"
+                                    className="block w-full !border-gray-200 border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
+                                />
                             </div>
                         </div>
 
-                        <div className="flex-1">
+                        <div className="flex-1 w-full">
                             <label className="block text-xl font-medium leading-6 text-white-900">
-                            Position
+                                Writter
                             </label>
                             <div className="mt-2">
-                            <input
-                                type="text"
-                                className="block w-full !border-gray-200 border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
-                            />
+                                <input
+                                    type="text"
+                                    className="block w-full !border-gray-200 border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
+                                />
                             </div>
                         </div>
 
                         <div className="flex-non">
                             <label className="block text-xl font-medium leading-6 text-white-900">
-                            Display
+                                Display
                             </label>
                             <div className="mt-2">
-                            <label class="toggle-switch mt-2">
-                                <input type="checkbox" />
-                                <span class="slider"></span>
-                            </label>
+                                <label class="toggle-switch mt-2">
+                                    <input type="checkbox" />
+                                    <span class="slider"></span>
+                                </label>
                             </div>
                         </div>
                     </div>
@@ -102,7 +97,7 @@ const FacultyFieldBody = () => {
                         <div className="grid grid-cols-1 md:!grid-cols-2 gap-4 py-2">
                             <div className="flex-1">
                                 <label className="block text-xl font-medium leading-6 text-white-900">
-                                Image
+                                    Image
                                 </label>
                                 <div className="flex items-center justify-center w-full mt-2 border-1">
                                     <label
@@ -184,39 +179,23 @@ const FacultyFieldBody = () => {
                             )}
 
                             <div className="flex-1">
-                                <label className="block text-xl font-medium leading-6 text-white-900">
-                                    Portfolio url links
-                                </label>
+                                <label className="block text-lg font-semibold text-gray-700">Details</label>
                                 <div className="mt-2">
-                                    <textarea className="!border-gray-300 h-60 block w-full rounded-md border-0 py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-2xl sm:leading-6"></textarea>
+                                    <textarea
+                                        value={details}
+                                        onChange={(e) => setDetails(e.target.value)}
+                                        className="h-60 w-full bg-gray-200 border !border-gray-300 rounded-md py-2 px-3 text-gray-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                        placeholder="Enter details here..."
+                                    ></textarea>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    {/* Third row */}
-                    <div>
-                        <div className="grid grid-cols-1 md:!grid-cols-3 gap-4 py-2">
-                            {/* Social */}
-                            <FacultyFieldSocial/>
 
-                            {/* Contact Info */}
-                            <FacultyFieldContactInfo/>
-
-                            {/* Faculty Backgorund */}
-                            <FacultyFieldBackground/>
-                        </div>
-                    </div>
-                    {/* Fourth row */}
-                    <div>
-                        <div className="grid grid-cols-1 gap-4 py-2">
-                            {/* Faculty Information */}
-                            <FacultyFieldInfo/>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
     );
 }
 
-export default FacultyFieldBody
+export default FeedbackFieldBody
