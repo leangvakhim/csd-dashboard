@@ -82,7 +82,7 @@ const ResearchlabFieldBody = () => {
                         </div>
                     </div>
                     {/* Second row */}
-                    <div>
+                    <div className=' py-2'>
                         <ResearchlabTagSection />
                     </div>
 
