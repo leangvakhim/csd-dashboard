@@ -56,9 +56,9 @@ const EventsFieldBody = () => {
                         </li>
                     </ul>
                 </div>
-                <div className="mt-3  ">
+                <div className="mt-4">
                     {/* First row */}
-                    <div className="flex sm:!flex-row flex-col gap-4 items-center py-2 mb-1">
+                    <div className="flex sm:!flex-row flex-col gap-4 items-center py-2 ">
                         <div className="flex-1">
                             <label className="block text-xl font-medium leading-6 text-white-900">
                                 Title
@@ -83,11 +83,11 @@ const EventsFieldBody = () => {
                             </div>
                         </div>
 
-                        <div className="flex-non">
+                        <div className="flex-non mb-2">
                             <label className="block text-xl font-medium leading-6 text-white-900">
                                 Display
                             </label>
-                            <div className="mt-2">
+                            <div className="mt-1 ">
                                 <label class="toggle-switch mt-2">
                                     <input type="checkbox" />
                                     <span class="slider"></span>
