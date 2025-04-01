@@ -5,23 +5,11 @@ import ResearchlabTagSection from './ResearchlabTagSection';
 
 const ResearchlabFieldBody = () => {
     const [activeTab, setActiveTab] = useState(1);
-    const [isMediaLibraryOpen, setMediaLibraryOpen] = useState(false);
-    const [selectedImage, setSelectedImage] = useState("");
-
-    const openMediaLibrary = () => {
-        // setCurrentField(field);
-        setMediaLibraryOpen(true);
-    };
-
-    const handleImageSelect = (imageUrl, field) => {
-        if (field === "image") {
-            setSelectedImage(imageUrl ? `${imageUrl}` : "");
-        }
-        setMediaLibraryOpen(false);
-    };
+   
+    
 
     return (
-        <div className='px-8 py-2 mb-1'>
+        <div className='sm:px-8 px-2 py-2 mb-1'>
             <div className="tabs">
                 <div className="flex">
                     <ul className="flex items-center h-12 bg-gray-100 rounded-lg transition-all duration-300 p-2 overflow-hidden">
@@ -81,11 +69,11 @@ const ResearchlabFieldBody = () => {
                             </div>
                         </div>
 
-                        <div className="flex-non">
+                        <div className="flex-non mb-2">
                             <label className="block text-xl font-medium leading-6 text-white-900">
                                 Display
                             </label>
-                            <div className="mt-2">
+                            <div className="mt-1">
                                 <label class="toggle-switch mt-2">
                                     <input type="checkbox" />
                                     <span class="slider"></span>
