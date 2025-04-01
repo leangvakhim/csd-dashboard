@@ -21,6 +21,7 @@ import ResearchlabField from './components/Researchlab/ResearchlabField';
 import Feedback from './pages/Feedback';
 import FeedBackField from './components/Feedback/FeedbackField';
 import Partnership from './pages/Partnership';
+import PartnershipField from './components/Partnership/PartnershipField';
 import PageField from './components/Page/PageField';
 
 function App() {
@@ -49,6 +50,7 @@ function App() {
         <Route path='/feedback' element={<Feedback/>} />
         <Route path='/feedback/feedback-details' element={<FeedBackField/>} />
         <Route path='/partnership' element={<Partnership/>} />
+        <Route path='/partnership/partnership-details' element={<PartnershipField />} />
         <Route path='/image' element={<Image/>} />
         <Route path='/login' element={<Login/>} />
       </Routes>

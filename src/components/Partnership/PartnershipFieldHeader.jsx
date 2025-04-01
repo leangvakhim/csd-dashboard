@@ -1,11 +1,11 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const NewsFieldHeader = () => {
+const PartnershipFieldHeader = () => {
     const navigate = useNavigate();
 
     const returnToPreviousPage = () => {
-        navigate(-1); // Navigate back to the previous page
+        navigate(-1); 
     };
 
     useEffect(() => {
@@ -83,4 +83,4 @@ const NewsFieldHeader = () => {
     );
 };
 
-export default NewsFieldHeader;
+export default PartnershipFieldHeader;

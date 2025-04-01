@@ -5,7 +5,7 @@ const EventsFieldHeader = () => {
     const navigate = useNavigate();
 
     const returntoPage = () => {
-        navigate("/events");
+        navigate(-1);
     };
 
     useEffect(() => {
