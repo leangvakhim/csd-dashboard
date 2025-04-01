@@ -5,7 +5,7 @@ const FacultyFieldHeader = () => {
     const navigate = useNavigate();
 
     const returntoPage = () => {
-        navigate("/faculty");
+        navigate(-1);
     };
 
     useEffect(() => {

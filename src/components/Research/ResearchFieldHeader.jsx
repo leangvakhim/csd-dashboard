@@ -5,7 +5,7 @@ const ResearchFieldHeader = () => {
     const navigate = useNavigate();
 
     const returntoPage = () => {
-        navigate("/research");
+        navigate(-1);
     };
 
     useEffect(() => {
