@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import EventsPiece from "./Events/EventsPiece";
 import { TbCarouselHorizontal, TbCodeDots } from "react-icons/tb";
 import { CgWebsite } from "react-icons/cg";
 import { LuColumns3 } from "react-icons/lu";
@@ -47,7 +48,6 @@ import SpecializationPiece from "./Specialization/SpecializationPiece";
 import TestimonialPiece from "./Testimontial/TestimontialPiece";
 import TypePiece from "./Type/TypePiece";
 import CriteriaPiecce from "./Criteria/CriteriaPiece";
-import EventsPiece from "./Events/EventsPiece";
 import ResearchPiece from "./Research/ResearchPiece";
 import FacultyPiece from "./Faculty/FacultyPiece";
 import ResearchlabPiece from "./Researchlab/ResearchlabPiece";
