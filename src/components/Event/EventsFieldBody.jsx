@@ -1,15 +1,31 @@
 import React, { useState } from 'react'
 import MediaLibraryModal from '../MediaLibraryModal';
 import EventsFormSection from './EventsFormSection';
-import EventsRichText from './EventsRichText';
+import JoditEditor from 'jodit-react';
+import 'jodit/es5/jodit.css';
+
+const config = {
+    readonly: false,
+    height: 400,
+    placeholder: 'Start typing...',
+    buttons: [
+        'bold', 'italic', 'underline', 'strikethrough', '|',
+        'ul', 'ol', '|', 'image', 'link', 'table', '|',
+        'align', 'undo', 'redo', 'hr', '|',
+        'source'
+    ],
+    uploader: {
+        insertImageAsBase64URI: true,  // Enable base64 image upload
+    },
+};
 
 const EventsFieldBody = () => {
     const [activeTab, setActiveTab] = useState(1);
     const [isMediaLibraryOpen, setMediaLibraryOpen] = useState(false);
     const [selectedImage, setSelectedImage] = useState("");
+    const [subtitleContent, setSubtitleContent] = useState('');
 
     const openMediaLibrary = () => {
-        // setCurrentField(field);
         setMediaLibraryOpen(true);
     };
 
@@ -186,7 +202,22 @@ const EventsFieldBody = () => {
                     </div>
                     {/* Third row - Full Width */}
                     <div className='h-full'>
-                        <EventsRichText />
+                        <div className="flex-1">
+                            <div className="grid grid-cols-1 gap-4 py-2">
+                                <div className="w-full">
+                                    <label className="block text-xl font-medium leading-6 text-white-900">
+                                    Description
+                                    </label>
+                                    <div className="mt-2 cursor-text">
+                                    <JoditEditor
+                                        value={subtitleContent}
+                                        config={config}
+                                        onChange={(newContent) => setSubtitleContent(newContent)}
+                                    />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                 </div>
