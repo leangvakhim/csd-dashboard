@@ -3,6 +3,7 @@ import { TbCarouselHorizontal, TbCodeDots } from "react-icons/tb";
 import { CgWebsite } from "react-icons/cg";
 import { LuColumns3 } from "react-icons/lu";
 import { HiOutlineAcademicCap } from "react-icons/hi2";
+import { TbBrandHipchat } from "react-icons/tb";
 import CarouselPiece from "./Carousel/CarouselPiece";
 import { RiInformationLine } from "react-icons/ri";
 import { LuSchool } from "react-icons/lu";
@@ -19,12 +20,20 @@ import { HiOutlineLightBulb } from "react-icons/hi";
 import { TbContract } from "react-icons/tb";
 import { MdOutlineSwipeDownAlt } from "react-icons/md";
 import { TbDirections } from "react-icons/tb";
+import { TbCell } from "react-icons/tb";
 import { TbTargetArrow } from "react-icons/tb";
 import { LiaChalkboardTeacherSolid } from "react-icons/lia";
 import { LuBrainCircuit } from "react-icons/lu";
 import { BsExclamationTriangle } from "react-icons/bs";
 import { TfiWrite } from "react-icons/tfi";
+import { TbMicroscope } from "react-icons/tb";
+import { TbNews } from "react-icons/tb";
+import { GiMountainClimbing } from "react-icons/gi";
+import { FiUser } from "react-icons/fi";
+import { TbSpeakerphone } from "react-icons/tb";
 import { RiQuestionnaireLine } from "react-icons/ri";
+import { TbSchool } from "react-icons/tb";
+import { LuHeartHandshake } from "react-icons/lu";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import BannerPiece from "./Banner/BannerPiece";
 
@@ -254,7 +263,7 @@ const sectionOptions = [
                 </h1>
             </div>
         ),
-        icon: TbTargetArrow,
+        icon: GiMountainClimbing,
         label: "Potential",
     },
     {
@@ -328,6 +337,114 @@ const sectionOptions = [
         ),
         icon: MdOutlineSwipeDownAlt,
         label: "Pyscroll",
+    },
+    {
+        type: "New",
+        component: () => (
+            <div className="bg-gray-50 p-2 rounded-lg">
+                <h1 className="text-xl font-bold text-center">
+                    News Section
+                </h1>
+            </div>
+        ),
+        icon: TbNews,
+        label: "New",
+    },
+    {
+        type: "Event",
+        component: () => (
+            <div className="bg-gray-50 p-2 rounded-lg">
+                <h1 className="text-xl font-bold text-center">
+                    Event Section
+                </h1>
+            </div>
+        ),
+        icon: TbSpeakerphone,
+        label: "Event",
+    },
+    {
+        type: "Research",
+        component: () => (
+            <div className="bg-gray-50 p-2 rounded-lg">
+                <h1 className="text-xl font-bold text-center">
+                    Research Section
+                </h1>
+            </div>
+        ),
+        icon: TbMicroscope,
+        label: "Research",
+    },
+    {
+        type: "Faculty",
+        component: () => (
+            <div className="bg-gray-50 p-2 rounded-lg">
+                <h1 className="text-xl font-bold text-center">
+                    Faculty Section
+                </h1>
+            </div>
+        ),
+        icon: FiUser,
+        label: "Faculty",
+    },
+    {
+        type: "Lab",
+        component: () => (
+            <div className="bg-gray-50 p-2 rounded-lg">
+                <h1 className="text-xl font-bold text-center">
+                    Lab Section
+                </h1>
+            </div>
+        ),
+        icon: TbCell,
+        label: "Lab",
+    },
+    {
+        type: "Scholarship",
+        component: () => (
+            <div className="bg-gray-50 p-2 rounded-lg">
+                <h1 className="text-xl font-bold text-center">
+                    Scholarship Section
+                </h1>
+            </div>
+        ),
+        icon: TbSchool,
+        label: "Scholarship",
+    },
+    {
+        type: "Career",
+        component: () => (
+            <div className="bg-gray-50 p-2 rounded-lg">
+                <h1 className="text-xl font-bold text-center">
+                    Career Section
+                </h1>
+            </div>
+        ),
+        icon: TbTargetArrow,
+        label: "Career",
+    },
+    {
+        type: "Partner",
+        component: () => (
+            <div className="bg-gray-50 p-2 rounded-lg">
+                <h1 className="text-xl font-bold text-center">
+                    Partner Section
+                </h1>
+            </div>
+        ),
+        icon: LuHeartHandshake,
+        label: "Partner",
+    },
+    {
+        type: "Feedback",
+        component: () => (
+            <div className="bg-gray-50 p-2 rounded-lg">
+                <h1 className="text-xl font-bold text-center">
+                    Feedback Section
+                </h1>
+            </div>
+        ),
+        icon: TbBrandHipchat,
+        label: "Feedback",
     },
 ];
 
