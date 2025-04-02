@@ -63,70 +63,22 @@ const sectionOptions = [
         label: "Banner",
     },
     {
-        type: "News",
-        component: NewPiece,
-        icon: CgWebsite,
-        label: "News",
-    },
-    {
         type: "Service",
         component: ServicePiece,
         icon: LuColumns3,
         label: "Service",
     },
     {
-        type: "Events",
-        component: EventsPiece,
-        icon: CgWebsite,
-        label: "Events",
-    },
-    {
-        type: "Research",
-        component: ResearchPiece,
-        icon: CgWebsite,
-        label: "Research",
-    },
-    {
-        type: "Researchlab",
-        component: ResearchlabPiece,
-        icon: CgWebsite,
-        label: "Researchlab",
-    },
-    {
-        type: "Faculty",
-        component: FacultyPiece,
-        icon: CgWebsite,
-        label: "Faculty",
-    },
-    {
-        type: "Career",
-        component: CareerPiece,
-        icon: CgWebsite,
-        label: "Career",
-    },
-    {
-        type: "Scholarship",
-        component: ScholarshipPiece,
-        icon: CgWebsite,
-        label: "Scholarship",
-    },
-    {
-        type: "Unlock",
-        component: UnlockPiece,
-        icon: CgWebsite,
-        label: "Unlock",
-    },
-    {
-        type: "Fee",
-        component: FeePiece,
-        icon: CgWebsite,
-        label: "Fee",
-    },
-    {
-        type: "Introduction",
-        component: IntroductionPiece,
-        icon: CgWebsite,
-        label: "Introduction",
+        type: "Gallery",
+        component: () => (
+            <div className="bg-gray-50 p-2 rounded-lg">
+                <h1 className="text-xl font-bold text-center">
+                    Gallery Section
+                </h1>
+            </div>
+        ),
+        icon: GrGallery,
+        label: "Gallery",
     },
     {
         type: "Specialization",
@@ -151,6 +103,54 @@ const sectionOptions = [
         ),
         icon: LuMessagesSquare,
         label: "Testimonial",
+    },
+    {
+        type: "Information",
+        component: () => (
+            <div className="bg-gray-50 p-2 rounded-lg">
+                <h1 className="text-xl font-bold text-center">
+                    Information Section
+                </h1>
+            </div>
+        ),
+        icon: RiInformationLine,
+        label: "Information",
+    },
+    {
+        type: "Facility",
+        component: () => (
+            <div className="bg-gray-50 p-2 rounded-lg">
+                <h1 className="text-xl font-bold text-center">
+                    Facility Section
+                </h1>
+            </div>
+        ),
+        icon: TbCodeDots,
+        label: "Facility",
+    },
+    {
+        type: "Program",
+        component: () => (
+            <div className="bg-gray-50 p-2 rounded-lg">
+                <h1 className="text-xl font-bold text-center">
+                    Program Section
+                </h1>
+            </div>
+        ),
+        icon: LuSchool,
+        label: "Program",
+    },
+    {
+        type: "Academic",
+        component: () => (
+            <div className="bg-gray-50 p-2 rounded-lg">
+                <h1 className="text-xl font-bold text-center">
+                    Academic Section
+                </h1>
+            </div>
+        ),
+        icon: HiOutlineAcademicCap,
+        label: "Academic",
     },
     {
         type: "Type",
@@ -190,13 +190,7 @@ const sectionOptions = [
     },
     {
         type: "Unlock",
-        component: () => (
-            <div className="bg-gray-50 p-2 rounded-lg">
-                <h1 className="text-xl font-bold text-center">
-                    Unlock Section
-                </h1>
-            </div>
-        ),
+        component: UnlockPiece,
         icon: AiOutlineUnlock,
         label: "Unlock",
     },
@@ -226,13 +220,7 @@ const sectionOptions = [
     },
     {
         type: "Fee",
-        component: () => (
-            <div className="bg-gray-50 p-2 rounded-lg">
-                <h1 className="text-xl font-bold text-center">
-                    Fee Section
-                </h1>
-            </div>
-        ),
+        component: FeePiece,
         icon: TbTax,
         label: "Fee",
     },
@@ -274,13 +262,7 @@ const sectionOptions = [
     },
     {
         type: "Introduction",
-        component: () => (
-            <div className="bg-gray-50 p-2 rounded-lg">
-                <h1 className="text-xl font-bold text-center">
-                    Introduction Section
-                </h1>
-            </div>
-        ),
+        component: IntroductionPiece,
         icon: TbDirections,
         label: "Introduction",
     },
@@ -346,85 +328,43 @@ const sectionOptions = [
     },
     {
         type: "New",
-        component: () => (
-            <div className="bg-gray-50 p-2 rounded-lg">
-                <h1 className="text-xl font-bold text-center">
-                    News Section
-                </h1>
-            </div>
-        ),
+        component: NewPiece,
         icon: TbNews,
         label: "New",
     },
     {
         type: "Event",
-        component: () => (
-            <div className="bg-gray-50 p-2 rounded-lg">
-                <h1 className="text-xl font-bold text-center">
-                    Event Section
-                </h1>
-            </div>
-        ),
+        component: EventsPiece,
         icon: TbSpeakerphone,
         label: "Event",
     },
     {
         type: "Research",
-        component: () => (
-            <div className="bg-gray-50 p-2 rounded-lg">
-                <h1 className="text-xl font-bold text-center">
-                    Research Section
-                </h1>
-            </div>
-        ),
+        component: ResearchPiece,
         icon: TbMicroscope,
         label: "Research",
     },
     {
         type: "Faculty",
-        component: () => (
-            <div className="bg-gray-50 p-2 rounded-lg">
-                <h1 className="text-xl font-bold text-center">
-                    Faculty Section
-                </h1>
-            </div>
-        ),
+        component: FacultyPiece,
         icon: FiUser,
         label: "Faculty",
     },
     {
         type: "Lab",
-        component: () => (
-            <div className="bg-gray-50 p-2 rounded-lg">
-                <h1 className="text-xl font-bold text-center">
-                    Lab Section
-                </h1>
-            </div>
-        ),
+        component: ResearchlabPiece,
         icon: TbCell,
         label: "Lab",
     },
     {
         type: "Scholarship",
-        component: () => (
-            <div className="bg-gray-50 p-2 rounded-lg">
-                <h1 className="text-xl font-bold text-center">
-                    Scholarship Section
-                </h1>
-            </div>
-        ),
+        component: ScholarshipPiece,
         icon: TbSchool,
         label: "Scholarship",
     },
     {
         type: "Career",
-        component: () => (
-            <div className="bg-gray-50 p-2 rounded-lg">
-                <h1 className="text-xl font-bold text-center">
-                    Career Section
-                </h1>
-            </div>
-        ),
+        component: CareerPiece,
         icon: TbTargetArrow,
         label: "Career",
     },
