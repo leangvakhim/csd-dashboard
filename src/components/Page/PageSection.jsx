@@ -54,13 +54,7 @@ const sectionOptions = [
     },
     {
         type: "Service",
-        component: () => (
-            <div className="bg-gray-50 p-2 rounded-lg">
-                <h1 className="text-xl font-bold text-center">
-                    Service Section
-                </h1>
-            </div>
-        ),
+        component: ServicePiece,
         icon: LuColumns3,
         label: "Service",
     },
