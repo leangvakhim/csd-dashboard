@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import MediaLibraryModal from '../MediaLibraryModal';
-import EventsRichText from '../Event/EventsRichText';
+// import EventsRichText from '../Event/EventsRichText';
 import ScholarshipDateTime from './ScholarshipDateTime';
 
 const ScholarshipFieldBody = () => {

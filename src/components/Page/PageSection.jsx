@@ -36,6 +36,7 @@ import { TbSchool } from "react-icons/tb";
 import { LuHeartHandshake } from "react-icons/lu";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import BannerPiece from "./Banner/BannerPiece";
+import NewPiece from "./New/NewPiece";
 import ServicePiece from "./Service/ServicePiece";
 import ProgramPiece from "./Program/ProgramPiece";
 import AcademicPiece from "./Academic/AcademicPiece";
@@ -120,236 +121,234 @@ const sectionOptions = [
     icon: TbBrandCarbon,
     label: "Criteria",
   },
-  {
-    type: "CSD",
-    component: () => (
-      <div className="bg-gray-50 p-2 rounded-lg">
-        <h1 className="text-xl font-bold text-center">CSD Section</h1>
-      </div>
-    ),
-    icon: FaComputer,
-    label: "CSD",
-  },
-  {
-    type: "Unlock",
-    component: () => (
-      <div className="bg-gray-50 p-2 rounded-lg">
-        <h1 className="text-xl font-bold text-center">Unlock Section</h1>
-      </div>
-    ),
-    icon: AiOutlineUnlock,
-    label: "Unlock",
-  },
-  {
-    type: "Study",
-    component: () => (
-      <div className="bg-gray-50 p-2 rounded-lg">
-        <h1 className="text-xl font-bold text-center">Study Section</h1>
-      </div>
-    ),
-    icon: LiaChalkboardTeacherSolid,
-    label: "Study",
-  },
-  {
-    type: "Avaialable",
-    component: () => (
-      <div className="bg-gray-50 p-2 rounded-lg">
-        <h1 className="text-xl font-bold text-center">Avaialable Section</h1>
-      </div>
-    ),
-    icon: MdOutlineEventAvailable,
-    label: "Available",
-  },
-  {
-    type: "Fee",
-    component: () => (
-      <div className="bg-gray-50 p-2 rounded-lg">
-        <h1 className="text-xl font-bold text-center">Fee Section</h1>
-      </div>
-    ),
-    icon: TbTax,
-    label: "Fee",
-  },
-  {
-    type: "Requirement",
-    component: () => (
-      <div className="bg-gray-50 p-2 rounded-lg">
-        <h1 className="text-xl font-bold text-center">Requirement Section</h1>
-      </div>
-    ),
-    icon: TbContract,
-    label: "Requirement",
-  },
-  {
-    type: "Future",
-    component: () => (
-      <div className="bg-gray-50 p-2 rounded-lg">
-        <h1 className="text-xl font-bold text-center">Future Section</h1>
-      </div>
-    ),
-    icon: HiOutlineLightBulb,
-    label: "Future",
-  },
-  {
-    type: "Potential",
-    component: () => (
-      <div className="bg-gray-50 p-2 rounded-lg">
-        <h1 className="text-xl font-bold text-center">Potential Section</h1>
-      </div>
-    ),
-    icon: GiMountainClimbing,
-    label: "Potential",
-  },
-  {
-    type: "Introduction",
-    component: () => (
-      <div className="bg-gray-50 p-2 rounded-lg">
-        <h1 className="text-xl font-bold text-center">Introduction Section</h1>
-      </div>
-    ),
-    icon: TbDirections,
-    label: "Introduction",
-  },
-  {
-    type: "Innovation",
-    component: () => (
-      <div className="bg-gray-50 p-2 rounded-lg">
-        <h1 className="text-xl font-bold text-center">Innovation Section</h1>
-      </div>
-    ),
-    icon: LuBrainCircuit,
-    label: "Innovation",
-  },
-  {
-    type: "FAQ",
-    component: () => (
-      <div className="bg-gray-50 p-2 rounded-lg">
-        <h1 className="text-xl font-bold text-center">FAQ Section</h1>
-      </div>
-    ),
-    icon: RiQuestionnaireLine,
-    label: "FAQ",
-  },
-  {
-    type: "Apply",
-    component: () => (
-      <div className="bg-gray-50 p-2 rounded-lg">
-        <h1 className="text-xl font-bold text-center">Apply Section</h1>
-      </div>
-    ),
-    icon: TfiWrite,
-    label: "Apply",
-  },
-  {
-    type: "Important",
-    component: () => (
-      <div className="bg-gray-50 p-2 rounded-lg">
-        <h1 className="text-xl font-bold text-center">Important Section</h1>
-      </div>
-    ),
-    icon: BsExclamationTriangle,
-    label: "Important",
-  },
-  {
-    type: "Pyscroll",
-    component: () => (
-      <div className="bg-gray-50 p-2 rounded-lg">
-        <h1 className="text-xl font-bold text-center">Pyscroll Section</h1>
-      </div>
-    ),
-    icon: MdOutlineSwipeDownAlt,
-    label: "Pyscroll",
-  },
-  {
-    type: "New",
-    component: () => (
-      <div className="bg-gray-50 p-2 rounded-lg">
-        <h1 className="text-xl font-bold text-center">News Section</h1>
-      </div>
-    ),
-    icon: TbNews,
-    label: "New",
-  },
-  {
-    type: "Event",
-    component: () => (
-      <div className="bg-gray-50 p-2 rounded-lg">
-        <h1 className="text-xl font-bold text-center">Event Section</h1>
-      </div>
-    ),
-    icon: TbSpeakerphone,
-    label: "Event",
-  },
-  {
-    type: "Research",
-    component: () => (
-      <div className="bg-gray-50 p-2 rounded-lg">
-        <h1 className="text-xl font-bold text-center">Research Section</h1>
-      </div>
-    ),
-    icon: TbMicroscope,
-    label: "Research",
-  },
-  {
-    type: "Faculty",
-    component: () => (
-      <div className="bg-gray-50 p-2 rounded-lg">
-        <h1 className="text-xl font-bold text-center">Faculty Section</h1>
-      </div>
-    ),
-    icon: FiUser,
-    label: "Faculty",
-  },
-  {
-    type: "Lab",
-    component: () => (
-      <div className="bg-gray-50 p-2 rounded-lg">
-        <h1 className="text-xl font-bold text-center">Lab Section</h1>
-      </div>
-    ),
-    icon: TbCell,
-    label: "Lab",
-  },
-  {
-    type: "Scholarship",
-    component: () => (
-      <div className="bg-gray-50 p-2 rounded-lg">
-        <h1 className="text-xl font-bold text-center">Scholarship Section</h1>
-      </div>
-    ),
-    icon: TbSchool,
-    label: "Scholarship",
-  },
-  {
-    type: "Career",
-    component: () => (
-      <div className="bg-gray-50 p-2 rounded-lg">
-        <h1 className="text-xl font-bold text-center">Career Section</h1>
-      </div>
-    ),
-    icon: TbTargetArrow,
-    label: "Career",
-  },
-  {
-    type: "Partner",
-    component: () => (
-      <div className="bg-gray-50 p-2 rounded-lg">
-        <h1 className="text-xl font-bold text-center">Partner Section</h1>
-      </div>
-    ),
-    icon: LuHeartHandshake,
-    label: "Partner",
-  },
-  {
-    type: "Feedback",
-    component: () => (
-      <div className="bg-gray-50 p-2 rounded-lg">
-        <h1 className="text-xl font-bold text-center">Feedback Section</h1>
-      </div>
-    ),
-    icon: TbBrandHipchat,
-    label: "Feedback",
-  },
+ 
+import EventsPiece from "./Events/EventsPiece";
+import ResearchPiece from "./Research/ResearchPiece";
+import FacultyPiece from "./Faculty/FacultyPiece";
+import ResearchlabPiece from "./Researchlab/ResearchlabPiece";
+import CareerPiece from "./Career/CareerPiece";
+import ScholarshipPiece from "./Scholarship/ScholarshipPiece";
+import UnlockPiece from "./Unlock/UnlockPiece";
+import FeePiece from "./Fee/FeePiece";
+import IntroductionPiece from "./Introduction/IntroductionPiece";
+
+const sectionOptions = [
+    {
+        type: "CSD",
+        component: () => (
+            <div className="bg-gray-50 p-2 rounded-lg">
+                <h1 className="text-xl font-bold text-center">
+                    CSD Section
+                </h1>
+            </div>
+        ),
+        icon: FaComputer,
+        label: "CSD",
+    },
+    {
+        type: "Unlock",
+        component: UnlockPiece,
+        icon: AiOutlineUnlock,
+        label: "Unlock",
+    },
+    {
+        type: "Study",
+        component: () => (
+            <div className="bg-gray-50 p-2 rounded-lg">
+                <h1 className="text-xl font-bold text-center">
+                    Study Section
+                </h1>
+            </div>
+        ),
+        icon: LiaChalkboardTeacherSolid,
+        label: "Study",
+    },
+    {
+        type: "Avaialable",
+        component: () => (
+            <div className="bg-gray-50 p-2 rounded-lg">
+                <h1 className="text-xl font-bold text-center">
+                    Avaialable Section
+                </h1>
+            </div>
+        ),
+        icon: MdOutlineEventAvailable,
+        label: "Available",
+    },
+    {
+        type: "Fee",
+        component: FeePiece,
+        icon: TbTax,
+        label: "Fee",
+    },
+    {
+        type: "Requirement",
+        component: () => (
+            <div className="bg-gray-50 p-2 rounded-lg">
+                <h1 className="text-xl font-bold text-center">
+                    Requirement Section
+                </h1>
+            </div>
+        ),
+        icon: TbContract,
+        label: "Requirement",
+    },
+    {
+        type: "Future",
+        component: () => (
+            <div className="bg-gray-50 p-2 rounded-lg">
+                <h1 className="text-xl font-bold text-center">
+                    Future Section
+                </h1>
+            </div>
+        ),
+        icon: HiOutlineLightBulb,
+        label: "Future",
+    },
+    {
+        type: "Potential",
+        component: () => (
+            <div className="bg-gray-50 p-2 rounded-lg">
+                <h1 className="text-xl font-bold text-center">
+                    Potential Section
+                </h1>
+            </div>
+        ),
+        icon: GiMountainClimbing,
+        label: "Potential",
+    },
+    {
+        type: "Introduction",
+        component: IntroductionPiece,
+        icon: TbDirections,
+        label: "Introduction",
+    },
+    {
+        type: "Innovation",
+        component: () => (
+            <div className="bg-gray-50 p-2 rounded-lg">
+                <h1 className="text-xl font-bold text-center">
+                    Innovation Section
+                </h1>
+            </div>
+        ),
+        icon: LuBrainCircuit,
+        label: "Innovation",
+    },
+    {
+        type: "FAQ",
+        component: () => (
+            <div className="bg-gray-50 p-2 rounded-lg">
+                <h1 className="text-xl font-bold text-center">
+                    FAQ Section
+                </h1>
+            </div>
+        ),
+        icon: RiQuestionnaireLine,
+        label: "FAQ",
+    },
+    {
+        type: "Apply",
+        component: () => (
+            <div className="bg-gray-50 p-2 rounded-lg">
+                <h1 className="text-xl font-bold text-center">
+                    Apply Section
+                </h1>
+            </div>
+        ),
+        icon: TfiWrite,
+        label: "Apply",
+    },
+    {
+        type: "Important",
+        component: () => (
+            <div className="bg-gray-50 p-2 rounded-lg">
+                <h1 className="text-xl font-bold text-center">
+                    Important Section
+                </h1>
+            </div>
+        ),
+        icon: BsExclamationTriangle,
+        label: "Important",
+    },
+    {
+        type: "Pyscroll",
+        component: () => (
+            <div className="bg-gray-50 p-2 rounded-lg">
+                <h1 className="text-xl font-bold text-center">
+                    Pyscroll Section
+                </h1>
+            </div>
+        ),
+        icon: MdOutlineSwipeDownAlt,
+        label: "Pyscroll",
+    },
+    {
+        type: "New",
+        component: NewPiece,
+        icon: TbNews,
+        label: "New",
+    },
+    {
+        type: "Event",
+        component: EventsPiece,
+        icon: TbSpeakerphone,
+        label: "Event",
+    },
+    {
+        type: "Research",
+        component: ResearchPiece,
+        icon: TbMicroscope,
+        label: "Research",
+    },
+    {
+        type: "Faculty",
+        component: FacultyPiece,
+        icon: FiUser,
+        label: "Faculty",
+    },
+    {
+        type: "Lab",
+        component: ResearchlabPiece,
+        icon: TbCell,
+        label: "Lab",
+    },
+    {
+        type: "Scholarship",
+        component: ScholarshipPiece,
+        icon: TbSchool,
+        label: "Scholarship",
+    },
+    {
+        type: "Career",
+        component: CareerPiece,
+        icon: TbTargetArrow,
+        label: "Career",
+    },
+    {
+        type: "Partner",
+        component: () => (
+            <div className="bg-gray-50 p-2 rounded-lg">
+                <h1 className="text-xl font-bold text-center">
+                    Partner Section
+                </h1>
+            </div>
+        ),
+        icon: LuHeartHandshake,
+        label: "Partner",
+    },
+    {
+        type: "Feedback",
+        component: () => (
+            <div className="bg-gray-50 p-2 rounded-lg">
+                <h1 className="text-xl font-bold text-center">
+                    Feedback Section
+                </h1>
+            </div>
+        ),
+        icon: TbBrandHipchat,
+        label: "Feedback",
+    },
 ];
 
 const PageSection = () => {
