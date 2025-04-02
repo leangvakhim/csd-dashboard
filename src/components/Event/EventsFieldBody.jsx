@@ -20,9 +20,6 @@ const EventsFieldBody = () => {
         setMediaLibraryOpen(false);
     };
 
-  
-
-
     return (
         <div className='px-8 py-2 mb-1'>
             <div className="tabs">
@@ -191,7 +188,7 @@ const EventsFieldBody = () => {
                     <div className='h-full'>
                         <EventsRichText />
                     </div>
-                   
+
                 </div>
 
             </div>

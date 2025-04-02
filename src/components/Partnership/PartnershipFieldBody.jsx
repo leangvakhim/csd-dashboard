@@ -21,38 +21,6 @@ const PartnershipFieldBody = () => {
     return (
         <div className='px-8 py-2 mb-1'>
             <div className="tabs">
-                <div className="flex">
-                    <ul className="flex items-center h-12 bg-gray-100 rounded-lg transition-all duration-300 p-2 overflow-hidden">
-                        <li>
-                            <a
-                                href="javascript:void(0)"
-                                className={`mx-2 inline-block py-1.5 px-6 text-gray-600 hover:text-gray-800 font-medium ${
-                                    activeTab === 1
-                                        ? 'bg-white rounded-lg text-gray-600'
-                                        : 'tablink'
-                                } whitespace-nowrap`}
-                                onClick={() => setActiveTab(1)}
-                                role="tab"
-                            >
-                                English
-                            </a>
-                        </li>
-                        <li>
-                            <a
-                                href="javascript:void(0)"
-                                className={`mx-2 inline-block py-1.5 px-6 text-gray-600 hover:text-gray-800 font-medium ${
-                                    activeTab === 2
-                                        ? 'bg-white rounded-lg text-gray-600'
-                                        : 'tablink'
-                                } whitespace-nowrap`}
-                                onClick={() => setActiveTab(2)}
-                                role="tab"
-                            >
-                                Khmer
-                            </a>
-                        </li>
-                    </ul>
-                </div>
                 <div className="mt-3">
                     {/* First row */}
                     <div className="flex flex-col sm:!flex-row gap-4 items-center py-2">
@@ -81,7 +49,7 @@ const PartnershipFieldBody = () => {
                             </div>
                         </div>
 
-                       
+
                     </div>
                     {/* Second row */}
                     <div className="w-full flex-1 my-0 sm:my-6">
@@ -169,7 +137,7 @@ const PartnershipFieldBody = () => {
                                 />
                             )}
 
-                           
+
 
                         </div>
                     </div>

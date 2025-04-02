@@ -11,7 +11,6 @@ const EventsField = () => {
             <div class=" w-full page-wrapper overflow-hidden">
                <EventsFieldHeader/>
                <EventsFieldBody/>
-
             </div>
         </div>
     )
