@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import MediaLibraryModal from "../../MediaLibraryModal";
 
-const ServicePieceSlider = () => {
+const FacilitiesPieceSlider = () => {
   const [currentSliderId, setCurrentSliderId] = useState(null);
   const [currentField, setCurrentField] = useState("");
   const [isMediaLibraryOpen, setMediaLibraryOpen] = useState(false);
@@ -10,7 +10,7 @@ const ServicePieceSlider = () => {
   const [slider, setSlider] = useState([
     {
       id: "1",
-      title: "Service 1",
+      title: "Facilities 1",
       subtitle: "",
       logo: "",
       image: "",
@@ -24,7 +24,7 @@ const ServicePieceSlider = () => {
   const handleAddSlider = () => {
     const newSlider = {
       id: `${Date.now()}`,
-      title: `Service ${slider.length + 1}`,
+      title: `Facilities ${slider.length + 1}`,
       subtitle: "",
       logo: "",
       image: "",
@@ -173,35 +173,33 @@ const ServicePieceSlider = () => {
                           </div>
                         </div>
                         {/* Subtitle */}
-                        <div className="grid grid-cols-1 gap-4 px-4 py-2">
+                        <div className="grid grid-cols-2 gap-4 px-4 py-2">
                           <div className="flex-1">
                             <label className="block text-xl font-medium leading-6 text-white-900">
                               Subtitle
                             </label>
                             <div className="mt-2">
-                              <textarea className="!border-gray-300 h-32 block w-full rounded-md border-0 py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-2xl sm:leading-6"></textarea>
+                              <textarea className="!border-gray-300 h-60 block w-full rounded-md border-0 py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-2xl sm:leading-6"></textarea>
                             </div>
                           </div>
-                        </div>
-                        {/* Image */}
-                        <div className="grid grid-cols-1 md:!grid-cols-2  gap-4 px-4 py-2">
+
                           <div className="flex-1">
                             <label className="block text-xl font-medium leading-6 text-white-900">
-                              Image
+                              Photo
                             </label>
                             <div className="flex items-center justify-center w-full mt-2 border-1">
                               <label className="flex flex-col items-center justify-center w-full h-60 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
-                                {sliders.logo ? (
+                                {sliders.image ? (
                                   <div>
                                     <img
-                                      src={sliders.logo}
+                                      src={sliders.image}
                                       alt="Selected"
                                       className="h-40 w-40 object-contain"
                                     />
                                     <div className="flex gap-3 mt-2 justify-center">
                                       <svg
                                         onClick={() =>
-                                          openMediaLibrary(sliders.id, "logo")
+                                          openMediaLibrary(sliders.id, "image")
                                         }
                                         xmlns="http://www.w3.org/2000/svg"
                                         fill="none"
@@ -218,7 +216,7 @@ const ServicePieceSlider = () => {
                                       </svg>
                                       <svg
                                         onClick={() =>
-                                          handleImageSelect("", "logo")
+                                          handleImageSelect("", "image")
                                         }
                                         xmlns="http://www.w3.org/2000/svg"
                                         fill="none"
@@ -238,7 +236,7 @@ const ServicePieceSlider = () => {
                                 ) : (
                                   <div
                                     onClick={() =>
-                                      openMediaLibrary(sliders.id, "logo")
+                                      openMediaLibrary(sliders.id, "image")
                                     }
                                     className="flex flex-col items-center justify-center pt-5 pb-6 "
                                   >
@@ -259,27 +257,12 @@ const ServicePieceSlider = () => {
                                     </svg>
                                     <p className="mb-2 text-sm text-gray-500">
                                       <span className="font-semibold">
-                                        Click to upload logo
+                                        Click to upload image
                                       </span>
                                     </p>
                                   </div>
                                 )}
                               </label>
-                            </div>
-                          </div>
-                          {isMediaLibraryOpen && (
-                            <MediaLibraryModal
-                              onSelect={handleImageSelect}
-                              onClose={() => setMediaLibraryOpen(false)}
-                            />
-                          )}
-
-                          <div className="flex-1">
-                            <label className="block text-xl font-medium leading-6 text-white-900">
-                              Subtitle
-                            </label>
-                            <div className="mt-2">
-                              <textarea className="!border-gray-300 h-60 block w-full rounded-md border-0 py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-2xl sm:leading-6"></textarea>
                             </div>
                           </div>
                           {isMediaLibraryOpen && (
@@ -313,7 +296,7 @@ const ServicePieceSlider = () => {
                   d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
                 />
               </svg>
-              Add new service
+              Add new facility
             </a>
           </div>
         )}
@@ -322,4 +305,4 @@ const ServicePieceSlider = () => {
   );
 };
 
-export default ServicePieceSlider;
+export default FacilitiesPieceSlider;

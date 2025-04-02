@@ -38,6 +38,90 @@ import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import BannerPiece from "./Banner/BannerPiece";
 import NewPiece from "./New/NewPiece";
 import ServicePiece from "./Service/ServicePiece";
+import ProgramPiece from "./Program/ProgramPiece";
+import AcademicPiece from "./Academic/AcademicPiece";
+import InformationPiece from "./Information/InformationPiece";
+import FacilitiesPiece from "./Facilities/FacilitiesPiece";
+import GalleryPiece from "./Gallery/GalleryPiece";
+import SpecializationPiece from "./Specialization/SpecializationPiece";
+import TestimonialPiece from "./Testimontial/TestimontialPiece";
+import TypePiece from "./Type/TypePiece";
+import CriteriaPiecce from "./Criteria/CriteriaPiece";
+
+const sectionOptions = [
+  {
+    type: "Slideshow",
+    component: CarouselPiece,
+    icon: TbCarouselHorizontal,
+    label: "Slideshow",
+  },
+  {
+    type: "Banner",
+    component: BannerPiece,
+    icon: CgWebsite,
+    label: "Banner",
+  },
+  {
+    type: "Service",
+    component: ServicePiece,
+    icon: LuColumns3,
+    label: "Service",
+  },
+  {
+    type: "Programs",
+    component: ProgramPiece,
+    icon: TbCodeDots,
+    label: "Programs",
+  },
+  {
+    type: "Academic",
+    component: AcademicPiece,
+    icon: HiOutlineAcademicCap,
+    label: "Academic",
+  },
+  {
+    type: "Information",
+    component: InformationPiece,
+    icon: RiInformationLine,
+    label: "Information",
+  },
+  {
+    type: "Facilities",
+    component: FacilitiesPiece,
+    icon: LuSchool,
+    label: "Facilities",
+  },
+  {
+    type: "Gallery",
+    component: GalleryPiece,
+    icon: GrGallery,
+    label: "Gallery",
+  },
+  {
+    type: "Specialization",
+    component: SpecializationPiece,
+    icon: MdAspectRatio,
+    label: "Specialization",
+  },
+  {
+    type: "Testimonial",
+    component: TestimonialPiece,
+    icon: LuMessagesSquare,
+    label: "Testimonial",
+  },
+  {
+    type: "Type",
+    component: TypePiece,
+    icon: LuFileType,
+    label: "Type",
+  },
+  {
+    type: "Criteria",
+    component: CriteriaPiecce,
+    icon: TbBrandCarbon,
+    label: "Criteria",
+  },
+ 
 import EventsPiece from "./Events/EventsPiece";
 import ResearchPiece from "./Research/ResearchPiece";
 import FacultyPiece from "./Faculty/FacultyPiece";
@@ -49,133 +133,6 @@ import FeePiece from "./Fee/FeePiece";
 import IntroductionPiece from "./Introduction/IntroductionPiece";
 
 const sectionOptions = [
-
-    {
-        type: "Slideshow",
-        component: CarouselPiece,
-        icon: TbCarouselHorizontal,
-        label: "Slideshow",
-    },
-    {
-        type: "Banner",
-        component: BannerPiece,
-        icon: CgWebsite,
-        label: "Banner",
-    },
-    {
-        type: "Service",
-        component: ServicePiece,
-        icon: LuColumns3,
-        label: "Service",
-    },
-    {
-        type: "Gallery",
-        component: () => (
-            <div className="bg-gray-50 p-2 rounded-lg">
-                <h1 className="text-xl font-bold text-center">
-                    Gallery Section
-                </h1>
-            </div>
-        ),
-        icon: GrGallery,
-        label: "Gallery",
-    },
-    {
-        type: "Specialization",
-        component: () => (
-            <div className="bg-gray-50 p-2 rounded-lg">
-                <h1 className="text-xl font-bold text-center">
-                    Specialization Section
-                </h1>
-            </div>
-        ),
-        icon: MdAspectRatio,
-        label: "Specialization",
-    },
-    {
-        type: "Testimonial",
-        component: () => (
-            <div className="bg-gray-50 p-2 rounded-lg">
-                <h1 className="text-xl font-bold text-center">
-                    Testimonial Section
-                </h1>
-            </div>
-        ),
-        icon: LuMessagesSquare,
-        label: "Testimonial",
-    },
-    {
-        type: "Information",
-        component: () => (
-            <div className="bg-gray-50 p-2 rounded-lg">
-                <h1 className="text-xl font-bold text-center">
-                    Information Section
-                </h1>
-            </div>
-        ),
-        icon: RiInformationLine,
-        label: "Information",
-    },
-    {
-        type: "Facility",
-        component: () => (
-            <div className="bg-gray-50 p-2 rounded-lg">
-                <h1 className="text-xl font-bold text-center">
-                    Facility Section
-                </h1>
-            </div>
-        ),
-        icon: TbCodeDots,
-        label: "Facility",
-    },
-    {
-        type: "Program",
-        component: () => (
-            <div className="bg-gray-50 p-2 rounded-lg">
-                <h1 className="text-xl font-bold text-center">
-                    Program Section
-                </h1>
-            </div>
-        ),
-        icon: LuSchool,
-        label: "Program",
-    },
-    {
-        type: "Academic",
-        component: () => (
-            <div className="bg-gray-50 p-2 rounded-lg">
-                <h1 className="text-xl font-bold text-center">
-                    Academic Section
-                </h1>
-            </div>
-        ),
-        icon: HiOutlineAcademicCap,
-        label: "Academic",
-    },
-    {
-        type: "Type",
-        component: () => (
-            <div className="bg-gray-50 p-2 rounded-lg">
-                <h1 className="text-xl font-bold text-center">
-                    Type Section
-                </h1>
-            </div>
-        ),
-        icon: LuFileType,
-        label: "Type",
-    },
-    {
-        type: "Criteria",
-        component: () => (
-            <div className="bg-gray-50 p-2 rounded-lg">
-                <h1 className="text-xl font-bold text-center">
-                    Criteria Section
-                </h1>
-            </div>
-        ),
-        icon: TbBrandCarbon,
-        label: "Criteria",
-    },
     {
         type: "CSD",
         component: () => (
