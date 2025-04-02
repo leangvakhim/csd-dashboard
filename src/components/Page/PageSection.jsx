@@ -9,6 +9,17 @@ import { LuSchool } from "react-icons/lu";
 import { GrGallery } from "react-icons/gr";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import BannerPiece from "./Banner/BannerPiece";
+import NewPiece from "./New/NewPiece";
+import ServicePiece from "./Service/ServicePiece";
+import EventsPiece from "./Events/EventsPiece";
+import ResearchPiece from "./Research/ResearchPiece";
+import FacultyPiece from "./Faculty/FacultyPiece";
+import ResearchlabPiece from "./Researchlab/ResearchlabPiece";
+import CareerPiece from "./Career/CareerPiece";
+import ScholarshipPiece from "./Scholarship/ScholarshipPiece";
+import UnlockPiece from "./Unlock/UnlockPiece";
+import FeePiece from "./Fee/FeePiece";
+import IntroductionPiece from "./Introduction/IntroductionPiece";
 
 const sectionOptions = [
     {
@@ -24,76 +35,70 @@ const sectionOptions = [
         label: "Banner",
     },
     {
+        type: "News",
+        component: NewPiece,
+        icon: CgWebsite,
+        label: "News",
+    },
+    {
         type: "Service",
-        component: () => (
-            <div className="bg-gray-50 p-2 rounded-lg">
-                <h1 className="text-xl font-bold text-center">
-                    Service Section
-                </h1>
-            </div>
-        ),
-        icon: LuColumns3,
+        component: ServicePiece,
+        icon: CgWebsite,
         label: "Service",
     },
     {
-        type: "Programs",
-        component: () => (
-            <div className="bg-gray-50 p-2 rounded-lg">
-                <h1 className="text-xl font-bold text-center">
-                    Programs Section
-                </h1>
-            </div>
-        ),
-        icon: TbCodeDots,
-        label: "Programs",
+        type: "Events",
+        component: EventsPiece,
+        icon: CgWebsite,
+        label: "Events",
     },
     {
-        type: "Academic",
-        component: () => (
-            <div className="bg-gray-50 p-2 rounded-lg">
-                <h1 className="text-xl font-bold text-center">
-                    Academic Section
-                </h1>
-            </div>
-        ),
-        icon: HiOutlineAcademicCap,
-        label: "Academic",
+        type: "Research",
+        component: ResearchPiece,
+        icon: CgWebsite,
+        label: "Research",
     },
     {
-        type: "Information",
-        component: () => (
-            <div className="bg-gray-50 p-2 rounded-lg">
-                <h1 className="text-xl font-bold text-center">
-                    Information Section
-                </h1>
-            </div>
-        ),
-        icon: RiInformationLine,
-        label: "Information",
+        type: "Researchlab",
+        component: ResearchlabPiece,
+        icon: CgWebsite,
+        label: "Researchlab",
     },
     {
-        type: "Facilities",
-        component: () => (
-            <div className="bg-gray-50 p-2 rounded-lg">
-                <h1 className="text-xl font-bold text-center">
-                    Facilities Section
-                </h1>
-            </div>
-        ),
-        icon: LuSchool,
-        label: "Facilities",
+        type: "Faculty",
+        component: FacultyPiece,
+        icon: CgWebsite,
+        label: "Faculty",
     },
     {
-        type: "Gallery",
-        component: () => (
-            <div className="bg-gray-50 p-2 rounded-lg">
-                <h1 className="text-xl font-bold text-center">
-                    Gallery Section
-                </h1>
-            </div>
-        ),
-        icon: GrGallery,
-        label: "Gallery",
+        type: "Career",
+        component: CareerPiece,
+        icon: CgWebsite,
+        label: "Career",
+    },
+    {
+        type: "Scholarship",
+        component: ScholarshipPiece,
+        icon: CgWebsite,
+        label: "Scholarship",
+    },
+    {
+        type: "Unlock",
+        component: UnlockPiece,
+        icon: CgWebsite,
+        label: "Unlock",
+    },
+    {
+        type: "Fee",
+        component: FeePiece,
+        icon: CgWebsite,
+        label: "Fee",
+    },
+    {
+        type: "Introduction",
+        component: IntroductionPiece,
+        icon: CgWebsite,
+        label: "Introduction",
     },
 ];
 
