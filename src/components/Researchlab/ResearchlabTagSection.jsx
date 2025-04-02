@@ -52,14 +52,14 @@ const ResearchlabTagSection = () => {
     };
 
     return (
-        <div className="">
+        <div className="space-y-0 border rounded-sm ">
             <DragDropContext onDragEnd={onDragEnd}>
                 <Droppable droppableId="sections">
                     {(provided) => (
                         <div
                             {...provided.droppableProps}
                             ref={provided.innerRef}
-                            className="space-y-4"
+                            className=""
                         >
                             {selectedSections.map((section, index) => (
                                 <Draggable
@@ -72,7 +72,7 @@ const ResearchlabTagSection = () => {
                                             ref={provided.innerRef}
                                             {...provided.draggableProps}
                                             {...provided.dragHandleProps}
-                                            className="bg-gray-50 rounded-lg border border-gray-300 py-2"
+                                            className=" py-2 bg-white border"
                                         >
                                             <summary className="cursor-pointer flex justify-between rounded-lg w-full ">
                                                 <div className="cursor-pointer flex items-center justify-between w-full px-4" onClick={() => toggleSection(section.id)}>
@@ -201,7 +201,7 @@ const ResearchlabTagSection = () => {
                 />
             )}
             <a
-                className={`cursor-pointer flex items-center py-2 text-sm font-medium text-blue-600 border-t border ${showSection ? "rounded-t-lg" : "rounded-lg"} bg-gray-50 hover:bg-gray-100 hover:underline mt-4`}
+                className={`cursor-pointer flex items-center py-2 text-sm font-medium text-blue-600 bg-gray-100 hover:bg-gray-50 hover:underline`}
                 onClick={handleAddTag} // Call handleAddTag function
             >
                 <svg
