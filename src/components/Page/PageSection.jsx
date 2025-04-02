@@ -47,81 +47,6 @@ import SpecializationPiece from "./Specialization/SpecializationPiece";
 import TestimonialPiece from "./Testimontial/TestimontialPiece";
 import TypePiece from "./Type/TypePiece";
 import CriteriaPiecce from "./Criteria/CriteriaPiece";
-
-const sectionOptions = [
-  {
-    type: "Slideshow",
-    component: CarouselPiece,
-    icon: TbCarouselHorizontal,
-    label: "Slideshow",
-  },
-  {
-    type: "Banner",
-    component: BannerPiece,
-    icon: CgWebsite,
-    label: "Banner",
-  },
-  {
-    type: "Service",
-    component: ServicePiece,
-    icon: LuColumns3,
-    label: "Service",
-  },
-  {
-    type: "Programs",
-    component: ProgramPiece,
-    icon: TbCodeDots,
-    label: "Programs",
-  },
-  {
-    type: "Academic",
-    component: AcademicPiece,
-    icon: HiOutlineAcademicCap,
-    label: "Academic",
-  },
-  {
-    type: "Information",
-    component: InformationPiece,
-    icon: RiInformationLine,
-    label: "Information",
-  },
-  {
-    type: "Facilities",
-    component: FacilitiesPiece,
-    icon: LuSchool,
-    label: "Facilities",
-  },
-  {
-    type: "Gallery",
-    component: GalleryPiece,
-    icon: GrGallery,
-    label: "Gallery",
-  },
-  {
-    type: "Specialization",
-    component: SpecializationPiece,
-    icon: MdAspectRatio,
-    label: "Specialization",
-  },
-  {
-    type: "Testimonial",
-    component: TestimonialPiece,
-    icon: LuMessagesSquare,
-    label: "Testimonial",
-  },
-  {
-    type: "Type",
-    component: TypePiece,
-    icon: LuFileType,
-    label: "Type",
-  },
-  {
-    type: "Criteria",
-    component: CriteriaPiecce,
-    icon: TbBrandCarbon,
-    label: "Criteria",
-  },
- 
 import EventsPiece from "./Events/EventsPiece";
 import ResearchPiece from "./Research/ResearchPiece";
 import FacultyPiece from "./Faculty/FacultyPiece";
@@ -133,6 +58,78 @@ import FeePiece from "./Fee/FeePiece";
 import IntroductionPiece from "./Introduction/IntroductionPiece";
 
 const sectionOptions = [
+    {
+        type: "Slideshow",
+        component: CarouselPiece,
+        icon: TbCarouselHorizontal,
+        label: "Slideshow",
+    },
+    {
+        type: "Banner",
+        component: BannerPiece,
+        icon: CgWebsite,
+        label: "Banner",
+    },
+    {
+        type: "Service",
+        component: ServicePiece,
+        icon: LuColumns3,
+        label: "Service",
+    },
+    {
+        type: "Programs",
+        component: ProgramPiece,
+        icon: TbCodeDots,
+        label: "Programs",
+    },
+    {
+        type: "Academic",
+        component: AcademicPiece,
+        icon: HiOutlineAcademicCap,
+        label: "Academic",
+    },
+    {
+        type: "Information",
+        component: InformationPiece,
+        icon: RiInformationLine,
+        label: "Information",
+    },
+    {
+        type: "Facilities",
+        component: FacilitiesPiece,
+        icon: LuSchool,
+        label: "Facilities",
+    },
+    {
+        type: "Gallery",
+        component: GalleryPiece,
+        icon: GrGallery,
+        label: "Gallery",
+    },
+    {
+        type: "Specialization",
+        component: SpecializationPiece,
+        icon: MdAspectRatio,
+        label: "Specialization",
+    },
+    {
+        type: "Testimonial",
+        component: TestimonialPiece,
+        icon: LuMessagesSquare,
+        label: "Testimonial",
+    },
+    {
+        type: "Type",
+        component: TypePiece,
+        icon: LuFileType,
+        label: "Type",
+    },
+    {
+        type: "Criteria",
+        component: CriteriaPiecce,
+        icon: TbBrandCarbon,
+        label: "Criteria",
+    },
     {
         type: "CSD",
         component: () => (
