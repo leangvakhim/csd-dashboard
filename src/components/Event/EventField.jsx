@@ -4,10 +4,14 @@ import EventsFieldHeader from './EventsFieldHeader'
 import EventsFieldBody from './EventsFieldBody'
 import { API_ENDPOINTS } from '../../service/APIConfig'
 import axios from 'axios';
+import { useLocation } from 'react-router-dom';
 
 const EventsField = () => {
     const [subtitleContent, setSubtitleContent] = useState('');
     const [nextOrder, setNextOrder] = useState(1);
+    const [existingEvents, setExistingEvents] = useState([]);
+    const location = useLocation();
+    const eventData = location.state?.eventData;
     const [formData, setFormData] = useState({
         lang: 1,
         e_title: null,
@@ -19,12 +23,18 @@ const EventsField = () => {
         active: 1,
     });
 
+    useEffect(() => {
+        if (eventData && eventData.data) {
+            setFormData(eventData.data);
+            setSubtitleContent(eventData.data.e_detail || "");
+        }
+    }, [eventData]);
+
     const handleImageSelect = (imageId) => {
         setFormData(prev => ({
             ...prev,
             e_img: imageId,
         }));
-        console.log("Selected image ID:", imageId);
     };
 
     useEffect(() => {
@@ -78,6 +88,7 @@ const EventsField = () => {
                     subtitleContent={subtitleContent}
                     setSubtitleContent={setSubtitleContent}
                     onImageSelect={handleImageSelect}
+                    existingEvents={existingEvents}
                 />
             </div>
         </div>

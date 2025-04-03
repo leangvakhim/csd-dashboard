@@ -19,10 +19,72 @@ const config = {
     },
 };
 
-const EventsFieldBody = ({formData, setFormData, subtitleContent, setSubtitleContent, onImageSelect}) => {
+const EventsFieldBody = ({formData, setFormData, subtitleContent, setSubtitleContent, onImageSelect, existingEvents}) => {
     const [activeTab, setActiveTab] = useState(1);
     const [isMediaLibraryOpen, setMediaLibraryOpen] = useState(false);
     const [selectedImage, setSelectedImage] = useState("");
+
+    // useEffect(() => {
+    //     console.log("editData received:", editData);
+    //     if (editData) {
+    //         setFormData({
+    //             lang: editData.lang || 1,
+    //             e_title: editData.e_title || '',
+    //             e_shorttitle: editData.e_shorttitle || '',
+    //             display: editData.display === 1,
+    //             e_date: editData.e_date || '',
+    //             e_fav: editData.e_fav || 0,
+    //             e_tags: editData.e_tags || '',
+    //             e_img: editData.e_img || '',
+    //         });
+    //         setSubtitleContent(editData.e_detail || '');
+    //         setSelectedImage(editData.image_url || '');
+    //     }
+    // }, [editData]);
+
+    //  useEffect(() => {
+    //     console.log("Loaded formData:", formData);
+    // }, [formData]);
+
+    useEffect(() => {
+        if (formData.e_img) {
+            fetch(`${API_ENDPOINTS.getImages}`)
+                .then(res => res.json())
+                .then(result => {
+                    const matched = result.data.find(img => img.image_id === formData.e_img);
+                    if (matched) {
+                        setSelectedImage(matched.image_url);
+                    }
+                })
+                .catch(err => console.error("Error fetching image:", err));
+        }
+    }, [formData.e_img]);
+
+    useEffect(() => {
+        // console.log("Loaded formData:", formData);
+
+        if (typeof formData.display !== 'boolean') {
+            setFormData(prev => ({
+                ...prev,
+                display: !!parseInt(prev.display)
+            }));
+        }
+
+        if (typeof formData.e_fav !== 'boolean') {
+            setFormData(prev => ({
+                ...prev,
+                e_fav: !!parseInt(prev.e_fav)
+            }));
+        }
+
+        if (formData.e_date && formData.e_date.includes(" ")) {
+            const dateOnly = formData.e_date.split(" ")[0];
+            setFormData(prev => ({
+                ...prev,
+                e_date: dateOnly
+            }));
+        }
+    }, [formData]);
 
     const openMediaLibrary = () => {
         setMediaLibraryOpen(true);
@@ -103,7 +165,10 @@ const EventsFieldBody = ({formData, setFormData, subtitleContent, setSubtitleCon
                                 <input
                                     type="text"
                                     value={formData.e_title}
-                                    onChange={(e) => setFormData({ ...formData, e_title: e.target.value })}
+                                                                    // value={formData.e_title}
+                                    // {console.log("FormData Title:", formData.e_title)}
+                                    // onChange={(e) => setFormData({ ...formData, e_title: e.target.value })}
+                                    onChange={(e) => setFormData(prev => ({ ...prev, e_title: e.target.value }))}
                                     className="block w-full !border-gray-200 border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
                                 />
                             </div>
@@ -131,8 +196,8 @@ const EventsFieldBody = ({formData, setFormData, subtitleContent, setSubtitleCon
                                 <label class="toggle-switch mt-2">
                                     <input
                                         type="checkbox"
-                                        value={formData.display}
-                                        onChange={(e) => setFormData({ ...formData, display: e.target.value })}
+                                        checked={formData.display}
+                                        onChange={(e) => setFormData({ ...formData, display: e.target.checked })}
                                     />
                                     <span class="slider"></span>
                                 </label>
@@ -268,9 +333,8 @@ const EventsFieldBody = ({formData, setFormData, subtitleContent, setSubtitleCon
                                                 onChange={(e) => setFormData({ ...formData, e_fav: e.target.value })}
                                                 className="mt-2 block w-full border !border-gray-300 rounded-md py-2 pl-2 text-gray-900 shadow-sm focus:ring-2 focus:ring-indigo-500"
                                             >
-                                                <option value="">Choose Option</option>
-                                                <option value="yes">Yes</option>
-                                                <option value="no">No</option>
+                                                <option value={true}>Yes</option>
+                                                <option value={false}>No</option>
                                             </select>
                                         </div>
                                     </div>

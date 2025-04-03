@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useState} from 'react'
 import Aside from '../components/Aside'
 import EventHeader from '../components/Event/EventHeader'
 import EventDashboard from '../components/Event/EventDashboard'
@@ -10,7 +10,7 @@ const Event = () => {
 
             <div className=" w-full page-wrapper overflow-hidden">
                 <EventHeader/>
-                <EventDashboard/>
+                <EventDashboard />
             </div>
         </div>
     )
