@@ -12,7 +12,6 @@ const EventDashboard = () => {
         const fetchEvents = async () => {
             try {
                 const response = await axios.get(API_ENDPOINTS.getEvent);
-                // console.log('API Response:', response.data);
                 setEventItems(response.data.data || []);
             } catch (error) {
                 console.error('Failed to fetch events:', error);
@@ -38,30 +37,17 @@ const EventDashboard = () => {
         setEventItems(newItems);
     };
 
-    const duplicateItem = (index) => {
-        const itemToDuplicate = eventItems[index];
-
-        const baseTitle = itemToDuplicate.title.replace(/\s\(copy(?:\s\d+)?\)$/i, '');
-
-        const copyCount = eventItems.filter(item =>
-            item.title.startsWith(baseTitle + ' (copy')
-        ).length;
-
-        const newTitle =
-            copyCount === 0
-                ? `${baseTitle} (copy)`
-                : `${baseTitle} (copy ${copyCount})`;
-
-        const newItem = {
-            ...itemToDuplicate,
-            id: Date.now(),
-            title: newTitle
-        };
-
-        const newItems = [...eventItems];
-        newItems.splice(index + 1, 0, newItem);
-        setEventItems(newItems);
-    };
+    // const duplicateItem = async (id) => {
+    //     try {
+    //         // const response = await axios.post(`${API_ENDPOINTS.duplicateEvent}/${id}`);
+    //         if (response.status === 200) {
+    //             alert("Event duplicated successfully");
+    //             window.location.reload();
+    //         }
+    //     } catch (error) {
+    //         console.error("Error duplicating event:", error);
+    //     }
+    // };
 
     const handleDelete = async (id) => {
         if (!window.confirm("Are you sure you want to delete of this event?")) return;
@@ -73,6 +59,7 @@ const EventDashboard = () => {
                     item.e_id === id ? { ...item, active: item.active ? 0 : 1 } : item
                 )
             );
+            window.location.reload();
         } catch (error) {
             console.error("Error toggling visibility:", error);
         }
@@ -122,7 +109,14 @@ const EventDashboard = () => {
                                     })
                                     : 'N/A'}
                                 </td>
-                                <td className="px-6 py-4">{item.lang ? 'English' : 'Khmer'}</td>
+                                <td className="px-6 py-4">
+                                    {{
+                                        1: 'English',
+                                        2: 'Khmer',
+                                        // 3: 'Chinese',
+                                        // 4: 'French'
+                                    }[item.lang] || 'Unknown'}
+                                </td>
                                 <td className="px-6 py-4">
                                     <span className={`${item.display ? 'bg-blue-100 text-blue-800' : 'bg-red-100 text-red-800'} text-xs font-medium me-2 px-2.5 py-0.5 rounded-xl`}>
                                         {item.display ? 'Enable' : 'Disable'}
@@ -158,7 +152,7 @@ const EventDashboard = () => {
                                                         <i className="ti ti-trash text-gray-500 text-xl"></i>
                                                         <span className="text-sm text-gray-700">Delete</span>
                                                     </a>
-                                                    <a onClick={() => duplicateItem(index)} className="cursor-pointer flex gap-2 items-center px-4 py-2 hover:bg-blue-100">
+                                                    <a onClick={() => duplicateItem(item.e_id)} className="cursor-pointer flex gap-2 items-center px-4 py-2 hover:bg-blue-100">
                                                         <i className="ti ti-copy text-gray-500 text-xl"></i>
                                                         <span className="text-sm text-gray-700">Duplicate</span>
                                                     </a>

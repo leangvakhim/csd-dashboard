@@ -9,7 +9,6 @@ import { useLocation } from 'react-router-dom';
 const EventsField = () => {
     const [subtitleContent, setSubtitleContent] = useState('');
     const [nextOrder, setNextOrder] = useState(1);
-    const [existingEvents, setExistingEvents] = useState([]);
     const location = useLocation();
     const eventData = location.state?.eventData;
     const [formData, setFormData] = useState({
@@ -42,12 +41,12 @@ const EventsField = () => {
             .then(response => {
                 const existing = response.data.data || [];
                 const maxOrder = Math.max(...existing.map(ev => ev.e_order || 0), 0);
-                setExistingEvents(existing);
                 setNextOrder(maxOrder + 1);
             });
     }, []);
 
     const handleSave = async () => {
+        let res;
         const payload = {
             lang: formData.lang,
             e_title: formData.e_title || '',
@@ -58,16 +57,19 @@ const EventsField = () => {
             e_img: formData.e_img || null,
             display: formData.display ? 1 : 0,
             e_detail: subtitleContent || '',
-            e_order: nextOrder,
+            e_order: formData.e_order || nextOrder,
             active: formData.active ? 1 : 0
         };
 
-        // console.log("subtitleContent before save:", subtitleContent);
-        // console.log("Payload to be sent:", payload);
-
         try {
-            const res = await axios.post(API_ENDPOINTS.createEvent, payload);
-            // console.log("Saved:", res.data);
+            if (formData.e_id) {
+                // Perform update
+                res = await axios.post(`${API_ENDPOINTS.updateEvent}/${formData.e_id}`, payload);
+            } else {
+                // Perform create
+                res = await axios.post(API_ENDPOINTS.createEvent, payload);
+            }
+            alert("Event saved successfully!");
         } catch (err) {
             console.error("Error saving:", err);
             if (err.response?.data?.errors) {
@@ -88,7 +90,6 @@ const EventsField = () => {
                     subtitleContent={subtitleContent}
                     setSubtitleContent={setSubtitleContent}
                     onImageSelect={handleImageSelect}
-                    existingEvents={existingEvents}
                 />
             </div>
         </div>

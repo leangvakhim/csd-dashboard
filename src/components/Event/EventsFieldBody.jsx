@@ -19,44 +19,28 @@ const config = {
     },
 };
 
-const EventsFieldBody = ({formData, setFormData, subtitleContent, setSubtitleContent, onImageSelect, existingEvents}) => {
-    const [activeTab, setActiveTab] = useState(1);
+const EventsFieldBody = ({formData, setFormData, subtitleContent, setSubtitleContent, onImageSelect}) => {
+    const [activeTab, setActiveTab] = useState(formData.lang || 1);
     const [isMediaLibraryOpen, setMediaLibraryOpen] = useState(false);
     const [selectedImage, setSelectedImage] = useState("");
 
-    // useEffect(() => {
-    //     console.log("editData received:", editData);
-    //     if (editData) {
-    //         setFormData({
-    //             lang: editData.lang || 1,
-    //             e_title: editData.e_title || '',
-    //             e_shorttitle: editData.e_shorttitle || '',
-    //             display: editData.display === 1,
-    //             e_date: editData.e_date || '',
-    //             e_fav: editData.e_fav || 0,
-    //             e_tags: editData.e_tags || '',
-    //             e_img: editData.e_img || '',
-    //         });
-    //         setSubtitleContent(editData.e_detail || '');
-    //         setSelectedImage(editData.image_url || '');
-    //     }
-    // }, [editData]);
-
-    //  useEffect(() => {
-    //     console.log("Loaded formData:", formData);
-    // }, [formData]);
+    useEffect(() => {
+        if (formData.lang) {
+            setActiveTab(formData.lang);
+        }
+    }, [formData.lang]);
 
     useEffect(() => {
-        if (formData.e_img) {
-            fetch(`${API_ENDPOINTS.getImages}`)
-                .then(res => res.json())
-                .then(result => {
-                    const matched = result.data.find(img => img.image_id === formData.e_img);
-                    if (matched) {
-                        setSelectedImage(matched.image_url);
-                    }
-                })
-                .catch(err => console.error("Error fetching image:", err));
+    if (formData.e_img) {
+        fetch(`${API_ENDPOINTS.getImages}`)
+            .then(res => res.json())
+            .then(result => {
+                const matched = result.data.find(img => img.image_id === formData.e_img);
+                if (matched) {
+                    setSelectedImage(matched.image_url);
+                }
+            })
+            .catch(err => console.error("Error fetching image:", err));
         }
     }, [formData.e_img]);
 
@@ -122,36 +106,28 @@ const EventsFieldBody = ({formData, setFormData, subtitleContent, setSubtitleCon
             <div className="tabs">
                 <div className="flex">
                     <ul className="flex items-center h-12 bg-gray-100 rounded-lg transition-all duration-300 p-2 overflow-hidden">
-                        <li>
-                            <a
-                                href="javascript:void(0)"
-                                className={`mx-2 inline-block py-1.5 px-6 text-gray-600 hover:text-gray-800 font-medium ${activeTab === 1
-                                    ? 'bg-white rounded-lg text-gray-600'
-                                    : 'tablink'
+                        {[
+                            { id: 1, label: "English" },
+                            { id: 2, label: "Khmer" },
+                            // { id: 3, label: "Chinese" },
+                            // { id: 4, label: "French" }
+                        ].map(langOption => (
+                            <li key={langOption.id}>
+                                <a
+                                    href="javascript:void(0)"
+                                    className={`mx-2 inline-block py-1.5 px-6 text-gray-600 hover:text-gray-800 font-medium ${
+                                        activeTab === langOption.id ? 'bg-white rounded-lg text-gray-600' : 'tablink'
                                     } whitespace-nowrap`}
-                                onClick={() => setActiveTab(1)}
-                                value={formData.lang}
-                                onChange={(e) => setFormData({ ...formData, lang: e.target.value })}
-                                role="tab"
-                            >
-                                English
-                            </a>
-                        </li>
-                        <li>
-                            <a
-                                href="javascript:void(0)"
-                                className={`mx-2 inline-block py-1.5 px-6 text-gray-600 hover:text-gray-800 font-medium ${activeTab === 2
-                                    ? 'bg-white rounded-lg text-gray-600'
-                                    : 'tablink'
-                                    } whitespace-nowrap`}
-                                onClick={() => setActiveTab(2)}
-                                value={formData.lang}
-                                onChange={(e) => setFormData({ ...formData, lang: e.target.value })}
-                                role="tab"
-                            >
-                                Khmer
-                            </a>
-                        </li>
+                                    onClick={() => {
+                                        setActiveTab(langOption.id);
+                                        setFormData(prev => ({ ...prev, lang: langOption.id }));
+                                    }}
+                                    role="tab"
+                                >
+                                    {langOption.label}
+                                </a>
+                            </li>
+                        ))}
                     </ul>
                 </div>
                 <div className="mt-4">
