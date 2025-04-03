@@ -1,7 +1,7 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import MediaLibraryModal from '../MediaLibraryModal';
-import EventsFormSection from './EventsFormSection';
 import JoditEditor from 'jodit-react';
+import { API_ENDPOINTS } from '../../service/APIConfig';
 import 'jodit/es5/jodit.css';
 
 const config = {
@@ -19,20 +19,39 @@ const config = {
     },
 };
 
-const EventsFieldBody = () => {
+const EventsFieldBody = ({formData, setFormData, subtitleContent, setSubtitleContent, onImageSelect}) => {
     const [activeTab, setActiveTab] = useState(1);
     const [isMediaLibraryOpen, setMediaLibraryOpen] = useState(false);
     const [selectedImage, setSelectedImage] = useState("");
-    const [subtitleContent, setSubtitleContent] = useState('');
 
     const openMediaLibrary = () => {
         setMediaLibraryOpen(true);
     };
 
-    const handleImageSelect = (imageUrl, field) => {
+    const handleImageSelect = async (imageUrl, field) => {
         if (field === "image") {
             setSelectedImage(imageUrl ? `${imageUrl}` : "");
+            try {
+                const response = await fetch(`${API_ENDPOINTS.getImages}`);
+                const result = await response.json();
+
+                if (result.status_code === "success" && Array.isArray(result.data)) {
+                    const matchedImage = result.data.find(image => image.image_url === imageUrl);
+                    if (matchedImage) {
+                        onImageSelect(matchedImage.image_id);
+                        setFormData(prevData => ({
+                            ...prevData,
+                            e_img: matchedImage.image_id,
+                        }));
+                    } else {
+                        console.warn("Image not found in API response for URL:", imageUrl);
+                    }
+                }
+            } catch (error) {
+                console.error("Failed to fetch images:", error);
+            }
         }
+
         setMediaLibraryOpen(false);
     };
 
@@ -49,6 +68,8 @@ const EventsFieldBody = () => {
                                     : 'tablink'
                                     } whitespace-nowrap`}
                                 onClick={() => setActiveTab(1)}
+                                value={formData.lang}
+                                onChange={(e) => setFormData({ ...formData, lang: e.target.value })}
                                 role="tab"
                             >
                                 English
@@ -62,6 +83,8 @@ const EventsFieldBody = () => {
                                     : 'tablink'
                                     } whitespace-nowrap`}
                                 onClick={() => setActiveTab(2)}
+                                value={formData.lang}
+                                onChange={(e) => setFormData({ ...formData, lang: e.target.value })}
                                 role="tab"
                             >
                                 Khmer
@@ -79,6 +102,8 @@ const EventsFieldBody = () => {
                             <div className="mt-2">
                                 <input
                                     type="text"
+                                    value={formData.e_title}
+                                    onChange={(e) => setFormData({ ...formData, e_title: e.target.value })}
                                     className="block w-full !border-gray-200 border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
                                 />
                             </div>
@@ -91,6 +116,8 @@ const EventsFieldBody = () => {
                             <div className="mt-2">
                                 <input
                                     type="text"
+                                    value={formData.e_shorttitle}
+                                    onChange={(e) => setFormData({ ...formData, e_shorttitle: e.target.value })}
                                     className="block w-full !border-gray-200 border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
                                 />
                             </div>
@@ -102,7 +129,11 @@ const EventsFieldBody = () => {
                             </label>
                             <div className="mt-1 ">
                                 <label class="toggle-switch mt-2">
-                                    <input type="checkbox" />
+                                    <input
+                                        type="checkbox"
+                                        value={formData.display}
+                                        onChange={(e) => setFormData({ ...formData, display: e.target.value })}
+                                    />
                                     <span class="slider"></span>
                                 </label>
                             </div>
@@ -129,6 +160,8 @@ const EventsFieldBody = () => {
                                                 <div className="flex gap-3 mt-2 justify-center">
                                                     <svg
                                                         onClick={() => openMediaLibrary("image")}
+                                                        value={formData.e_img}
+                                                        onChange={(e) => setFormData({ ...formData, e_img: e.target.value })}
                                                         xmlns="http://www.w3.org/2000/svg"
                                                         fill="none"
                                                         viewBox="0 0 24 24"
@@ -144,6 +177,8 @@ const EventsFieldBody = () => {
                                                     </svg>
                                                     <svg
                                                         onClick={() => handleImageSelect("", "image")}
+                                                        value={formData.e_img}
+                                                        onChange={(e) => setFormData({ ...formData, e_img: e.target.value })}
                                                         xmlns="http://www.w3.org/2000/svg"
                                                         fill="none"
                                                         viewBox="0 0 24 24"
@@ -162,6 +197,8 @@ const EventsFieldBody = () => {
                                         ) : (
                                             <div
                                                 onClick={() => openMediaLibrary("image")}
+                                                value={formData.e_img}
+                                                onChange={(e) => setFormData({ ...formData, e_img: e.target.value })}
                                                 className="flex flex-col items-center justify-center pt-5 pb-6 "
                                             >
                                                 <svg
@@ -195,7 +232,49 @@ const EventsFieldBody = () => {
                             )}
 
                             <div className='min-h-full'>
-                                <EventsFormSection />
+                                <div className="flex justify-center items-center">
+                                    <div className="w-full  bg-white space-y-5">
+                                        {/* Tags Input */}
+                                        <div>
+                                            <label className="block text-xl font-medium text-gray-700">Tags</label>
+                                            <input
+                                                type="text"
+                                                value={formData.e_tags}
+                                                onChange={(e) => setFormData({ ...formData, e_tags: e.target.value })}
+                                                className="mt-2 w-full py-2 border !border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                                placeholder="Enter tags"
+                                            />
+                                        </div>
+
+                                        {/* Date Input */}
+                                        <div className="mt-4">
+                                            <label htmlFor="event-date" className="block text-xl font-medium text-gray-700">
+                                                Event Date
+                                            </label>
+                                            <input
+                                                type="date"
+                                                id="event-date"
+                                                value={formData.e_date}
+                                                onChange={(e) => setFormData({ ...formData, e_date: e.target.value })}
+                                                className="mt-2 w-full py-2 border !border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                            />
+                                        </div>
+
+                                        {/* Favorite Dropdown */}
+                                        <div className="mt-4">
+                                            <label className="block text-xl font-medium text-gray-700">Favorite</label>
+                                            <select
+                                                value={formData.e_fav}
+                                                onChange={(e) => setFormData({ ...formData, e_fav: e.target.value })}
+                                                className="mt-2 block w-full border !border-gray-300 rounded-md py-2 pl-2 text-gray-900 shadow-sm focus:ring-2 focus:ring-indigo-500"
+                                            >
+                                                <option value="">Choose Option</option>
+                                                <option value="yes">Yes</option>
+                                                <option value="no">No</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
 
                         </div>
@@ -219,9 +298,7 @@ const EventsFieldBody = () => {
                             </div>
                         </div>
                     </div>
-
                 </div>
-
             </div>
         </div>
     );

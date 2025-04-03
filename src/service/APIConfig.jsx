@@ -10,10 +10,10 @@ const API_ENDPOINTS = {
     deleteImage: `${API_BASEURL}/images/delete`,
 
     // news
-    getNews: `${API_BASEURL}/news`,
-    createNews: `${API_BASEURL}/create`,
-    updateNews: `${API_BASEURL}/update`,
-    deleteNews: `${API_BASEURL}/visibility`,
+    getEvent: `${API_BASEURL}/event`,
+    createEvent: `${API_BASEURL}/event/create`,
+    updateEvent: `${API_BASEURL}/event/update`,
+    deleteEvent: `${API_BASEURL}/event/visibility`,
 
     // button
     // buttons: `${API_BASEURL}/button`,
