@@ -56,6 +56,13 @@ import ScholarshipPiece from "./Scholarship/ScholarshipPiece";
 import UnlockPiece from "./Unlock/UnlockPiece";
 import FeePiece from "./Fee/FeePiece";
 import IntroductionPiece from "./Introduction/IntroductionPiece";
+import CsdPiece from "./CSD/CsdPiece";
+import StudyPiece from "./Study/StudyPiece";
+import FuturePiece from "./Future/FuturePiece";
+import PotentaiPiece from "./Potential/PotentailPiece";
+import InnovationPiece from "./Innovation/InnovationPiece";
+import FaqPiece from "./Faq/FaqPiece";
+import ApplyPiece from "./Apply/ApplyPiece";
 
 const sectionOptions = [
     {
@@ -132,13 +139,7 @@ const sectionOptions = [
     },
     {
         type: "CSD",
-        component: () => (
-            <div className="bg-gray-50 p-2 rounded-lg">
-                <h1 className="text-xl font-bold text-center">
-                    CSD Section
-                </h1>
-            </div>
-        ),
+        component: CsdPiece,
         icon: FaComputer,
         label: "CSD",
     },
@@ -150,13 +151,7 @@ const sectionOptions = [
     },
     {
         type: "Study",
-        component: () => (
-            <div className="bg-gray-50 p-2 rounded-lg">
-                <h1 className="text-xl font-bold text-center">
-                    Study Section
-                </h1>
-            </div>
-        ),
+        component: StudyPiece,
         icon: LiaChalkboardTeacherSolid,
         label: "Study",
     },
@@ -192,25 +187,13 @@ const sectionOptions = [
     },
     {
         type: "Future",
-        component: () => (
-            <div className="bg-gray-50 p-2 rounded-lg">
-                <h1 className="text-xl font-bold text-center">
-                    Future Section
-                </h1>
-            </div>
-        ),
+        component: FuturePiece,
         icon: HiOutlineLightBulb,
         label: "Future",
     },
     {
         type: "Potential",
-        component: () => (
-            <div className="bg-gray-50 p-2 rounded-lg">
-                <h1 className="text-xl font-bold text-center">
-                    Potential Section
-                </h1>
-            </div>
-        ),
+        component: PotentaiPiece,
         icon: GiMountainClimbing,
         label: "Potential",
     },
@@ -222,37 +205,19 @@ const sectionOptions = [
     },
     {
         type: "Innovation",
-        component: () => (
-            <div className="bg-gray-50 p-2 rounded-lg">
-                <h1 className="text-xl font-bold text-center">
-                    Innovation Section
-                </h1>
-            </div>
-        ),
+        component: InnovationPiece,
         icon: LuBrainCircuit,
         label: "Innovation",
     },
     {
         type: "FAQ",
-        component: () => (
-            <div className="bg-gray-50 p-2 rounded-lg">
-                <h1 className="text-xl font-bold text-center">
-                    FAQ Section
-                </h1>
-            </div>
-        ),
+        component: FaqPiece,
         icon: RiQuestionnaireLine,
         label: "FAQ",
     },
     {
         type: "Apply",
-        component: () => (
-            <div className="bg-gray-50 p-2 rounded-lg">
-                <h1 className="text-xl font-bold text-center">
-                    Apply Section
-                </h1>
-            </div>
-        ),
+        component: ApplyPiece,
         icon: TfiWrite,
         label: "Apply",
     },
