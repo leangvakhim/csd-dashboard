@@ -8,7 +8,6 @@ import { useLocation } from 'react-router-dom';
 
 const EventsField = () => {
     const [subtitleContent, setSubtitleContent] = useState('');
-    const [nextOrder, setNextOrder] = useState(1);
     const location = useLocation();
     const eventData = location.state?.eventData;
     const [formData, setFormData] = useState({
@@ -36,15 +35,6 @@ const EventsField = () => {
         }));
     };
 
-    useEffect(() => {
-        axios.get(API_ENDPOINTS.getEvent)
-            .then(response => {
-                const existing = response.data.data || [];
-                const maxOrder = Math.max(...existing.map(ev => ev.e_order || 0), 0);
-                setNextOrder(maxOrder + 1);
-            });
-    }, []);
-
     const handleSave = async () => {
         let res;
         const payload = {
@@ -57,7 +47,6 @@ const EventsField = () => {
             e_img: formData.e_img || null,
             display: formData.display ? 1 : 0,
             e_detail: subtitleContent || '',
-            e_order: formData.e_order || nextOrder,
             active: formData.active ? 1 : 0
         };
 
@@ -67,7 +56,8 @@ const EventsField = () => {
                 res = await axios.post(`${API_ENDPOINTS.updateEvent}/${formData.e_id}`, payload);
             } else {
                 // Perform create
-                res = await axios.post(API_ENDPOINTS.createEvent, payload);
+                const { e_order, ...createPayload } = payload;
+                res = await axios.post(API_ENDPOINTS.createEvent, createPayload);
             }
             alert("Event saved successfully!");
         } catch (err) {

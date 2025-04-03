@@ -141,9 +141,6 @@ const EventsFieldBody = ({formData, setFormData, subtitleContent, setSubtitleCon
                                 <input
                                     type="text"
                                     value={formData.e_title}
-                                                                    // value={formData.e_title}
-                                    // {console.log("FormData Title:", formData.e_title)}
-                                    // onChange={(e) => setFormData({ ...formData, e_title: e.target.value })}
                                     onChange={(e) => setFormData(prev => ({ ...prev, e_title: e.target.value }))}
                                     className="block w-full !border-gray-200 border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
                                 />

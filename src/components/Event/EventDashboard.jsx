@@ -12,7 +12,8 @@ const EventDashboard = () => {
         const fetchEvents = async () => {
             try {
                 const response = await axios.get(API_ENDPOINTS.getEvent);
-                setEventItems(response.data.data || []);
+                const sortedEvents = (response.data.data || []).sort((a, b) => b.e_order - a.e_order);
+                setEventItems(sortedEvents);
             } catch (error) {
                 console.error('Failed to fetch events:', error);
             }
@@ -27,27 +28,50 @@ const EventDashboard = () => {
         navigate('/event/event-detail', { state: { eventData } });
     };
 
-    const moveItem = (index, direction) => {
+    const moveItem = async (index, direction) => {
         const newItems = [...eventItems];
         const targetIndex = direction === 'up' ? index - 1 : index + 1;
 
         if (targetIndex < 0 || targetIndex >= newItems.length) return;
 
+        // Swap items locally
         [newItems[index], newItems[targetIndex]] = [newItems[targetIndex], newItems[index]];
-        setEventItems(newItems);
+
+        // Update e_order values
+        const updatedItems = newItems.map((item, i) => ({
+            ...item,
+            e_order: newItems.length - i // or i + 1 for ascending order
+        }));
+
+        setEventItems(updatedItems);
+
+        try {
+            await updateOrderOnServer(updatedItems);
+        } catch (error) {
+            console.error("Failed to update order on server:", error);
+        }
     };
 
-    // const duplicateItem = async (id) => {
-    //     try {
-    //         // const response = await axios.post(`${API_ENDPOINTS.duplicateEvent}/${id}`);
-    //         if (response.status === 200) {
-    //             alert("Event duplicated successfully");
-    //             window.location.reload();
-    //         }
-    //     } catch (error) {
-    //         console.error("Error duplicating event:", error);
-    //     }
-    // };
+    const updateOrderOnServer = async (items) => {
+        const payload = items.map(item => ({
+            e_id: item.e_id,
+            e_order: item.e_order
+        }));
+
+        await axios.put(`${API_ENDPOINTS.updateEventOrder}`, payload);
+    };
+
+    const duplicateItem = async (id) => {
+        try {
+            const response = await axios.post(`${API_ENDPOINTS.duplicateEvent}/${id}`);
+            if (response.status === 200) {
+                alert("Event duplicated successfully");
+                window.location.reload();
+            }
+        } catch (error) {
+            console.error("Error duplicating event:", error);
+        }
+    };
 
     const handleDelete = async (id) => {
         if (!window.confirm("Are you sure you want to delete of this event?")) return;
