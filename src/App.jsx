@@ -38,7 +38,7 @@ function App() {
         <Route path='/event' element={<Event/>} />
         <Route path='/event/event-detail' element={<EventsField/>} />
         <Route path='/news' element={<New/>} />
-        <Route path='//news/news-details' element={<NewsField />} />
+        <Route path='/news/news-details' element={<NewsField />} />
         <Route path='/career' element={<Career/>} />
         <Route path='/career/career-details' element={<CareerField />} />
         <Route path='/scholarship' element={<Scholarship/>} />

@@ -1,27 +1,110 @@
 import React, { useState } from 'react'
 import MediaLibraryModal from '../MediaLibraryModal';
-import NewsFormSection from './NewsFormSection';
-import NewsRichText from './NewsRichText';
+import JoditEditor from 'jodit-react';
+import 'jodit/es5/jodit.css';
+import { API_ENDPOINTS } from '../../service/APIConfig';
+import { useEffect } from 'react';
 
 
-const NewsFieldBody = () => {
+
+const config = {
+    readonly: false,  // Set to true for read-only mode
+    height: 400,
+    placeholder: 'Start typing...',
+    buttons: [
+        'bold', 'italic', 'underline', 'strikethrough', '|',
+        'ul', 'ol', '|', 'image', 'link', 'table', '|',
+        'align', 'undo', 'redo', 'hr', '|',
+        'source'
+    ],
+    uploader: {
+        insertImageAsBase64URI: true,  // Enable base64 image upload
+    },
+};
+
+const NewsFieldBody = ({ formData, setFormData, subtitleContent, setSubtitleContent, onImageSelect }) => {
     const [activeTab, setActiveTab] = useState(1);
     const [isMediaLibraryOpen, setMediaLibraryOpen] = useState(false);
     const [selectedImage, setSelectedImage] = useState("");
 
+    useEffect(() => {
+        if (formData.lang) {
+            setActiveTab(formData.lang);
+        }
+    }, [formData.lang]);
+
+    useEffect(() => {
+        if (formData.n_img) {
+            fetch(`${API_ENDPOINTS.getImages}`)
+                .then(res => res.json())
+                .then(result => {
+                    const matched = result.data.find(img => img.image_id === formData.n_img);
+                    if (matched) {
+                        setSelectedImage(matched.image_url);
+                    }
+                })
+                .catch(err => console.error("Error fetching image:", err));
+        }
+    }, [formData.n_img]);
+
+    useEffect(() => {
+        // console.log("Loaded formData:", formData);
+
+        if (typeof formData.display !== 'boolean') {
+            setFormData(prev => ({
+                ...prev,
+                display: !!parseInt(prev.display)
+            }));
+        }
+
+        if (typeof formData.n_fav !== 'boolean') {
+            setFormData(prev => ({
+                ...prev,
+                n_fav: !!parseInt(prev.n_fav)
+            }));
+        }
+
+        if (formData.n_date && formData.n_date.includes(" ")) {
+            const dateOnly = formData.n_date.split(" ")[0];
+            setFormData(prev => ({
+                ...prev,
+                n_date: dateOnly
+            }));
+        }
+    }, [formData]);
+
     const openMediaLibrary = () => {
-        // setCurrentField(field);
         setMediaLibraryOpen(true);
     };
 
-    const handleImageSelect = (imageUrl, field) => {
+    const handleImageSelect = async (imageUrl, field) => {
         if (field === "image") {
             setSelectedImage(imageUrl ? `${imageUrl}` : "");
+            try {
+                const response = await fetch(`${API_ENDPOINTS.getImages}`);
+                const result = await response.json();
+
+                if (result.status_code === "success" && Array.isArray(result.data)) {
+                    const matchedImage = result.data.find(image => image.image_url === imageUrl);
+                    if (matchedImage) {
+                        onImageSelect(matchedImage.image_id);
+                        setFormData(prevData => ({
+                            ...prevData,
+                            n_img: matchedImage.image_id,
+                        }));
+                    } else {
+                        console.warn("Image not found in API response for URL:", imageUrl);
+                    }
+                }
+            } catch (error) {
+                console.error("Failed to fetch images:", error);
+            }
         }
+
         setMediaLibraryOpen(false);
     };
 
-  
+
 
 
     return (
@@ -67,6 +150,8 @@ const NewsFieldBody = () => {
                             <div className="mt-2">
                                 <input
                                     type="text"
+                                    value={formData.n_title}
+                                    onChange={(e) => setFormData(prev => ({ ...prev, n_title: e.target.value }))}
                                     className="block w-full !border-gray-200 border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
                                 />
                             </div>
@@ -79,6 +164,8 @@ const NewsFieldBody = () => {
                             <div className="mt-2">
                                 <input
                                     type="text"
+                                    value={formData.n_shorttitle}
+                                    onChange={(e) => setFormData({ ...formData, n_shorttitle: e.target.value })}
                                     className="block w-full !border-gray-200 border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
                                 />
                             </div>
@@ -90,7 +177,11 @@ const NewsFieldBody = () => {
                             </label>
                             <div className="mt-1 ">
                                 <label class="toggle-switch mt-2">
-                                    <input type="checkbox" />
+                                    <input
+                                        type="checkbox"
+                                        checked={formData.display}
+                                        onChange={(e) => setFormData({ ...formData, display: e.target.checked })}
+                                    />
                                     <span class="slider"></span>
                                 </label>
                             </div>
@@ -117,6 +208,8 @@ const NewsFieldBody = () => {
                                                 <div className="flex gap-3 mt-2 justify-center">
                                                     <svg
                                                         onClick={() => openMediaLibrary("image")}
+                                                        value={formData.e_img}
+                                                        onChange={(e) => setFormData({ ...formData, n_img: e.target.value })}
                                                         xmlns="http://www.w3.org/2000/svg"
                                                         fill="none"
                                                         viewBox="0 0 24 24"
@@ -132,6 +225,8 @@ const NewsFieldBody = () => {
                                                     </svg>
                                                     <svg
                                                         onClick={() => handleImageSelect("", "image")}
+                                                        value={formData.e_img}
+                                                        onChange={(e) => setFormData({ ...formData, n_img: e.target.value })}
                                                         xmlns="http://www.w3.org/2000/svg"
                                                         fill="none"
                                                         viewBox="0 0 24 24"
@@ -150,6 +245,8 @@ const NewsFieldBody = () => {
                                         ) : (
                                             <div
                                                 onClick={() => openMediaLibrary("image")}
+                                                value={formData.e_img}
+                                                onChange={(e) => setFormData({ ...formData, n_img: e.target.value })}
                                                 className="flex flex-col items-center justify-center pt-5 pb-6 "
                                             >
                                                 <svg
@@ -181,18 +278,72 @@ const NewsFieldBody = () => {
                                     onClose={() => setMediaLibraryOpen(false)}
                                 />
                             )}
-
                             <div className='min-h-full'>
-                                <NewsFormSection />
-                            </div>
+                                <div className="flex justify-center items-center">
+                                    <div className="w-full  bg-white space-y-5">
+                                        {/* Tags Input */}
+                                        <div>
+                                            <label className="block text-xl font-medium text-gray-700">Tags</label>
+                                            <input
+                                                type="text"
+                                                value={formData.n_tags}
+                                                onChange={(e) => setFormData({ ...formData, n_tags: e.target.value })}
+                                                className="mt-2 w-full py-2 border !border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                                placeholder="Enter tags"
+                                            />
+                                        </div>
 
+                                        {/* Date Input */}
+                                        <div className="mt-4">
+                                            <label htmlFor="event-date" className="block text-xl font-medium text-gray-700">
+                                                News Date
+                                            </label>
+                                            <input
+                                                type="date"
+                                                id="event-date"
+                                                value={formData.n_date}
+                                                onChange={(e) => setFormData({ ...formData, n_date: e.target.value })}
+                                                className="mt-2 w-full py-2 border !border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                            />
+                                        </div>
+
+                                        {/* Favorite Dropdown */}
+                                        <div className="mt-4">
+                                            <label className="block text-xl font-medium text-gray-700">Favorite</label>
+                                            <select
+                                                value={formData.n_fav}
+                                                onChange={(e) => setFormData({ ...formData, n_fav: e.target.value })}
+                                                className="mt-2 block w-full border !border-gray-300 rounded-md py-2 pl-2 text-gray-900 shadow-sm focus:ring-2 focus:ring-indigo-500"
+                                            >
+                                                <option value={true}>Yes</option>
+                                                <option value={false}>No</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     {/* Third row - Full Width */}
                     <div className='h-full'>
-                        <NewsRichText />
+                        <div className="flex-1">
+                            <div className="grid grid-cols-1 gap-4 py-2">
+                                <div className="w-full">
+                                    <label className="block text-xl font-medium leading-6 text-white-900">
+                                        Description
+                                    </label>
+                                    <div className="mt-2 cursor-text">
+                                        <JoditEditor
+                                            value={subtitleContent}
+                                            config={config}
+                                            onChange={(newContent) => setSubtitleContent(newContent)}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                   
+
                 </div>
 
             </div>
