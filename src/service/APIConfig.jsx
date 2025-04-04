@@ -10,7 +10,7 @@ const API_ENDPOINTS = {
     uploadImage: `${API_BASEURL}/images/create`,
     deleteImage: `${API_BASEURL}/images/delete`,
 
-    // events
+    // news
     getEvent: `${API_BASEURL}/event`,
     createEvent: `${API_BASEURL}/event/create`,
     updateEvent: `${API_BASEURL}/event/update`,
@@ -21,22 +21,19 @@ const API_ENDPOINTS = {
     // faculty
     getFaculty: `${API_BASEURL}/faculty`,
     createFaculty: `${API_BASEURL}/faculty/create`,
-    updateFaculty: `${API_BASEURL}/faculty/update`,
-    deleteFaculty: `${API_BASEURL}/faculty/visibility`,
-    // duplicateEvent: `${API_BASEURL}/event/duplicate`,
-    // updateEventOrder: `${API_BASEURL}/event/reorder`,
+    // updateFaculty: `${API_BASEURL}/faculty/update`,
+    // deleteFaculty: `${API_BASEURL}/faculty/visibility`,
+    // duplicateFaculty: `${API_BASEURL}/faculty/duplicate`,
+    // updateFacultyOrder: `${API_BASEURL}/faculty/reorder`,
+
+    // faculty-contact
+    getFaculty: `${API_BASEURL}/faculty-contact`,
+    createFacultyContact: `${API_BASEURL}/faculty-contact/create`,
+    // updateFacultyContact: `${API_BASEURL}/faculty-contact/update`,
+    // deleteFacultyContact: `${API_BASEURL}/faculty-contact/visibility`,
+    // updateFacultyContactOrder: `${API_BASEURL}/faculty-contact/reorder`,
 
 
-    // news
-    getNews: `${API_BASEURL}/news`,
-    createNews: `${API_BASEURL}/news/create`,
-    updateNews: `${API_BASEURL}/news/update`,
-    deleteNews: `${API_BASEURL}/news/visibility`,
-    duplicateNews: `${API_BASEURL}/news/duplicate`,
-    updateNewsOrder: `${API_BASEURL}/news/reorder`,
-
-
-    
     // button
     // buttons: `${API_BASEURL}/button`,
 
