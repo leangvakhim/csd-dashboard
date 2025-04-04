@@ -26,6 +26,7 @@ const EventDashboard = () => {
         const response = await axios.get(`${API_ENDPOINTS.getEvent}/${id}`);
         const eventData = response.data;
         navigate('/event/event-detail', { state: { eventData } });
+        // console.log("Passing data: ",response.data);
     };
 
     const moveItem = async (index, direction) => {

@@ -96,8 +96,10 @@ const TypePiece = () => {
             </div>
           </div>
         </div>
+        <div className="mb-4">
+          <TypePieceSlider/>
+        </div>
       </details>
-      <TypePieceSlider></TypePieceSlider>
     </div>
   );
 };

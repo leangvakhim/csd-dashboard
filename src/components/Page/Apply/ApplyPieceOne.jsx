@@ -17,7 +17,7 @@ const ApplyPieceOne = () => {
             secondbtnselect: "",
         },
     ]);
-    
+
 
     const handleAddSlider = () => {
         const newSlider = {
@@ -162,7 +162,7 @@ const ApplyPieceOne = () => {
                                                         </div>
                                                     </div>
                                                 </div>
-                                               
+
                                             </details>
                                         </li>
                                     )}

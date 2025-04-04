@@ -1,17 +1,23 @@
 import React, { useState } from "react";
+import MediaLibraryModal from "../../MediaLibraryModal";
 
 const CriteriaPiece = () => {
   const [isRotatedButton, setIsRotatedButton] = useState(false);
   const [isMediaLibraryOpen, setMediaLibraryOpen] = useState(false);
-  const [selectedImage, setSelectedImage] = useState("");
+  const [selectedImage1, setSelectedImage1] = useState("");
+  const [selectedImage2, setSelectedImage2] = useState("");
+  const [currentField, setCurrentField] = useState("");
 
-  const openMediaLibrary = () => {
+  const openMediaLibrary = (field) => {
+    setCurrentField(field);
     setMediaLibraryOpen(true);
   };
 
   const handleImageSelect = (imageUrl, field) => {
-    if (field === "image") {
-      setSelectedImage(imageUrl ? `${imageUrl}` : "");
+    if (field === "image1") {
+        setSelectedImage1(imageUrl);
+    } else if (field === "image2") {
+        setSelectedImage2(imageUrl);
     }
     setMediaLibraryOpen(false);
   };
@@ -115,16 +121,16 @@ const CriteriaPiece = () => {
             </label>
             <div className="flex items-center justify-center w-full mt-2 border-1">
               <label className="flex flex-col items-center justify-center w-full h-60 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
-                {selectedImage ? (
+                {selectedImage1 ? (
                   <div>
                     <img
-                      src={selectedImage}
+                      src={selectedImage1}
                       alt="Selected"
                       className="h-40 w-40 object-contain"
                     />
                     <div className="flex gap-3 mt-2 justify-center">
                       <svg
-                        onClick={() => openMediaLibrary("image")}
+                        onClick={() => openMediaLibrary("image1")}
                         xmlns="http://www.w3.org/2000/svg"
                         fill="none"
                         viewBox="0 0 24 24"
@@ -139,7 +145,7 @@ const CriteriaPiece = () => {
                         />
                       </svg>
                       <svg
-                        onClick={() => handleImageSelect("", "image")}
+                        onClick={() => handleImageSelect("", "image1")}
                         xmlns="http://www.w3.org/2000/svg"
                         fill="none"
                         viewBox="0 0 24 24"
@@ -157,7 +163,7 @@ const CriteriaPiece = () => {
                   </div>
                 ) : (
                   <div
-                    onClick={() => openMediaLibrary("image")}
+                    onClick={() => openMediaLibrary("image1")}
                     className="flex flex-col items-center justify-center pt-5 pb-6 "
                   >
                     <svg
@@ -185,11 +191,11 @@ const CriteriaPiece = () => {
               </label>
             </div>
           </div>
-          {isMediaLibraryOpen && (
-            <MediaLibraryModal
-              onSelect={(imageUrl) => handleImageSelect(imageUrl, "image")}
-              onClose={() => setMediaLibraryOpen(false)}
-            />
+          {isMediaLibraryOpen && currentField === "image1" && (
+              <MediaLibraryModal
+                  onSelect={(url) => handleImageSelect(url, "image1")}
+                  onClose={() => setMediaLibraryOpen(false)}
+              />
           )}
           <div className="flex-1">
             <label className="block text-xl font-medium leading-6 text-white-900">
@@ -197,16 +203,16 @@ const CriteriaPiece = () => {
             </label>
             <div className="flex items-center justify-center w-full mt-2 border-1">
               <label className="flex flex-col items-center justify-center w-full h-60 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
-                {selectedImage ? (
+                {selectedImage2 ? (
                   <div>
                     <img
-                      src={selectedImage}
+                      src={selectedImage2}
                       alt="Selected"
                       className="h-40 w-40 object-contain"
                     />
                     <div className="flex gap-3 mt-2 justify-center">
                       <svg
-                        onClick={() => openMediaLibrary("image")}
+                        onClick={() => openMediaLibrary("image2")}
                         xmlns="http://www.w3.org/2000/svg"
                         fill="none"
                         viewBox="0 0 24 24"
@@ -221,7 +227,7 @@ const CriteriaPiece = () => {
                         />
                       </svg>
                       <svg
-                        onClick={() => handleImageSelect("", "image")}
+                        onClick={() => handleImageSelect("", "image2")}
                         xmlns="http://www.w3.org/2000/svg"
                         fill="none"
                         viewBox="0 0 24 24"
@@ -239,7 +245,7 @@ const CriteriaPiece = () => {
                   </div>
                 ) : (
                   <div
-                    onClick={() => openMediaLibrary("image")}
+                    onClick={() => openMediaLibrary("image2")}
                     className="flex flex-col items-center justify-center pt-5 pb-6 "
                   >
                     <svg
@@ -267,11 +273,11 @@ const CriteriaPiece = () => {
               </label>
             </div>
           </div>
-          {isMediaLibraryOpen && (
-            <MediaLibraryModal
-              onSelect={(imageUrl) => handleImageSelect(imageUrl, "image")}
-              onClose={() => setMediaLibraryOpen(false)}
-            />
+          {isMediaLibraryOpen && currentField === "image2" && (
+              <MediaLibraryModal
+                  onSelect={(url) => handleImageSelect(url, "image2")}
+                  onClose={() => setMediaLibraryOpen(false)}
+              />
           )}
         </div>
       </details>

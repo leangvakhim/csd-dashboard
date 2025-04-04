@@ -4,13 +4,11 @@ import MediaLibraryModal from "../../MediaLibraryModal";
 
 const FeePiece = () => {
     const [isRotatedButton1, setIsRotatedButton1] = useState(false);
-    const [redirectpage, setRedirectpage] = useState("")
     const [isMediaLibraryOpen, setMediaLibraryOpen] = useState(false);
     const [selectedImage, setSelectedImage] = useState("");
 
 
     const openMediaLibrary = () => {
-        // setCurrentField(field);
         setMediaLibraryOpen(true);
     };
 
@@ -204,14 +202,6 @@ const FeePiece = () => {
                                 onClose={() => setMediaLibraryOpen(false)}
                             />
                         )}
-                    </div>
-                </div>
-
-
-                {/* Row 3 */}
-                <div className="w-full flex justify-center items-center bg-gray-50 border p-6">
-                    <div className="px-4 py-2 mb-1">
-                        <span> Fee's Element</span>
                     </div>
                 </div>
             </details >

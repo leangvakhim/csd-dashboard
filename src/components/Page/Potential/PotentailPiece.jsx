@@ -1,16 +1,16 @@
 import React, { useState } from "react";
 import PotentaiPieceOne from "./PotentaiPieceOne";
-
+import MediaLibraryModal from "../../MediaLibraryModal";
 
 const PotentaiPiece = () => {
   const [isRotatedButton1, setIsRotatedButton1] = useState(false);
   const [isMediaLibraryOpen, setMediaLibraryOpen] = useState(false);
     const [selectedImage, setSelectedImage] = useState("");
-  
+
     const openMediaLibrary = () => {
       setMediaLibraryOpen(true);
     };
-  
+
     const handleImageSelect = (imageUrl, field) => {
       if (field === "image") {
         setSelectedImage(imageUrl ? `${imageUrl}` : "");
@@ -192,10 +192,10 @@ const PotentaiPiece = () => {
             />
           )}
         </div>
-
-       
+        <div className="mb-4">
+          <PotentaiPieceOne />
+        </div>
       </details>
-      <PotentaiPieceOne />
     </div>
   );
 };

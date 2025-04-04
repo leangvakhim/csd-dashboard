@@ -4,7 +4,7 @@ import FaqPieceOne from "./FaqPieceOne";
 
 const FaqPiece = () => {
   const [isRotatedButton1, setIsRotatedButton1] = useState(false);
-  
+
   return (
     <div className="grid grid-cols-1 gap-4 ">
       <details className="group [&_summary::-webkit-details-marker]:hidden rounded-lg">
@@ -96,12 +96,12 @@ const FaqPiece = () => {
               <textarea className="!border-gray-300 h-60 block w-full rounded-md border-0 py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-2xl sm:leading-6"></textarea>
             </div>
           </div>
-          
-        </div>
 
-       
+        </div>
+        <div className="mb-4">
+          <FaqPieceOne />
+        </div>
       </details>
-      <FaqPieceOne />
     </div>
   );
 };

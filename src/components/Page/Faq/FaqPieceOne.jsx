@@ -16,7 +16,7 @@ const FaqPieceOne = () => {
             secondbtnselect: "",
         },
     ]);
-    
+
 
     const handleAddSlider = () => {
         const newSlider = {
@@ -171,7 +171,7 @@ const FaqPieceOne = () => {
                                                             <textarea className="!border-gray-300 h-60 block w-full rounded-md border-0 py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-2xl sm:leading-6"></textarea>
                                                         </div>
                                                     </div>
-                                                 
+
                                                 </div>
                                             </details>
                                         </li>
@@ -197,7 +197,7 @@ const FaqPieceOne = () => {
                                     d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
                                 />
                             </svg>
-                            Add new csd
+                            Add new faq
                         </a>
                     </div>
                 )}

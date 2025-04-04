@@ -8,14 +8,8 @@ const config = {
     readonly: false,
     height: 400,
     placeholder: 'Start typing...',
-    buttons: [
-        'bold', 'italic', 'underline', 'strikethrough', '|',
-        'ul', 'ol', '|', 'image', 'link', 'table', '|',
-        'align', 'undo', 'redo', 'hr', '|',
-        'source'
-    ],
     uploader: {
-        insertImageAsBase64URI: true,  // Enable base64 image upload
+        insertImageAsBase64URI: true,
     },
 };
 
