@@ -23,8 +23,8 @@ const API_ENDPOINTS = {
     createNews: `${API_BASEURL}/news/create`,
     updateNews: `${API_BASEURL}/news/update`,
     deleteNews: `${API_BASEURL}/news/visibility`,
-    // duplicateNews: `${API_BASEURL}/news/duplicate`,
-    // updateNewsOrder: `${API_BASEURL}/news/reorder`,
+    duplicateNews: `${API_BASEURL}/news/duplicate`,
+    updateNewsOrder: `${API_BASEURL}/news/reorder`,
 
     // faculty
     getFaculty: `${API_BASEURL}/faculty`,

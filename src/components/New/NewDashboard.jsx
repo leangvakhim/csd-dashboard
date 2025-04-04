@@ -62,26 +62,26 @@ const NewDashboard = () => {
         }
     };
 
-    // const updateOrderOnServer = async (items) => {
-    //     const payload = items.map(item => ({
-    //         n_id: item.n_id,
-    //         n_order: item.n_order
-    //     }));
+    const updateOrderOnServer = async (items) => {
+        const payload = items.map(item => ({
+            n_id: item.n_id,
+            n_order: item.n_order
+        }));
 
-    //     await axios.put(`${API_ENDPOINTS.updateNewsOrder}`, payload);
-    // };
+        await axios.put(`${API_ENDPOINTS.updateNewsOrder}`, payload);
+    };
 
-    // const duplicateItem = async (id) => {
-    //     try {
-    //         const response = await axios.post(`${API_ENDPOINTS.duplicateNews}/${id}`);
-    //         if (response.status === 200) {
-    //             alert("Event duplicated successfully");
-    //             window.location.reload();
-    //         }
-    //     } catch (error) {
-    //         console.error("Error duplicating news:", error);
-    //     }
-    // };
+    const duplicateItem = async (id) => {
+        try {
+            const response = await axios.post(`${API_ENDPOINTS.duplicateNews}/${id}`);
+            if (response.status === 200) {
+                alert("Event duplicated successfully");
+                window.location.reload();
+            }
+        } catch (error) {
+            console.error("Error duplicating news:", error);
+        }
+    };
 
     const handleDelete = async (id) => {
         if (!window.confirm("Are you sure you want to delete of this news?")) return;
