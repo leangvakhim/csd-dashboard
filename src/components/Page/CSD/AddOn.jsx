@@ -155,7 +155,7 @@ const AddOn = () => {
 
                                                 {/* title */}
                                                 <div className="flex flex-col items-center gap-4 px-4 py-2">
-                                                    <div className="flex-1">
+                                                    <div className="flex-1 w-full">
                                                         <label className=" block text-xl font-medium leading-6 text-white-900">
                                                             Title
                                                         </label>
@@ -166,7 +166,7 @@ const AddOn = () => {
                                                             />
                                                         </div>
                                                     </div>
-                                                    <div className="flex-1">
+                                                    <div className="flex-1 w-full">
                                                         <label className=" block text-xl font-medium leading-6 text-white-900">
                                                             Amount
                                                         </label>
@@ -177,7 +177,7 @@ const AddOn = () => {
                                                             />
                                                         </div>
                                                     </div>
-                                                    <div className="flex-1">
+                                                    <div className="flex-1 w-full">
                                                         <label className=" block text-xl font-medium leading-6 text-white-900">
                                                             Amount
                                                         </label>
@@ -212,7 +212,7 @@ const AddOn = () => {
                                     d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
                                 />
                             </svg>
-                            Add new csd
+                            Add new addOn
                         </a>
                     </div>
                 )}
