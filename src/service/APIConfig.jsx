@@ -1,5 +1,5 @@
-// const API_BASEURL = "https://54.151.188.108/api";
-const API_BASEURL = "http://127.0.0.1:8000/api";
+const API_BASEURL = "https://54.151.188.108/api";
+// const API_BASEURL = "http://127.0.0.1:8000/api";
 
 const API_ENDPOINTS = {
     // text
@@ -48,9 +48,9 @@ const API_ENDPOINTS = {
      deleteCareer: `${API_BASEURL}/career/visibility`,
      duplicateCareer: `${API_BASEURL}/career/duplicate`,
      updateCareerOrder: `${API_BASEURL}/career/reorder`,
- 
- 
-    
+
+
+
     // button
     // buttons: `${API_BASEURL}/button`,
 
