@@ -13,7 +13,7 @@ const config = {
     },
 };
 
-const EventsFieldBody = ({formData, setFormData, subtitleContent, setSubtitleContent, onImageSelect}) => {
+const EventsFieldBody = ({ formData, setFormData, subtitleContent, setSubtitleContent, onImageSelect }) => {
     const [activeTab, setActiveTab] = useState(formData.lang || 1);
     const [isMediaLibraryOpen, setMediaLibraryOpen] = useState(false);
     const [selectedImage, setSelectedImage] = useState("");
@@ -25,16 +25,16 @@ const EventsFieldBody = ({formData, setFormData, subtitleContent, setSubtitleCon
     }, [formData.lang]);
 
     useEffect(() => {
-    if (formData.e_img) {
-        fetch(`${API_ENDPOINTS.getImages}`)
-            .then(res => res.json())
-            .then(result => {
-                const matched = result.data.find(img => img.image_id === formData.e_img);
-                if (matched) {
-                    setSelectedImage(matched.image_url);
-                }
-            })
-            .catch(err => console.error("Error fetching image:", err));
+        if (formData.e_img) {
+            fetch(`${API_ENDPOINTS.getImages}`)
+                .then(res => res.json())
+                .then(result => {
+                    const matched = result.data.find(img => img.image_id === formData.e_img);
+                    if (matched) {
+                        setSelectedImage(matched.image_url);
+                    }
+                })
+                .catch(err => console.error("Error fetching image:", err));
         }
     }, [formData.e_img]);
 
@@ -109,9 +109,8 @@ const EventsFieldBody = ({formData, setFormData, subtitleContent, setSubtitleCon
                             <li key={langOption.id}>
                                 <a
                                     href="javascript:void(0)"
-                                    className={`mx-2 inline-block py-1.5 px-6 text-gray-600 hover:text-gray-800 font-medium ${
-                                        activeTab === langOption.id ? 'bg-white rounded-lg text-gray-600' : 'tablink'
-                                    } whitespace-nowrap`}
+                                    className={`mx-2 inline-block py-1.5 px-6 text-gray-600 hover:text-gray-800 font-medium ${activeTab === langOption.id ? 'bg-white rounded-lg text-gray-600' : 'tablink'
+                                        } whitespace-nowrap`}
                                     onClick={() => {
                                         setActiveTab(langOption.id);
                                         setFormData(prev => ({ ...prev, lang: langOption.id }));
@@ -176,7 +175,7 @@ const EventsFieldBody = ({formData, setFormData, subtitleContent, setSubtitleCon
                         <div className="grid  grid-cols-1 md:!grid-cols-2 items-center gap-4">
                             <div className="">
                                 <label className="block text-xl font-medium leading-6 text-white-900">
-                                Image
+                                    Image
                                 </label>
                                 <div className="flex items-center justify-center w-full mt-2 border-1">
                                     <label
@@ -316,14 +315,14 @@ const EventsFieldBody = ({formData, setFormData, subtitleContent, setSubtitleCon
                             <div className="grid grid-cols-1 gap-4 py-2">
                                 <div className="w-full">
                                     <label className="block text-xl font-medium leading-6 text-white-900">
-                                    Description
+                                        Description
                                     </label>
                                     <div className="mt-2 cursor-text">
-                                    <JoditEditor
-                                        value={subtitleContent}
-                                        config={config}
-                                        onChange={(newContent) => setSubtitleContent(newContent)}
-                                    />
+                                        <JoditEditor
+                                            value={subtitleContent}
+                                            config={config}
+                                            onChange={(newContent) => setSubtitleContent(newContent)}
+                                        />
                                     </div>
                                 </div>
                             </div>

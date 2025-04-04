@@ -75,7 +75,7 @@ const NewDashboard = () => {
         try {
             const response = await axios.post(`${API_ENDPOINTS.duplicateNews}/${id}`);
             if (response.status === 200) {
-                alert("Event duplicated successfully");
+                alert("News duplicated successfully");
                 window.location.reload();
             }
         } catch (error) {

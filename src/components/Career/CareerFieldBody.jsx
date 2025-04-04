@@ -1,26 +1,108 @@
 import React, { useState } from 'react'
 import MediaLibraryModal from '../MediaLibraryModal';
-import CareerFormSection from './CareerFormSection';
-import CareerRichText from './CareerRichText';
+import JoditEditor from 'jodit-react';
+import 'jodit/es5/jodit.css';
+import { API_ENDPOINTS } from '../../service/APIConfig';
+import { useEffect } from 'react';
 
-const CareerFieldBody = () => {
+const config = {
+    readonly: false,  // Set to true for read-only mode
+    height: 400,
+    placeholder: 'Start typing...',
+    buttons: [
+        'bold', 'italic', 'underline', 'strikethrough', '|',
+        'ul', 'ol', '|', 'image', 'link', 'table', '|',
+        'align', 'undo', 'redo', 'hr', '|',
+        'source'
+    ],
+    uploader: {
+        insertImageAsBase64URI: true,  // Enable base64 image upload
+    },
+};
+
+const CareerFieldBody = ({ formData, setFormData, subtitleContent, setSubtitleContent, onImageSelect }) => {
     const [activeTab, setActiveTab] = useState(1);
     const [isMediaLibraryOpen, setMediaLibraryOpen] = useState(false);
     const [selectedImage, setSelectedImage] = useState("");
 
+    useEffect(() => {
+        if (formData.lang) {
+            setActiveTab(formData.lang);
+        }
+    }, [formData.lang]);
+
+    useEffect(() => {
+        if (formData.c_img) {
+            fetch(`${API_ENDPOINTS.getImages}`)
+                .then(res => res.json())
+                .then(result => {
+                    const matched = result.data.find(img => img.image_id === formData.c_img);
+                    if (matched) {
+                        setSelectedImage(matched.image_url);
+                    }
+                })
+                .catch(err => console.error("Error fetching image:", err));
+        }
+    }, [formData.c_img]);
+
+    useEffect(() => {
+        // console.log("Loaded formData:", formData);
+
+        if (typeof formData.display !== 'boolean') {
+            setFormData(prev => ({
+                ...prev,
+                display: !!parseInt(prev.display)
+            }));
+        }
+
+        if (typeof formData.c_fav !== 'boolean') {
+            setFormData(prev => ({
+                ...prev,
+                c_fav: !!parseInt(prev.c_fav)
+            }));
+        }
+
+        if (formData.c_date && formData.c_date.includes(" ")) {
+            const dateOnly = formData.c_date.split(" ")[0];
+            setFormData(prev => ({
+                ...prev,
+                c_date: dateOnly
+            }));
+        }
+    }, [formData]);
+
     const openMediaLibrary = () => {
-        // setCurrentField(field);
         setMediaLibraryOpen(true);
     };
 
-    const handleImageSelect = (imageUrl, field) => {
+    const handleImageSelect = async (imageUrl, field) => {
         if (field === "image") {
             setSelectedImage(imageUrl ? `${imageUrl}` : "");
+            try {
+                const response = await fetch(`${API_ENDPOINTS.getImages}`);
+                const result = await response.json();
+
+                if (result.status_code === "success" && Array.isArray(result.data)) {
+                    const matchedImage = result.data.find(image => image.image_url === imageUrl);
+                    if (matchedImage) {
+                        onImageSelect(matchedImage.image_id);
+                        setFormData(prevData => ({
+                            ...prevData,
+                            c_img: matchedImage.image_id,
+                        }));
+                    } else {
+                        console.warn("Image not found in API response for URL:", imageUrl);
+                    }
+                }
+            } catch (error) {
+                console.error("Failed to fetch images:", error);
+            }
         }
+
         setMediaLibraryOpen(false);
     };
 
-  
+
 
 
     return (
@@ -28,32 +110,27 @@ const CareerFieldBody = () => {
             <div className="tabs">
                 <div className="flex">
                     <ul className="flex items-center h-12 bg-gray-100 rounded-lg transition-all duration-300 p-2 overflow-hidden">
-                        <li>
-                            <a
-                                href="javascript:void(0)"
-                                className={`mx-2 inline-block py-1.5 px-6 text-gray-600 hover:text-gray-800 font-medium ${activeTab === 1
-                                    ? 'bg-white rounded-lg text-gray-600'
-                                    : 'tablink'
-                                    } whitespace-nowrap`}
-                                onClick={() => setActiveTab(1)}
-                                role="tab"
-                            >
-                                English
-                            </a>
-                        </li>
-                        <li>
-                            <a
-                                href="javascript:void(0)"
-                                className={`mx-2 inline-block py-1.5 px-6 text-gray-600 hover:text-gray-800 font-medium ${activeTab === 2
-                                    ? 'bg-white rounded-lg text-gray-600'
-                                    : 'tablink'
-                                    } whitespace-nowrap`}
-                                onClick={() => setActiveTab(2)}
-                                role="tab"
-                            >
-                                Khmer
-                            </a>
-                        </li>
+                        {[
+                            { id: 1, label: "English" },
+                            { id: 2, label: "Khmer" },
+                            // { id: 3, label: "Chinese" },
+                            // { id: 4, label: "French" }
+                        ].map(langOption => (
+                            <li key={langOption.id}>
+                                <a
+                                    href="javascript:void(0)"
+                                    className={`mx-2 inline-block py-1.5 px-6 text-gray-600 hover:text-gray-800 font-medium ${activeTab === langOption.id ? 'bg-white rounded-lg text-gray-600' : 'tablink'
+                                        } whitespace-nowrap`}
+                                    onClick={() => {
+                                        setActiveTab(langOption.id);
+                                        setFormData(prev => ({ ...prev, lang: langOption.id }));
+                                    }}
+                                    role="tab"
+                                >
+                                    {langOption.label}
+                                </a>
+                            </li>
+                        ))}
                     </ul>
                 </div>
                 <div className="mt-4">
@@ -66,6 +143,8 @@ const CareerFieldBody = () => {
                             <div className="mt-2">
                                 <input
                                     type="text"
+                                    value={formData.c_title}
+                                    onChange={(e) => setFormData(prev => ({ ...prev, c_title: e.target.value }))}
                                     className="block w-full !border-gray-200 border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
                                 />
                             </div>
@@ -78,6 +157,8 @@ const CareerFieldBody = () => {
                             <div className="mt-2">
                                 <input
                                     type="text"
+                                    value={formData.c_shorttitle}
+                                    onChange={(e) => setFormData({ ...formData, c_shorttitle: e.target.value })}
                                     className="block w-full !border-gray-200 border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
                                 />
                             </div>
@@ -89,7 +170,11 @@ const CareerFieldBody = () => {
                             </label>
                             <div className="mt-1 ">
                                 <label class="toggle-switch mt-2">
-                                    <input type="checkbox" />
+                                    <input
+                                        type="checkbox"
+                                        checked={formData.display}
+                                        onChange={(e) => setFormData({ ...formData, display: e.target.checked })}
+                                    />
                                     <span class="slider"></span>
                                 </label>
                             </div>
@@ -100,7 +185,7 @@ const CareerFieldBody = () => {
                         <div className="grid  grid-cols-1 md:!grid-cols-2 items-center gap-4">
                             <div className="">
                                 <label className="block text-xl font-medium leading-6 text-white-900">
-                                Image
+                                    Image
                                 </label>
                                 <div className="flex items-center justify-center w-full mt-2 border-1">
                                     <label
@@ -116,6 +201,8 @@ const CareerFieldBody = () => {
                                                 <div className="flex gap-3 mt-2 justify-center">
                                                     <svg
                                                         onClick={() => openMediaLibrary("image")}
+                                                        value={formData.c_img}
+                                                        onChange={(e) => setFormData({ ...formData, c_img: e.target.value })}
                                                         xmlns="http://www.w3.org/2000/svg"
                                                         fill="none"
                                                         viewBox="0 0 24 24"
@@ -131,6 +218,8 @@ const CareerFieldBody = () => {
                                                     </svg>
                                                     <svg
                                                         onClick={() => handleImageSelect("", "image")}
+                                                        value={formData.c_img}
+                                                        onChange={(e) => setFormData({ ...formData, c_img: e.target.value })}
                                                         xmlns="http://www.w3.org/2000/svg"
                                                         fill="none"
                                                         viewBox="0 0 24 24"
@@ -149,6 +238,8 @@ const CareerFieldBody = () => {
                                         ) : (
                                             <div
                                                 onClick={() => openMediaLibrary("image")}
+                                                value={formData.c_img}
+                                                onChange={(e) => setFormData({ ...formData, c_img: e.target.value })}
                                                 className="flex flex-col items-center justify-center pt-5 pb-6 "
                                             >
                                                 <svg
@@ -182,16 +273,60 @@ const CareerFieldBody = () => {
                             )}
 
                             <div className='min-h-full'>
-                                <CareerFormSection />
+                                <div className="w-full  bg-white space-y-5">
+
+                                    {/* Date Input */}
+                                    <div className="">
+                                        <label htmlFor="event-date" className="block text-xl font-medium text-gray-700">
+                                            Career Date
+                                        </label>
+                                        <input
+                                            type="date"
+                                            id="event-date"
+                                            value={formData.c_date}
+                                            onChange={(e) => setFormData({ ...formData, c_date: e.target.value })}
+                                            className="mt-2 w-full py-2 border !border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                        />
+                                    </div>
+
+                                    {/* Favorite Dropdown */}
+                                    <div className="mt-4">
+                                        <label className="block text-xl font-medium text-gray-700">Favorite</label>
+                                        <select
+                                            value={formData.c_fav}
+                                            onChange={(e) => setFormData({ ...formData, c_fav: e.target.value })}
+                                            className="mt-2 block w-full border !border-gray-300 rounded-md py-2 pl-2 text-gray-900 shadow-sm focus:ring-2 focus:ring-indigo-500"
+                                        >
+                                            <option value={true}>Yes</option>
+                                            <option value={false}>No</option>
+                                        </select>
+                                    </div>
+                                </div>
                             </div>
 
                         </div>
                     </div>
                     {/* Third row - Full Width */}
                     <div className='h-full'>
-                        <CareerRichText />
+                        <div className="flex-1">
+
+                            <div className="grid grid-cols-1 gap-4 py-2">
+                                <div className="w-full">
+                                    <label className="block text-xl font-medium leading-6 text-white-900">
+                                        Description
+                                    </label>
+                                    <div className="mt-2 cursor-text">
+                                        <JoditEditor
+                                            value={subtitleContent}
+                                            config={config}
+                                            onChange={(newContent) => setSubtitleContent(newContent)}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                   
+
                 </div>
 
             </div>
