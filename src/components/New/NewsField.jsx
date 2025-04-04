@@ -44,7 +44,7 @@ const NewsField = () => {
                 res = await axios.post(`${API_ENDPOINTS.updateNews}/${formData.n_id}`, payload);
             } else {
                 // Perform create
-                const { e_order, ...createPayload } = payload;
+                const { n_order, ...createPayload } = payload;
                 res = await axios.post(API_ENDPOINTS.createNews, createPayload);
             }
             alert("News saved successfully!");

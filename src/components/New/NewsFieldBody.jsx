@@ -203,7 +203,7 @@ const NewsFieldBody = ({ formData, setFormData, subtitleContent, setSubtitleCont
                                                 <div className="flex gap-3 mt-2 justify-center">
                                                     <svg
                                                         onClick={() => openMediaLibrary("image")}
-                                                        value={formData.e_img}
+                                                        value={formData.n_img}
                                                         onChange={(e) => setFormData({ ...formData, n_img: e.target.value })}
                                                         xmlns="http://www.w3.org/2000/svg"
                                                         fill="none"
@@ -220,7 +220,7 @@ const NewsFieldBody = ({ formData, setFormData, subtitleContent, setSubtitleCont
                                                     </svg>
                                                     <svg
                                                         onClick={() => handleImageSelect("", "image")}
-                                                        value={formData.e_img}
+                                                        value={formData.n_img}
                                                         onChange={(e) => setFormData({ ...formData, n_img: e.target.value })}
                                                         xmlns="http://www.w3.org/2000/svg"
                                                         fill="none"
@@ -240,7 +240,7 @@ const NewsFieldBody = ({ formData, setFormData, subtitleContent, setSubtitleCont
                                         ) : (
                                             <div
                                                 onClick={() => openMediaLibrary("image")}
-                                                value={formData.e_img}
+                                                value={formData.n_img}
                                                 onChange={(e) => setFormData({ ...formData, n_img: e.target.value })}
                                                 className="flex flex-col items-center justify-center pt-5 pb-6 "
                                             >

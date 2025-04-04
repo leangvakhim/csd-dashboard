@@ -28,6 +28,15 @@ const API_ENDPOINTS = {
     updateNewsOrder: `${API_BASEURL}/news/reorder`,
 
 
+     // career
+     getCareer: `${API_BASEURL}/career`,
+     createCareer: `${API_BASEURL}/career/create`,
+     updateCareer: `${API_BASEURL}/career/update`,
+     deleteCareer: `${API_BASEURL}/career/visibility`,
+     duplicateCareer: `${API_BASEURL}/career/duplicate`,
+     updateCareerOrder: `${API_BASEURL}/career/reorder`,
+ 
+ 
     
     // button
     // buttons: `${API_BASEURL}/button`,
