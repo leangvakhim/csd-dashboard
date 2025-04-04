@@ -14,20 +14,20 @@ const NewDashboard = () => {
             try {
                 const response = await axios.get(API_ENDPOINTS.getNews);
                 let newsArray = response.data.data;
-    
+
                 if (newsArray && !Array.isArray(newsArray)) {
-                    newsArray = [newsArray]; 
+                    newsArray = [newsArray];
                 } else if (!newsArray) {
-                    newsArray = []; 
+                    newsArray = [];
                 }
-    
+
                 const sortedNews = newsArray.sort((a, b) => b.n_order - a.n_order);
                 setEventItems(sortedNews);
             } catch (error) {
                 console.error('Failed to fetch news:', error);
             }
         };
-    
+
         fetchNews();
     }, []);
 
@@ -37,7 +37,7 @@ const NewDashboard = () => {
         navigate('/news/news-details', { state: { eventData } });
     };
 
-    
+
     const moveItem = async (index, direction) => {
         const newItems = [...eventItems];
         const targetIndex = direction === 'up' ? index - 1 : index + 1;
@@ -62,26 +62,26 @@ const NewDashboard = () => {
         }
     };
 
-    const updateOrderOnServer = async (items) => {
-        const payload = items.map(item => ({
-            n_id: item.n_id,
-            n_order: item.n_order
-        }));
+    // const updateOrderOnServer = async (items) => {
+    //     const payload = items.map(item => ({
+    //         n_id: item.n_id,
+    //         n_order: item.n_order
+    //     }));
 
-        await axios.put(`${API_ENDPOINTS.updateNewsOrder}`, payload);
-    };
+    //     await axios.put(`${API_ENDPOINTS.updateNewsOrder}`, payload);
+    // };
 
-    const duplicateItem = async (id) => {
-        try {
-            const response = await axios.post(`${API_ENDPOINTS.duplicateNews}/${id}`);
-            if (response.status === 200) {
-                alert("Event duplicated successfully");
-                window.location.reload();
-            }
-        } catch (error) {
-            console.error("Error duplicating news:", error);
-        }
-    };
+    // const duplicateItem = async (id) => {
+    //     try {
+    //         const response = await axios.post(`${API_ENDPOINTS.duplicateNews}/${id}`);
+    //         if (response.status === 200) {
+    //             alert("Event duplicated successfully");
+    //             window.location.reload();
+    //         }
+    //     } catch (error) {
+    //         console.error("Error duplicating news:", error);
+    //     }
+    // };
 
     const handleDelete = async (id) => {
         if (!window.confirm("Are you sure you want to delete of this news?")) return;

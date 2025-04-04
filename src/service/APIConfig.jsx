@@ -10,13 +10,21 @@ const API_ENDPOINTS = {
     uploadImage: `${API_BASEURL}/images/create`,
     deleteImage: `${API_BASEURL}/images/delete`,
 
-    // news
+    // event
     getEvent: `${API_BASEURL}/event`,
     createEvent: `${API_BASEURL}/event/create`,
     updateEvent: `${API_BASEURL}/event/update`,
     deleteEvent: `${API_BASEURL}/event/visibility`,
     duplicateEvent: `${API_BASEURL}/event/duplicate`,
     updateEventOrder: `${API_BASEURL}/event/reorder`,
+
+    // news
+    getNews: `${API_BASEURL}/news`,
+    createNews: `${API_BASEURL}/news/create`,
+    updateNews: `${API_BASEURL}/news/update`,
+    deleteNews: `${API_BASEURL}/news/visibility`,
+    // duplicateNews: `${API_BASEURL}/news/duplicate`,
+    // updateNewsOrder: `${API_BASEURL}/news/reorder`,
 
     // faculty
     getFaculty: `${API_BASEURL}/faculty`,
