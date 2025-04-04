@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import ApplyPieceOne from "./ApplyPieceOne";
+import MediaLibraryModal from "../../MediaLibraryModal";
 
 
 const ApplyPiece = () => {
@@ -222,9 +223,10 @@ const ApplyPiece = () => {
 
                 </div>
 
-
+                <div className="mb-4">
+                    <ApplyPieceOne />
+                </div>
             </details>
-            <ApplyPieceOne />
         </div>
     );
 };

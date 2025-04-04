@@ -1,51 +1,36 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import 'jodit/es5/jodit.css';
 import JoditEditor from 'jodit-react';
 
+const config = {
+    readonly: false,
+    height: 400,
+    iframe: false,
+    placeholder: 'Start typing...',
+    uploader: {
+        insertImageAsBase64URI: true,
+    },
+};
 
 const StudyPieceOne = () => {
     const [rotatedStates, setRotatedStates] = useState({});
-      const [subtitleContent, setSubtitleContent] = useState('');
+    const [subtitleContent, setSubtitleContent] = useState('');
     const [slider, setSlider] = useState([
         {
             id: "1",
             title: "study 1",
             subtitle: "",
-            logo: "",
-            image: "",
-            firstbtntitle: "",
-            firstbtnselect: "",
-            secondbtntitle: "",
-            secondbtnselect: "",
+            desc: "",
         },
     ]);
-    const config = {
-        readonly: false,
-        height: 400,
-        placeholder: 'Start typing...',
-        buttons: [
-            'bold', 'italic', 'underline', 'strikethrough', '|',
-            'ul', 'ol', '|', 'image', 'link', 'table', '|',
-            'align', 'undo', 'redo', 'hr', '|',
-            'source'
-        ],
-        uploader: {
-            insertImageAsBase64URI: true,  // Enable base64 image upload
-        },
-    };
 
     const handleAddSlider = () => {
         const newSlider = {
             id: `${Date.now()}`,
             title: `study ${slider.length + 1}`,
             subtitle: "",
-            logo: "",
-            image: "",
-            firstbtntitle: "",
-            firstbtnselect: "",
-            secondbtntitle: "",
-            secondbtnselect: "",
+            desc: "",
         };
 
         setSlider([...slider, newSlider]);

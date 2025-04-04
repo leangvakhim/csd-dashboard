@@ -228,14 +228,6 @@ const IntroductionPiece = () => {
                         )}
                     </div>
                 </div>
-
-
-                {/* Row 3 */}
-                <div className="w-full flex justify-center items-center bg-gray-50 border p-6">
-                    <div className="px-4 py-2 mb-1">
-                        <span> Introduction's Element</span>
-                    </div>
-                </div>
             </details >
         </div >
     )

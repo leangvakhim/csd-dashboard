@@ -51,3 +51,9 @@ body{
 .toggle-switch input:checked+.slider::before {
     transform: translateX(21px);
 }
+
+.jodit-wysiwyg ul,
+.jodit-wysiwyg ol {
+    list-style: initial;
+    padding-left: 20px;
+}

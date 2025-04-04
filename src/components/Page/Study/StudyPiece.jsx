@@ -111,8 +111,10 @@ const StudyPiece = () => {
           </div>
 
         </div>
+        <div className="mb-4">
+          <StudyPieceOne />
+        </div>
       </details>
-      <StudyPieceOne />
     </div>
   );
 };

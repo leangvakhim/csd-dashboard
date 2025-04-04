@@ -1,17 +1,16 @@
 import React, { useState } from "react";
 import FuturePieceOne from "./FuturePieceOne";
-
-
+import MediaLibraryModal from "../../MediaLibraryModal";
 
 const FuturePiece = () => {
   const [isRotatedButton1, setIsRotatedButton1] = useState(false);
   const [isMediaLibraryOpen, setMediaLibraryOpen] = useState(false);
     const [selectedImage, setSelectedImage] = useState("");
-  
+
     const openMediaLibrary = () => {
       setMediaLibraryOpen(true);
     };
-  
+
     const handleImageSelect = (imageUrl, field) => {
       if (field === "image") {
         setSelectedImage(imageUrl ? `${imageUrl}` : "");
@@ -193,10 +192,10 @@ const FuturePiece = () => {
             />
           )}
         </div>
-
-       
+        <div className="mb-4">
+          <FuturePieceOne />
+        </div>
       </details>
-      <FuturePieceOne />
     </div>
   );
 };

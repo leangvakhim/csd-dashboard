@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import MediaLibraryModal from "../../MediaLibraryModal";
 
 const CsdPieceOne = () => {
     const [rotatedStates, setRotatedStates] = useState({});
@@ -8,12 +9,7 @@ const CsdPieceOne = () => {
             id: "1",
             title: "Csd 1",
             subtitle: "",
-            logo: "",
             image: "",
-            firstbtntitle: "",
-            firstbtnselect: "",
-            secondbtntitle: "",
-            secondbtnselect: "",
         },
     ]);
     const [isMediaLibraryOpen, setMediaLibraryOpen] = useState(false);
@@ -35,12 +31,7 @@ const CsdPieceOne = () => {
             id: `${Date.now()}`,
             title: `Csd ${slider.length + 1}`,
             subtitle: "",
-            logo: "",
             image: "",
-            firstbtntitle: "",
-            firstbtnselect: "",
-            secondbtntitle: "",
-            secondbtnselect: "",
         };
 
         setSlider([...slider, newSlider]);

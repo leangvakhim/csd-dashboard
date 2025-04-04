@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import InnovationPieceOne from "./InnovationPieceOne";
 import 'jodit/es5/jodit.css';
 import JoditEditor from 'jodit-react';
+import MediaLibraryModal from "../../MediaLibraryModal";
 
 const InnovationPiece = () => {
     const [isRotatedButton1, setIsRotatedButton1] = useState(false);
@@ -13,12 +14,6 @@ const InnovationPiece = () => {
         readonly: false,
         height: 400,
         placeholder: 'Start typing...',
-        buttons: [
-            'bold', 'italic', 'underline', 'strikethrough', '|',
-            'ul', 'ol', '|', 'image', 'link', 'table', '|',
-            'align', 'undo', 'redo', 'hr', '|',
-            'source'
-        ],
         uploader: {
             insertImageAsBase64URI: true,  // Enable base64 image upload
         },
@@ -213,10 +208,10 @@ const InnovationPiece = () => {
                         </div>
                     </div>
                 </div>
-
-
+                <div className="mb-4">
+                    <InnovationPieceOne />
+                </div>
             </details>
-            <InnovationPieceOne />
         </div>
     );
 };

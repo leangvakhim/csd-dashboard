@@ -63,254 +63,226 @@ import PotentaiPiece from "./Potential/PotentailPiece";
 import InnovationPiece from "./Innovation/InnovationPiece";
 import FaqPiece from "./Faq/FaqPiece";
 import ApplyPiece from "./Apply/ApplyPiece";
-
+import AvailablePiece from "./Available/AvailablePiece";
+import RequirementPiece from "./Requirement/RequirementPiece";
+import ImportantPiece from "./Important/ImportantPiece";
+import PartnerPiece from "./Partner/PartnerPiece";
+import FeedbackPiece from "./Feedback/FeedbackPiece";
 const sectionOptions = [
-    {
-        type: "Slideshow",
-        component: CarouselPiece,
-        icon: TbCarouselHorizontal,
-        label: "Slideshow",
-    },
-    {
-        type: "Banner",
-        component: BannerPiece,
-        icon: CgWebsite,
-        label: "Banner",
-    },
-    {
-        type: "Service",
-        component: ServicePiece,
-        icon: LuColumns3,
-        label: "Service",
-    },
-    {
-        type: "Programs",
-        component: ProgramPiece,
-        icon: TbCodeDots,
-        label: "Programs",
-    },
-    {
-        type: "Academic",
-        component: AcademicPiece,
-        icon: HiOutlineAcademicCap,
-        label: "Academic",
-    },
-    {
-        type: "Information",
-        component: InformationPiece,
-        icon: RiInformationLine,
-        label: "Information",
-    },
-    {
-        type: "Facilities",
-        component: FacilitiesPiece,
-        icon: LuSchool,
-        label: "Facilities",
-    },
-    {
-        type: "Gallery",
-        component: GalleryPiece,
-        icon: GrGallery,
-        label: "Gallery",
-    },
-    {
-        type: "Specialization",
-        component: SpecializationPiece,
-        icon: MdAspectRatio,
-        label: "Specialization",
-    },
-    {
-        type: "Testimonial",
-        component: TestimonialPiece,
-        icon: LuMessagesSquare,
-        label: "Testimonial",
-    },
-    {
-        type: "Type",
-        component: TypePiece,
-        icon: LuFileType,
-        label: "Type",
-    },
-    {
-        type: "Criteria",
-        component: CriteriaPiecce,
-        icon: TbBrandCarbon,
-        label: "Criteria",
-    },
-    {
-        type: "CSD",
-        component: CsdPiece,
-        icon: FaComputer,
-        label: "CSD",
-    },
-    {
-        type: "Unlock",
-        component: UnlockPiece,
-        icon: AiOutlineUnlock,
-        label: "Unlock",
-    },
-    {
-        type: "Study",
-        component: StudyPiece,
-        icon: LiaChalkboardTeacherSolid,
-        label: "Study",
-    },
-    {
-        type: "Avaialable",
-        component: () => (
-            <div className="bg-gray-50 p-2 rounded-lg">
-                <h1 className="text-xl font-bold text-center">
-                    Avaialable Section
-                </h1>
-            </div>
-        ),
-        icon: MdOutlineEventAvailable,
-        label: "Available",
-    },
-    {
-        type: "Fee",
-        component: FeePiece,
-        icon: TbTax,
-        label: "Fee",
-    },
-    {
-        type: "Requirement",
-        component: () => (
-            <div className="bg-gray-50 p-2 rounded-lg">
-                <h1 className="text-xl font-bold text-center">
-                    Requirement Section
-                </h1>
-            </div>
-        ),
-        icon: TbContract,
-        label: "Requirement",
-    },
-    {
-        type: "Future",
-        component: FuturePiece,
-        icon: HiOutlineLightBulb,
-        label: "Future",
-    },
-    {
-        type: "Potential",
-        component: PotentaiPiece,
-        icon: GiMountainClimbing,
-        label: "Potential",
-    },
-    {
-        type: "Introduction",
-        component: IntroductionPiece,
-        icon: TbDirections,
-        label: "Introduction",
-    },
-    {
-        type: "Innovation",
-        component: InnovationPiece,
-        icon: LuBrainCircuit,
-        label: "Innovation",
-    },
-    {
-        type: "FAQ",
-        component: FaqPiece,
-        icon: RiQuestionnaireLine,
-        label: "FAQ",
-    },
-    {
-        type: "Apply",
-        component: ApplyPiece,
-        icon: TfiWrite,
-        label: "Apply",
-    },
-    {
-        type: "Important",
-        component: () => (
-            <div className="bg-gray-50 p-2 rounded-lg">
-                <h1 className="text-xl font-bold text-center">
-                    Important Section
-                </h1>
-            </div>
-        ),
-        icon: BsExclamationTriangle,
-        label: "Important",
-    },
-    {
-        type: "Pyscroll",
-        component: () => (
-            <div className="bg-gray-50 p-2 rounded-lg">
-                <h1 className="text-xl font-bold text-center">
-                    Pyscroll Section
-                </h1>
-            </div>
-        ),
-        icon: MdOutlineSwipeDownAlt,
-        label: "Pyscroll",
-    },
-    {
-        type: "New",
-        component: NewPiece,
-        icon: TbNews,
-        label: "New",
-    },
-    {
-        type: "Event",
-        component: EventsPiece,
-        icon: TbSpeakerphone,
-        label: "Event",
-    },
-    {
-        type: "Research",
-        component: ResearchPiece,
-        icon: TbMicroscope,
-        label: "Research",
-    },
-    {
-        type: "Faculty",
-        component: FacultyPiece,
-        icon: FiUser,
-        label: "Faculty",
-    },
-    {
-        type: "Lab",
-        component: ResearchlabPiece,
-        icon: TbCell,
-        label: "Lab",
-    },
-    {
-        type: "Scholarship",
-        component: ScholarshipPiece,
-        icon: TbSchool,
-        label: "Scholarship",
-    },
-    {
-        type: "Career",
-        component: CareerPiece,
-        icon: TbTargetArrow,
-        label: "Career",
-    },
-    {
-        type: "Partner",
-        component: () => (
-            <div className="bg-gray-50 p-2 rounded-lg">
-                <h1 className="text-xl font-bold text-center">
-                    Partner Section
-                </h1>
-            </div>
-        ),
-        icon: LuHeartHandshake,
-        label: "Partner",
-    },
-    {
-        type: "Feedback",
-        component: () => (
-            <div className="bg-gray-50 p-2 rounded-lg">
-                <h1 className="text-xl font-bold text-center">
-                    Feedback Section
-                </h1>
-            </div>
-        ),
-        icon: TbBrandHipchat,
-        label: "Feedback",
-    },
+  {
+    type: "Slideshow",
+    component: CarouselPiece,
+    icon: TbCarouselHorizontal,
+    label: "Slideshow",
+  },
+  {
+    type: "Banner",
+    component: BannerPiece,
+    icon: CgWebsite,
+    label: "Banner",
+  },
+  {
+    type: "Service",
+    component: ServicePiece,
+    icon: LuColumns3,
+    label: "Service",
+  },
+  {
+    type: "Programs",
+    component: ProgramPiece,
+    icon: TbCodeDots,
+    label: "Programs",
+  },
+  {
+    type: "Academic",
+    component: AcademicPiece,
+    icon: HiOutlineAcademicCap,
+    label: "Academic",
+  },
+  {
+    type: "Information",
+    component: InformationPiece,
+    icon: RiInformationLine,
+    label: "Information",
+  },
+  {
+    type: "Facilities",
+    component: FacilitiesPiece,
+    icon: LuSchool,
+    label: "Facilities",
+  },
+  {
+    type: "Gallery",
+    component: GalleryPiece,
+    icon: GrGallery,
+    label: "Gallery",
+  },
+  {
+    type: "Specialization",
+    component: SpecializationPiece,
+    icon: MdAspectRatio,
+    label: "Specialization",
+  },
+  {
+    type: "Testimonial",
+    component: TestimonialPiece,
+    icon: LuMessagesSquare,
+    label: "Testimonial",
+  },
+  {
+    type: "Type",
+    component: TypePiece,
+    icon: LuFileType,
+    label: "Type",
+  },
+  {
+    type: "Criteria",
+    component: CriteriaPiecce,
+    icon: TbBrandCarbon,
+    label: "Criteria",
+  },
+  {
+    type: "CSD",
+    component: CsdPiece,
+    icon: FaComputer,
+    label: "CSD",
+  },
+  {
+    type: "Unlock",
+    component: UnlockPiece,
+    icon: AiOutlineUnlock,
+    label: "Unlock",
+  },
+  {
+    type: "Study",
+    component: StudyPiece,
+    icon: LiaChalkboardTeacherSolid,
+    label: "Study",
+  },
+  {
+    type: "Avaialable",
+    component: AvailablePiece,
+    icon: MdOutlineEventAvailable,
+    label: "Available",
+  },
+  {
+    type: "Fee",
+    component: FeePiece,
+    icon: TbTax,
+    label: "Fee",
+  },
+  {
+    type: "Requirement",
+    component: RequirementPiece,
+    icon: TbContract,
+    label: "Requirement",
+  },
+  {
+    type: "Future",
+    component: FuturePiece,
+    icon: HiOutlineLightBulb,
+    label: "Future",
+  },
+  {
+    type: "Potential",
+    component: PotentaiPiece,
+    icon: GiMountainClimbing,
+    label: "Potential",
+  },
+  {
+    type: "Introduction",
+    component: IntroductionPiece,
+    icon: TbDirections,
+    label: "Introduction",
+  },
+  {
+    type: "Innovation",
+    component: InnovationPiece,
+    icon: LuBrainCircuit,
+    label: "Innovation",
+  },
+  {
+    type: "FAQ",
+    component: FaqPiece,
+    icon: RiQuestionnaireLine,
+    label: "FAQ",
+  },
+  {
+    type: "Apply",
+    component: ApplyPiece,
+    icon: TfiWrite,
+    label: "Apply",
+  },
+  {
+    type: "Important",
+    component: ImportantPiece,
+    icon: BsExclamationTriangle,
+    label: "Important",
+  },
+  {
+    type: "Pyscroll",
+    component: () => (
+      <div className="bg-gray-50 p-2 rounded-lg">
+        <h1 className="text-xl font-bold text-center">Pyscroll Section</h1>
+      </div>
+    ),
+    icon: MdOutlineSwipeDownAlt,
+    label: "Pyscroll",
+  },
+  {
+    type: "New",
+    component: NewPiece,
+    icon: TbNews,
+    label: "New",
+  },
+  {
+    type: "Event",
+    component: EventsPiece,
+    icon: TbSpeakerphone,
+    label: "Event",
+  },
+  {
+    type: "Research",
+    component: ResearchPiece,
+    icon: TbMicroscope,
+    label: "Research",
+  },
+  {
+    type: "Faculty",
+    component: FacultyPiece,
+    icon: FiUser,
+    label: "Faculty",
+  },
+  {
+    type: "Lab",
+    component: ResearchlabPiece,
+    icon: TbCell,
+    label: "Lab",
+  },
+  {
+    type: "Scholarship",
+    component: ScholarshipPiece,
+    icon: TbSchool,
+    label: "Scholarship",
+  },
+  {
+    type: "Career",
+    component: CareerPiece,
+    icon: TbTargetArrow,
+    label: "Career",
+  },
+  {
+    type: "Partner",
+    component: PartnerPiece,
+    icon: LuHeartHandshake,
+    label: "Partner",
+  },
+  {
+    type: "Feedback",
+    component: FeedbackPiece,
+    icon: TbBrandHipchat,
+    label: "Feedback",
+  },
 ];
 
 const PageSection = () => {

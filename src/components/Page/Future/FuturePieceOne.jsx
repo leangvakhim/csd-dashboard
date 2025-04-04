@@ -16,7 +16,7 @@ const FuturePieceOne = () => {
             secondbtnselect: "",
         },
     ]);
-   
+
     const handleAddSlider = () => {
         const newSlider = {
             id: `${Date.now()}`,
@@ -170,7 +170,7 @@ const FuturePieceOne = () => {
                                                             <textarea className="!border-gray-300 h-60 block w-full rounded-md border-0 py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-2xl sm:leading-6"></textarea>
                                                         </div>
                                                     </div>
-                                                   
+
                                                 </div>
                                             </details>
                                         </li>

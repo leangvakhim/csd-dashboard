@@ -14,20 +14,20 @@ const NewDashboard = () => {
             try {
                 const response = await axios.get(API_ENDPOINTS.getNews);
                 let newsArray = response.data.data;
-    
+
                 if (newsArray && !Array.isArray(newsArray)) {
-                    newsArray = [newsArray]; 
+                    newsArray = [newsArray];
                 } else if (!newsArray) {
-                    newsArray = []; 
+                    newsArray = [];
                 }
-    
+
                 const sortedNews = newsArray.sort((a, b) => b.n_order - a.n_order);
                 setEventItems(sortedNews);
             } catch (error) {
                 console.error('Failed to fetch news:', error);
             }
         };
-    
+
         fetchNews();
     }, []);
 
@@ -37,7 +37,7 @@ const NewDashboard = () => {
         navigate('/news/news-details', { state: { eventData } });
     };
 
-    
+
     const moveItem = async (index, direction) => {
         const newItems = [...eventItems];
         const targetIndex = direction === 'up' ? index - 1 : index + 1;

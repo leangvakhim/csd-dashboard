@@ -1,7 +1,6 @@
 import React, { useState } from "react";
-import TypePieceSlider from "../Type/TypePieceSlider";
 
-const TypePiece = () => {
+const FeedbackPiece = () => {
   const [isRotatedButton1, setIsRotatedButton1] = useState(false);
 
   return (
@@ -20,7 +19,7 @@ const TypePiece = () => {
               >
                 <path d="M40 352l48 0c22.1 0 40 17.9 40 40l0 48c0 22.1-17.9 40-40 40l-48 0c-22.1 0-40-17.9-40-40l0-48c0-22.1 17.9-40 40-40zm192 0l48 0c22.1 0 40 17.9 40 40l0 48c0 22.1-17.9 40-40 40l-48 0c-22.1 0-40-17.9-40-40l0-48c0-22.1 17.9-40 40-40zM40 320c-22.1 0-40-17.9-40-40l0-48c0-22.1 17.9-40 40-40l48 0c22.1 0 40 17.9 40 40l0 48c0 22.1-17.9 40-40 40l-48 0zM232 192l48 0c22.1 0 40 17.9 40 40l0 48c0 22.1-17.9 40-40 40l-48 0c-22.1 0-40-17.9-40-40l0-48c0-22.1 17.9-40 40-40zM40 160c-22.1 0-40-17.9-40-40L0 72C0 49.9 17.9 32 40 32l48 0c22.1 0 40 17.9 40 40l0 48c0 22.1-17.9 40-40 40l-48 0zM232 32l48 0c22.1 0 40 17.9 40 40l0 48c0 22.1-17.9 40-40 40l-48 0c-22.1 0-40-17.9-40-40l0-48c0-22.1 17.9-40 40-40z"></path>
               </svg>
-              <span className=" text-xl font-medium">Type S&E</span>
+              <span className=" text-xl font-medium">Feedback</span>
             </div>
             <div className="flex gap-1">
               <svg
@@ -61,7 +60,7 @@ const TypePiece = () => {
           </div>
         </summary>
         {/* Row 1 */}
-        <div className="flex flex-row gap-2 px-4 py-2">
+        <div className="flex flex-row gap-4 px-4 py-2">
           <div className="flex-1">
             <label className="block text-xl font-medium leading-6 text-white-900">
               Title
@@ -73,6 +72,18 @@ const TypePiece = () => {
               />
             </div>
           </div>
+          <div className="flex-1">
+            <label className="block text-xl font-medium leading-6 text-white-900">
+              Image tag
+            </label>
+            <div className="mt-2">
+              <input
+                type="text"
+                className="block w-full !border-gray-200 border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
+              />
+            </div>
+          </div>
+
           <div className="flex-non">
             <label className="block text-xl font-medium leading-6 text-white-900">
               Display
@@ -85,23 +96,51 @@ const TypePiece = () => {
             </div>
           </div>
         </div>
+
         {/* Row 2 */}
-        <div className="grid grid-cols-1 gap-4 px-4 py-2 mb-1">
-          <div className="flex-1">
-            <label className="block text-xl font-medium leading-6 text-white-900">
-              Subtitle
-            </label>
-            <div className="mt-2">
-              <textarea className="!border-gray-300 h-60 block w-full rounded-md border-0 py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-2xl sm:leading-6"></textarea>
+        <div className="grid grid-cols-1  gap-4 px-4 py-2 mb-1">
+          <div className="grid grid-cols-2  gap-4 px-4 py-2 mb-1">
+            <div className="flex-1">
+              <label className="block text-xl font-medium leading-6 text-white-900">
+                subtitle
+              </label>
+              <div className="mt-2">
+                <textarea className="!border-gray-300 h-60 block w-full rounded-md border-0 py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-2xl sm:leading-6"></textarea>
+              </div>
+            </div>
+            <div className="flex-1">
+              <label className="block text-xl font-medium leading-6 text-white-900">
+                button title
+              </label>
+              <div className="mt-2">
+                <input
+                  type="text"
+                  className="block w-full !border-gray-200 border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
+                />
+              </div>
+              <label
+                for="countries"
+                className="block text-lg font-medium leading-6 text-white-900"
+              >
+                Redirect page
+              </label>
+              <select className="mt-2 !border-gray-300 block w-full border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6">
+                <option selected>Choose a page</option>
+                <option value="Home">Home page</option>
+                <option value="About">About page</option>
+              </select>
             </div>
           </div>
         </div>
-        <div className="mb-4">
-          <TypePieceSlider/>
+        {/* Row 3 */}
+        <div className="w-full flex justify-center items-center bg-gray-50 border p-6">
+          <div className="px-4 py-2 mb-1">
+            <span>feedback's Element</span>
+          </div>
         </div>
       </details>
     </div>
   );
 };
 
-export default TypePiece;
+export default FeedbackPiece;

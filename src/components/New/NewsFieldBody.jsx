@@ -5,18 +5,10 @@ import 'jodit/es5/jodit.css';
 import { API_ENDPOINTS } from '../../service/APIConfig';
 import { useEffect } from 'react';
 
-
-
 const config = {
     readonly: false,  // Set to true for read-only mode
     height: 400,
     placeholder: 'Start typing...',
-    buttons: [
-        'bold', 'italic', 'underline', 'strikethrough', '|',
-        'ul', 'ol', '|', 'image', 'link', 'table', '|',
-        'align', 'undo', 'redo', 'hr', '|',
-        'source'
-    ],
     uploader: {
         insertImageAsBase64URI: true,  // Enable base64 image upload
     },

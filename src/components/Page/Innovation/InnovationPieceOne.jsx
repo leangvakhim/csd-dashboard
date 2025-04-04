@@ -1,6 +1,6 @@
-
 import React, { useState } from "react";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import MediaLibraryModal from "../../MediaLibraryModal";
 
 const InnovationPieceOne = () => {
     const [rotatedStates, setRotatedStates] = useState({});
