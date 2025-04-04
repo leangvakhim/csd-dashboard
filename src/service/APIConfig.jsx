@@ -18,6 +18,14 @@ const API_ENDPOINTS = {
     duplicateEvent: `${API_BASEURL}/event/duplicate`,
     updateEventOrder: `${API_BASEURL}/event/reorder`,
 
+    // faculty
+    getFaculty: `${API_BASEURL}/faculty`,
+    createFaculty: `${API_BASEURL}/faculty/create`,
+    updateFaculty: `${API_BASEURL}/faculty/update`,
+    deleteFaculty: `${API_BASEURL}/faculty/visibility`,
+    // duplicateEvent: `${API_BASEURL}/event/duplicate`,
+    // updateEventOrder: `${API_BASEURL}/event/reorder`,
+
 
     // button
     // buttons: `${API_BASEURL}/button`,
