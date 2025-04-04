@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import TypePieceSlider from "../Type/TypePieceSlider";
+import FaqPieceOne from "./FaqPieceOne";
 
-const TypePiece = () => {
+
+const FaqPiece = () => {
   const [isRotatedButton1, setIsRotatedButton1] = useState(false);
 
   return (
@@ -20,7 +21,7 @@ const TypePiece = () => {
               >
                 <path d="M40 352l48 0c22.1 0 40 17.9 40 40l0 48c0 22.1-17.9 40-40 40l-48 0c-22.1 0-40-17.9-40-40l0-48c0-22.1 17.9-40 40-40zm192 0l48 0c22.1 0 40 17.9 40 40l0 48c0 22.1-17.9 40-40 40l-48 0c-22.1 0-40-17.9-40-40l0-48c0-22.1 17.9-40 40-40zM40 320c-22.1 0-40-17.9-40-40l0-48c0-22.1 17.9-40 40-40l48 0c22.1 0 40 17.9 40 40l0 48c0 22.1-17.9 40-40 40l-48 0zM232 192l48 0c22.1 0 40 17.9 40 40l0 48c0 22.1-17.9 40-40 40l-48 0c-22.1 0-40-17.9-40-40l0-48c0-22.1 17.9-40 40-40zM40 160c-22.1 0-40-17.9-40-40L0 72C0 49.9 17.9 32 40 32l48 0c22.1 0 40 17.9 40 40l0 48c0 22.1-17.9 40-40 40l-48 0zM232 32l48 0c22.1 0 40 17.9 40 40l0 48c0 22.1-17.9 40-40 40l-48 0c-22.1 0-40-17.9-40-40l0-48c0-22.1 17.9-40 40-40z"></path>
               </svg>
-              <span className=" text-xl font-medium">Type S&E</span>
+              <span className=" text-xl font-medium">Faq</span>
             </div>
             <div className="flex gap-1">
               <svg
@@ -86,7 +87,7 @@ const TypePiece = () => {
           </div>
         </div>
         {/* Row 2 */}
-        <div className="grid grid-cols-1 gap-4 px-4 py-2 mb-1">
+        <div className="grid grid-cols-1 gap-4 px-4 py-2 ">
           <div className="flex-1">
             <label className="block text-xl font-medium leading-6 text-white-900">
               Subtitle
@@ -95,13 +96,14 @@ const TypePiece = () => {
               <textarea className="!border-gray-300 h-60 block w-full rounded-md border-0 py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-2xl sm:leading-6"></textarea>
             </div>
           </div>
+
         </div>
         <div className="mb-4">
-          <TypePieceSlider/>
+          <FaqPieceOne />
         </div>
       </details>
     </div>
   );
 };
 
-export default TypePiece;
+export default FaqPiece;

@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import MediaLibraryModal from '../MediaLibraryModal';
-// import EventsRichText from '../Event/EventsRichText';
 import ScholarshipDateTime from './ScholarshipDateTime';
+import ScholarshipRichText from './ScholarshipRichText';
 
 const ScholarshipFieldBody = () => {
     const [activeTab, setActiveTab] = useState(1);
@@ -177,12 +177,6 @@ const ScholarshipFieldBody = () => {
                                     onClose={() => setMediaLibraryOpen(false)}
                                 />
                             )}
-                            {/* {isMediaLibraryOpen && currentField === "image" && (
-                                <MediaLibraryModal
-                                    onSelect={(imageUrl) => handleImageSelect(imageUrl, "image")}
-                                    onClose={() => setMediaLibraryOpen(false)}
-                                />
-                            )} */}
 
                             <div className="">
                                 <label className="block text-xl font-medium leading-6 text-white-900">
@@ -266,26 +260,14 @@ const ScholarshipFieldBody = () => {
                                     onClose={() => setMediaLibraryOpen(false)}
                                 />
                             )}
-                            {/* {isMediaLibraryOpen && currentField === "letter_image" &&(
-                                <MediaLibraryModal
-                                    onSelect={(imageUrl) => handleImageSelect(imageUrl, "letter_image")}
-                                    onClose={() => setMediaLibraryOpen(false)}
-                                />
-                            )} */}
-
-                            <div className='min-h-full'>
-                                {/* <EventsFormSection /> */}
-                            </div>
 
                         </div>
                     </div>
                     {/* Third row - Full Width */}
                     <div className='h-full'>
-                        <EventsRichText />
+                        <ScholarshipRichText />
                     </div>
-
                 </div>
-
             </div>
         </div>
     );

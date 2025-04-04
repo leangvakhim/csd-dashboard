@@ -2,7 +2,6 @@ import React, {useEffect} from 'react'
 import { Link } from 'react-router-dom';
 
 const EventHeader = () => {
-  //   const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     const handleClickOutside = (event) => {

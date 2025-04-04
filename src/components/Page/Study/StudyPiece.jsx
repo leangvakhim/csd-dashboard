@@ -1,8 +1,9 @@
 import React, { useState } from "react";
-import TypePieceSlider from "../Type/TypePieceSlider";
+import StudyPieceOne from "./StudyPieceOne";
 
-const TypePiece = () => {
+const StudyPiece = () => {
   const [isRotatedButton1, setIsRotatedButton1] = useState(false);
+  const [type, setType] = useState("")
 
   return (
     <div className="grid grid-cols-1 gap-4 ">
@@ -20,7 +21,7 @@ const TypePiece = () => {
               >
                 <path d="M40 352l48 0c22.1 0 40 17.9 40 40l0 48c0 22.1-17.9 40-40 40l-48 0c-22.1 0-40-17.9-40-40l0-48c0-22.1 17.9-40 40-40zm192 0l48 0c22.1 0 40 17.9 40 40l0 48c0 22.1-17.9 40-40 40l-48 0c-22.1 0-40-17.9-40-40l0-48c0-22.1 17.9-40 40-40zM40 320c-22.1 0-40-17.9-40-40l0-48c0-22.1 17.9-40 40-40l48 0c22.1 0 40 17.9 40 40l0 48c0 22.1-17.9 40-40 40l-48 0zM232 192l48 0c22.1 0 40 17.9 40 40l0 48c0 22.1-17.9 40-40 40l-48 0c-22.1 0-40-17.9-40-40l0-48c0-22.1 17.9-40 40-40zM40 160c-22.1 0-40-17.9-40-40L0 72C0 49.9 17.9 32 40 32l48 0c22.1 0 40 17.9 40 40l0 48c0 22.1-17.9 40-40 40l-48 0zM232 32l48 0c22.1 0 40 17.9 40 40l0 48c0 22.1-17.9 40-40 40l-48 0c-22.1 0-40-17.9-40-40l0-48c0-22.1 17.9-40 40-40z"></path>
               </svg>
-              <span className=" text-xl font-medium">Type S&E</span>
+              <span className=" text-xl font-medium">Study</span>
             </div>
             <div className="flex gap-1">
               <svg
@@ -38,9 +39,8 @@ const TypePiece = () => {
                 />
               </svg>
               <div
-                className={`cursor-pointer shrink-0 transition-transform duration-300 ${
-                  isRotatedButton1 ? "rotate-180" : ""
-                }`}
+                className={`cursor-pointer shrink-0 transition-transform duration-300 ${isRotatedButton1 ? "rotate-180" : ""
+                  }`}
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -61,7 +61,7 @@ const TypePiece = () => {
           </div>
         </summary>
         {/* Row 1 */}
-        <div className="flex flex-row gap-2 px-4 py-2">
+        <div className="flex flex-row items-center gap-2 px-4 py-2">
           <div className="flex-1">
             <label className="block text-xl font-medium leading-6 text-white-900">
               Title
@@ -72,6 +72,20 @@ const TypePiece = () => {
                 className="block w-full !border-gray-200 border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
               />
             </div>
+          </div>
+          <div className="flex-1">
+          <div className="">
+            <label className="block text-xl font-medium text-gray-700">Type</label>
+            <select
+              value={type}
+              onChange={(e) => setType(e.target.value)}
+              className="mt-2 block w-full border !border-gray-300 rounded-md py-2 pl-2 text-gray-900 shadow-sm focus:ring-2 focus:ring-indigo-500"
+            >
+              <option value="">Choose Option</option>
+              <option value="yes">Option 1</option>
+              <option value="no">Option 2</option>
+            </select>
+          </div>
           </div>
           <div className="flex-non">
             <label className="block text-xl font-medium leading-6 text-white-900">
@@ -95,13 +109,14 @@ const TypePiece = () => {
               <textarea className="!border-gray-300 h-60 block w-full rounded-md border-0 py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-2xl sm:leading-6"></textarea>
             </div>
           </div>
+
         </div>
         <div className="mb-4">
-          <TypePieceSlider/>
+          <StudyPieceOne />
         </div>
       </details>
     </div>
   );
 };
 
-export default TypePiece;
+export default StudyPiece;
