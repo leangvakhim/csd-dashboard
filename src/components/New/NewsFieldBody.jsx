@@ -112,32 +112,27 @@ const NewsFieldBody = ({ formData, setFormData, subtitleContent, setSubtitleCont
             <div className="tabs">
                 <div className="flex">
                     <ul className="flex items-center h-12 bg-gray-100 rounded-lg transition-all duration-300 p-2 overflow-hidden">
-                        <li>
-                            <a
-                                href="javascript:void(0)"
-                                className={`mx-2 inline-block py-1.5 px-6 text-gray-600 hover:text-gray-800 font-medium ${activeTab === 1
-                                    ? 'bg-white rounded-lg text-gray-600'
-                                    : 'tablink'
-                                    } whitespace-nowrap`}
-                                onClick={() => setActiveTab(1)}
-                                role="tab"
-                            >
-                                English
-                            </a>
-                        </li>
-                        <li>
-                            <a
-                                href="javascript:void(0)"
-                                className={`mx-2 inline-block py-1.5 px-6 text-gray-600 hover:text-gray-800 font-medium ${activeTab === 2
-                                    ? 'bg-white rounded-lg text-gray-600'
-                                    : 'tablink'
-                                    } whitespace-nowrap`}
-                                onClick={() => setActiveTab(2)}
-                                role="tab"
-                            >
-                                Khmer
-                            </a>
-                        </li>
+                        {[
+                            { id: 1, label: "English" },
+                            { id: 2, label: "Khmer" },
+                            // { id: 3, label: "Chinese" },
+                            // { id: 4, label: "French" }
+                        ].map(langOption => (
+                            <li key={langOption.id}>
+                                <a
+                                    href="javascript:void(0)"
+                                    className={`mx-2 inline-block py-1.5 px-6 text-gray-600 hover:text-gray-800 font-medium ${activeTab === langOption.id ? 'bg-white rounded-lg text-gray-600' : 'tablink'
+                                        } whitespace-nowrap`}
+                                    onClick={() => {
+                                        setActiveTab(langOption.id);
+                                        setFormData(prev => ({ ...prev, lang: langOption.id }));
+                                    }}
+                                    role="tab"
+                                >
+                                    {langOption.label}
+                                </a>
+                            </li>
+                        ))}
                     </ul>
                 </div>
                 <div className="mt-4">
