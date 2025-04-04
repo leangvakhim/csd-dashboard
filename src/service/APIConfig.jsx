@@ -41,13 +41,13 @@ const API_ENDPOINTS = {
     // deleteFacultyContact: `${API_BASEURL}/faculty-contact/visibility`,
     // updateFacultyContactOrder: `${API_BASEURL}/faculty-contact/reorder`,
 
-     // career
-     getCareer: `${API_BASEURL}/career`,
-     createCareer: `${API_BASEURL}/career/create`,
-     updateCareer: `${API_BASEURL}/career/update`,
-     deleteCareer: `${API_BASEURL}/career/visibility`,
-     duplicateCareer: `${API_BASEURL}/career/duplicate`,
-     updateCareerOrder: `${API_BASEURL}/career/reorder`,
+    // career
+    getCareer: `${API_BASEURL}/career`,
+    createCareer: `${API_BASEURL}/career/create`,
+    updateCareer: `${API_BASEURL}/career/update`,
+    deleteCareer: `${API_BASEURL}/career/visibility`,
+    duplicateCareer: `${API_BASEURL}/career/duplicate`,
+    updateCareerOrder: `${API_BASEURL}/career/reorder`,
 
 
 

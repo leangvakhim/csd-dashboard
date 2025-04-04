@@ -15,20 +15,20 @@ const CareerDashboard = () => {
             try {
                 const response = await axios.get(API_ENDPOINTS.getCareer);
                 let newsArray = response.data.data;
-    
+
                 if (newsArray && !Array.isArray(newsArray)) {
-                    newsArray = [newsArray]; 
+                    newsArray = [newsArray];
                 } else if (!newsArray) {
-                    newsArray = []; 
+                    newsArray = [];
                 }
-    
+
                 const sortedCareer = newsArray.sort((a, b) => b.c_order - a.c_order);
                 setEventItems(sortedCareer);
             } catch (error) {
                 console.error('Failed to fetch career:', error);
             }
         };
-    
+
         fetchNews();
     }, []);
 
@@ -38,7 +38,7 @@ const CareerDashboard = () => {
         navigate('/career/career-details', { state: { eventData } });
     };
 
-    
+
     const moveItem = async (index, direction) => {
         const newItems = [...eventItems];
         const targetIndex = direction === 'up' ? index - 1 : index + 1;
@@ -69,7 +69,7 @@ const CareerDashboard = () => {
             c_order: item.c_order
         }));
 
-        await axios.put(`${API_ENDPOINTS.updateCareer}`, payload);
+        await axios.put(`${API_ENDPOINTS.updateCareerOrder}`, payload);
     };
 
     const duplicateItem = async (id) => {
