@@ -111,7 +111,7 @@ const NewsFieldBody = ({ formData, setFormData, subtitleContent, setSubtitleCont
         <div className='px-8 py-2 mb-1'>
             <div className="tabs">
                 <div className="flex">
-                <ul className="flex items-center h-12 bg-gray-100 rounded-lg transition-all duration-300 p-2 overflow-hidden">
+                    <ul className="flex items-center h-12 bg-gray-100 rounded-lg transition-all duration-300 p-2 overflow-hidden">
                         {[
                             { id: 1, label: "English" },
                             { id: 2, label: "Khmer" },
@@ -121,9 +121,8 @@ const NewsFieldBody = ({ formData, setFormData, subtitleContent, setSubtitleCont
                             <li key={langOption.id}>
                                 <a
                                     href="javascript:void(0)"
-                                    className={`mx-2 inline-block py-1.5 px-6 text-gray-600 hover:text-gray-800 font-medium ${
-                                        activeTab === langOption.id ? 'bg-white rounded-lg text-gray-600' : 'tablink'
-                                    } whitespace-nowrap`}
+                                    className={`mx-2 inline-block py-1.5 px-6 text-gray-600 hover:text-gray-800 font-medium ${activeTab === langOption.id ? 'bg-white rounded-lg text-gray-600' : 'tablink'
+                                        } whitespace-nowrap`}
                                     onClick={() => {
                                         setActiveTab(langOption.id);
                                         setFormData(prev => ({ ...prev, lang: langOption.id }));
