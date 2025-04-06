@@ -1,7 +1,7 @@
 import React, {useEffect} from 'react'
 import { useNavigate } from 'react-router-dom'
 
-const FacultyFieldHeader = () => {
+const FacultyFieldHeader = ({onSave}) => {
     const navigate = useNavigate();
 
     const returntoPage = () => {
@@ -44,23 +44,23 @@ const FacultyFieldHeader = () => {
                         let overlay = document.getElementById('sidebar-overlay');
                         if (aside) {
                             const isVisible = aside.classList.contains('hs-overlay-open:translate-x-0');
-                            if (isVisible) {
-                            aside.classList.remove('hs-overlay-open:translate-x-0');
-                            aside.classList.add('-translate-x-full');
-                            // hide overlay
-                            if (overlay) {
-                                overlay.remove();
-                            }
+                                if (isVisible) {
+                                aside.classList.remove('hs-overlay-open:translate-x-0');
+                                aside.classList.add('-translate-x-full');
+                                // hide overlay
+                                if (overlay) {
+                                    overlay.remove();
+                                }
                             } else {
-                            aside.classList.add('hs-overlay-open:translate-x-0');
-                            aside.classList.remove('-translate-x-full');
-                            // show overlay
-                            if (!overlay) {
-                                overlay = document.createElement('div');
-                                overlay.id = 'sidebar-overlay';
-                                overlay.className = 'fixed inset-0 bg-black bg-opacity-50 z-[998] xl:hidden';
-                                document.body.appendChild(overlay);
-                            }
+                                aside.classList.add('hs-overlay-open:translate-x-0');
+                                aside.classList.remove('-translate-x-full');
+                                // show overlay
+                                if (!overlay) {
+                                    overlay = document.createElement('div');
+                                    overlay.id = 'sidebar-overlay';
+                                    overlay.className = 'fixed inset-0 bg-black bg-opacity-50 z-[998] xl:hidden';
+                                    document.body.appendChild(overlay);
+                                }
                             }
                         }
                         }}
@@ -82,6 +82,7 @@ const FacultyFieldHeader = () => {
 
                 <div className="flex items-center gap-4">
                     <button
+                        onClick={onSave}
                         className="cursor-pointer bg-blue-600 !text-gray-100 font-medium px-4 py-2 rounded hover:bg-blue-700"
                         aria-current="page"
                     >

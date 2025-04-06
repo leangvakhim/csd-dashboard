@@ -1,24 +1,19 @@
-import React, {useState} from 'react'
+import React, { forwardRef, useImperativeHandle, useState } from 'react';
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import JoditEditor from 'jodit-react';
 import 'jodit/es5/jodit.css';
 
 const config = {
-    readonly: false,  // Set to true for read-only mode
+    readonly: false,
     height: 400,
     placeholder: 'Start typing...',
-    buttons: [
-        'bold', 'italic', 'underline', 'strikethrough', '|',
-        'ul', 'ol', '|', 'image', 'link', 'table', '|',
-        'align', 'undo', 'redo', 'hr', '|',
-        'source'
-    ],
     uploader: {
-        insertImageAsBase64URI: true,  // Enable base64 image upload
+        insertImageAsBase64URI: true,
     },
 };
 
-const FacultyFieldInfo = () => {
+const FacultyFieldInfo = forwardRef((props, ref) => {
+    const [InfoItems, setInfoItems] = useState([]);
     const [rotatedStates, setRotatedStates] = useState({});
     const [subtitleContent, setSubtitleContent] = useState('');
     const [info, setInfo] = useState([
@@ -29,6 +24,10 @@ const FacultyFieldInfo = () => {
         place: "",
         },
     ]);
+
+    useImperativeHandle(ref, () => ({
+        getData: () => InfoItems
+    }));
 
     const handleAddInfo = () => {
         const newInfo = {
@@ -199,6 +198,6 @@ const FacultyFieldInfo = () => {
             </div>
         </div>
     )
-}
+});
 
 export default FacultyFieldInfo

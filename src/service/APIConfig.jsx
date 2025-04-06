@@ -1,5 +1,6 @@
-const API_BASEURL = "https://54.151.188.108/api";
-// const API_BASEURL = "http://127.0.0.1:8000/api";
+const API = "https://54.151.188.108";
+// const API = "http://127.0.0.1:8000";
+const API_BASEURL = `${API}/api`;
 
 const API_ENDPOINTS = {
     // text
@@ -29,17 +30,39 @@ const API_ENDPOINTS = {
     // faculty
     getFaculty: `${API_BASEURL}/faculty`,
     createFaculty: `${API_BASEURL}/faculty/create`,
-    // updateFaculty: `${API_BASEURL}/faculty/update`,
-    // deleteFaculty: `${API_BASEURL}/faculty/visibility`,
-    // duplicateFaculty: `${API_BASEURL}/faculty/duplicate`,
-    // updateFacultyOrder: `${API_BASEURL}/faculty/reorder`,
+    updateFaculty: `${API_BASEURL}/faculty/update`,
+    deleteFaculty: `${API_BASEURL}/faculty/visibility`,
+    duplicateFaculty: `${API_BASEURL}/faculty/duplicate`,
+    updateFacultyOrder: `${API_BASEURL}/faculty/reorder`,
 
     // faculty-contact
-    getFaculty: `${API_BASEURL}/faculty-contact`,
+    getFacultyContact: `${API_BASEURL}/faculty-contact`,
     createFacultyContact: `${API_BASEURL}/faculty-contact/create`,
-    // updateFacultyContact: `${API_BASEURL}/faculty-contact/update`,
-    // deleteFacultyContact: `${API_BASEURL}/faculty-contact/visibility`,
-    // updateFacultyContactOrder: `${API_BASEURL}/faculty-contact/reorder`,
+    updateFacultyContact: `${API_BASEURL}/faculty-contact/update`,
+    deleteFacultyContact: `${API_BASEURL}/faculty-contact/visibility`,
+    updateFacultyContactOrder: `${API_BASEURL}/faculty-contact/reorder`,
+
+    // faculty-bg
+    getFacultyBG: `${API_BASEURL}/faculty-bg`,
+    createFacultyBG: `${API_BASEURL}/faculty-bg/create`,
+    updateFacultyBG: `${API_BASEURL}/faculty-bg/update`,
+    deleteFacultyBG: `${API_BASEURL}/faculty-bg/visibility`,
+    updateFacultyBGOrder: `${API_BASEURL}/faculty-bg/reorder`,
+
+    // faculty-info
+    getFacultyInfo: `${API_BASEURL}/faculty-info`,
+    createFacultyInfo: `${API_BASEURL}/faculty-info/create`,
+    updateFacultyInfo: `${API_BASEURL}/faculty-info/update`,
+    deleteFacultyInfo: `${API_BASEURL}/faculty-info/visibility`,
+    updateFacultyInfoOrder: `${API_BASEURL}/faculty-info/reorder`,
+
+    // social
+    getSocial: `${API_BASEURL}/social`,
+    getSocialByFaculty: `${API_BASEURL}/social/by-faculty`,
+    createSocial: `${API_BASEURL}/social/create`,
+    updateSocial: `${API_BASEURL}/social/update`,
+    deleteSocial: `${API_BASEURL}/social/visibility`,
+    updateSocialOrder: `${API_BASEURL}/social/reorder`,
 
     // career
     getCareer: `${API_BASEURL}/career`,
@@ -49,8 +72,6 @@ const API_ENDPOINTS = {
     duplicateCareer: `${API_BASEURL}/career/duplicate`,
     updateCareerOrder: `${API_BASEURL}/career/reorder`,
 
-
-
     // button
     // buttons: `${API_BASEURL}/button`,
 
@@ -58,4 +79,4 @@ const API_ENDPOINTS = {
     // addons: `${API_BASEURL}/addon`
 };
 
-export {API_BASEURL, API_ENDPOINTS};
+export {API_BASEURL, API_ENDPOINTS, API};

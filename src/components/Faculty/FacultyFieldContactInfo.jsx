@@ -1,7 +1,8 @@
-import React, { useState } from 'react'
+import React, { forwardRef, useImperativeHandle, useState } from 'react';
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 
-const FacultyFieldContactInfo = () => {
+const FacultyFieldContactInfo = forwardRef((props, ref) => {
+    const [contactItems, setContactItems] = useState([]);
     const [rotatedStatesContactinfo, setRotatedStatesContactinfo] = useState({});
     const [contactinfo, setContactinfo] = useState([
     {
@@ -9,6 +10,10 @@ const FacultyFieldContactInfo = () => {
         title: "Contact Info 1",
         },
     ]);
+
+    useImperativeHandle(ref, () => ({
+        getData: () => contactItems
+    }));
 
     const handleAddContactinfo = () => {
         const newContactinfo = {
@@ -106,7 +111,9 @@ const FacultyFieldContactInfo = () => {
                                                             <div className="mt-2">
                                                             <input
                                                                 type="text"
-                                                                value={contactinfos.title}
+                                                                // value={contactinfos.title}
+                                                                value={formData.fc_name}
+                                                                onChange={(e) => setFormData(prev => ({ ...prev, fc_name: e.target.value }))}
                                                                 className="!border-gray-300 block w-full border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
                                                             />
                                                             </div>
@@ -120,7 +127,11 @@ const FacultyFieldContactInfo = () => {
                                                             </label>
                                                             <div className="mt-2">
                                                                 <label className="toggle-switch mb-1">
-                                                                    <input type="checkbox" />
+                                                                    <input
+                                                                        type="checkbox"
+                                                                        checked={formData.display}
+                                                                        onChange={(e) => setFormData({ ...formData, display: e.target.checked })}
+                                                                        />
                                                                     <span className="slider"></span>
                                                                 </label>
                                                             </div>
@@ -147,6 +158,6 @@ const FacultyFieldContactInfo = () => {
             </DragDropContext>
         </div>
     )
-}
+});
 
 export default FacultyFieldContactInfo

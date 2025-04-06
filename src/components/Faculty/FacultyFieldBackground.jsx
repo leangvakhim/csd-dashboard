@@ -1,9 +1,10 @@
-import React, {useState} from 'react'
+import React, { forwardRef, useImperativeHandle, useState } from 'react';
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import MediaLibraryModal from '../MediaLibraryModal';
+import { API_ENDPOINTS } from '../../service/APIConfig';
 
-const FacultyFieldBackground = () => {
-
+const FacultyFieldBackground = forwardRef(({formData, setFormData}, ref) => {
+    const [BgItems, setBgItems] = useState([]);
     const [rotatedStates, setRotatedStates] = useState({});
     const [currentBackgroundId, setCurrentBackgroundId] = useState(null);
     const [isMediaLibraryOpen, setMediaLibraryOpen] = useState(false);
@@ -14,6 +15,69 @@ const FacultyFieldBackground = () => {
         image: "",
         },
     ]);
+
+    useImperativeHandle(ref, () => ({
+        getData: () => background.map(item => ({
+            title: item.title,
+            image: formData.fbg_img,
+            display: formData.display,
+            fbg_name: formData.fbg_name,
+        }))
+    }));
+
+    useEffect(() => {
+        if (formData.fbg_img) {
+            fetch(`${API_ENDPOINTS.getImages}`)
+                .then(res => res.json())
+                .then(result => {
+                    const matched = result.data.find(img => img.image_id === formData.fbg_img);
+                    if (matched) {
+                        setSelectedImage(matched.image_url);
+                    }
+                })
+                .catch(err => console.error("Error fetching image:", err));
+        }
+    }, [formData.e_img]);
+
+    useEffect(() => {
+        // console.log("Loaded formData:", formData);
+
+        if (typeof formData.display !== 'boolean') {
+            setFormData(prev => ({
+                ...prev,
+                display: !!parseInt(prev.display)
+            }));
+        }
+    }, [formData]);
+
+
+    const handleImageSelect = async (imageUrl, field) => {
+        if (field === "image") {
+            setSelectedImage(imageUrl ? `${imageUrl}` : "");
+            try {
+                const response = await fetch(`${API_ENDPOINTS.getImages}`);
+                const result = await response.json();
+
+                if (result.status_code === "success" && Array.isArray(result.data)) {
+                    const matchedImage = result.data.find(image => image.image_url === imageUrl);
+                    if (matchedImage) {
+                        onImageSelect(matchedImage.image_id);
+                        setFormData(prevData => ({
+                            ...prevData,
+                            fbg_img: matchedImage.image_id,
+                        }));
+                    } else {
+                        console.warn("Image not found in API response for URL:", imageUrl);
+                    }
+                }
+            } catch (error) {
+                console.error("Failed to fetch images:", error);
+            }
+        }
+
+        setMediaLibraryOpen(false);
+    };
+
 
     const handleAddBackground = () => {
         const newBackground = {
@@ -45,19 +109,6 @@ const FacultyFieldBackground = () => {
     const openMediaLibrary = (backgroundId, field) => {
         setCurrentBackgroundId(backgroundId);
         setMediaLibraryOpen(true);
-    };
-
-    const handleImageSelect = (imageUrl, field) => {
-        if (field === "bg") {
-            setBackground((prevBackground) =>
-                prevBackground.map((item) =>
-                    item.id === currentBackgroundId
-                        ? { ...item, image: imageUrl ? `${imageUrl}` : "" }
-                        : item
-                )
-            );
-        }
-        setMediaLibraryOpen(false);
     };
 
     return (
@@ -133,7 +184,13 @@ const FacultyFieldBackground = () => {
                                                                 <div className="mt-2">
                                                                 <input
                                                                     type="text"
-                                                                    value={backgrounds.title}
+                                                                    value={formData.fbg_name}
+                                                                    // onChange={(e) => setFormData(prev => ({ ...prev, fbg_name: e.target.value }))}
+                                                                    onChange={(e) => {
+                                                                        const newBackgrounds = [...background];
+                                                                        newBackgrounds[index].fbg_name = e.target.value;
+                                                                        setBackground(newBackgrounds);
+                                                                    }}
                                                                     className="!border-gray-300 block w-full border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
                                                                 />
                                                                 </div>
@@ -157,6 +214,8 @@ const FacultyFieldBackground = () => {
                                                                                 <div className="flex gap-3 mt-2 justify-center">
                                                                                     <svg
                                                                                         onClick={() => openMediaLibrary(backgrounds.id, "bg")}
+                                                                                        value={formData.fbg_img}
+                                                                                        onChange={(e) => setFormData({ ...formData, fbg_img: e.target.value })}
                                                                                         xmlns="http://www.w3.org/2000/svg"
                                                                                         fill="none"
                                                                                         viewBox="0 0 24 24"
@@ -172,6 +231,8 @@ const FacultyFieldBackground = () => {
                                                                                     </svg>
                                                                                     <svg
                                                                                         onClick={() => handleImageSelect("", "bg")}
+                                                                                        value={formData.fbg_img}
+                                                                                        onChange={(e) => setFormData({ ...formData, fbg_img: e.target.value })}
                                                                                         xmlns="http://www.w3.org/2000/svg"
                                                                                         fill="none"
                                                                                         viewBox="0 0 24 24"
@@ -190,6 +251,8 @@ const FacultyFieldBackground = () => {
                                                                         ) : (
                                                                             <div
                                                                                 onClick={() => openMediaLibrary(backgrounds.id, "bg")}
+                                                                                value={formData.fbg_img}
+                                                                                onChange={(e) => setFormData({ ...formData, fbg_img: e.target.value })}
                                                                                 className="flex flex-col items-center justify-center pt-5 pb-6 "
                                                                             >
                                                                                 <svg
@@ -230,7 +293,11 @@ const FacultyFieldBackground = () => {
                                                                 </label>
                                                                 <div className="mt-2">
                                                                     <label className="toggle-switch mb-1">
-                                                                        <input type="checkbox" />
+                                                                        <input
+                                                                            type="checkbox"
+                                                                            checked={formData.display}
+                                                                            onChange={(e) => setFormData({ ...formData, display: e.target.checked })}
+                                                                            />
                                                                         <span className="slider"></span>
                                                                     </label>
                                                                 </div>
@@ -258,6 +325,6 @@ const FacultyFieldBackground = () => {
             </div>
         </div>
     )
-}
+});
 
 export default FacultyFieldBackground
