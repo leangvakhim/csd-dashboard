@@ -55,12 +55,7 @@ const FacultyFieldBackground = forwardRef(
         fbg_name: "",
       };
 
-      try {
-        await axios.post(`${API_ENDPOINTS.createFacultyBG}`);
-        setBackground((prev) => [...prev, newBackground]);
-      } catch (error) {
-        console.error("Error adding background:", error);
-      }
+      setBackground((prevItems) => [...prevItems, newBackground]);
     };
 
     const toggleRotation = (id) => {

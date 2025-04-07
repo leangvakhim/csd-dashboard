@@ -9,13 +9,10 @@ import { API_ENDPOINTS } from '../../service/APIConfig';
 const FacultyFieldBody = ({
     formData,
     setFormData,
-    subtitleContent,
-    setSubtitleContent,
     onImageSelect,
     socialRef,
     contactRef,
-    backgroundRef,
-    infoRef
+   
 }) => {
     const [activeTab, setActiveTab] = useState(formData.lang || 1);
     const [isMediaLibraryOpen, setMediaLibraryOpen] = useState(false);
@@ -273,7 +270,7 @@ const FacultyFieldBody = ({
                             <FacultyFieldContactInfo ref={contactRef} f_id={formData.f_id} />
 
                             {/* Faculty Backgorund */}
-                            <FacultyFieldBackground ref={backgroundRef} f_id={formData.f_id} />
+                            {/* <FacultyFieldBackground ref={backgroundRef} f_id={formData.f_id} /> */}
                         </div>
                     </div>
                     {/* Fourth row */}
