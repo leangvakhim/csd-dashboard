@@ -12,7 +12,7 @@ const FacultyDashboard = () => {
         const fetchEvents = async () => {
             try {
                 const response = await axios.get(API_ENDPOINTS.getFaculty);
-                setFacultyItems(response.data.data);
+                setFacultyItems(Array.isArray(response.data.data) ? response.data.data : []);
             } catch (error) {
                 console.error('Failed to fetch events:', error);
             }
