@@ -27,7 +27,7 @@ const FacultyFieldSocial = forwardRef(({ formData = {}, setFormData = {}, f_id }
                 const data = {
                     f_id: item.f_id,
                     social_link: item.social_link,
-                    social_img: item.social_img || null,
+                    social_img: item.social_img_id || null,
                     social_order: index + 1,
                     display: item.display !== undefined ? item.display : 0,
                     active: 1,
@@ -56,44 +56,27 @@ const FacultyFieldSocial = forwardRef(({ formData = {}, setFormData = {}, f_id }
         }
     };
 
-    const handleAddSocial = async () => {
-        if(!f_id) {
+    const handleAddSocial = () => {
+        if (!f_id) {
             console.error("Faculty ID is not available");
             return;
         }
-      
+
         const newSocial = {
-          title: `Social ${social.length + 1}`,
-          social_link: null,
-          social_img: null,
-          display: 0,
-          active: 1,
-          f_id: f_id,
-        };
-      
-        try {
-          const response = await axios.post(API_ENDPOINTS.createSocial, newSocial);
-          const created = response.data.data;
-      
-          const newSocialData = {
-            ...newSocial,
-            id: created.social_id.toString(),
-            social_id: created.social_id,
-            social_order: social.length + 1,
+            id: Date.now().toString(),
+            title: `Social ${social.length + 1}`,
+            social_link: '',
             social_img: null,
             social_img_id: null,
-          };
-      
-          setSocial((prev) => [...prev, newSocialData]);
-      
-          // Optional: reload only if necessary
-          // window.location.reload();
-        } catch (error) {
-          console.error("❌ Error adding new social:", error.response?.data || error.message);
-        }
-      };
-      
-      
+            display: 0,
+            active: 1,
+            f_id: f_id,
+            social_order: social.length + 1,
+        };
+
+        setSocial((prev) => [...prev, newSocial]);
+    };
+
     const toggleRotation = (id) => {
         setRotatedStates((prev) => ({
             ...prev,
