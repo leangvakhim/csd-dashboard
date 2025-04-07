@@ -154,7 +154,7 @@ const FacultyField = () => {
 
     const handleSave = async () => {
         try {
-            // await saveFaculty();
+            await saveFaculty();
             await saveFacultySocial();
             alert("Faculty information saved successfully!");
         } catch (err) {

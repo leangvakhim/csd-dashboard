@@ -1,4 +1,4 @@
-const API = "https://54.151.188.108";
+const API = "https://52.221.196.157";
 // const API = "http://127.0.0.1:8000";
 const API_BASEURL = `${API}/api`;
 
@@ -18,6 +18,14 @@ const API_ENDPOINTS = {
     deleteEvent: `${API_BASEURL}/event/visibility`,
     duplicateEvent: `${API_BASEURL}/event/duplicate`,
     updateEventOrder: `${API_BASEURL}/event/reorder`,
+
+    // menu
+    getMenu: `${API_BASEURL}/menu`,
+    createMenu: `${API_BASEURL}/menu/create`,
+    updateMenu: `${API_BASEURL}/menu/update`,
+    deleteMenu: `${API_BASEURL}/menu/visibility`,
+    duplicateMenu: `${API_BASEURL}/menu/duplicate`,
+    updateMenuOrder: `${API_BASEURL}/menu/reorder`,
 
     // news
     getNews: `${API_BASEURL}/news`,

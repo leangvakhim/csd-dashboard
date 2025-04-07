@@ -18,7 +18,6 @@ const ImageBody = () => {
                     setImages(response.data.data); // images
                     setFilteredImages(response.data.data);
                 } else {
-                    console.error("API did not return expected data structure:", response.data);
                     setImages([]);
                     setFilteredImages([]); // Reset filtered images
                 }
@@ -51,6 +50,7 @@ const ImageBody = () => {
 
         const formData = new FormData();
         for (let file of files) {
+            console.log("📁 Appending file:", file.name);
             formData.append("img[]", file);
         }
 
@@ -69,10 +69,10 @@ const ImageBody = () => {
                     setFilteredImages(updatedImages.data.data); // Update filtered images
                 }
             } else {
-                console.error("Upload failed:", response.data);
+                console.error("❌ Upload failed or response malformed:", response.data);
             }
         } catch (error) {
-            console.error("Error uploading images:", error);
+            console.error("🔥 Error uploading images:", error);
         } finally {
             setIsUploading(false);
         }

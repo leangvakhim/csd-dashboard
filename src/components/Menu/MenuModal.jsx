@@ -1,12 +1,78 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import axios from 'axios'
+import { API_ENDPOINTS } from '../../service/APIConfig'
 
-const MenuModal = ({ isOpen, onClose }) => {
+const MenuModal = ({ isOpen, onClose, data}) => {
+    const [menuOptions, setMenuOptions] = useState([]);
+    const [formData, setFormData] = useState({
+        lang: 1,
+        title: null,
+        menup_id: null,
+        display: true,
+        active: 1,
+    });
 
-  if (!isOpen) return null;
-  return (
+    useEffect(() => {
+        if (data) {
+            setFormData({
+                lang: data.lang || 1,
+                title: data.title || '',
+                menup_id: data.menup_id || null,
+                display: !!data.display,
+                active: data.active ?? 1,
+            });
+        }
+
+        const fetchMenus = async () => {
+            try {
+                const res = await axios.get(API_ENDPOINTS.getMenu);
+                if (res.data && res.data.data) {
+                    const filteredMenus = res.data.data.filter(menu =>
+                        menu.menup_id === null && menu.menu_id !== data?.menu_id
+                    );
+                    setMenuOptions(filteredMenus);
+                }
+            } catch (err) {
+                console.error(' Failed to fetch parent menus:', err);
+            }
+        };
+
+        fetchMenus();
+    }, [data]);
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        const payload = {
+            lang: parseInt(formData.lang) || 1,
+            title: formData.title || null,
+            menup_id: formData.menup_id ? parseInt(formData.menup_id) : null,
+            display: formData.display ? 1 : 0,
+            active: formData.active ? 1 : 0,
+        };
+
+        try {
+            let res;
+            if (data?.menu_id) {
+                res = await axios.post(`${API_ENDPOINTS.updateMenu}/${data.menu_id}`, payload);
+                window.location.reload();
+            } else {
+                res = await axios.post(API_ENDPOINTS.createMenu, payload);
+                window.location.reload();
+            }
+            onClose(); // Close the modal
+        } catch (err) {
+            if (err.response && err.response.status === 422) {
+                console.error('❌ Validation errors:', err.response.data.errors);
+            } else {
+                console.error('❌ Failed to create menu:', err);
+            }
+        }
+    };
+
+    if (!isOpen) return null;
+    return (
     <>
       <div className=" fixed inset-0 z-[999] bg-black bg-opacity-50"></div>
-
         <div id="crud-modal" tabIndex="-1" aria-hidden="true" className="z-[1000] overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0  flex items-center justify-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
             <div className="relative p-4 w-full max-w-md max-h-full">
 
@@ -24,56 +90,74 @@ const MenuModal = ({ isOpen, onClose }) => {
                         </button>
                     </div>
 
-                    <form className="p-4 md:p-5">
+                    <form onSubmit={handleSubmit} className="p-4 md:p-5">
                         <div className="grid grid-cols-2 gap-4 mb-4 ">
                             <div className="col-span-2 sm:col-span-1">
                                 <label htmlFor="price" className="block mb-2 text-sm font-medium text-gray-900 ">Title</label>
-                                <input type="text" name="price" id="price" className="!bg-gray-50 !border !border-gray-300 !text-gray-900 text-sm !rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 " />
+                                <input
+                                    type="text"
+                                    value={formData.title}
+                                    onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+                                    className="!bg-gray-50 !border !border-gray-300 !text-gray-900 text-sm !rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 "
+                                />
                             </div>
 
                             <div className="col-span-1">
                                 <label htmlFor="category" className="block mb-2 text-sm font-medium text-gray-900 ">Parent Menu</label>
-                                <select id="category" className="!bg-gray-50 !border !border-gray-300 !text-gray-900 text-sm !rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 ">
-                                    <option selected=""></option>
-                                    <option value="home">Home</option>
-                                    <option value="academic">Academic</option>
-                                    <option value="program">Program</option>
+                                <select
+                                    value={formData.menup_id}
+                                    onChange={(e) => setFormData(prev => ({ ...prev, menup_id: parseInt(e.target.value) || null }))}
+                                    className="!bg-gray-50 !border !border-gray-300 !text-gray-900 text-sm !rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 "
+                                >
+                                    <option value="">Select Parent Menu</option>
+                                    {menuOptions.map((menu) => (
+                                        <option key={menu.menu_id} value={menu.menu_id}>
+                                            {menu.title}
+                                        </option>
+                                    ))}
                                 </select>
                             </div>
 
                             <div className="col-span-1">
                                 <label htmlFor="category" className="block mb-2 text-sm font-medium text-gray-900 ">Languages</label>
-                                <select id="category" className="!bg-gray-50 !border !border-gray-300 !text-gray-900 text-sm !rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 ">
-                                    <option selected=""></option>
-                                    <option value="en">English</option>
-                                    <option value="kh">Khmer</option>
+                                <select
+                                    value={formData.lang}
+                                    onChange={(e) => setFormData(prev => ({ ...prev, lang: parseInt(e.target.value) || 1 }))}
+                                    className="!bg-gray-50 !border !border-gray-300 !text-gray-900 text-sm !rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 "
+                                >
+                                    <option value=""></option>
+                                    <option value="1">English</option>
+                                    <option value="2">Khmer</option>
                                 </select>
                             </div>
                             <div className="col-span-1">
                                 <label htmlFor="category" className="block mb-2 text-sm font-medium text-gray-900 ">Pages</label>
-                                <select id="category" className="!bg-gray-50 !border !border-gray-300 !text-gray-900 text-sm !rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 ">
-                                    <option selected=""></option>
-                                    <option value="home">Home Page</option>
-                                    <option value="about">About Page</option>
+                                <select
+                                    className="!bg-gray-50 !border !border-gray-300 !text-gray-900 text-sm !rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 "
+                                >
+                                    <option value=""></option>
+                                    <option value="1">Home Page</option>
+                                    <option value="2">About Page</option>
                                 </select>
                             </div>
 
                             <div className="col-span-1">
-                                <label htmlFor="category" className="block mb-2 text-sm font-medium text-gray-900 ">Status</label>
+                                <label htmlFor="category" className="block mb-2 text-sm font-medium text-gray-900 ">Display</label>
                                 <div className="">
-                                    <label class="toggle-switch mt-1">
-                                        <input type="checkbox" />
-                                        <span class="slider"></span>
+                                    <label className="toggle-switch mt-1">
+                                        <input
+                                            type="checkbox"
+                                            checked={formData.display}
+                                            onChange={(e) => setFormData(prev => ({ ...prev, display: e.target.checked }))}
+                                        />
+                                        <span className="slider"></span>
                                     </label>
                                 </div>
                             </div>
                         </div>
                         <div className="flex items-center gap-4">
-                            <button
-                            className="!bg-blue-600 !text-white font-medium px-4 py-2 rounded-lg hover:!bg-blue-700"
-                            aria-current="page"
-                            >
-                            Add new menu
+                            <button type="submit" className="!bg-blue-600 !text-white font-medium px-4 py-2 rounded-lg hover:!bg-blue-700">
+                              Add new menu
                             </button>
                         </div>
                     </form>
