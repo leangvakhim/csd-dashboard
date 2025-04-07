@@ -7,16 +7,16 @@ import MediaLibraryModal from '../MediaLibraryModal';
 import { API_ENDPOINTS } from '../../service/APIConfig';
 
 const FacultyFieldBody = ({
-        formData,
-        setFormData,
-        subtitleContent,
-        setSubtitleContent,
-        onImageSelect,
-        socialRef,
-        contactRef,
-        backgroundRef,
-        infoRef
-    }) => {
+    formData,
+    setFormData,
+    subtitleContent,
+    setSubtitleContent,
+    onImageSelect,
+    socialRef,
+    contactRef,
+    backgroundRef,
+    infoRef
+}) => {
     const [activeTab, setActiveTab] = useState(formData.lang || 1);
     const [isMediaLibraryOpen, setMediaLibraryOpen] = useState(false);
     const [selectedImage, setSelectedImage] = useState("");
@@ -116,45 +116,45 @@ const FacultyFieldBody = ({
                     <div className="flex flex-row gap-4 py-2 mb-1">
                         <div className="flex-1">
                             <label className="block text-xl font-medium leading-6 text-white-900">
-                            Full name
+                                Full name
                             </label>
                             <div className="mt-2">
-                            <input
-                                type="text"
-                                value={formData.f_name || ""}
-                                onChange={(e) => setFormData({ ...formData, f_name: e.target.value })}
-                                className="block w-full !border-gray-200 border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
-                            />
+                                <input
+                                    type="text"
+                                    value={formData.f_name || ""}
+                                    onChange={(e) => setFormData({ ...formData, f_name: e.target.value })}
+                                    className="block w-full !border-gray-200 border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
+                                />
                             </div>
                         </div>
 
                         <div className="flex-1">
                             <label className="block text-xl font-medium leading-6 text-white-900">
-                            Position
+                                Position
                             </label>
                             <div className="mt-2">
-                            <input
-                                type="text"
-                                value={formData.f_position}
-                                onChange={(e) => setFormData(prev => ({ ...prev, f_position: e.target.value }))}
-                                className="block w-full !border-gray-200 border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
-                            />
+                                <input
+                                    type="text"
+                                    value={formData.f_position}
+                                    onChange={(e) => setFormData(prev => ({ ...prev, f_position: e.target.value }))}
+                                    className="block w-full !border-gray-200 border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
+                                />
                             </div>
                         </div>
 
                         <div className="flex-non">
                             <label className="block text-xl font-medium leading-6 text-white-900">
-                            Display
+                                Display
                             </label>
                             <div className="mt-2">
-                            <label class="toggle-switch mt-2">
-                                <input
-                                    type="checkbox"
-                                    checked={formData.display}
-                                    onChange={(e) => setFormData({ ...formData, display: e.target.checked })}
+                                <label class="toggle-switch mt-2">
+                                    <input
+                                        type="checkbox"
+                                        checked={formData.display}
+                                        onChange={(e) => setFormData({ ...formData, display: e.target.checked })}
                                     />
-                                <span class="slider"></span>
-                            </label>
+                                    <span class="slider"></span>
+                                </label>
                             </div>
                         </div>
                     </div>
@@ -163,7 +163,7 @@ const FacultyFieldBody = ({
                         <div className="grid grid-cols-1 md:!grid-cols-2 gap-4 py-2">
                             <div className="flex-1">
                                 <label className="block text-xl font-medium leading-6 text-white-900">
-                                Image
+                                    Image
                                 </label>
                                 <div className="flex items-center justify-center w-full mt-2 border-1">
                                     <label
@@ -270,10 +270,10 @@ const FacultyFieldBody = ({
                             <FacultyFieldSocial ref={socialRef} f_id={formData.f_id} />
 
                             {/* Contact Info */}
-                            {/* <FacultyFieldContactInfo ref={contactRef} f_id={formData.f_id}/> */}
+                            <FacultyFieldContactInfo ref={contactRef} f_id={formData.f_id} />
 
                             {/* Faculty Backgorund */}
-                            {/* <FacultyFieldBackground ref={backgroundRef} f_id={formData.f_id}/> */}
+                            <FacultyFieldBackground ref={backgroundRef} f_id={formData.f_id} />
                         </div>
                     </div>
                     {/* Fourth row */}
