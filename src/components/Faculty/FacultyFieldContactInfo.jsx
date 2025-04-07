@@ -1,27 +1,79 @@
 import React, { forwardRef, useImperativeHandle, useState } from 'react';
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import { API, API_ENDPOINTS } from '../../service/APIConfig';
+import axios from 'axios';
 
-const FacultyFieldContactInfo = forwardRef((props, ref) => {
-    const [contactItems, setContactItems] = useState([]);
+const FacultyFieldContactInfo = forwardRef(({ formData = {}, setFormData = {}, f_id }, ref) => {
     const [rotatedStatesContactinfo, setRotatedStatesContactinfo] = useState({});
     const [contactinfo, setContactinfo] = useState([
-    {
-        id: "1",
-        title: "Contact Info 1",
+        {
+            id: "1",
+            f_id: f_id,
+            fc_title: "Contact info 1",
+            fc_name: "Contact Name 1",
+            display: true,
         },
     ]);
 
     useImperativeHandle(ref, () => ({
-        getData: () => contactItems
+        getData: () => {
+            const sortedContactinfo = [...contactinfo].sort((a, b) => a.id - b.id);
+            const contactInfoData = sortedContactinfo.map((item) => ({
+                fc_title: item.fc_title,
+                f_id: item.f_id,
+                fc_name: item.fc_name,
+                display: item.display,
+                id: item.id,
+            }));
+            return {
+                contactinfo: contactInfoData,
+            };
+        }
     }));
 
-    const handleAddContactinfo = () => {
+    const handleDeleteContactinfo = async (id) => {
+        if (!window.confirm("Are you sure you want to delete of this contact?")) return;
+
+        try {
+            await axios.put(`${API}${API_ENDPOINTS.deleteFacultyContact}/${id}/`)
+            setContactinfo((prevContactinfo) =>
+                prevContactinfo.map((contact) =>
+                    contact.id === id ? { ...contact, display: false } : contact
+                )
+            );
+            window.location.reload();
+            console.log("Contact info deleted successfully");
+        }
+        catch (error) {
+            console.error("Error deleting contact info:", error);
+        }
+    };
+
+    const handleAddContactinfo = async () => {
+        if(!f_id) {
+            console.error("Faculty ID is not available");
+            return;
+        }
         const newContactinfo = {
             id: `${Date.now()}`,
-            title: `Contact info ${contactinfo.length + 1}`,
+            fc_title: `Contact info ${contactinfo.length + 1}`,
+            display: true,
+           
         };
+        try {
+            await axios.post(`${API}${API_ENDPOINTS.createFacultyContact}`)
+                .then((response) => {
+                    console.log("Contact info created successfully:", response.data);
+                    setContactinfo((prevContactinfo) => [...prevContactinfo, newContactinfo]);
+                })
+                .catch((error) => {
+                    console.error("Error creating contact info:", error);
+                });
+        }
+        catch (error) {
+            console.error("Error creating contact info:", error);
+        }
 
-        setContactinfo([...contactinfo, newContactinfo]);
     };
 
     const toggleRotationContactinfo = (id) => {
@@ -56,18 +108,18 @@ const FacultyFieldContactInfo = forwardRef((props, ref) => {
                                         key={contactinfos.id}
                                         draggableId={contactinfos.id}
                                         index={index}
-                                        >
+                                    >
                                         {(provided) => (
                                             <li
                                                 className={`below-border ${index === contactinfos.length - 1 ? 'border-none' : ''}`}
                                                 ref={provided.innerRef}
                                                 {...provided.draggableProps}
-                                                >
+                                            >
                                                 {/* Contact Info  */}
                                                 <details className='group [&_summary::-webkit-details-marker]:hidden !border-b-1 '>
                                                     <summary className='cursor-pointer flex justify-between rounded-lg px-2 py-2 pl-5 w-full '
                                                         onClick={() => toggleRotationContactinfo(contactinfos.id)}
-                                                        >
+                                                    >
                                                         <div className="flex ">
                                                             <div className="cursor-grab my-auto"
                                                                 {...provided.dragHandleProps}>
@@ -75,7 +127,7 @@ const FacultyFieldContactInfo = forwardRef((props, ref) => {
                                                                     <path d="M40 352l48 0c22.1 0 40 17.9 40 40l0 48c0 22.1-17.9 40-40 40l-48 0c-22.1 0-40-17.9-40-40l0-48c0-22.1 17.9-40 40-40zm192 0l48 0c22.1 0 40 17.9 40 40l0 48c0 22.1-17.9 40-40 40l-48 0c-22.1 0-40-17.9-40-40l0-48c0-22.1 17.9-40 40-40zM40 320c-22.1 0-40-17.9-40-40l0-48c0-22.1 17.9-40 40-40l48 0c22.1 0 40 17.9 40 40l0 48c0 22.1-17.9 40-40 40l-48 0zM232 192l48 0c22.1 0 40 17.9 40 40l0 48c0 22.1-17.9 40-40 40l-48 0c-22.1 0-40-17.9-40-40l0-48c0-22.1 17.9-40 40-40zM40 160c-22.1 0-40-17.9-40-40L0 72C0 49.9 17.9 32 40 32l48 0c22.1 0 40 17.9 40 40l0 48c0 22.1-17.9 40-40 40l-48 0zM232 32l48 0c22.1 0 40 17.9 40 40l0 48c0 22.1-17.9 40-40 40l-48 0c-22.1 0-40-17.9-40-40l0-48c0-22.1 17.9-40 40-40z"></path>
                                                                 </svg>
                                                             </div>
-                                                            <span className="ml-2 text-lg">{contactinfos.title}</span>
+                                                            <span className="ml-2 text-lg">{contactinfos.fc_title}</span>
                                                         </div>
                                                         <span className=' shrink-0 transition-transform duration-500 group-open:-rotate-0 flex gap-2'>
                                                             <div className='block'>
@@ -86,15 +138,15 @@ const FacultyFieldContactInfo = forwardRef((props, ref) => {
                                                                     strokeWidth={1.5}
                                                                     stroke="currentColor"
                                                                     className="size-6 cursor-pointer"
+                                                                    onClick={() => handleDeleteContactinfo(contactinfos.id)}
                                                                 >
                                                                     <path strokeLinecap="round" strokeLinejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
                                                                 </svg>
                                                             </div>
                                                             <span
-                                                                className={`cursor-pointer shrink-0 transition-transform duration-300 ${
-                                                                        rotatedStatesContactinfo[contactinfos.id] ? "rotate-180" : ""
-                                                                        }`}
-                                                                >
+                                                                className={`cursor-pointer shrink-0 transition-transform duration-300 ${rotatedStatesContactinfo[contactinfos.id] ? "rotate-180" : ""
+                                                                    }`}
+                                                            >
                                                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
                                                                     <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 15.75 7.5-7.5 7.5 7.5" />
                                                                 </svg>
@@ -106,16 +158,16 @@ const FacultyFieldContactInfo = forwardRef((props, ref) => {
                                                     <div className="grid grid-cols-1 gap-4 px-4 py-2">
                                                         <div className="flex-1">
                                                             <label className=" block text-xl font-medium leading-6 text-white-900">
-                                                            Title
+                                                                Title
                                                             </label>
                                                             <div className="mt-2">
-                                                            <input
-                                                                type="text"
-                                                                // value={contactinfos.title}
-                                                                value={formData.fc_name}
-                                                                onChange={(e) => setFormData(prev => ({ ...prev, fc_name: e.target.value }))}
-                                                                className="!border-gray-300 block w-full border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
-                                                            />
+                                                                <input
+                                                                    type="text"
+                                                                    // value={contactinfos.title}
+                                                                    value={formData.fc_name}
+                                                                    onChange={(e) => setFormData(prev => ({ ...prev, fc_name: e.target.value }))}
+                                                                    className="!border-gray-300 block w-full border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
+                                                                />
                                                             </div>
                                                         </div>
                                                     </div>
@@ -131,7 +183,7 @@ const FacultyFieldContactInfo = forwardRef((props, ref) => {
                                                                         type="checkbox"
                                                                         checked={formData.display}
                                                                         onChange={(e) => setFormData({ ...formData, display: e.target.checked })}
-                                                                        />
+                                                                    />
                                                                     <span className="slider"></span>
                                                                 </label>
                                                             </div>
@@ -144,7 +196,7 @@ const FacultyFieldContactInfo = forwardRef((props, ref) => {
                                 ))}
                             </ul>
                             <a
-                                className="flex items-center p-3 text-sm font-medium text-blue-600 !border-b !border-x rounded-b-lg bg-gray-50  hover:bg-gray-100  hover:underline"
+                                className="flex items-center cursor-pointer p-3 text-sm font-medium text-blue-600 !border-b !border-x rounded-b-lg bg-gray-50  hover:bg-gray-100  hover:underline"
                                 onClick={handleAddContactinfo}
                             >
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="size-6 mr-2">

@@ -4,18 +4,19 @@ import MediaLibraryModal from '../MediaLibraryModal';
 import { API, API_ENDPOINTS } from '../../service/APIConfig';
 import axios from 'axios';
 
-const FacultyFieldSocial = forwardRef(({formData = {}, setFormData = {}, f_id}, ref) => {
+const FacultyFieldSocial = forwardRef(({ formData = {}, setFormData = {}, f_id }, ref) => {
     const [rotatedStates, setRotatedStates] = useState({});
     const [currentSocialId, setCurrentSocialId] = useState(null);
     const [isMediaLibraryOpen, setMediaLibraryOpen] = useState(false);
     const [social, setSocial] = useState([
-    {
-        id: 1,
-        title: "Social 1",
-        social_link: null,
-        social_img: null,
-        display: 0,
-        active: 1,
+        {
+            id: 1,
+            f_id: f_id,
+            title: "Social 1",
+            social_link: null,
+            social_img: null,
+            display: 0,
+            active: 1,
         },
     ]);
 
@@ -24,8 +25,9 @@ const FacultyFieldSocial = forwardRef(({formData = {}, setFormData = {}, f_id}, 
             const sorted = [...social].sort((a, b) => a.social_order - b.social_order);
             return sorted.map((item, index) => {
                 const data = {
+                    f_id: item.f_id,
                     social_link: item.social_link,
-                    social_img: item.social_img_id || null,
+                    social_img: item.social_img || null,
                     social_order: index + 1,
                     display: item.display !== undefined ? item.display : 0,
                     active: 1,
@@ -45,7 +47,7 @@ const FacultyFieldSocial = forwardRef(({formData = {}, setFormData = {}, f_id}, 
             await axios.put(`${API_ENDPOINTS.deleteSocial}/${id}`);
             setSocial(prevItems =>
                 prevItems.map(item =>
-                    item.social_id === id ? { ...item, active: item.active ? 0 : 1 } : item
+                    item.id === id ? { ...item, active: item.active ? 0 : 1 } : item
                 )
             );
             window.location.reload();
@@ -54,19 +56,44 @@ const FacultyFieldSocial = forwardRef(({formData = {}, setFormData = {}, f_id}, 
         }
     };
 
-    const handleAddSocial = () => {
+    const handleAddSocial = async () => {
+        if(!f_id) {
+            console.error("Faculty ID is not available");
+            return;
+        }
+      
         const newSocial = {
-            id: `temp-${Date.now()}`,
-            title: `Social ${social.length + 1}`,
-            social_link: null,
-            social_img: null,
-            display: 0,
-            active: 1,
+          title: `Social ${social.length + 1}`,
+          social_link: null,
+          social_img: null,
+          display: 0,
+          active: 1,
+          f_id: f_id,
         };
-
-        setSocial([...social, newSocial]);
-    };
-
+      
+        try {
+          const response = await axios.post(API_ENDPOINTS.createSocial, newSocial);
+          const created = response.data.data;
+      
+          const newSocialData = {
+            ...newSocial,
+            id: created.social_id.toString(),
+            social_id: created.social_id,
+            social_order: social.length + 1,
+            social_img: null,
+            social_img_id: null,
+          };
+      
+          setSocial((prev) => [...prev, newSocialData]);
+      
+          // Optional: reload only if necessary
+          // window.location.reload();
+        } catch (error) {
+          console.error("❌ Error adding new social:", error.response?.data || error.message);
+        }
+      };
+      
+      
     const toggleRotation = (id) => {
         setRotatedStates((prev) => ({
             ...prev,
@@ -178,18 +205,18 @@ const FacultyFieldSocial = forwardRef(({formData = {}, setFormData = {}, f_id}, 
                                         key={socials.id}
                                         draggableId={socials.id}
                                         index={index}
-                                        >
+                                    >
                                         {(provided) => (
                                             <li
                                                 className={`below-border ${index === socials.length - 1 ? 'border-none' : ''}`}
                                                 ref={provided.innerRef}
                                                 {...provided.draggableProps}
-                                                >
+                                            >
                                                 {/* Social  */}
                                                 <details className='group [&_summary::-webkit-details-marker]:hidden !border-b-1 '>
                                                     <summary className='cursor-pointer flex justify-between rounded-lg px-2 py-2 pl-5 w-full '
                                                         onClick={() => toggleRotation(socials.id)}
-                                                        >
+                                                    >
                                                         <div className="flex ">
                                                             <div className="cursor-grab my-auto"
                                                                 {...provided.dragHandleProps}>
@@ -214,10 +241,9 @@ const FacultyFieldSocial = forwardRef(({formData = {}, setFormData = {}, f_id}, 
                                                                 </svg>
                                                             </span>
                                                             <span
-                                                                className={`cursor-pointer shrink-0 transition-transform duration-300 ${
-                                                                        rotatedStates[socials.id] ? "rotate-180" : ""
-                                                                        }`}
-                                                                >
+                                                                className={`cursor-pointer shrink-0 transition-transform duration-300 ${rotatedStates[socials.id] ? "rotate-180" : ""
+                                                                    }`}
+                                                            >
                                                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
                                                                     <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 15.75 7.5-7.5 7.5 7.5" />
                                                                 </svg>
@@ -278,10 +304,10 @@ const FacultyFieldSocial = forwardRef(({formData = {}, setFormData = {}, f_id}, 
                                                                                 </svg>
                                                                                 <svg
                                                                                     onClick={() => {
-                                                                                      const updated = [...social];
-                                                                                      updated[index].social_img = null;
-                                                                                      updated[index].social_img_id = null;
-                                                                                      setSocial(updated);
+                                                                                        const updated = [...social];
+                                                                                        updated[index].social_img = null;
+                                                                                        updated[index].social_img_id = null;
+                                                                                        setSocial(updated);
                                                                                     }}
                                                                                     value={formData.social_img}
                                                                                     onChange={(e) => setFormData({ ...formData, social_img: e.target.value })}
@@ -366,7 +392,7 @@ const FacultyFieldSocial = forwardRef(({formData = {}, setFormData = {}, f_id}, 
                                 ))}
                             </ul>
                             <a
-                                className="flex items-center p-3 text-sm font-medium text-blue-600 !border-b !border-x rounded-b-lg bg-gray-50  hover:bg-gray-100  hover:underline"
+                                className="flex items-center cursor-pointer p-3 text-sm font-medium text-blue-600 !border-b !border-x rounded-b-lg bg-gray-50  hover:bg-gray-100  hover:underline"
                                 onClick={handleAddSocial}
                             >
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="size-6 mr-2">

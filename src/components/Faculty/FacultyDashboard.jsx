@@ -28,7 +28,7 @@ const FacultyDashboard = () => {
             await axios.put(`${API_ENDPOINTS.deleteFaculty}/${id}`);
             setFacultyItems(prevItems =>
                 prevItems.map(item =>
-                    item.e_id === id ? { ...item, active: item.active ? 0 : 1 } : item
+                    item.f_id === id ? { ...item, active: item.active ? 0 : 1 } : item
                 )
             );
             window.location.reload();
