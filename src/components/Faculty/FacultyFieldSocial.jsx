@@ -45,7 +45,7 @@ const FacultyFieldSocial = forwardRef(({formData = {}, setFormData = {}, f_id}, 
             await axios.put(`${API_ENDPOINTS.deleteSocial}/${id}`);
             setSocial(prevItems =>
                 prevItems.map(item =>
-                    item.e_id === id ? { ...item, active: item.active ? 0 : 1 } : item
+                    item.social_id === id ? { ...item, active: item.active ? 0 : 1 } : item
                 )
             );
             window.location.reload();
@@ -73,16 +73,6 @@ const FacultyFieldSocial = forwardRef(({formData = {}, setFormData = {}, f_id}, 
             [id]: !prev[id],
         }));
     };
-
-    // const onDragEnd = (result) => {
-    //     if (!result.destination) return;
-
-    //     const newSocial = Array.from(social);
-    //     const [reorderedSocial] = newSocial.splice(result.source.index, 1);
-    //     newSocial.splice(result.destination.index, 0, reorderedSocial);
-
-    //     setSocial(newSocial);
-    // };
 
     const onDragEnd = (result) => {
         if (!result.destination) return;
