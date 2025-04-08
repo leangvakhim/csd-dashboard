@@ -82,13 +82,17 @@ const FacultyFieldBackground = forwardRef(({ formData = {}, setFormData = {}, f_
     if (!result.destination) return;
 
     const newBackground = Array.from(background);
-    const [reorderedBackground] = newBackground.splice(
-      result.source.index,
-      1
-    );
+    const [reorderedBackground] = newBackground.splice(result.source.index,1);
     newBackground.splice(result.destination.index, 0, reorderedBackground);
+    const reorderedItems = newBackground.map((item, index) => ({
+      ...item,
+      fbg_order: index + 1
+    }));
 
-    setBackground(newBackground);
+    // Ensure ordering by social_order before updating state
+    reorderedItems.sort((a, b) => a.fbg_order - b.fbg_order);
+
+    setBackground(reorderedItems);
   };
 
   const openMediaLibrary = (backgroundId, field) => {
@@ -158,6 +162,7 @@ const FacultyFieldBackground = forwardRef(({ formData = {}, setFormData = {}, f_
               const matched = imgData.data?.find(img => img.image_id === item.fbg_img_id);
               return {
                 fbg_id: item.fbg_id,
+                id: item.fbg_id?.toString(),
                 title: `University ${item.fbg_order || 1}`,
                 fbg_name: item.fbg_name || "",
                 fbg_img: matched ? `${API}/storage/uploads/${matched.img}` : null,

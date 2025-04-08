@@ -112,6 +112,7 @@ const FacultyFieldContactInfo = forwardRef(({ f_id }, ref) => {
                         const formatted = result.data.map(item => ({
                             fc_id: item.fc_id,
                             f_id: item.f_id,
+                            id: item.fc_id?.toString(),
                             title: `Contact info ${item.fc_order || 1}`,
                             fc_name: item.fc_name || '',
                             fc_order: item.fc_order || 0,
