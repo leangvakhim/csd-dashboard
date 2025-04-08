@@ -108,11 +108,11 @@ const FacultyFieldSocial = forwardRef(({ formData = {}, setFormData = {}, f_id }
                         const imgRes = await fetch(`${API_ENDPOINTS.getImages}`);
                         const imgData = await imgRes.json();
 
-                        const formatted = result.data.map(item => {
+                        const formatted = result.data.map((item, index) => {
                             const matched = imgData.data?.find(img => img.image_id === item.social_img);
                             return {
                                 id: item.social_id?.toString(),
-                                title: `Social ${item.social_order || 1}`,
+                                title: `Social ${index + 1}`,
                                 social_link: item.social_link || '',
                                 social_img: matched ? `${API}/storage/uploads/${matched.img}` : null,
                                 social_img_id: item.social_img || null,

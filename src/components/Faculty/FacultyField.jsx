@@ -303,29 +303,25 @@ const FacultyField = () => {
         }
         // Perform reorder
         const reorderPayload = filteredBG
-        .filter(item => typeof item.fbg_id === 'number')
+        .filter(item => typeof item.fbg_id === "number")
         .map(item => ({
             fbg_id: item.fbg_id,
-            fbg_order: item.fbg_order
+            fbg_order: item.fbg_order,
         }));
         console.log("Reordering backgrounds with payload:", reorderPayload);
 
-        try {
-            const response = await axios.post(API_ENDPOINTS.updateFacultyBGOrder, reorderPayload, {
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
-                }
-            });
-            console.log("Reorder successful:", response.data);
-        } catch (error) {
-            console.error("Detailed error:", {
-                message: error.message,
-                response: error.response?.data,
-                status: error.response?.status,
-                config: error.config
-            });
-            throw error;
+        if (reorderPayload.length > 0) {
+            console.log("🔃 Reordering contacts:", reorderPayload);
+            try {
+                await axios.post(API_ENDPOINTS.updateFacultyBGOrder, reorderPayload, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                    },
+                });
+            } catch (error) {
+                console.error("Error reordering contacts:", error);
+            }
         }
     };
 
