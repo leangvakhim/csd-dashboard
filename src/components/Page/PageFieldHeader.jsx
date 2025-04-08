@@ -1,7 +1,7 @@
 import React, {useEffect} from 'react'
 import { useNavigate } from 'react-router-dom'
 
-const PageFieldHeader = () => {
+const PageFieldHeader = ({onSave}) => {
 
     const navigate = useNavigate();
 
@@ -83,6 +83,7 @@ const PageFieldHeader = () => {
 
                 <div className="flex items-center gap-4">
                     <button
+                        onClick={onSave}
                         className="cursor-pointer bg-blue-600 !text-gray-100 font-medium px-4 py-2 rounded hover:bg-blue-700"
                         aria-current="page"
                     >

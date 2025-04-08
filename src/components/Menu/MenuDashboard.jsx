@@ -8,6 +8,7 @@ const MenuDashboard = () => {
     const [menuItems, setMenuItems] = useState([]);
     const [selectedItem, setSelectedItem] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [pageOptions, setPageOptions] = useState([]);
 
     const handleEdit = (item) => {
         setSelectedItem(item);
@@ -25,6 +26,18 @@ const MenuDashboard = () => {
             }
         };
 
+        const fetchPages = async () => {
+            try {
+                const res = await axios.get(API_ENDPOINTS.getPage);
+                if (res.data && res.data.data) {
+                    setPageOptions(res.data.data);
+                }
+            } catch (err) {
+                console.error('❌ Failed to fetch pages:', err);
+            }
+        };
+
+        fetchPages();
         fetchMenuItems();
     }, []);
 
@@ -117,7 +130,9 @@ const MenuDashboard = () => {
                             <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
                                 {item.title}
                             </th>
-                            <td className="px-6 py-4">N/A</td>
+                            <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
+                                {pageOptions.find(page => page.p_menu === item.menu_id)?.p_title || 'N/A'}
+                            </td>
                             <td className="px-6 py-4">
                                 {{
                                     1: 'English',
