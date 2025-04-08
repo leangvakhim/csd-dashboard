@@ -15,51 +15,33 @@ const FacultyFieldBackground = forwardRef(({ formData = {}, setFormData = {}, f_
       id: "1",
       title: "Univeristy 1",
       fbg_img: null,
-      display: true,
-      fbg_name: "",
+      display: 0,
+      fbg_name: null,
     },
   ]);
 
   useImperativeHandle(ref, () => ({
     getData: () => {
-      // Check if background data is available and properly loaded
-      if (!background || background.length === 0) {
-        console.warn("Background data is empty or not loaded yet.");
-        return [];  // Return an empty array if no background data is available
-      }
-  
-      // Log the background data for debugging purposes
-      console.log("Background data before processing:", background);
-  
-      // Map over the background data and apply necessary transformations
-      const backgroundData = background.map((item, index) => {
-        // Log individual item to check the structure
-        console.log("Processing item:", item);
-  
-        // If fbg_img is missing, use a default value (e.g., 'default-image.jpg')
-        const fbg_img = item.fbg_img || 'default-image.jpg';  // Set a default image if undefined
-  
+      // Log the background data before mapping
+      const sorted = [...background].sort((a, b) => a.fbg_order - b.fbg_order);
+      return sorted.map((item, index) => {
         const baseItem = {
-          id: item.id,
-          f_id: f_id,  // Assuming f_id is available in your scope
-          fbg_img: fbg_img,  // Use the fallback or existing image
-          fbg_name: item.fbg_name || 'Untitled',  // Default to 'Untitled' if name is missing
-          display: item.display ?? 1,  // Default display to 1 if not provided
-          active: item.active ?? 1,   // Default active to 1 if not provided
-          fbg_order: index + 1,       // Adjust order based on the index (1-based index)
+          f_id: f_id,
+          fbg_img: item.fbg_img,
+          fbg_name: item.fbg_name,
+          display: item.display ?? 1,
+          active: item.active ?? 1,
+          fbg_order: index + 1,
         };
-  
+        if (typeof item.fbg_id === 'number') {
+          baseItem.fbg_id = item.fbg_id;
+        }
         return baseItem;
       });
-  
-      // Log the processed backgroundData for debugging
-      console.log("Processed backgroundData:", backgroundData);
-  
-      return backgroundData;  // Return the processed background data
     }
   }));
-  
-  
+
+
 
   const handleDeleteBackground = async (id) => {
     if (!window.confirm("Are you sure you want to delete this background?"));
@@ -83,7 +65,7 @@ const FacultyFieldBackground = forwardRef(({ formData = {}, setFormData = {}, f_
       title: `University ${background.length + 1}`,
       image: null,
       display: true,
-      fbg_name: "",
+      fbg_name: null,
     };
 
     setBackground((prevItems) => [...prevItems, newBackground]);
@@ -218,8 +200,8 @@ const FacultyFieldBackground = forwardRef(({ formData = {}, setFormData = {}, f_
                       {(provided) => (
                         <li
                           className={`below-border ${index === backgrounds.length - 1
-                              ? "border-none"
-                              : ""
+                            ? "border-none"
+                            : ""
                             }`}
                           ref={provided.innerRef}
                           {...provided.draggableProps}
@@ -257,7 +239,7 @@ const FacultyFieldBackground = forwardRef(({ formData = {}, setFormData = {}, f_
                                     stroke="currentColor"
                                     className="size-6 cursor-pointer"
                                     onClick={() =>
-                                      handleDeleteBackground(backgrounds.id)
+                                      handleDeleteBackground(backgrounds.fbg_id)
                                     }
                                   >
                                     <path
@@ -269,8 +251,8 @@ const FacultyFieldBackground = forwardRef(({ formData = {}, setFormData = {}, f_
                                 </div>
                                 <span
                                   className={`cursor-pointer shrink-0 transition-transform duration-300 ${rotatedStates[backgrounds.id]
-                                      ? "rotate-180"
-                                      : ""
+                                    ? "rotate-180"
+                                    : ""
                                     }`}
                                 >
                                   <svg
@@ -442,7 +424,7 @@ const FacultyFieldBackground = forwardRef(({ formData = {}, setFormData = {}, f_
                                   <label className="toggle-switch mb-1">
                                     <input
                                       type="checkbox"
-                                      checked={background.display}
+                                      checked={backgrounds.display}
                                       onChange={(e) => {
                                         const updatedSocials = [
                                           ...background,

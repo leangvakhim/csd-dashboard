@@ -5,7 +5,8 @@ import axios from 'axios';
 import { useEffect } from 'react';
 
 const FacultyFieldContactInfo = forwardRef(({ f_id }, ref) => {
-    const [rotatedStatesContactinfo, setRotatedStatesContactinfo] = useState({});
+
+    const [rotatedStates, setRotatedStates] = useState({});
     const [contactinfo, setContactinfo] = useState([
         {
             id: "1",
@@ -43,19 +44,19 @@ const FacultyFieldContactInfo = forwardRef(({ f_id }, ref) => {
 
 
 
-    const handleDeleteContactinfo = async (fc_id) => {
+    const handleDeleteContactinfo = async (id) => {
         const confirmDelete = window.confirm("Are you sure you want to delete this contact?");
         if (!confirmDelete) return;
-        console.log("dfghj", fc_id)
+        console.log("dfghj", id)
 
         try {
-            await axios.put(`${API_ENDPOINTS.deleteFacultyContact}/${fc_id}/`);
+            await axios.put(`${API_ENDPOINTS.deleteFacultyContact}/${id}/`);
 
             // Update contact state without reloading the page
             setContactinfo(prevContactinfo =>
                 prevContactinfo.map(contact =>
-                    contact.id === fc_id
-                        ? { ...contact, active: 0 } // Mark as deleted
+                    contact.id === id
+                        ? { ...contact, active: contact.active ? 0 : 1 } // Mark as deleted
                         : contact
                 )
             );
@@ -82,8 +83,8 @@ const FacultyFieldContactInfo = forwardRef(({ f_id }, ref) => {
 
     };
 
-    const toggleRotationContactinfo = (id) => {
-        setRotatedStatesContactinfo((prev) => ({
+    const toggleRotation = (id) => {
+        setRotatedStates((prev) => ({
             ...prev,
             [id]: !prev[id],
         }));
@@ -151,7 +152,7 @@ const FacultyFieldContactInfo = forwardRef(({ f_id }, ref) => {
                                                 {/* Contact Info  */}
                                                 <details className='group [&_summary::-webkit-details-marker]:hidden !border-b-1 '>
                                                     <summary className='cursor-pointer flex justify-between rounded-lg px-2 py-2 pl-5 w-full '
-                                                        onClick={() => toggleRotationContactinfo(contactinfos.id)}
+                                                        onClick={() => toggleRotation(contactinfos.id)}
                                                     >
                                                         <div className="flex ">
                                                             <div className="cursor-grab my-auto"
@@ -171,13 +172,13 @@ const FacultyFieldContactInfo = forwardRef(({ f_id }, ref) => {
                                                                     strokeWidth={1.5}
                                                                     stroke="currentColor"
                                                                     className="size-6 cursor-pointer"
-                                                                    onClick={() => handleDeleteContactinfo(contactinfos.fc_id)}
+                                                                    onClick={() => handleDeleteContactinfo(contactinfos.id)}
                                                                 >
                                                                     <path strokeLinecap="round" strokeLinejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
                                                                 </svg>
                                                             </div>
                                                             <span
-                                                                className={`cursor-pointer shrink-0 transition-transform duration-300 ${rotatedStatesContactinfo[contactinfos.id] ? "rotate-180" : ""
+                                                                className={`cursor-pointer shrink-0 transition-transform duration-300 ${rotatedStates[contactinfos.id] ? "rotate-180" : ""
                                                                     }`}
                                                             >
                                                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
