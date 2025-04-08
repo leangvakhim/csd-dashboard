@@ -303,7 +303,7 @@ const FacultyField = () => {
             await saveFaculty();
             await saveFacultySocial();
             await saveFacultyContact();
-            await saveFacultyBG();
+            // await saveFacultyBG();
             alert("Faculty information saved successfully!");
         } catch (err) {
             if (err.response?.data?.errors) {

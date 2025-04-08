@@ -1,5 +1,5 @@
-// const API = "https://52.221.196.157";
-const API = "http://127.0.0.1:8000";
+const API = "https://52.221.196.157";
+// const API = "http://127.0.0.1:8000";
 const API_BASEURL = `${API}/api`;
 
 const API_ENDPOINTS = {
@@ -53,6 +53,7 @@ const API_ENDPOINTS = {
 
     // faculty-contact
     getFacultyContact: `${API_BASEURL}/faculty-contact`,
+    getFacultyContactByFaculty: `${API_BASEURL}/faculty-contact/by-faculty`,
     createFacultyContact: `${API_BASEURL}/faculty-contact/create`,
     updateFacultyContact: `${API_BASEURL}/faculty-contact/update`,
     deleteFacultyContact: `${API_BASEURL}/faculty-contact/visibility`,
@@ -60,6 +61,7 @@ const API_ENDPOINTS = {
 
     // faculty-bg
     getFacultyBG: `${API_BASEURL}/faculty-bg`,
+    getFacultyBGByFaculty: `${API_BASEURL}/faculty-bg/by-faculty`,
     createFacultyBG: `${API_BASEURL}/faculty-bg/create`,
     updateFacultyBG: `${API_BASEURL}/faculty-bg/update`,
     deleteFacultyBG: `${API_BASEURL}/faculty-bg/visibility`,
@@ -67,6 +69,7 @@ const API_ENDPOINTS = {
 
     // faculty-info
     getFacultyInfo: `${API_BASEURL}/faculty-info`,
+    getFacultyInfoByFaculty: `${API_BASEURL}/faculty-info/by-faculty`,
     createFacultyInfo: `${API_BASEURL}/faculty-info/create`,
     updateFacultyInfo: `${API_BASEURL}/faculty-info/update`,
     deleteFacultyInfo: `${API_BASEURL}/faculty-info/visibility`,
