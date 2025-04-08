@@ -4,8 +4,7 @@ import MediaLibraryModal from "../MediaLibraryModal";
 import { API_ENDPOINTS } from "../../service/APIConfig";
 import axios from "axios";
 
-const FacultyFieldBackground = forwardRef(
-  ({ formData = {}, setFormData = {}, f_id }, ref) => {
+const FacultyFieldBackground = forwardRef(({formData= {}, setFormData ={}, f_id }, ref) => {
     const [rotatedStates, setRotatedStates] = useState({});
     const [currentBackgroundId, setCurrentBackgroundId] = useState(null);
     const [isMediaLibraryOpen, setMediaLibraryOpen] = useState(false);
@@ -25,8 +24,9 @@ const FacultyFieldBackground = forwardRef(
           id: item.id,
           fbg_img: item.fbg_img,
           fbg_name: item.fbg_name,
-          title: item.title,
           display: item.display,
+          fbg_img_id: item.fbg_img_id,
+          active: item.active,
         })),
     }));
 
@@ -37,7 +37,7 @@ const FacultyFieldBackground = forwardRef(
         await axios.put(`${API_ENDPOINTS.deleteFacultyBG}/${id}`);
         setBackground((prevItems) =>
           prevItems.map((item) =>
-            item.id === id ? { ...item, display: false } : item
+            item.id === id ? { ...item, active: item.active ? 0 : 1  } : item
           )
         );
         window.location.reload();
@@ -55,12 +55,7 @@ const FacultyFieldBackground = forwardRef(
         fbg_name: "",
       };
 
-      try {
-        await axios.post(`${API_ENDPOINTS.createFacultyBG}`);
-        setBackground((prev) => [...prev, newBackground]);
-      } catch (error) {
-        console.error("Error adding background:", error);
-      }
+      setBackground((prevItems) => [...prevItems, newBackground]);
     };
 
     const toggleRotation = (id) => {
@@ -245,7 +240,8 @@ const FacultyFieldBackground = forwardRef(
                                   <div className="mt-2">
                                     <input
                                       type="text"
-                                      value={formData.fbg_name}
+                                      value={backgrounds.fbg_name}
+                                      placeholder="Background name"
                                       // onChange={(e) => setFormData(prev => ({ ...prev, fbg_name: e.target.value }))}
                                       onChange={(e) => {
                                         const newBackgrounds = [...background];

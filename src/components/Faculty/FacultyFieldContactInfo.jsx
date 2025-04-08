@@ -3,33 +3,40 @@ import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import { API, API_ENDPOINTS } from '../../service/APIConfig';
 import axios from 'axios';
 
-const FacultyFieldContactInfo = forwardRef(({ formData = {}, setFormData = {}, f_id }, ref) => {
+const FacultyFieldContactInfo = forwardRef(({ f_id }, ref) => {
     const [rotatedStatesContactinfo, setRotatedStatesContactinfo] = useState({});
     const [contactinfo, setContactinfo] = useState([
         {
             id: "1",
             f_id: f_id,
-            fc_title: "Contact info 1",
-            fc_name: "Contact Name 1",
-            display: true,
+            title: "Contact info 1",
+            fc_name: null,
+            display: 0,
+            active: 1,
         },
     ]);
 
     useImperativeHandle(ref, () => ({
         getData: () => {
-            const sortedContactinfo = [...contactinfo].sort((a, b) => a.id - b.id);
-            const contactInfoData = sortedContactinfo.map((item) => ({
-                fc_title: item.fc_title,
+            const sortedContactinfo = [...contactinfo].sort((a, b) => a.fc_order - b.fc_order);
+            const contactInfoData = sortedContactinfo.map((item, index) => ({
                 f_id: item.f_id,
+                fc_order: index + 1,
                 fc_name: item.fc_name,
                 display: item.display,
-                id: item.id,
+                active: item.active,
             }));
+            if (typeof fc_id !== 'number') {    
+                contactInfoData.forEach(item => {
+                    item.fc_id = item.id;
+                });
+            }
             return {
-                contactinfo: contactInfoData,
+                contactinfo: contactInfoData
             };
         }
     }));
+
 
     const handleDeleteContactinfo = async (id) => {
         if (!window.confirm("Are you sure you want to delete of this contact?")) return;
@@ -38,7 +45,7 @@ const FacultyFieldContactInfo = forwardRef(({ formData = {}, setFormData = {}, f
             await axios.put(`${API}${API_ENDPOINTS.deleteFacultyContact}/${id}/`)
             setContactinfo((prevContactinfo) =>
                 prevContactinfo.map((contact) =>
-                    contact.id === id ? { ...contact, display: false } : contact
+                    contact.id === id ? { ...contact, active: contact.active ? 0 : 1 } : contact
                 )
             );
             window.location.reload();
@@ -50,29 +57,16 @@ const FacultyFieldContactInfo = forwardRef(({ formData = {}, setFormData = {}, f
     };
 
     const handleAddContactinfo = async () => {
-        if(!f_id) {
-            console.error("Faculty ID is not available");
-            return;
-        }
+
         const newContactinfo = {
             id: `${Date.now()}`,
-            fc_title: `Contact info ${contactinfo.length + 1}`,
-            display: true,
-           
+            f_id: f_id,
+            title: `Contact info ${contactinfo.length + 1}`,
+            fc_name: null,
+            display: 0,
+            active: 1,
         };
-        try {
-            await axios.post(`${API}${API_ENDPOINTS.createFacultyContact}`)
-                .then((response) => {
-                    console.log("Contact info created successfully:", response.data);
-                    setContactinfo((prevContactinfo) => [...prevContactinfo, newContactinfo]);
-                })
-                .catch((error) => {
-                    console.error("Error creating contact info:", error);
-                });
-        }
-        catch (error) {
-            console.error("Error creating contact info:", error);
-        }
+        setContactinfo((prevContactinfo) => [...prevContactinfo, newContactinfo]);
 
     };
 
@@ -127,7 +121,7 @@ const FacultyFieldContactInfo = forwardRef(({ formData = {}, setFormData = {}, f
                                                                     <path d="M40 352l48 0c22.1 0 40 17.9 40 40l0 48c0 22.1-17.9 40-40 40l-48 0c-22.1 0-40-17.9-40-40l0-48c0-22.1 17.9-40 40-40zm192 0l48 0c22.1 0 40 17.9 40 40l0 48c0 22.1-17.9 40-40 40l-48 0c-22.1 0-40-17.9-40-40l0-48c0-22.1 17.9-40 40-40zM40 320c-22.1 0-40-17.9-40-40l0-48c0-22.1 17.9-40 40-40l48 0c22.1 0 40 17.9 40 40l0 48c0 22.1-17.9 40-40 40l-48 0zM232 192l48 0c22.1 0 40 17.9 40 40l0 48c0 22.1-17.9 40-40 40l-48 0c-22.1 0-40-17.9-40-40l0-48c0-22.1 17.9-40 40-40zM40 160c-22.1 0-40-17.9-40-40L0 72C0 49.9 17.9 32 40 32l48 0c22.1 0 40 17.9 40 40l0 48c0 22.1-17.9 40-40 40l-48 0zM232 32l48 0c22.1 0 40 17.9 40 40l0 48c0 22.1-17.9 40-40 40l-48 0c-22.1 0-40-17.9-40-40l0-48c0-22.1 17.9-40 40-40z"></path>
                                                                 </svg>
                                                             </div>
-                                                            <span className="ml-2 text-lg">{contactinfos.fc_title}</span>
+                                                            <span className="ml-2 text-lg">{contactinfos.title}</span>
                                                         </div>
                                                         <span className=' shrink-0 transition-transform duration-500 group-open:-rotate-0 flex gap-2'>
                                                             <div className='block'>
@@ -157,19 +151,25 @@ const FacultyFieldContactInfo = forwardRef(({ formData = {}, setFormData = {}, f
                                                     {/* Contact Info title */}
                                                     <div className="grid grid-cols-1 gap-4 px-4 py-2">
                                                         <div className="flex-1">
-                                                            <label className=" block text-xl font-medium leading-6 text-white-900">
+                                                            <label className="block text-xl font-medium leading-6 text-white-900">
                                                                 Title
                                                             </label>
                                                             <div className="mt-2">
                                                                 <input
                                                                     type="text"
-                                                                    // value={contactinfos.title}
-                                                                    value={formData.fc_name}
-                                                                    onChange={(e) => setFormData(prev => ({ ...prev, fc_name: e.target.value }))}
+                                                                    value={contactinfo[index]?.fc_name || ''} 
+                                                                    onChange={(e) => {
+                                                                        const updatedContactinfo = [...contactinfo];  // Create a new copy of the array
+                                                                        if (updatedContactinfo[index]) {
+                                                                            updatedContactinfo[index].fc_name = e.target.value;  // Safely update the value
+                                                                            setContactinfo(updatedContactinfo);  // Update state with new array
+                                                                        }
+                                                                    }}
                                                                     className="!border-gray-300 block w-full border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
                                                                 />
                                                             </div>
                                                         </div>
+
                                                     </div>
                                                     {/* Display button */}
                                                     <div className="grid grid-cols-1 gap-4 px-4 py-2">
@@ -181,8 +181,12 @@ const FacultyFieldContactInfo = forwardRef(({ formData = {}, setFormData = {}, f
                                                                 <label className="toggle-switch mb-1">
                                                                     <input
                                                                         type="checkbox"
-                                                                        checked={formData.display}
-                                                                        onChange={(e) => setFormData({ ...formData, display: e.target.checked })}
+                                                                        checked={contactinfo.display}
+                                                                        onChange={(e) => {
+                                                                            const updatedSocials = [...contactinfo];
+                                                                            updatedSocials[index].display = e.target.checked ? 1 : 0;
+                                                                            setContactinfo(updatedSocials);
+                                                                        }}
                                                                     />
                                                                     <span className="slider"></span>
                                                                 </label>

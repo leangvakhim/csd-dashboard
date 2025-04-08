@@ -9,13 +9,11 @@ import { API_ENDPOINTS } from '../../service/APIConfig';
 const FacultyFieldBody = ({
     formData,
     setFormData,
-    subtitleContent,
-    setSubtitleContent,
     onImageSelect,
     socialRef,
     contactRef,
-    backgroundRef,
-    infoRef
+    backgroundRef
+   
 }) => {
     const [activeTab, setActiveTab] = useState(formData.lang || 1);
     const [isMediaLibraryOpen, setMediaLibraryOpen] = useState(false);
