@@ -159,8 +159,6 @@ const FacultyField = () => {
             return;
         }
         const contactData = contactRef.current?.getData?.() || [];
-        // const contactinfo = Array.isArray(contactData.contactinfo) ? contactData.contactinfo : [];
-        // const socialData = socialRef.current?.getData?.() || [];
 
         // Remove duplicates based on fc_name and fc_id (id is used for existing contacts)
         const seen = new Set();
@@ -175,7 +173,7 @@ const FacultyField = () => {
 
         // New contacts (no fc_id)
         const newContacts = filteredContacts.filter(item => typeof item.fc_id !== "number").map(item => ({
-            fc_order: item.fc_order || 0,
+            fc_order: item.fc_order,
             fc_name: item.fc_name,
             display: item.display ? 1 : 0,
             active: 1,
@@ -188,17 +186,18 @@ const FacultyField = () => {
         console.log("🔄 Contacts to update:", updateContacts);
 
         for (const item of updateContacts) {
-            console.log(`🔧 Updating contact ID ${item.fc_id}`, item);
             const updatePayload = {
-                fc_order: item.fc_order,
+                fc_order: item.fc_order, // Potential issue: no fallback
                 fc_name: item.fc_name,
                 display: item.display ?? 1,
                 active: item.active ?? 1,
                 fc_f: f_id, // Faculty ID
             };
+            console.log("srtyut", updatePayload);
             try {
                 console.log("🔄 Update Payload:", updatePayload);
                 await axios.post(`${API_ENDPOINTS.updateFacultyContact}/${item.fc_id}`, updatePayload);
+
 
             } catch (error) {
                 console.error("Error updating contact:", error);
@@ -206,10 +205,11 @@ const FacultyField = () => {
         }
 
         // Create new contacts
+
         if (newContacts.length > 0) {
             const createPayload = {
                 f_id, // Faculty ID
-                contact_faculty: newContacts,
+                fc_f: newContacts, // Potential issue: Key name
             };
             try {
                 await axios.post(API_ENDPOINTS.createFacultyContact, createPayload);
@@ -249,44 +249,55 @@ const FacultyField = () => {
             console.warn("Cannot save background: missing faculty ID.");
             return;
         }
-
+    
         const bgData = backgroundRef.current?.getData?.() || [];
-        const bgList = Array.isArray(bgData) ? bgData : [];
-
-        const newBGs = bgList.filter(item => typeof item.fbg_id !== 'number').map(item => ({
+        const seen = new Set();
+        const filteredBG = Array.isArray(bgData)
+            ? bgData.filter(item => {
+                const key = `${item.fbg_order}-${item.fbg_img}`;
+                if (seen.has(key)) return false;
+                seen.add(key);
+                return item.social_link || item.social_img;
+            })
+            : [];
+    
+        const newBGs = filteredBG.filter(item => typeof item.fbg_id !== 'number').map(item => ({
             fbg_order: item.fbg_order,
-            fbg_img: item.fbg_img,
+            fbg_img: item.fbg_img || 'default-image.jpg',  // Ensure fbg_img is a string
             display: item.display ?? 1,
             active: item.active ?? 1
         }));
-
-        const updateBGs = bgList.filter(item => typeof item.fbg_id === 'number');
-
+    
+        const updateBGs = filteredBG.filter(item => typeof item.fbg_id === 'number');
+    
         for (const item of updateBGs) {
             const payload = {
                 fbg_order: item.fbg_order,
-                fbg_img: item.fbg_img,
+                fbg_img: item.fbg_img || 'default-image.jpg',  // Ensure fbg_img is a string
                 display: item.display ?? 1,
                 active: item.active ?? 1,
                 fbg_f: f_id,
             };
+            console.log("Updating background with payload:", payload);
             await axios.post(`${API_ENDPOINTS.updateFacultyBG}/${item.fbg_id}`, payload);
         }
-
+    
         if (newBGs.length > 0) {
             const payload = {
                 f_id,
-                faculty_bg: newBGs
+                fbg_f: newBGs
             };
+            console.log("Creating new backgrounds with payload:", payload);
             await axios.post(API_ENDPOINTS.createFacultyBG, payload);
         }
-
+    
         const reorderPayload = updateBGs.map(item => ({
             fbg_id: item.fbg_id,
             fbg_order: item.fbg_order
         }));
-
+    
         if (reorderPayload.length > 0) {
+            console.log("Reordering backgrounds with payload:", reorderPayload);
             await axios.post(API_ENDPOINTS.updateFacultyBGOrder, reorderPayload, {
                 headers: {
                     'Content-Type': 'application/json',
@@ -295,6 +306,9 @@ const FacultyField = () => {
             });
         }
     };
+    
+    
+    
 
 
 
@@ -302,8 +316,8 @@ const FacultyField = () => {
         try {
             await saveFaculty();
             await saveFacultySocial();
-            await saveFacultyContact();
-            // await saveFacultyBG();
+            // await saveFacultyContact();
+            await saveFacultyBG();
             alert("Faculty information saved successfully!");
         } catch (err) {
             if (err.response?.data?.errors) {

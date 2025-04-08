@@ -2,6 +2,7 @@ import React, { forwardRef, useImperativeHandle, useState } from 'react';
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import { API, API_ENDPOINTS } from '../../service/APIConfig';
 import axios from 'axios';
+import { useEffect } from 'react';
 
 const FacultyFieldContactInfo = forwardRef(({ f_id }, ref) => {
     const [rotatedStatesContactinfo, setRotatedStatesContactinfo] = useState({});
@@ -18,43 +19,54 @@ const FacultyFieldContactInfo = forwardRef(({ f_id }, ref) => {
 
     useImperativeHandle(ref, () => ({
         getData: () => {
-            const sortedContactinfo = [...contactinfo].sort((a, b) => a.fc_order - b.fc_order);
-            const contactInfoData = sortedContactinfo.map((item, index) => ({
-                f_id: item.f_id,
-                fc_order: index + 1,
-                fc_name: item.fc_name,
-                display: item.display,
-                active: item.active,
-            }));
-            if (typeof fc_id !== 'number') {    
-                contactInfoData.forEach(item => {
-                    item.fc_id = item.id;
-                });
-            }
-            return {
-                contactinfo: contactInfoData
-            };
+            const sortedContactinfo = [...contactinfo].sort((a, b) => a.fc_order - b.fc_order || 0);
+            const contactInfoData = sortedContactinfo.map((item, index) => {
+                const baseItem = {
+                    f_id: item.f_id,
+                    fc_order: index + 1,
+                    fc_name: item.fc_name,
+                    display: item.display,
+                    active: item.active,
+                };
+
+                if (typeof item.fc_id === 'number') {
+                    baseItem.fc_id = item.fc_id;
+                }
+
+                return baseItem;
+            });
+
+            console.log("📦 Valid contactData:", contactInfoData);
+            return contactInfoData;
         }
     }));
 
 
-    const handleDeleteContactinfo = async (id) => {
-        if (!window.confirm("Are you sure you want to delete of this contact?")) return;
+
+    const handleDeleteContactinfo = async (fc_id) => {
+        const confirmDelete = window.confirm("Are you sure you want to delete this contact?");
+        if (!confirmDelete) return;
+        console.log("dfghj", fc_id)
 
         try {
-            await axios.put(`${API}${API_ENDPOINTS.deleteFacultyContact}/${id}/`)
-            setContactinfo((prevContactinfo) =>
-                prevContactinfo.map((contact) =>
-                    contact.id === id ? { ...contact, active: contact.active ? 0 : 1 } : contact
+            await axios.put(`${API_ENDPOINTS.deleteFacultyContact}/${fc_id}/`);
+
+            // Update contact state without reloading the page
+            setContactinfo(prevContactinfo =>
+                prevContactinfo.map(contact =>
+                    contact.id === fc_id
+                        ? { ...contact, active: 0 } // Mark as deleted
+                        : contact
                 )
             );
+
+            console.log("✅ Contact info deleted successfully.");
             window.location.reload();
-            console.log("Contact info deleted successfully");
-        }
-        catch (error) {
-            console.error("Error deleting contact info:", error);
+        } catch (error) {
+            console.error("❌ Error deleting contact info:", error);
         }
     };
+
 
     const handleAddContactinfo = async () => {
 
@@ -86,6 +98,33 @@ const FacultyFieldContactInfo = forwardRef(({ f_id }, ref) => {
 
         setContactinfo(newContactinfo);
     };
+
+    useEffect(() => {
+        if (!f_id) {
+            console.error("❌ f_id is undefined or missing.");
+        }
+        if (f_id) {
+            fetch(`${API_ENDPOINTS.getFacultyContactByFaculty}/${f_id}`)
+                .then(res => res.json())
+                .then(result => {
+                    if (Array.isArray(result.data)) {
+                        const formatted = result.data.map(item => ({
+                            fc_id: item.fc_id,
+                            f_id: item.f_id,
+                            title: `Contact info ${item.fc_order || 1}`,
+                            fc_name: item.fc_name || '',
+                            fc_order: item.fc_order || 0,
+                            display: item.display ?? 1,
+                            active: item.active ?? 1
+                        }));
+                        console.log(f_id)
+                        setContactinfo(formatted);
+                    }
+                })
+                .catch(err => console.error("❌ Error fetching faculty contact info:", err));
+        }
+    }, [f_id]);
+
 
     return (
         <div className="flex-1">
@@ -132,7 +171,7 @@ const FacultyFieldContactInfo = forwardRef(({ f_id }, ref) => {
                                                                     strokeWidth={1.5}
                                                                     stroke="currentColor"
                                                                     className="size-6 cursor-pointer"
-                                                                    onClick={() => handleDeleteContactinfo(contactinfos.id)}
+                                                                    onClick={() => handleDeleteContactinfo(contactinfos.fc_id)}
                                                                 >
                                                                     <path strokeLinecap="round" strokeLinejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
                                                                 </svg>
@@ -157,7 +196,7 @@ const FacultyFieldContactInfo = forwardRef(({ f_id }, ref) => {
                                                             <div className="mt-2">
                                                                 <input
                                                                     type="text"
-                                                                    value={contactinfo[index]?.fc_name || ''} 
+                                                                    value={contactinfo[index]?.fc_name || ''}
                                                                     onChange={(e) => {
                                                                         const updatedContactinfo = [...contactinfo];  // Create a new copy of the array
                                                                         if (updatedContactinfo[index]) {
@@ -181,11 +220,11 @@ const FacultyFieldContactInfo = forwardRef(({ f_id }, ref) => {
                                                                 <label className="toggle-switch mb-1">
                                                                     <input
                                                                         type="checkbox"
-                                                                        checked={contactinfo.display}
+                                                                        checked={contactinfos.display}
                                                                         onChange={(e) => {
-                                                                            const updatedSocials = [...contactinfo];
-                                                                            updatedSocials[index].display = e.target.checked ? 1 : 0;
-                                                                            setContactinfo(updatedSocials);
+                                                                            const updatedContactinfo = [...contactinfo];
+                                                                            updatedContactinfo[index].display = e.target.checked ? 1 : 0;
+                                                                            setContactinfo(updatedContactinfo);
                                                                         }}
                                                                     />
                                                                     <span className="slider"></span>
