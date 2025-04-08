@@ -158,38 +158,38 @@ const FacultyField = () => {
             console.warn("Cannot save contacts: missing faculty ID.");
             return;
         }
-    
         const contactData = contactRef.current?.getData?.() || {};
-        const contactinfo = contactData.contactinfo || [];
+        const contactinfo = Array.isArray(contactData.contactinfo) ? contactData.contactinfo : [];
     
         // Remove duplicates based on fc_name and fc_id (id is used for existing contacts)
         const seen = new Set();
         const filteredContacts = Array.isArray(contactinfo)
             ? contactinfo.filter(item => {
-                const key = `${item.fc_name}-${item.fc_id}`;
+                const key = `${item.fc_order}-${item.fc_id}`;
                 if (seen.has(key)) return false;
                 seen.add(key);
-                return item.fc_name; // Ensure it's not an empty or undefined name
+                return item.fc_name;
             })
             : [];
     
         // New contacts (no fc_id)
-        const newContacts = filteredContacts.filter(item => !item.fc_id).map(item => ({
+        const newContacts = filteredContacts.filter(item => typeof item.fc_id !== "number").map(item => ({
             fc_order: item.fc_order || 0,
             fc_name: item.fc_name,
             display: item.display ? 1 : 0,
             active: 1,
         }));
-    
+        console.log("🔍 Filtered contacts:", filteredContacts);
         console.log("🆕 New contacts to create:", newContacts);
     
         // Existing contacts (with fc_id)
-        const updateContacts = filteredContacts.filter(item => item.fc_id);
-    
+        const updateContacts = filteredContacts.filter(item => typeof item.fc_id == "number");
+        console.log("🔄 Contacts to update:", updateContacts);
+        
         for (const item of updateContacts) {
             console.log(`🔧 Updating contact ID ${item.fc_id}`, item);
             const updatePayload = {
-                fc_order: item.fc_order || 0,
+                fc_order: item.fc_order,
                 fc_name: item.fc_name,
                 display: item.display ?? 1,
                 active: item.active ?? 1,
@@ -208,7 +208,7 @@ const FacultyField = () => {
             const createPayload = {
                 f_id, // Faculty ID
                 contact_faculty: newContacts, 
-            };
+            };            
             try {
                 await axios.post(API_ENDPOINTS.createFacultyContact, createPayload);
                 console.log("🆕 Create Payload:", createPayload);
@@ -219,7 +219,7 @@ const FacultyField = () => {
     
         // Reorder contacts if needed
         const reorderPayload = filteredContacts
-            .filter(item => item.fc_id) // Only reorder existing contacts with fc_id
+            .filter(item => item.fc_id) 
             .map(item => ({
                 fc_id: item.fc_id,
                 fc_order: item.fc_order,
@@ -240,9 +240,6 @@ const FacultyField = () => {
         }
     };
     
-
-
-
 
     const handleSave = async () => {
         try {
