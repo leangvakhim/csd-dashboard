@@ -13,7 +13,7 @@ const FacultyFieldBody = ({
     socialRef,
     contactRef,
     backgroundRef
-   
+
 }) => {
     const [activeTab, setActiveTab] = useState(formData.lang || 1);
     const [isMediaLibraryOpen, setMediaLibraryOpen] = useState(false);

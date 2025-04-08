@@ -43,6 +43,14 @@ const API_ENDPOINTS = {
     duplicateNews: `${API_BASEURL}/news/duplicate`,
     updateNewsOrder: `${API_BASEURL}/news/reorder`,
 
+    // section
+    getSection: `${API_BASEURL}/section`,
+    getSectionByPage: `${API_BASEURL}/section/by-page`,
+    createSection: `${API_BASEURL}/section/create`,
+    updateSection: `${API_BASEURL}/section/update`,
+    deleteSection: `${API_BASEURL}/section/visibility`,
+    updateSectionOrder: `${API_BASEURL}/section/reorder`,
+
     // faculty
     getFaculty: `${API_BASEURL}/faculty`,
     createFaculty: `${API_BASEURL}/faculty/create`,

@@ -91,7 +91,7 @@ const PageDashboard = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {pageItems.map((item, index) => (
+                    {Array.isArray(pageItems) && pageItems.map((item, index) => (
                         <tr key={item.id} className="odd:bg-white even:bg-gray-50 border">
                             <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
                                 {item.p_title}

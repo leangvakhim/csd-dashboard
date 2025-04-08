@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, forwardRef } from "react";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import { TbCarouselHorizontal, TbCodeDots } from "react-icons/tb";
 import { CgWebsite } from "react-icons/cg";
@@ -285,9 +285,21 @@ const sectionOptions = [
   },
 ];
 
-const PageSection = () => {
+const PageSection = forwardRef(({ formData = {}, setFormData = {}, page_id }, pageRef) => {
   const [showSection, setShowSection] = useState(false);
   const [selectedSections, setSelectedSections] = useState([]);
+
+  React.useImperativeHandle(pageRef, () => ({
+    getSections: () => {
+      return selectedSections.map((section, index) => ({
+        sec_order: index + 1,
+        lang: formData?.lang ?? 1,
+        display: 0,
+        active: 1,
+        sec_type: section.type
+      }));
+    }
+  }));
 
   const handleAddPage = () => {
     setShowSection(!showSection);
@@ -395,6 +407,6 @@ const PageSection = () => {
       )}
     </div>
   );
-};
+});
 
 export default PageSection;
