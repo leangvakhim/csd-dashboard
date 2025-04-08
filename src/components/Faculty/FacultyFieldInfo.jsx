@@ -2,6 +2,10 @@ import React, { forwardRef, useImperativeHandle, useState } from 'react';
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import JoditEditor from 'jodit-react';
 import 'jodit/es5/jodit.css';
+import { useEffect } from 'react';
+import { API, API_ENDPOINTS } from '../../service/APIConfig';
+
+
 
 const config = {
     readonly: false,
@@ -12,33 +16,61 @@ const config = {
     },
 };
 
-const FacultyFieldInfo = forwardRef((props, ref) => {
+const FacultyFieldInfo = forwardRef((f_id, ref) => {
     const [InfoItems, setInfoItems] = useState([]);
     const [rotatedStates, setRotatedStates] = useState({});
     const [subtitleContent, setSubtitleContent] = useState('');
     const [info, setInfo] = useState([
-    {
-        id: "1",
-        title: "Information 1",
-        subtitle: "",
-        place: "",
+        {
+            id: "1",
+            f_id: f_id,
+            title: "Information 1",
+            finfo_title: '',
+            finfo_detail: '',
+            finfo_side: '',
+
         },
     ]);
 
+
+
     useImperativeHandle(ref, () => ({
-        getData: () => InfoItems
+        getData: () => {
+            // Log the background data before mapping
+            const sorted = [...info].sort((a, b) => a.finfo_order - b.finfo_order);
+            return sorted.map((item, index) => {
+                const baseItem = {
+                    f_id: f_id,
+                    finfo_title: item.finfo_title,
+                    finfo_detail: item.finfo_detail,
+                    finfo_side: item.finfo_side,
+                    display: item.display ?? 1,
+                    active: item.active ?? 1,
+                    fbg_order: index + 1,
+                };
+                if (typeof item.finfo_id === 'number') {
+                    baseItem.finfo_id = item.finfo_id;
+                }
+                return baseItem;
+            });
+        }
     }));
 
     const handleAddInfo = () => {
         const newInfo = {
             id: `${Date.now()}`,
+            f_id: f_id,
             title: `Information ${info.length + 1}`,
-            subtitle: "",
-            place: "",
+            finfo_title: '',
+            finfo_detail: '',
+            finfo_side: '',
+
         };
 
         setInfo([...info, newInfo]);
     };
+
+
 
     const toggleRotation = (id) => {
         setRotatedStates((prev) => ({
@@ -57,6 +89,30 @@ const FacultyFieldInfo = forwardRef((props, ref) => {
         setInfo(newInfo);
     };
 
+    useEffect(() => {
+        if (f_id) {
+          fetch(`${API_ENDPOINTS.getFacultyInfoByFaculty}/${f_id}`)
+            .then(res => res.json())
+            .then(result => {
+              if (Array.isArray(result.data)) {
+                const formatted = result.data.map((item, index) => ({
+                  finfo_id: item.finfo_id || null,
+                  f_id: f_id,
+                  id: String(item.finfo_id || ''),
+                  title: `Information ${index + 1}`, // Capitalized for consistency
+                  finfo_title: item.finfo_title || "",
+                  finfo_detail: item.finfo_detail || "",
+                  display: Boolean(item.display ?? 0),
+                  active: Boolean(item.active ?? 1),
+                }));
+      
+                setInfo(formatted);
+              }
+            })
+            .catch(err => console.error("❌ Error fetching faculty info data:", err));
+        }
+      }, [f_id]);
+      
     return (
         <div>
             {/* Faculty Info */}
@@ -74,7 +130,7 @@ const FacultyFieldInfo = forwardRef((props, ref) => {
                                             key={infos.id}
                                             draggableId={infos.id}
                                             index={index}
-                                            >
+                                        >
                                             {(provided) => (
                                                 <li
                                                     className={`below-border ${index === infos.length - 1 ? 'border-none' : ''}`}
@@ -84,7 +140,7 @@ const FacultyFieldInfo = forwardRef((props, ref) => {
                                                     <details className='group [&_summary::-webkit-details-marker]:hidden !border-b-1 '>
                                                         <summary className='cursor-pointer flex justify-between rounded-lg px-2 py-2 pl-5 w-full '
                                                             onClick={() => toggleRotation(infos.id)}
-                                                            >
+                                                        >
                                                             <div className="flex ">
                                                                 <div
                                                                     className="cursor-grab my-auto"
@@ -110,10 +166,9 @@ const FacultyFieldInfo = forwardRef((props, ref) => {
                                                                     </svg>
                                                                 </div>
                                                                 <span
-                                                                    className={`cursor-pointer shrink-0 transition-transform duration-300 ${
-                                                                            rotatedStates[infos.id] ? "rotate-180" : ""
-                                                                            }`}
-                                                                    >
+                                                                    className={`cursor-pointer shrink-0 transition-transform duration-300 ${rotatedStates[infos.id] ? "rotate-180" : ""
+                                                                        }`}
+                                                                >
                                                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
                                                                         <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 15.75 7.5-7.5 7.5 7.5" />
                                                                     </svg>
@@ -125,14 +180,21 @@ const FacultyFieldInfo = forwardRef((props, ref) => {
                                                         <div className="grid grid-cols-1 gap-4 px-4 py-2">
                                                             <div className="flex-1">
                                                                 <label className="block text-xl font-medium leading-6 text-white-900">
-                                                                Info name
+                                                                    Info name
                                                                 </label>
                                                                 <div className="mt-2">
-                                                                <input
-                                                                    type="text"
-                                                                    value={infos.title}
-                                                                    className="!border-gray-300 block w-full border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
-                                                                />
+                                                                    <input
+                                                                        type="text"
+                                                                        value={infos.finfo_title}
+                                                                        // onChange={(e) => setFormData(prev => ({ ...prev, fbg_name: e.target.value }))}
+                                                                        onChange={(e) => {
+                                                                            const newInfo = [...info];
+                                                                            newInfo[index].fbg_name =
+                                                                                e.target.value;
+                                                                            setInfo(newInfo);
+                                                                        }}
+                                                                        className="!border-gray-300 block w-full border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
+                                                                    />
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -141,11 +203,20 @@ const FacultyFieldInfo = forwardRef((props, ref) => {
                                                             <label class="block text-xl font-medium leading-6 text-white-900">
                                                                 Select page option
                                                             </label>
-                                                            <select class="!border-gray-300 block w-full border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6">
-                                                                <option selected>Choose a display position</option>
+                                                            <select
+                                                                value={infos.finfo_side}
+                                                                onChange={(e) => {
+                                                                    const newInfo = [...info];
+                                                                    newInfo[index].finfo_side = e.target.value;
+                                                                    setInfo(newInfo);
+                                                                }}
+                                                                className="w-full border rounded-md p-2"
+                                                            >
+                                                                <option value="">Choose side</option>
                                                                 <option value="left">Left</option>
                                                                 <option value="right">Right</option>
                                                             </select>
+
                                                         </div>
                                                         {/* Subtitle */}
                                                         <div className="grid grid-cols-1 gap-4 px-4 py-2">
@@ -170,7 +241,20 @@ const FacultyFieldInfo = forwardRef((props, ref) => {
                                                                 </label>
                                                                 <div className="mt-2">
                                                                     <label className="toggle-switch mb-1">
-                                                                        <input type="checkbox" />
+                                                                        <input
+                                                                            type="checkbox"
+                                                                            checked={infos.display}
+                                                                            onChange={(e) => {
+                                                                                const updateInfo = [
+                                                                                    ...info,
+                                                                                ];
+                                                                                updateInfo[index].display = e
+                                                                                    .target.checked
+                                                                                    ? 1
+                                                                                    : 0;
+                                                                                setInfo(updateInfo);
+                                                                            }}
+                                                                        />
                                                                         <span className="slider"></span>
                                                                     </label>
                                                                 </div>

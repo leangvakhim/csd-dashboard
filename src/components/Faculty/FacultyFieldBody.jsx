@@ -12,7 +12,8 @@ const FacultyFieldBody = ({
     onImageSelect,
     socialRef,
     contactRef,
-    backgroundRef
+    backgroundRef,
+    infoRef
    
 }) => {
     const [activeTab, setActiveTab] = useState(formData.lang || 1);
@@ -278,7 +279,7 @@ const FacultyFieldBody = ({
                     <div>
                         <div className="grid grid-cols-1 gap-4 py-2">
                             {/* Faculty Information */}
-                            {/* <FacultyFieldInfo ref={infoRef} f_id={formData.f_id}/> */}
+                            <FacultyFieldInfo ref={infoRef} f_id={formData.f_id}/>
                         </div>
                     </div>
                 </div>

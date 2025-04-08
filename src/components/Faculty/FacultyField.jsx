@@ -10,6 +10,7 @@ const FacultyField = () => {
     const socialRef = useRef();
     const contactRef = useRef();
     const backgroundRef = useRef();
+    const infoRef = useRef();
     // const infoRef = useRef();
     const [subtitleContent, setSubtitleContent] = useState('');
     const location = useLocation();
@@ -361,6 +362,7 @@ const FacultyField = () => {
                     socialRef={socialRef}
                     contactRef={contactRef}
                     backgroundRef={backgroundRef}
+                    infoRef={infoRef}
                     initialSocialData={socialRef.current?.getData?.()}
                 />
             </div>

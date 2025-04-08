@@ -67,7 +67,7 @@ const FacultyFieldBackground = forwardRef(({ formData = {}, setFormData = {}, f_
       title: `University ${background.length + 1}`,
       fbg_name: null,
       fbg_img: null,
-      display: true,
+      display: 0,
     };
     setBackground((prevItems) => [...prevItems, newBackground]);
 
