@@ -9,7 +9,7 @@ const PageFieldBody = forwardRef(({formData, setFormData}, ref) => {
 
     return (
         <div className='px-4'>
-            <div className="flex flex-row gap-4 px-4 py-2 mb-1">
+            <div className="flex flex-row gap-4 px-4">
                 <div className="flex-1">
                     <label className="block text-xl font-medium leading-6 text-white-900">
                     Title
@@ -55,7 +55,7 @@ const PageFieldBody = forwardRef(({formData, setFormData}, ref) => {
                 </div>
             </div>
             <div>
-                <PageSection ref={ref} />
+                <PageSection ref={ref} formData={formData}/>
             </div>
         </div>
     )

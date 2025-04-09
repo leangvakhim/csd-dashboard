@@ -1,5 +1,7 @@
-import React, { useState, forwardRef } from "react";
-import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import React, { useState, forwardRef, useCallback } from "react";
+import axios from "axios";
+import { DndProvider, useDrag, useDrop } from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend";
 import { TbCarouselHorizontal, TbCodeDots } from "react-icons/tb";
 import { CgWebsite } from "react-icons/cg";
 import { LuColumns3 } from "react-icons/lu";
@@ -68,6 +70,7 @@ import RequirementPiece from "./Requirement/RequirementPiece";
 import ImportantPiece from "./Important/ImportantPiece";
 import PartnerPiece from "./Partner/PartnerPiece";
 import FeedbackPiece from "./Feedback/FeedbackPiece";
+import { API_ENDPOINTS } from "../../service/APIConfig";
 const sectionOptions = [
   {
     type: "Slideshow",
@@ -220,16 +223,6 @@ const sectionOptions = [
     label: "Important",
   },
   {
-    type: "Pyscroll",
-    component: () => (
-      <div className="bg-gray-50 p-2 rounded-lg">
-        <h1 className="text-xl font-bold text-center">Pyscroll Section</h1>
-      </div>
-    ),
-    icon: MdOutlineSwipeDownAlt,
-    label: "Pyscroll",
-  },
-  {
     type: "New",
     component: NewPiece,
     icon: TbNews,
@@ -289,16 +282,79 @@ const PageSection = forwardRef(({ formData = {}, setFormData = {}, page_id }, pa
   const [showSection, setShowSection] = useState(false);
   const [selectedSections, setSelectedSections] = useState([]);
 
+  React.useEffect(() => {
+    console.log("👀 useEffect triggered with page_id:", page_id);
+    const fetchSections = async () => {
+      if (!page_id) return;
+
+      try {
+        const response = await axios.get(`${API_ENDPOINTS.getSectionByPage}/${page_id}`);
+        // console.log(`${API_ENDPOINTS.getSectionByPage}/${page_id}`);
+        const fetchedSections = response.data?.data || [];
+
+        const mapped = fetchedSections.map((section) => ({
+          // id: section.sec_id || Date.now() + Math.random(),
+          // type: section.sec_type
+          id: section.sec_id,
+          type: section.sec_type,
+          data: section
+        }));
+
+        setSelectedSections(mapped);
+      } catch (error) {
+        console.error("❌ Failed to fetch sections:", error);
+      }
+    };
+
+    fetchSections();
+  }, [page_id]);
+
   React.useImperativeHandle(pageRef, () => ({
     getSections: () => {
-      return selectedSections.map((section, index) => ({
-        sec_order: index + 1,
-        lang: formData?.lang ?? 1,
-        display: 0,
-        active: 1,
-        sec_type: section.type
-      }));
-    }
+      return selectedSections.map((section, index) => {
+        const baseSection = {
+          sec_id: section.isTemporary ? null : section.id,
+          sec_order: index + 1,
+          lang: formData?.lang ?? 1,
+          display: 0,
+          active: 1,
+          sec_type: section.type || null
+        };
+
+        // Attach any additional nested data, such as banners
+        if (section.type === "Banner" && section.data && section.data.banners) {
+          baseSection.banners = section.data.banners;
+        }
+
+        return baseSection;
+      });
+    },
+
+    updateSectionIds: (newIds) => {
+      setSelectedSections(prev =>
+        prev.map(section => {
+          const match = newIds.find(n => n.tempId === section.id);
+          if (!match) return section;
+
+          const updatedData = { ...section.data };
+
+          // ✅ If section contains banners, update their ban_sec
+          if (updatedData.banners && Array.isArray(updatedData.banners)) {
+            updatedData.banners = updatedData.banners.map(b => ({
+              ...b,
+              ban_sec: match.realId
+            }));
+          }
+
+          return {
+            ...section,
+            id: match.realId,
+            isTemporary: false,
+            data: updatedData,
+          };
+        })
+      );
+    },
   }));
 
   const handleAddPage = () => {
@@ -306,67 +362,102 @@ const PageSection = forwardRef(({ formData = {}, setFormData = {}, page_id }, pa
   };
 
   const handleAddSection = (sectionType) => {
-    setSelectedSections([
-      ...selectedSections,
-      { id: Date.now(), type: sectionType },
-    ]);
+    const newSection = {
+      id: selectedSections.length + 1,
+      type: sectionType,
+      isTemporary: true,
+      data: sectionType === "Banner" ? { banners: [] } : {},
+    };
+
+    setSelectedSections([...selectedSections, newSection]);
     setShowSection(false);
   };
 
-  const onDragEnd = (result) => {
-    if (!result.destination) return;
-
-    const newSections = Array.from(selectedSections);
-    const [reorderedItem] = newSections.splice(result.source.index, 1);
-    newSections.splice(result.destination.index, 0, reorderedItem);
-
-    setSelectedSections(newSections);
-  };
+  const handleDataChange = useCallback((newData, index) => {
+    setSelectedSections(prevSections => {
+      const updated = [...prevSections];
+      updated[index].data = {
+        ...updated[index].data,
+        ...newData,
+      };
+      return updated;
+    });
+  }, []);
 
   return (
     <div>
-      <DragDropContext onDragEnd={onDragEnd}>
-        <Droppable droppableId="sections">
-          {(provided) => (
-            <div
-              {...provided.droppableProps}
-              ref={provided.innerRef}
-              className="space-y-4"
-            >
-              {selectedSections.map((section, index) => (
-                <Draggable
-                  key={section.id.toString()}
-                  draggableId={section.id.toString()}
-                  index={index}
-                >
-                  {(provided) => (
-                    <div
-                      ref={provided.innerRef}
-                      {...provided.draggableProps}
-                      {...provided.dragHandleProps}
-                      className="bg-gray-50 rounded-lg border border-gray-300 mx-4"
-                    >
-                      {sectionOptions
-                        .filter((s) => s.type === section.type)
-                        .map((s, i) => {
-                          const SectionComponent = s.component;
-                          return <SectionComponent key={i} />;
-                        })}
-                    </div>
-                  )}
-                </Draggable>
-              ))}
-              {provided.placeholder}
-            </div>
-          )}
-        </Droppable>
-      </DragDropContext>
+      <DndProvider backend={HTML5Backend}>
+        {selectedSections.map((section, index) => {
+          const SectionComponent = sectionOptions.find((s) => s.type === section.type)?.component;
+
+          if (!SectionComponent) return null;
+
+          const moveSection = (dragIndex, hoverIndex) => {
+            const newSections = [...selectedSections];
+            const [dragged] = newSections.splice(dragIndex, 1);
+            newSections.splice(hoverIndex, 0, dragged);
+            setSelectedSections(newSections);
+          };
+
+          const SectionItem = ({ section, index }) => {
+            const ref = React.useRef(null);
+            const [, drop] = useDrop({
+              accept: "SECTION",
+              hover(item) {
+                if (item.index !== index) {
+                  moveSection(item.index, index);
+                  item.index = index;
+                }
+              },
+            });
+
+            const [{ isDragging }, drag] = useDrag({
+              type: "SECTION",
+              item: { type: "SECTION", index },
+              collect: (monitor) => ({
+                isDragging: monitor.isDragging(),
+              }),
+            });
+
+            drag(drop(ref));
+
+            return (
+              <div
+                ref={ref}
+                key={section.id}
+                style={{ opacity: isDragging ? 0.5 : 1 }}
+                className="bg-gray-50 rounded-lg border border-gray-300 mx-4 my-2"
+              >
+                {/* <SectionComponent
+                  data={section.data}
+                  sectionId={section.data?.sec_id || section.id}
+                  onDataChange={(newData) => {
+                    const updatedSections = [...selectedSections];
+                    updatedSections[index].data = {
+                      ...updatedSections[index].data,
+                      ...newData,
+                    };
+                    setSelectedSections(updatedSections);
+                  }}
+                /> */}
+                <SectionComponent
+                  data={section.data}
+                  sectionId={section.data?.sec_id || section.id}
+                  onDataChange={(newData) => handleDataChange(newData, index)}
+                />
+              </div>
+            );
+          };
+
+          return <SectionItem key={section.id} section={section} index={index} />;
+        })}
+      </DndProvider>
 
       {/* Add new section button */}
       <a
         className={`mx-4 cursor-pointer flex items-center p-3 text-sm font-medium text-blue-600 border-t border ${
           showSection ? "rounded-t-lg" : "rounded-lg"
-        } bg-gray-50 hover:bg-gray-100 hover:underline mt-4`}
+        } bg-gray-50 hover:bg-gray-100 hover:underline mt-2`}
         onClick={handleAddPage}
       >
         <svg

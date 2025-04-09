@@ -48,21 +48,30 @@ const PageField = () => {
 
             const savedPageId = response.data?.data?.p_id;
             const sections = pageRef.current?.getSections?.() || [];
-            console.log(sections);
 
-            // if (sections.length > 0 && savedPageId) {
             if (sections.length > 0 && savedPageId) {
-                for (const section of sections) {
-                    const sectionPayload = {
-                        sec_page: savedPageId,
-                        sec_order: section.sec_order,
-                        lang: section.lang,
-                        display: section.display ?? 0,
-                        active: section.active ?? 1
-                    };
+                const sectionPayload = sections.map((section, index) => ({
+                    sec_page: savedPageId,
+                    sec_order: section.sec_order,
+                    lang: section.lang,
+                    display: section.display ?? 0,
+                    active: section.active ?? 1,
+                    sec_type: section.sec_type ?? ''
+                }));
 
-                    await axios.post(API_ENDPOINTS.createSection, sectionPayload);
-                    console.log("📦 Section saved:", sectionPayload);
+                // await axios.post(API_ENDPOINTS.createSection, { sections: sectionPayload });
+                console.log("📦 Sections sent as array:", sectionPayload);
+
+                const allBanners = sections.flatMap(section => section.banners || []);
+                console.log(allBanners);
+                if (allBanners.length > 0) {
+                    const bannerPayload = allBanners.map(banner => ({
+                        ...banner,
+                        ban_sec: sectionPayload[sections.findIndex(sec => sec.banners?.includes(banner))]?.sec_id || null
+                    }));
+
+                    await axios.post(API_ENDPOINTS.createBanner, { banners: bannerPayload });
+                    console.log("📢 Banners sent as array:", bannerPayload);
                 }
             }
 
@@ -91,6 +100,7 @@ const PageField = () => {
                     formData={formData}
                     setFormData={setFormData}
                     ref={pageRef}
+                    pageData={formData}
                 />
             </div>
         </div>

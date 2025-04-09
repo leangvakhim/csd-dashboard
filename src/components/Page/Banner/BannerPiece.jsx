@@ -1,21 +1,74 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import MediaLibraryModal from "../../MediaLibraryModal";
+import axios from "axios";
+import { API_ENDPOINTS } from "../../../service/APIConfig";
 
-const BannerPiece = () => {
+const BannerPiece = ({ onDataChange, sectionId }) => {
     const [isRotatedButton1, setIsRotatedButton1] = useState(false);
     const [isMediaLibraryOpen, setMediaLibraryOpen] = useState(false);
     const [selectedImage, setSelectedImage] = useState("");
+    const [selectedImageId, setSelectedImageId] = useState(null);
+    const [title, setTitle] = useState("");
+    const [subtitle, setSubtitle] = useState("");
+    const [display, setDisplay] = useState(true);
+
+    const prevBannerRef = useRef({});
 
     const openMediaLibrary = () => {
         setMediaLibraryOpen(true);
     };
 
-    const handleImageSelect = (imageUrl, field) => {
+    useEffect(() => {
+        console.log("🔥 sectionId inside BannerPiece:", sectionId);
+    }, [sectionId]);
+
+    const handleImageSelect = async (imageUrl, imageId, field) => {
+        let resolvedId = null;
+
         if (field === "image") {
             setSelectedImage(imageUrl ? `${imageUrl}` : "");
+
+            try {
+                const response = await axios.get(API_ENDPOINTS.getImages);
+                const images = response.data?.data || [];
+
+                const imageName = imageUrl?.split("/").pop();
+                const matchedImage = images.find(
+                img => img.image_id && img.img === imageName
+                );
+
+                resolvedId = matchedImage?.image_id || null;
+                setSelectedImageId(resolvedId);
+            } catch (error) {
+                console.error("Failed to resolve image ID from URL", error);
+            }
         }
         setMediaLibraryOpen(false);
     };
+
+    // useEffect(() => {
+    //     const bannerData = {
+    //         ban_title: title,
+    //         ban_subtitle: subtitle,
+    //         ban_img: selectedImageId,
+    //         ban_sec: sectionId,
+    //     };
+
+    //     const prevData = prevBannerRef.current;
+
+    //     const hasChanged =
+    //         prevData.ban_title !== bannerData.ban_title ||
+    //         prevData.ban_subtitle !== bannerData.ban_subtitle ||
+    //         prevData.ban_img !== bannerData.ban_img ||
+    //         prevData.ban_sec !== bannerData.ban_sec;
+
+    //     if (hasChanged) {
+    //         prevBannerRef.current = bannerData;
+    //         if (typeof onDataChange === "function") {
+    //             setTimeout(() => onDataChange(bannerData), 0);
+    //         }
+    //     }
+    // }, [title, subtitle, selectedImageId, sectionId]);
 
     return (
         <div className="grid grid-cols-1 gap-4 ">
@@ -72,6 +125,8 @@ const BannerPiece = () => {
                         <div className="mt-2">
                         <input
                             type="text"
+                            value={title}
+                            onChange={(e) => setTitle(e.target.value)}
                             className="block w-full !border-gray-200 border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
                         />
                         </div>
@@ -83,7 +138,7 @@ const BannerPiece = () => {
                         </label>
                         <div className="mt-2">
                         <label class="toggle-switch mt-2">
-                            <input type="checkbox" />
+                            <input type="checkbox" checked={display} onChange={() => setDisplay(!display)} />
                             <span class="slider"></span>
                         </label>
                         </div>
@@ -121,7 +176,7 @@ const BannerPiece = () => {
                                                 />
                                             </svg>
                                             <svg
-                                                onClick={() => handleImageSelect("", "image")}
+                                                onClick={() => handleImageSelect("", null, "image")}
                                                 xmlns="http://www.w3.org/2000/svg"
                                                 fill="none"
                                                 viewBox="0 0 24 24"
@@ -167,7 +222,7 @@ const BannerPiece = () => {
                     </div>
                     {isMediaLibraryOpen && (
                         <MediaLibraryModal
-                            onSelect={(imageUrl) => handleImageSelect(imageUrl, "image")}
+                            onSelect={(imageUrl, imageId) => handleImageSelect(imageUrl, imageId, "image")}
                             onClose={() => setMediaLibraryOpen(false)}
                         />
                     )}
@@ -177,7 +232,11 @@ const BannerPiece = () => {
                             Subtitle
                         </label>
                         <div className="mt-2">
-                            <textarea className="!border-gray-300 h-60 block w-full rounded-md border-0 py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-2xl sm:leading-6"></textarea>
+                            <textarea
+                                value={subtitle}
+                                onChange={(e) => setSubtitle(e.target.value)}
+                                className="!border-gray-300 h-60 block w-full rounded-md border-0 py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-2xl sm:leading-6"
+                            ></textarea>
                         </div>
                     </div>
                 </div>
