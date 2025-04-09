@@ -1,7 +1,7 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, forwardRef } from 'react'
 import PageSection from './PageSection'
 
-const PageFieldBody = ({formData, setFormData}) => {
+const PageFieldBody = forwardRef(({formData, setFormData}, ref) => {
 
     useEffect(() => {
         // console.log("Loaded formData: ", formData);
@@ -9,7 +9,7 @@ const PageFieldBody = ({formData, setFormData}) => {
 
     return (
         <div className='px-4'>
-            <div className="flex flex-row gap-4 px-4 py-2 mb-1">
+            <div className="flex flex-row gap-4 px-4">
                 <div className="flex-1">
                     <label className="block text-xl font-medium leading-6 text-white-900">
                     Title
@@ -46,7 +46,7 @@ const PageFieldBody = ({formData, setFormData}) => {
                     <label class="toggle-switch mt-2">
                         <input
                             type="checkbox"
-                            checked={!!formData?.display}
+                            checked={formData?.display === true}
                             onChange={(e) => setFormData(prev => ({ ...prev, display: e.target.checked }))}
                         />
                         <span class="slider"></span>
@@ -55,10 +55,10 @@ const PageFieldBody = ({formData, setFormData}) => {
                 </div>
             </div>
             <div>
-                <PageSection/>
+                <PageSection ref={ref} formData={formData}/>
             </div>
         </div>
     )
-}
+})
 
-export default PageFieldBody
+export default PageFieldBody;
