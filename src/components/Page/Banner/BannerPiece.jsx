@@ -22,32 +22,6 @@ const BannerPiece = ({ onDataChange, sectionId }) => {
         console.log("🔥 sectionId inside BannerPiece:", sectionId);
     }, [sectionId]);
 
-
-
-    // const handleImageSelect = async (imageUrl, imageId, field) => {
-    //     let resolvedId = null;
-
-    //     if (field === "image") {
-    //         setSelectedImage(imageUrl ? `${imageUrl}` : "");
-
-    //         try {
-    //             const response = await axios.get(API_ENDPOINTS.getImages);
-    //             const images = response.data?.data || [];
-
-    //             const imageName = imageUrl?.split("/").pop();
-    //             const matchedImage = images.find(
-    //             img => img.image_id && img.img === imageName
-    //             );
-
-    //             resolvedId = matchedImage?.image_id || null;
-    //             setSelectedImageId(resolvedId);
-    //         } catch (error) {
-    //             console.error("Failed to resolve image ID from URL", error);
-    //         }
-    //     }
-    //     setMediaLibraryOpen(false);
-    // };
-
     const handleImageSelect = async (imageUrl, imageId, field) => {
         if (field !== "image") return;
 
@@ -65,31 +39,32 @@ const BannerPiece = ({ onDataChange, sectionId }) => {
 
                 const resolvedId = matchedImage?.image_id || null;
                 setSelectedImageId(resolvedId);
-
-                console.log("✅ Image resolved:", resolvedId);
             } catch (error) {
                 console.error("❌ Failed to resolve image ID from URL", error);
             }
         }
-
         setMediaLibraryOpen(false);
     };
 
+    const getBannerData = () => {
+        return {
+            ban_title: title,
+            ban_subtitle: subtitle,
+            ban_img: selectedImageId,
+            ban_sec: sectionId,
+        };
+    };
+
     useEffect(() => {
-        if (title || subtitle || selectedImageId || sectionId) {
-            const bannerData = {
-                ban_title: title,
-                ban_subtitle: subtitle,
-                ban_img: selectedImageId,
-                ban_sec: sectionId,
-            };
+        const isReady =
+            // title.length < -1 &&
+            subtitle.trim() !== "" &&
+            selectedImageId !== null &&
+            sectionId !== null;
 
-            console.log("🔥 sectionId inside BannerPiece:", sectionId);
-            console.log("Image id: ", selectedImageId);
-
-            if (sectionId && selectedImageId !== null) {
-                onDataChange(bannerData);
-            }
+        if (isReady && onDataChange) {
+            onDataChange(getBannerData());
+            // onDataChange();
         }
     }, [title, subtitle, selectedImageId, sectionId]);
 

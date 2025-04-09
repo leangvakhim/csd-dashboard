@@ -1,11 +1,19 @@
 import React, { useEffect, forwardRef } from 'react'
 import PageSection from './PageSection'
 
-const PageFieldBody = forwardRef(({formData, setFormData}, ref) => {
+const PageFieldBody = forwardRef((props, pageRef) => {
+    const { formData, setFormData } = props;
 
     useEffect(() => {
-        // console.log("Loaded formData: ", formData);
-    }, [formData]);
+        if (pageRef && pageRef.current) {
+            if (typeof pageRef.current.getPrograms === 'function') {
+            } else {
+            console.warn("❌ getPrograms() is NOT defined on pageRef.current");
+            }
+        } else {
+            console.warn("❌ pageRef is missing or not set");
+        }
+    }, []);
 
     return (
         <div className='px-4'>
@@ -55,10 +63,14 @@ const PageFieldBody = forwardRef(({formData, setFormData}, ref) => {
                 </div>
             </div>
             <div>
-                <PageSection ref={ref} formData={formData}/>
+                <PageSection
+                    ref={pageRef}
+                    formData={formData}
+                    setFormData={setFormData}
+                />
             </div>
         </div>
     )
-})
+});
 
 export default PageFieldBody;

@@ -1,4 +1,4 @@
-import React, { useState, forwardRef, useCallback } from "react";
+import React, { useState, forwardRef, useRef, useCallback, useImperativeHandle } from "react";
 import axios from "axios";
 import { DndProvider, useDrag, useDrop } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
@@ -278,7 +278,8 @@ const sectionOptions = [
   },
 ];
 
-const PageSection = forwardRef(({ formData = {}, setFormData = {}, page_id }, pageRef) => {
+const PageSection = forwardRef(({ formData = {}, setFormData = {}, page_id }, ref) => {
+  const programPieceRef = useRef();
   const [showSection, setShowSection] = useState(false);
   const [selectedSections, setSelectedSections] = useState([]);
 
@@ -309,24 +310,18 @@ const PageSection = forwardRef(({ formData = {}, setFormData = {}, page_id }, pa
     fetchSections();
   }, [page_id]);
 
-  React.useImperativeHandle(pageRef, () => ({
+  useImperativeHandle(ref, () => ({
     getSections: () => {
       return selectedSections.map((section, index) => {
-        const baseSection = {
-          sec_id: section.isTemporary ? null : section.id,
+        return {
+          sec_id: section.id,
+          sec_type: section.type,
           sec_order: index + 1,
           lang: formData?.lang ?? 1,
           display: 0,
           active: 1,
-          sec_type: section.type || null
+          ...section.data,
         };
-
-        // Attach any additional nested data, such as banners
-        if (section.type === "Banner" && section.data && section.data.banners) {
-          baseSection.banners = section.data.banners;
-        }
-
-        return baseSection;
       });
     },
 
@@ -338,7 +333,6 @@ const PageSection = forwardRef(({ formData = {}, setFormData = {}, page_id }, pa
 
           const updatedData = { ...section.data };
 
-          // ✅ If section contains banners, update their ban_sec
           if (updatedData.banners && Array.isArray(updatedData.banners)) {
             updatedData.banners = updatedData.banners.map(b => ({
               ...b,
@@ -355,6 +349,10 @@ const PageSection = forwardRef(({ formData = {}, setFormData = {}, page_id }, pa
         })
       );
     },
+
+    getPrograms: () => {
+      return programPieceRef.current?.getPrograms?.() || [];
+    }
   }));
 
   const handleAddPage = () => {
@@ -366,7 +364,7 @@ const PageSection = forwardRef(({ formData = {}, setFormData = {}, page_id }, pa
       id: selectedSections.length + 1,
       type: sectionType,
       isTemporary: true,
-      data: sectionType === "Banner" ? { banners: [] } : {},
+      // data: sectionType === "Banner" ? { banners: [] } : {},
     };
 
     setSelectedSections([...selectedSections, newSection]);
@@ -375,6 +373,13 @@ const PageSection = forwardRef(({ formData = {}, setFormData = {}, page_id }, pa
 
   const handleDataChange = useCallback((newData, index) => {
     setSelectedSections(prevSections => {
+
+      const prevData = prevSections[index]?.data || {};
+      const hasChanges = Object.keys(newData).some(
+        key => newData[key] !== prevData[key]
+      );
+      if (!hasChanges) return prevSections;
+
       const updated = [...prevSections];
       updated[index].data = {
         ...updated[index].data,
@@ -428,19 +433,8 @@ const PageSection = forwardRef(({ formData = {}, setFormData = {}, page_id }, pa
                 style={{ opacity: isDragging ? 0.5 : 1 }}
                 className="bg-gray-50 rounded-lg border border-gray-300 mx-4 my-2"
               >
-                {/* <SectionComponent
-                  data={section.data}
-                  sectionId={section.data?.sec_id || section.id}
-                  onDataChange={(newData) => {
-                    const updatedSections = [...selectedSections];
-                    updatedSections[index].data = {
-                      ...updatedSections[index].data,
-                      ...newData,
-                    };
-                    setSelectedSections(updatedSections);
-                  }}
-                /> */}
                 <SectionComponent
+                  ref={section.type === "Programs" ? programPieceRef : null}
                   data={section.data}
                   sectionId={section.data?.sec_id || section.id}
                   onDataChange={(newData) => handleDataChange(newData, index)}
