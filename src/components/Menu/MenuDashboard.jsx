@@ -29,8 +29,11 @@ const MenuDashboard = () => {
         const fetchPages = async () => {
             try {
                 const res = await axios.get(API_ENDPOINTS.getPage);
-                if (res.data && res.data.data) {
+                if (res.data && Array.isArray(res.data.data)) {
                     setPageOptions(res.data.data);
+                } else {
+                    console.error("❌ pageOptions is not an array:", res.data.data);
+                    setPageOptions([]); // fallback
                 }
             } catch (err) {
                 console.error('❌ Failed to fetch pages:', err);
