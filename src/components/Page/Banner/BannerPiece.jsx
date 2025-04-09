@@ -11,8 +11,8 @@ const BannerPiece = ({ onDataChange, sectionId }) => {
     const [title, setTitle] = useState("");
     const [subtitle, setSubtitle] = useState("");
     const [display, setDisplay] = useState(true);
-
     const prevBannerRef = useRef({});
+
 
     const openMediaLibrary = () => {
         setMediaLibraryOpen(true);
@@ -22,53 +22,76 @@ const BannerPiece = ({ onDataChange, sectionId }) => {
         console.log("🔥 sectionId inside BannerPiece:", sectionId);
     }, [sectionId]);
 
+
+
+    // const handleImageSelect = async (imageUrl, imageId, field) => {
+    //     let resolvedId = null;
+
+    //     if (field === "image") {
+    //         setSelectedImage(imageUrl ? `${imageUrl}` : "");
+
+    //         try {
+    //             const response = await axios.get(API_ENDPOINTS.getImages);
+    //             const images = response.data?.data || [];
+
+    //             const imageName = imageUrl?.split("/").pop();
+    //             const matchedImage = images.find(
+    //             img => img.image_id && img.img === imageName
+    //             );
+
+    //             resolvedId = matchedImage?.image_id || null;
+    //             setSelectedImageId(resolvedId);
+    //         } catch (error) {
+    //             console.error("Failed to resolve image ID from URL", error);
+    //         }
+    //     }
+    //     setMediaLibraryOpen(false);
+    // };
+
     const handleImageSelect = async (imageUrl, imageId, field) => {
-        let resolvedId = null;
+        if (field !== "image") return;
 
-        if (field === "image") {
-            setSelectedImage(imageUrl ? `${imageUrl}` : "");
+        setSelectedImage(imageUrl || "");
 
+        if (imageUrl) {
             try {
                 const response = await axios.get(API_ENDPOINTS.getImages);
                 const images = response.data?.data || [];
 
-                const imageName = imageUrl?.split("/").pop();
+                const imageName = imageUrl.split("/").pop();
                 const matchedImage = images.find(
-                img => img.image_id && img.img === imageName
+                    (img) => img.image_id && img.img === imageName
                 );
 
-                resolvedId = matchedImage?.image_id || null;
+                const resolvedId = matchedImage?.image_id || null;
                 setSelectedImageId(resolvedId);
+
+                console.log("✅ Image resolved:", resolvedId);
             } catch (error) {
-                console.error("Failed to resolve image ID from URL", error);
+                console.error("❌ Failed to resolve image ID from URL", error);
             }
         }
+
         setMediaLibraryOpen(false);
     };
 
-    // useEffect(() => {
-    //     const bannerData = {
-    //         ban_title: title,
-    //         ban_subtitle: subtitle,
-    //         ban_img: selectedImageId,
-    //         ban_sec: sectionId,
-    //     };
+    useEffect(() => {
+        if (title || subtitle || selectedImageId || sectionId) {
+            const bannerData = {
+                ban_title: title,
+                ban_subtitle: subtitle,
+                ban_img: selectedImageId,
+                ban_sec: sectionId,
+            };
 
-    //     const prevData = prevBannerRef.current;
+            console.log("🔥 sectionId inside BannerPiece:", sectionId);
+            console.log("Image id: ", selectedImageId);
 
-    //     const hasChanged =
-    //         prevData.ban_title !== bannerData.ban_title ||
-    //         prevData.ban_subtitle !== bannerData.ban_subtitle ||
-    //         prevData.ban_img !== bannerData.ban_img ||
-    //         prevData.ban_sec !== bannerData.ban_sec;
-
-    //     if (hasChanged) {
-    //         prevBannerRef.current = bannerData;
-    //         if (typeof onDataChange === "function") {
-    //             setTimeout(() => onDataChange(bannerData), 0);
-    //         }
-    //     }
-    // }, [title, subtitle, selectedImageId, sectionId]);
+            if (sectionId && selectedImageId !== null) {
+                onDataChange(bannerData);
+            }
+        }
+    }, [title, subtitle, selectedImageId, sectionId]);
 
     return (
         <div className="grid grid-cols-1 gap-4 ">
@@ -161,7 +184,10 @@ const BannerPiece = ({ onDataChange, sectionId }) => {
                                         />
                                         <div className="flex gap-3 mt-2 justify-center">
                                             <svg
-                                                onClick={() => openMediaLibrary("image")}
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    openMediaLibrary("image");
+                                                }}
                                                 xmlns="http://www.w3.org/2000/svg"
                                                 fill="none"
                                                 viewBox="0 0 24 24"

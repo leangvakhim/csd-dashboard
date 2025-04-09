@@ -74,6 +74,7 @@ const FacultyDashboard = () => {
             f_order: item.f_order
         }));
 
+        console.log("Reorder payload:", payload);
         await axios.put(`${API_ENDPOINTS.updateFacultyOrder}`, payload);
     };
 
@@ -144,10 +145,10 @@ const FacultyDashboard = () => {
                                     </span>
                                 </td>
                                 <td className="px-2 py-6 flex gap-2 items-center relative">
-                                    <a href="#" onClick={() => moveItem(index, 'up')} className="font-medium text-gray-900 hover:text-blue-500 hover:underline">
+                                    <a onClick={() => moveItem(index, 'up')} className="cursor-pointer font-medium text-gray-900 hover:text-blue-500 hover:underline">
                                         <i className="ti ti-chevron-up text-xl"></i>
                                     </a> |
-                                    <a href="#" onClick={() => moveItem(index, 'down')} className="font-medium text-gray-900 hover:text-blue-500 hover:underline">
+                                    <a onClick={() => moveItem(index, 'down')} className="cursor-pointer font-medium text-gray-900 hover:text-blue-500 hover:underline">
                                         <i className="ti ti-chevron-down text-xl"></i>
                                     </a> |
                                     <div className="relative">
