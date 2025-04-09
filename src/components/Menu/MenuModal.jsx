@@ -65,7 +65,7 @@ const MenuModal = ({ isOpen, onClose, data}) => {
             lang: parseInt(formData.lang) || 1,
             title: formData.title || null,
             menup_id: formData.menup_id ? parseInt(formData.menup_id) : null,
-            display: formData.display ? 1 : 0,
+            display: formData.display === true ? 1 : 0,
             active: formData.active ? 1 : 0,
             p_menu: formData.p_menu ? parseInt(formData.p_menu) : null,
         };
