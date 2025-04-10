@@ -211,7 +211,7 @@ const FacultyFieldInfo = forwardRef(({ f_id }, ref) => {
                                                                         // Ensure we create a new array and properly set the updated value
                                                                         const updatedInfo = [...info];
                                                                             updatedInfo[index].finfo_title = e.target.value;
-                                                                            setInfo(updatedInfo);  // Trigger the state update properly
+                                                                            setInfo(updatedInfo); 
                                                                         
                                                                     }}
                                                                     className="!border-gray-300 block w-full border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
