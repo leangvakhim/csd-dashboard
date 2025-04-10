@@ -8,12 +8,6 @@ const EDITOR_CONFIG = {
     readonly: false,
     height: 400,
     placeholder: 'Start typing...',
-    buttons: [
-        'bold', 'italic', 'underline', 'strikethrough', '|',
-        'ul', 'ol', '|', 'image', 'link', 'table', '|',
-        'align', 'undo', 'redo', 'hr', '|',
-        'source'
-    ],
     uploader: {
         insertImageAsBase64URI: true,
     },
@@ -302,16 +296,13 @@ const ScholarshipFieldBody = ({ formData, setFormData, onImageSelect }) => {
                                 {/* Sponsor */}
                                 <div className="flex flex-col w-full">
                                     <label className="text-lg font-semibold text-gray-700">Sponsor</label>
-                                    <select
+                                    <input
+                                        type="text"
                                         name="sc_sponsor"
                                         value={formData.sc_sponsor}
                                         onChange={handleInputChange}
-                                        className="mt-2 w-full border !border-gray-300 rounded-md py-2 pl-2 pr-3 text-gray-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                                    >
-                                        <option value="">Choose Option</option>
-                                        <option value="1">Woori</option>
-                                        <option value="2">ABA</option>
-                                    </select>
+                                        className="mt-2 w-full bg-gray-200 py-2 px-3 border !border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                    />
                                 </div>
                             </div>
 

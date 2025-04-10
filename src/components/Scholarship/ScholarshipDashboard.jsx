@@ -117,7 +117,15 @@ const ScholarshipDashboard = () => {
                                 {item.sc_sponsor}
                             </th>
                             <td className="px-6 py-4">{item.sc_title}</td>
-                            <td className="px-6 py-4">{item.sc_deadline}</td>
+                            <td className="px-6 py-4">
+                                {item.sc_deadline
+                                    ? new Date(item.sc_deadline).toLocaleDateString('en-US', {
+                                        year: 'numeric',
+                                        month: 'long',
+                                        day: 'numeric'
+                                    })
+                                    : 'N/A'}
+                            </td>
                             <td className="px-6 py-4">{item.lang === 1 ? "English" : "Khmer"}</td>
                             <td className="px-6 py-4">
                                 <span className={`${item.display ? 'bg-blue-100 text-blue-800' : 'bg-red-100 text-red-800'} text-xs font-medium px-2.5 py-0.5 rounded-xl`}>
