@@ -4,16 +4,16 @@ import PageSection from './PageSection'
 const PageFieldBody = forwardRef((props, pageRef) => {
     const { formData, setFormData, page_id } = props;
 
-    useEffect(() => {
-        if (pageRef && pageRef.current) {
-            if (typeof pageRef.current.getPrograms === 'function') {
-            } else {
-            console.warn("❌ getPrograms() is NOT defined on pageRef.current");
-            }
-        } else {
-            console.warn("❌ pageRef is missing or not set");
-        }
-    }, []);
+    // useEffect(() => {
+    //     if (pageRef && pageRef.current) {
+    //         if (typeof pageRef.current.getPrograms === 'function') {
+    //         } else {
+    //         console.warn("❌ getPrograms() is NOT defined on pageRef.current");
+    //         }
+    //     } else {
+    //         console.warn("❌ pageRef is missing or not set");
+    //     }
+    // }, []);
 
     return (
         <div className='px-4'>

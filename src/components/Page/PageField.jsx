@@ -41,6 +41,25 @@ const PageField = () => {
         }
     }
 
+    const saveBanner = async (savedSectionId) => {
+        const banners = await pageRef.current?.getBanners?.() || [];
+
+        console.log("🔥 Raw banners from getBanner:", banners);
+        console.log("🔥 savedSectionId:", savedSectionId);
+
+        if (banners.length > 0 && savedSectionId) {
+            const bannerPayload = banners.map((banner) => ({
+                ban_sec: savedSectionId,
+                ban_title: banner.ban_title || '',
+                ban_subtitle: banner.ban_subtitle || '',
+                ban_img: banner.ban_img || null
+            }));
+
+            console.log("🎓 Banners sent as array:", bannerPayload);
+            await axios.post(API_ENDPOINTS.createBanner, { banners: bannerPayload });
+        }
+    }
+
     // const saveSection = async (savedPageId) => {
     //     const sections = pageRef.current?.getSections?.() || [];
 
@@ -88,8 +107,13 @@ const PageField = () => {
                 }));
 
                 console.log("🚀 Section Payload to sync:", sectionPayload);
+
             try {
-                await axios.put(API_ENDPOINTS.syncSection, {
+                // await axios.put(API_ENDPOINTS.syncSection, {
+                //     sec_page: page_id,
+                //     sections: sectionPayload,
+                // });
+                const response = await axios.put(API_ENDPOINTS.syncSection, {
                     sec_page: page_id,
                     sections: sectionPayload,
                 });
@@ -101,6 +125,7 @@ const PageField = () => {
                 // console.log("📥 savedSectionId:", savedSectionId);
 
                 saveDepartment(savedSectionId);
+                saveBanner(savedSectionId);
 
             } catch (error) {
                 console.error("Failed to sync section:", error.response?.data || error.message);

@@ -280,17 +280,18 @@ const sectionOptions = [
 
 const PageSection = forwardRef(({ formData = {}, setFormData = {}, page_id }, ref) => {
   const programPieceRef = useRef();
+  const bannerPieceRef = useRef();
   const [showSection, setShowSection] = useState(false);
   const [selectedSections, setSelectedSections] = useState([]);
 
   useEffect(() => {
-    console.log("👀 useEffect triggered with page_id:", page_id);
+    // console.log("👀 useEffect triggered with page_id:", page_id);
     const fetchSections = async () => {
       if (!page_id) return;
 
       try {
         const response = await axios.get(`${API_ENDPOINTS.getSectionByPage}/${page_id}`);
-        console.log(`${API_ENDPOINTS.getSectionByPage}/${page_id}`);
+        // console.log(`${API_ENDPOINTS.getSectionByPage}/${page_id}`);
         const fetchedSections = response.data?.data || [];
 
         const mapped = fetchedSections.map((section) => ({
@@ -348,9 +349,8 @@ const PageSection = forwardRef(({ formData = {}, setFormData = {}, page_id }, re
       );
     },
 
-    getPrograms: () => {
-      return programPieceRef.current?.getPrograms?.() || [];
-    }
+    getPrograms: () => programPieceRef.current?.getPrograms?.() || [],
+    getBanners: () => bannerPieceRef.current?.getBanners?.() || [],
   }));
 
   const handleAddPage = () => {
@@ -432,7 +432,11 @@ const PageSection = forwardRef(({ formData = {}, setFormData = {}, page_id }, re
                 className="bg-gray-50 rounded-lg border border-gray-300 mx-4 my-2"
               >
                 <SectionComponent
-                  ref={section.type === "Programs" ? programPieceRef : null}
+                  ref={
+                        section.type === "Programs" ? programPieceRef
+                      : section.type === "Banner" ? bannerPieceRef
+                      : null
+                    }
                   data={section.data}
                   sectionId={section.data?.sec_id || section.id}
                   onDataChange={(newData) => handleDataChange(newData, index)}
