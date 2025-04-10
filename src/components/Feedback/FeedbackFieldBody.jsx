@@ -1,22 +1,62 @@
 import React, { useState } from 'react'
 import MediaLibraryModal from '../MediaLibraryModal';
-import axios from "axios";
+import { API_ENDPOINTS } from '../../service/APIConfig';
+import { useEffect } from 'react';
 
-const FeedbackFieldBody = () => {
+const FeedbackFieldBody = ({ formData, setFormData, onImageSelect }) => {
     const [activeTab, setActiveTab] = useState(1);
     const [isMediaLibraryOpen, setMediaLibraryOpen] = useState(false);
     const [selectedImage, setSelectedImage] = useState("");
-    const [details, setDetails] = useState("");
+
+    useEffect(() => {
+        if (formData.lang) {
+            setActiveTab(formData.lang);
+        }
+    }, [formData.lang]);
+
+    useEffect(() => {
+        if (formData.fb_img) {
+            fetch(`${API_ENDPOINTS.getImages}`)
+                .then(res => res.json())
+                .then(result => {
+                    const matched = result.data.find(img => img.image_id === formData.fb_img);
+                    if (matched) {
+                        setSelectedImage(matched.image_url);
+                    }
+                })
+                .catch(err => console.error("Error fetching image:", err));
+        }
+    }, [formData.fb_img]);
+
 
     const openMediaLibrary = () => {
-        // setCurrentField(field);
         setMediaLibraryOpen(true);
     };
 
-    const handleImageSelect = (imageUrl, field) => {
+    const handleImageSelect = async (imageUrl, field) => {
         if (field === "image") {
             setSelectedImage(imageUrl ? `${imageUrl}` : "");
+            try {
+                const response = await fetch(`${API_ENDPOINTS.getImages}`);
+                const result = await response.json();
+
+                if (result.status_code === "success" && Array.isArray(result.data)) {
+                    const matchedImage = result.data.find(image => image.image_url === imageUrl);
+                    if (matchedImage) {
+                        onImageSelect(matchedImage.image_id);
+                        setFormData(prevData => ({
+                            ...prevData,
+                            fb_img: matchedImage.image_id,
+                        }));
+                    } else {
+                        console.warn("Image not found in API response for URL:", imageUrl);
+                    }
+                }
+            } catch (error) {
+                console.error("Failed to fetch images:", error);
+            }
         }
+
         setMediaLibraryOpen(false);
     };
 
@@ -25,32 +65,27 @@ const FeedbackFieldBody = () => {
             <div className="tabs">
                 <div className="flex">
                     <ul className="flex items-center h-12 bg-gray-100 rounded-lg transition-all duration-300 p-2 overflow-hidden">
-                        <li>
-                            <a
-                                href="javascript:void(0)"
-                                className={`mx-2 inline-block py-1.5 px-6 text-gray-600 hover:text-gray-800 font-medium ${activeTab === 1
-                                        ? 'bg-white rounded-lg text-gray-600'
-                                        : 'tablink'
-                                    } whitespace-nowrap`}
-                                onClick={() => setActiveTab(1)}
-                                role="tab"
-                            >
-                                English
-                            </a>
-                        </li>
-                        <li>
-                            <a
-                                href="javascript:void(0)"
-                                className={`mx-2 inline-block py-1.5 px-6 text-gray-600 hover:text-gray-800 font-medium ${activeTab === 2
-                                        ? 'bg-white rounded-lg text-gray-600'
-                                        : 'tablink'
-                                    } whitespace-nowrap`}
-                                onClick={() => setActiveTab(2)}
-                                role="tab"
-                            >
-                                Khmer
-                            </a>
-                        </li>
+                        {[
+                            { id: 1, label: "English" },
+                            { id: 2, label: "Khmer" },
+                            // { id: 3, label: "Chinese" },
+                            // { id: 4, label: "French" }
+                        ].map(langOption => (
+                            <li key={langOption.id}>
+                                <a
+                                    href="javascript:void(0)"
+                                    className={`mx-2 inline-block py-1.5 px-6 text-gray-600 hover:text-gray-800 font-medium ${activeTab === langOption.id ? 'bg-white rounded-lg text-gray-600' : 'tablink'
+                                        } whitespace-nowrap`}
+                                    onClick={() => {
+                                        setActiveTab(langOption.id);
+                                        setFormData(prev => ({ ...prev, lang: langOption.id }));
+                                    }}
+                                    role="tab"
+                                >
+                                    {langOption.label}
+                                </a>
+                            </li>
+                        ))}
                     </ul>
                 </div>
                 <div className="mt-3">
@@ -63,6 +98,8 @@ const FeedbackFieldBody = () => {
                             <div className="mt-2">
                                 <input
                                     type="text"
+                                    value={formData.fb_title || ""}
+                                    onChange={e => setFormData(prev => ({ ...prev, fb_title: e.target.value }))}
                                     className="block w-full !border-gray-200 border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
                                 />
                             </div>
@@ -75,6 +112,8 @@ const FeedbackFieldBody = () => {
                             <div className="mt-2">
                                 <input
                                     type="text"
+                                    value={formData.fb_subtitle || ""}
+                                    onChange={e => setFormData(prev => ({ ...prev, fb_subtitle: e.target.value }))}
                                     className="block w-full !border-gray-200 border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
                                 />
                             </div>
@@ -85,10 +124,20 @@ const FeedbackFieldBody = () => {
                                 Display
                             </label>
                             <div className="mt-2">
-                                <label class="toggle-switch mt-2">
-                                    <input type="checkbox" />
-                                    <span class="slider"></span>
+                                <label className="toggle-switch mt-2">
+                                    <input
+                                        type="checkbox"
+                                        checked={formData.display === 1}
+                                        onChange={e =>
+                                            setFormData(prev => ({
+                                                ...prev,
+                                                display: e.target.checked ? 1 : 0
+                                            }))
+                                        }
+                                    />
+                                    <span className="slider"></span>
                                 </label>
+
                             </div>
                         </div>
                     </div>
@@ -113,6 +162,8 @@ const FeedbackFieldBody = () => {
                                                 <div className="flex gap-3 mt-2 justify-center">
                                                     <svg
                                                         onClick={() => openMediaLibrary("image")}
+                                                        value={formData.fb_img}
+                                                        onChange={(e) => setFormData({ ...formData, fb_img: e.target.value })}
                                                         xmlns="http://www.w3.org/2000/svg"
                                                         fill="none"
                                                         viewBox="0 0 24 24"
@@ -128,6 +179,8 @@ const FeedbackFieldBody = () => {
                                                     </svg>
                                                     <svg
                                                         onClick={() => handleImageSelect("", "image")}
+                                                        value={formData.fb_img}
+                                                        onChange={(e) => setFormData({ ...formData, fb_img: e.target.value })}
                                                         xmlns="http://www.w3.org/2000/svg"
                                                         fill="none"
                                                         viewBox="0 0 24 24"
@@ -146,6 +199,8 @@ const FeedbackFieldBody = () => {
                                         ) : (
                                             <div
                                                 onClick={() => openMediaLibrary("image")}
+                                                value={formData.fb_img}
+                                                onChange={(e) => setFormData({ ...formData, fb_img: e.target.value })}
                                                 className="flex flex-col items-center justify-center pt-5 pb-6 "
                                             >
                                                 <svg
@@ -182,8 +237,8 @@ const FeedbackFieldBody = () => {
                                 <label className="block text-lg font-semibold text-gray-700">Details</label>
                                 <div className="mt-2">
                                     <textarea
-                                        value={details}
-                                        onChange={(e) => setDetails(e.target.value)}
+                                        value={formData.fb_writer}
+                                        onChange={(e) => setFormData({ ...formData, fb_writer: e.target.value })}
                                         className="h-60 w-full bg-gray-200 border !border-gray-300 rounded-md py-2 px-3 text-gray-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
                                         placeholder="Enter details here..."
                                     ></textarea>

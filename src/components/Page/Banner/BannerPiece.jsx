@@ -149,7 +149,10 @@ const BannerPiece = forwardRef((props, ref) => {
                                         />
                                         <div className="flex gap-3 mt-2 justify-center">
                                             <svg
-                                                onClick={() => openMediaLibrary("image")}
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    openMediaLibrary("image");
+                                                }}
                                                 xmlns="http://www.w3.org/2000/svg"
                                                 fill="none"
                                                 viewBox="0 0 24 24"

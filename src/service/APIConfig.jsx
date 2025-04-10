@@ -110,6 +110,34 @@ const API_ENDPOINTS = {
     duplicateCareer: `${API_BASEURL}/career/duplicate`,
     updateCareerOrder: `${API_BASEURL}/career/reorder`,
 
+
+
+
+     // feedback
+     getScholarship: `${API_BASEURL}/scholarship`,
+     createScholarship: `${API_BASEURL}/scholarship/create`,
+     updateScholarship: `${API_BASEURL}/scholarship/update`,
+     deleteScholarship: `${API_BASEURL}/scholarship/visibility`,
+     duplicateScholarship: `${API_BASEURL}/scholarship/duplicate`,
+     updateScholarshipOrder: `${API_BASEURL}/scholarship/reorder`,
+
+
+      // feedback
+      getFeedback: `${API_BASEURL}/feedback`,
+      createFeedback: `${API_BASEURL}/feedback/create`,
+      updateFeedback: `${API_BASEURL}/feedback/update`,
+      deleteFeedback: `${API_BASEURL}/feedback/visibility`,
+      duplicateFeedback: `${API_BASEURL}/feedback/duplicate`,
+      updateFeedbackOrder: `${API_BASEURL}/feedback/reorder`,
+
+     // partnership
+     getPartnership: `${API_BASEURL}/partnership`,
+     createPartnership: `${API_BASEURL}/partnership/create`,
+     updatePartnership: `${API_BASEURL}/partnership/update`,
+     deletePartnership: `${API_BASEURL}/partnership/visibility`,
+     duplicatePartnership: `${API_BASEURL}/partnership/duplicate`,
+     updatePartnershipOrder: `${API_BASEURL}/partnership/reorder`,
+
     // button
     // buttons: `${API_BASEURL}/button`,
 

@@ -40,7 +40,6 @@ const PageField = () => {
             await axios.post(API_ENDPOINTS.createDepartment, { programs: programPayload });
         }
     }
-
     const saveBanner = async (savedSectionId) => {
         const banners = await pageRef.current?.getBanners?.() || [];
 
