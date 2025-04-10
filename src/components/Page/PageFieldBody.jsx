@@ -2,7 +2,7 @@ import React, { useEffect, forwardRef } from 'react'
 import PageSection from './PageSection'
 
 const PageFieldBody = forwardRef((props, pageRef) => {
-    const { formData, setFormData } = props;
+    const { formData, setFormData, page_id } = props;
 
     useEffect(() => {
         if (pageRef && pageRef.current) {
@@ -67,6 +67,7 @@ const PageFieldBody = forwardRef((props, pageRef) => {
                     ref={pageRef}
                     formData={formData}
                     setFormData={setFormData}
+                    page_id={page_id}
                 />
             </div>
         </div>

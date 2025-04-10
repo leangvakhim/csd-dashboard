@@ -41,28 +41,88 @@ const PageField = () => {
         }
     }
 
-    const saveSection = async (savedPageId) => {
+    // const saveSection = async (savedPageId) => {
+    //     const sections = pageRef.current?.getSections?.() || [];
+
+    //     if (sections.length > 0 && savedPageId) {
+    //         const sectionPayload = sections.map((section, index) => ({
+    //             sec_page: savedPageId,
+    //             sec_order: section.sec_order,
+    //             sec_type: section.sec_type,
+    //             lang: section.lang,
+    //             display: section.display ?? 0,
+    //             active: section.active ?? 1,
+    //         }));
+
+    //         const response = await axios.post(API_ENDPOINTS.createSection, { sections: sectionPayload });
+    //         console.log("📦 Sections sent as array:", sectionPayload);
+
+    //         const savedSectionId = Array.isArray(response.data?.data)
+    //             ? response.data.data[0]?.sec_id
+    //             : response.data?.data?.sec_id;
+
+    //         // console.log("📥 savedSectionId:", savedSectionId);
+
+    //         saveDepartment(savedSectionId);
+    //     }
+    // };
+
+    const syncSection = async (savedPageId) => {
         const sections = pageRef.current?.getSections?.() || [];
+        const page_id = savedPageId;
 
-        if (sections.length > 0 && savedPageId) {
-            const sectionPayload = sections.map((section, index) => ({
-                sec_page: savedPageId,
-                sec_order: section.sec_order,
-                lang: section.lang,
-                display: section.display ?? 0,
-                active: section.active ?? 1,
-            }));
+        if (!page_id) {
+            console.error("Page_id is undefined! Cannot sync section.");
+            return;
+        }
 
-            const response = await axios.post(API_ENDPOINTS.createSection, { sections: sectionPayload });
-            // console.log("📦 Sections sent as array:", sectionPayload);
+        if (savedPageId) {
+                const sectionPayload = sections.map((section, index) => ({
+                    sec_id: section.sec_id || null,
+                    sec_page: savedPageId,
+                    sec_order: section.sec_order,
+                    sec_type: section.sec_type,
+                    lang: section.lang,
+                    display: section.display ?? 0,
+                    active: section.active ?? 1,
+                }));
 
-            const savedSectionId = Array.isArray(response.data?.data)
+                console.log("🚀 Section Payload to sync:", sectionPayload);
+            try {
+                await axios.put(API_ENDPOINTS.syncSection, {
+                    sec_page: page_id,
+                    sections: sectionPayload,
+                });
+
+                const savedSectionId = Array.isArray(response.data?.data)
                 ? response.data.data[0]?.sec_id
                 : response.data?.data?.sec_id;
 
-            // console.log("📥 savedSectionId:", savedSectionId);
+                // console.log("📥 savedSectionId:", savedSectionId);
 
-            saveDepartment(savedSectionId);
+                saveDepartment(savedSectionId);
+
+            } catch (error) {
+                console.error("Failed to sync section:", error.response?.data || error.message);
+            }
+        }
+    };
+
+    const reorderSection = async () => {
+        const sections = pageRef.current?.getSections?.() || [];
+
+        const sectionPayload = sections.map((section, index) => ({
+            sec_id: section.sec_id,  // Required for reorder
+            sec_order: index + 1     // New order based on index
+        }));
+
+        // console.log("🚚 Section Payload to reorder:", sectionPayload);
+
+        try {
+            await axios.post(API_ENDPOINTS.updateSectionOrder, sectionPayload);
+            // console.log("✅ Section reordered successfully");
+        } catch (error) {
+            console.error("❌ Failed to reorder section:", error.response?.data || error.message);
         }
     };
 
@@ -88,7 +148,9 @@ const PageField = () => {
 
             const savedPageId = response.data?.data?.p_id;
 
-            saveSection(savedPageId);
+            // saveSection(savedPageId);
+            syncSection(savedPageId);
+            reorderSection();
 
         } catch (error) {
             console.error('❌ Failed to save page or sections:', error.response?.data || error.message);
@@ -108,7 +170,6 @@ const PageField = () => {
     return (
         <div id="main-wrapper" className=" flex">
             <Aside/>
-
             <div className=" w-full page-wrapper overflow-hidden">
                 <PageFieldHeader onSave={handleSave}/>
                 <PageFieldBody
@@ -116,6 +177,7 @@ const PageField = () => {
                     setFormData={setFormData}
                     ref={pageRef}
                     pageData={formData}
+                    page_id={formData.p_id}
                 />
             </div>
         </div>

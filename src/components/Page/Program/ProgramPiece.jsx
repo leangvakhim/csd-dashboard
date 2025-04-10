@@ -50,14 +50,14 @@ const ProgramPiece = forwardRef((props, ref) => {
     }
   };
 
-  useEffect(() => {
-    console.log("📦 Current Program Data", {
-      title,
-      selectedImage1,
-      selectedImage2,
-      detail
-    });
-  }, [title, selectedImage1, selectedImage2, detail]);
+  // useEffect(() => {
+  //   console.log("📦 Current Program Data", {
+  //     title,
+  //     selectedImage1,
+  //     selectedImage2,
+  //     detail
+  //   });
+  // }, [title, selectedImage1, selectedImage2, detail]);
 
   useImperativeHandle(ref, () => ({
      getPrograms: async () => {

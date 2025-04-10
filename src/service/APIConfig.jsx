@@ -1,5 +1,5 @@
-const API = "https://52.221.196.157";
-// const API = "http://127.0.0.1:8000";
+// const API = "https://52.221.196.157";
+const API = "http://127.0.0.1:8000";
 const API_BASEURL = `${API}/api`;
 
 const API_ENDPOINTS = {
@@ -48,6 +48,11 @@ const API_ENDPOINTS = {
     createBanner: `${API_BASEURL}/banner/create`,
     updateBanner: `${API_BASEURL}/banner/update`,
 
+    // department
+    getDepartment: `${API_BASEURL}/department`,
+    createDepartment: `${API_BASEURL}/department/create`,
+    updateDepartment: `${API_BASEURL}/department/update`,
+
     // section
     getSection: `${API_BASEURL}/section`,
     getSectionByPage: `${API_BASEURL}/section/by-page`,
@@ -55,6 +60,7 @@ const API_ENDPOINTS = {
     updateSection: `${API_BASEURL}/section/update`,
     deleteSection: `${API_BASEURL}/section/visibility`,
     updateSectionOrder: `${API_BASEURL}/section/reorder`,
+    syncSection: `${API_BASEURL}/section/sync-section`,
 
     // faculty
     getFaculty: `${API_BASEURL}/faculty`,
