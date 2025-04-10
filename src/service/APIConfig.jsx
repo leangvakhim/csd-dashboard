@@ -105,6 +105,17 @@ const API_ENDPOINTS = {
     updateCareerOrder: `${API_BASEURL}/career/reorder`,
 
 
+
+
+     // feedback
+     getScholarship: `${API_BASEURL}/scholarship`,
+     createScholarship: `${API_BASEURL}/scholarship/create`,
+     updateScholarship: `${API_BASEURL}/scholarship/update`,
+     deleteScholarship: `${API_BASEURL}/scholarship/visibility`,
+     duplicateScholarship: `${API_BASEURL}/scholarship/duplicate`,
+     updateScholarshipOrder: `${API_BASEURL}/scholarship/reorder`,
+
+
       // feedback
       getFeedback: `${API_BASEURL}/feedback`,
       createFeedback: `${API_BASEURL}/feedback/create`,

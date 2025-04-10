@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const PartnershipFieldHeader = () => {
+const ScholarshipFieldHeader = ({ onSave }) => {
     const navigate = useNavigate();
 
     const returnToPreviousPage = () => {
@@ -13,7 +13,7 @@ const PartnershipFieldHeader = () => {
             const aside = document.getElementById('application-sidebar-brand');
             const toggleBtn = document.getElementById('headerCollapse');
             let overlay = document.getElementById('sidebar-overlay');
-            
+
             if (
                 aside &&
                 aside.classList.contains('hs-overlay-open:translate-x-0') &&
@@ -73,6 +73,7 @@ const PartnershipFieldHeader = () => {
                         Return
                     </button>
                     <button
+                        onClick={onSave}
                         className="cursor-pointer bg-blue-600 text-white font-medium px-4 py-2 rounded hover:bg-blue-700"
                     >
                         Save
@@ -83,4 +84,4 @@ const PartnershipFieldHeader = () => {
     );
 };
 
-export default PartnershipFieldHeader;
+export default ScholarshipFieldHeader;
