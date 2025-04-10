@@ -1,4 +1,4 @@
-import React, { useState, forwardRef, useRef, useCallback, useImperativeHandle } from "react";
+import React, { useState, forwardRef, useEffect, useRef, useCallback, useImperativeHandle } from "react";
 import axios from "axios";
 import { DndProvider, useDrag, useDrop } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
@@ -280,11 +280,12 @@ const sectionOptions = [
 
 const PageSection = forwardRef(({ formData = {}, setFormData = {}, page_id }, ref) => {
   const programPieceRef = useRef();
+  const bannerPieceRef = useRef();
   const [showSection, setShowSection] = useState(false);
   const [selectedSections, setSelectedSections] = useState([]);
 
-  React.useEffect(() => {
-    console.log("👀 useEffect triggered with page_id:", page_id);
+  useEffect(() => {
+    // console.log("👀 useEffect triggered with page_id:", page_id);
     const fetchSections = async () => {
       if (!page_id) return;
 
@@ -294,8 +295,6 @@ const PageSection = forwardRef(({ formData = {}, setFormData = {}, page_id }, re
         const fetchedSections = response.data?.data || [];
 
         const mapped = fetchedSections.map((section) => ({
-          // id: section.sec_id || Date.now() + Math.random(),
-          // type: section.sec_type
           id: section.sec_id,
           type: section.sec_type,
           data: section
@@ -350,9 +349,8 @@ const PageSection = forwardRef(({ formData = {}, setFormData = {}, page_id }, re
       );
     },
 
-    getPrograms: () => {
-      return programPieceRef.current?.getPrograms?.() || [];
-    }
+    getPrograms: () => programPieceRef.current?.getPrograms?.() || [],
+    getBanners: () => bannerPieceRef.current?.getBanners?.() || [],
   }));
 
   const handleAddPage = () => {
@@ -434,7 +432,11 @@ const PageSection = forwardRef(({ formData = {}, setFormData = {}, page_id }, re
                 className="bg-gray-50 rounded-lg border border-gray-300 mx-4 my-2"
               >
                 <SectionComponent
-                  ref={section.type === "Programs" ? programPieceRef : null}
+                  ref={
+                        section.type === "Programs" ? programPieceRef
+                      : section.type === "Banner" ? bannerPieceRef
+                      : null
+                    }
                   data={section.data}
                   sectionId={section.data?.sec_id || section.id}
                   onDataChange={(newData) => handleDataChange(newData, index)}

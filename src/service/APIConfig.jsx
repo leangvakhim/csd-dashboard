@@ -48,6 +48,11 @@ const API_ENDPOINTS = {
     createBanner: `${API_BASEURL}/banner/create`,
     updateBanner: `${API_BASEURL}/banner/update`,
 
+    // department
+    getDepartment: `${API_BASEURL}/department`,
+    createDepartment: `${API_BASEURL}/department/create`,
+    updateDepartment: `${API_BASEURL}/department/update`,
+
     // section
     getSection: `${API_BASEURL}/section`,
     getSectionByPage: `${API_BASEURL}/section/by-page`,
@@ -55,6 +60,7 @@ const API_ENDPOINTS = {
     updateSection: `${API_BASEURL}/section/update`,
     deleteSection: `${API_BASEURL}/section/visibility`,
     updateSectionOrder: `${API_BASEURL}/section/reorder`,
+    syncSection: `${API_BASEURL}/section/sync-section`,
 
     // faculty
     getFaculty: `${API_BASEURL}/faculty`,
