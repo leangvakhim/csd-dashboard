@@ -37,13 +37,13 @@ const BannerPiece = forwardRef((props, ref) => {
         }
     };
 
-    useEffect(() => {
-      console.log("📦 Current Banner Data", {
-        title,
-        selectedImage,
-        subtitle
-      });
-    }, [title, selectedImage, subtitle]);
+    // useEffect(() => {
+    //   console.log("📦 Current Banner Data", {
+    //     title,
+    //     selectedImage,
+    //     subtitle
+    //   });
+    // }, [title, selectedImage, subtitle]);
 
     useImperativeHandle(ref, () => ({
         getBanners: async () => {

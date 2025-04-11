@@ -43,8 +43,8 @@ const PageField = () => {
     const saveBanner = async (savedSectionId) => {
         const banners = await pageRef.current?.getBanners?.() || [];
 
-        console.log("🔥 Raw banners from getBanner:", banners);
-        console.log("🔥 savedSectionId:", savedSectionId);
+        // console.log("🔥 Raw banners from getBanner:", banners);
+        // console.log("🔥 savedSectionId:", savedSectionId);
 
         if (banners.length > 0 && savedSectionId) {
             const bannerPayload = banners.map((banner) => ({
@@ -54,8 +54,24 @@ const PageField = () => {
                 ban_img: banner.ban_img || null
             }));
 
-            console.log("🎓 Banners sent as array:", bannerPayload);
+            // console.log("🎓 Banners sent as array:", bannerPayload);
             await axios.post(API_ENDPOINTS.createBanner, { banners: bannerPayload });
+        }
+    }
+    const saveSlideshow = async (savedSectionId) => {
+        const slideshows = await pageRef.current?.getSlideshows?.() || [];
+
+        // console.log("🔥 Raw slideshow from getSlideshows:", slideshows);
+        // console.log("🔥 savedSectionId:", savedSectionId);
+
+        if (slideshows.length > 0 && savedSectionId) {
+            const slideshowPayload = slideshows.map((item) => ({
+                ...item,
+                slider_sec: savedSectionId
+            }));
+
+            // console.log("🎓 slideshow sent as array:", slideshowPayload);
+            await axios.post(API_ENDPOINTS.createSlideshow, {Slideshow: slideshowPayload});
         }
     }
 
@@ -108,10 +124,6 @@ const PageField = () => {
                 console.log("🚀 Section Payload to sync:", sectionPayload);
 
             try {
-                // await axios.put(API_ENDPOINTS.syncSection, {
-                //     sec_page: page_id,
-                //     sections: sectionPayload,
-                // });
                 const response = await axios.put(API_ENDPOINTS.syncSection, {
                     sec_page: page_id,
                     sections: sectionPayload,
@@ -121,10 +133,11 @@ const PageField = () => {
                 ? response.data.data[0]?.sec_id
                 : response.data?.data?.sec_id;
 
-                // console.log("📥 savedSectionId:", savedSectionId);
+                console.log("📥 savedSectionId:", savedSectionId);
 
-                saveDepartment(savedSectionId);
-                saveBanner(savedSectionId);
+                // saveDepartment(savedSectionId);
+                // saveBanner(savedSectionId);
+                saveSlideshow(savedSectionId);
 
             } catch (error) {
                 console.error("Failed to sync section:", error.response?.data || error.message);
@@ -136,8 +149,8 @@ const PageField = () => {
         const sections = pageRef.current?.getSections?.() || [];
 
         const sectionPayload = sections.map((section, index) => ({
-            sec_id: section.sec_id,  // Required for reorder
-            sec_order: index + 1     // New order based on index
+            sec_id: section.sec_id,
+            sec_order: index + 1
         }));
 
         // console.log("🚚 Section Payload to reorder:", sectionPayload);
@@ -164,7 +177,8 @@ const PageField = () => {
 
         try {
             let response;
-            if (formData.p_id) {
+            console.log("formData.p_id:", formData.p_id)
+            if (formData?.p_id) {
                 response = await axios.post(`${API_ENDPOINTS.updatePage}/${formData.p_id}`, payload);
             } else {
                 response = await axios.post(API_ENDPOINTS.createPage, payload);

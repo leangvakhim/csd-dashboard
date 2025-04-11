@@ -1,8 +1,10 @@
-import React, { useState } from "react";
+import { forwardRef, useImperativeHandle, useState, useEffect } from "react";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import MediaLibraryModal from '../../MediaLibraryModal';
+import axios from "axios";
+import { API_ENDPOINTS } from "../../../service/APIConfig";
 
-const CarouselPieceSlider = () => {
+const CarouselPieceSlider = forwardRef((props, ref) => {
     const [isRotatedButton1, setIsRotatedButton1] = useState(false);
     const [isRotatedButton2, setIsRotatedButton2] = useState(false);
     const [currentSliderId, setCurrentSliderId] = useState(null);
@@ -16,12 +18,58 @@ const CarouselPieceSlider = () => {
         subtitle: "",
         logo: "",
         image: "",
-        firstbtntitle: "",
+        firstbtntitle: "Button 1",
         firstbtnselect: "",
-        secondbtntitle: "",
+        secondbtntitle: "Button 2",
         secondbtnselect: ""
         },
     ]);
+
+    // useEffect(() => {
+    //    console.log("📦 Current Slider Data:", slider);
+    // }, [slider]);
+
+    useImperativeHandle(ref, () => ({
+        getSliders: async () => {
+            return await Promise.all(slider.map(async item => {
+                let btn1Id = 0;
+                let btn2Id = 0;
+
+                try {
+                    const btn1Res = await axios.post(API_ENDPOINTS.createBtnss, {
+                        bss_title: item.firstbtntitle || '',
+                        bss_routepage: item.firstbtnselect || '',
+                        display: item.firstbtndisplay ? 1 : 0,
+                    });
+                    btn1Id = btn1Res.data?.data?.bss_id || null;
+                } catch (error) {
+                    console.error("Error create btn1:", error);
+                }
+
+                try {
+                    const btn2Res = await axios.post(API_ENDPOINTS.createBtnss, {
+                        bss_title: item.secondbtntitle || '',
+                        bss_routepage: item.secondbtnselect || '',
+                        display: item.secondbtndisplay ? 1 : 0,
+                    });
+                    btn2Id = btn2Res.data?.data?.bss_id || null;
+                } catch (error) {
+                    console.error("Error create btn2:", error);
+                }
+
+                return {
+                    slider_title: item.title || '',
+                    slider_text: item.subtitle || '',
+                    logo: item.logo ? await getImageIdByUrl(item.logo) : 0,
+                    img: item.image ? await getImageIdByUrl(item.image) : 0,
+                    btn1: btn1Id,
+                    btn2: btn2Id,
+                    display: item.display ? 1 : 0,
+                    active: 1
+                }
+            }))
+        }
+    }))
 
     const handleAddSlider = () => {
         const newSlider = {
@@ -30,9 +78,9 @@ const CarouselPieceSlider = () => {
             subtitle: "",
             logo: "",
             image: "",
-            firstbtntitle: "",
+            firstbtntitle: `Button 1`,
             firstbtnselect: "",
-            secondbtntitle: "",
+            secondbtntitle: `Button 2`,
             secondbtnselect: ""
         };
 
@@ -62,15 +110,40 @@ const CarouselPieceSlider = () => {
         setMediaLibraryOpen(true);
     };
 
-    const handleImageSelect = (imageUrl) => {
+    const handleImageSelect = (imageUrl, field) => {
         setSlider((prevSlider) =>
-            prevSlider.map((item) =>
-                item.id === currentSliderId
-                    ? { ...item, [currentField]: imageUrl ? `${imageUrl}` : "" }
-                    : item
-            )
+            prevSlider.map((item) => {
+                if (item.id === currentSliderId) {
+                    return {
+                        ...item,
+                        [currentField]: imageUrl || "", // clear if empty string
+                    };
+                }
+                return item;
+            })
         );
         setMediaLibraryOpen(false);
+    };
+
+    const handleInputChange = (id, field, value) => {
+        setSlider((prevSlider) =>
+            prevSlider.map((item) =>
+                item.id === id ? { ...item, [field]: value } : item
+            )
+        );
+    };
+
+    const getImageIdByUrl = async (url) => {
+        try {
+            const response = await axios.get(API_ENDPOINTS.getImages);
+            const images = Array.isArray(response.data) ? response.data : response.data.data;
+
+            const matchedImage = images.find((img) => img.image_url === url);
+            return matchedImage?.image_id || null;
+            } catch (error) {
+            console.error('❌ Failed to fetch image ID:', error);
+            return null;
+        }
     };
 
     return (
@@ -139,6 +212,8 @@ const CarouselPieceSlider = () => {
                                                         <div className="mt-2">
                                                         <input
                                                             type="text"
+                                                            value={sliders.title}
+                                                            onChange={(e) => handleInputChange(sliders.id, 'title', e.target.value)}
                                                             className="!border-gray-300 block w-full border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
                                                         />
                                                         </div>
@@ -151,7 +226,11 @@ const CarouselPieceSlider = () => {
                                                             Subtitle
                                                         </label>
                                                         <div className="mt-2">
-                                                            <textarea className="!border-gray-300 h-32 block w-full rounded-md border-0 py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-2xl sm:leading-6"></textarea>
+                                                            <textarea
+                                                                value={sliders.subtitle}
+                                                                onChange={(e) => handleInputChange(sliders.id, 'subtitle', e.target.value)}
+                                                                className="!border-gray-300 h-32 block w-full rounded-md border-0 py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-2xl sm:leading-6"
+                                                            />
                                                         </div>
                                                     </div>
                                                 </div>
@@ -187,7 +266,7 @@ const CarouselPieceSlider = () => {
                                                                                 />
                                                                             </svg>
                                                                             <svg
-                                                                                onClick={() => handleImageSelect("", "logo")}
+                                                                                onClick={() => { setCurrentField("logo"); handleImageSelect("", "logo"); }}
                                                                                 xmlns="http://www.w3.org/2000/svg"
                                                                                 fill="none"
                                                                                 viewBox="0 0 24 24"
@@ -268,7 +347,7 @@ const CarouselPieceSlider = () => {
                                                                                 />
                                                                             </svg>
                                                                             <svg
-                                                                                onClick={() => handleImageSelect("", "image")}
+                                                                                onClick={() => { setCurrentField("image"); handleImageSelect("", "image"); }}
                                                                                 xmlns="http://www.w3.org/2000/svg"
                                                                                 fill="none"
                                                                                 viewBox="0 0 24 24"
@@ -319,15 +398,16 @@ const CarouselPieceSlider = () => {
                                                         />
                                                     )}
                                                 </div>
-                                                {/* Button 1 */}
-                                                <div className="grid grid-cols-1 md:!grid-cols-2  gap-4 px-4 py-2">
-                                                    <details className="group [&_summary::-webkit-details-marker]:hidden border-2 rounded-lg">
+                                                {/* Button  */}
+                                                <div className="grid grid-cols-1 sm:!grid-cols-2 gap-4 px-4 py-2">
+                                                    {/* Button 1 */}
+                                                    <details className="group [&_summary::-webkit-details-marker]:hidden border-2 rounded-lg grid-cols-1">
                                                         <summary
                                                             className="cursor-pointer flex justify-between rounded-lg py-2 w-full "
                                                         >
                                                             <div className="cursor-pointer flex items-center justify-between w-full px-4" onClick={() => setIsRotatedButton1(!isRotatedButton1)}>
                                                                 <span className=" text-xl font-medium">
-                                                                    About
+                                                                    {sliders.firstbtntitle}
                                                                 </span>
                                                                 <div className={`cursor-pointer shrink-0 transition-transform duration-300 ${isRotatedButton1 ? 'rotate-180' : ''}`}>
                                                                     <svg
@@ -356,6 +436,8 @@ const CarouselPieceSlider = () => {
                                                                 <div className="mt-2">
                                                                 <input
                                                                     type="text"
+                                                                    value={sliders.firstbtntitle}
+                                                                    onChange={(e) => handleInputChange(sliders.id, 'firstbtntitle', e.target.value)}
                                                                     className="!border-gray-300 block w-full border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
                                                                 />
                                                                 </div>
@@ -365,8 +447,12 @@ const CarouselPieceSlider = () => {
                                                                 <label for="countries" className="block text-lg font-medium leading-6 text-white-900">
                                                                     Select page option
                                                                 </label>
-                                                                <select className="mt-2 !border-gray-300 block w-full border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6">
-                                                                    <option selected>Choose a page</option>
+                                                                <select
+                                                                    className="mt-2 !border-gray-300 block w-full border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
+                                                                    value={sliders.firstbtnselect}
+                                                                    onChange={(e) => handleInputChange(sliders.id, 'firstbtnselect', e.target.value)}
+                                                                >
+                                                                    <option value="">Choose a page</option>
                                                                     <option value="Home">Home</option>
                                                                     <option value="About">About</option>
                                                                     <option value="Contact">Contact</option>
@@ -379,36 +465,25 @@ const CarouselPieceSlider = () => {
                                                                 </label>
                                                                 <div className="mt-2">
                                                                     <label className="toggle-switch mt-2">
-                                                                        <input type="checkbox" />
+                                                                    <input
+                                                                        type="checkbox"
+                                                                        checked={sliders.firstbtndisplay || false}
+                                                                        onChange={(e) => handleInputChange(sliders.id, 'firstbtndisplay', e.target.checked)}
+                                                                    />
                                                                         <span className="slider"></span>
                                                                     </label>
                                                                 </div>
                                                             </div>
                                                         </div>
                                                     </details>
-
-                                                    <div className="flex flex-row items-center w-full gap-4">
-                                                        <label className="block text-xl font-medium leading-6 text-white-900">
-                                                            Display
-                                                        </label>
-                                                        <div className="mt-2">
-                                                            <label className="toggle-switch mb-1">
-                                                                <input type="checkbox" />
-                                                                <span className="slider"></span>
-                                                            </label>
-                                                        </div>
-                                                    </div>
-
-                                                </div>
-                                                {/* Button 2 */}
-                                                <div className="grid grid-cols-1 md:!grid-cols-2  gap-4 px-4 py-2">
-                                                    <details className="group [&_summary::-webkit-details-marker]:hidden border-2 rounded-lg">
+                                                        {/* button 2 */}
+                                                    <details className="group [&_summary::-webkit-details-marker]:hidden border-2 rounded-lg grid-cols-1">
                                                         <summary
                                                             className="cursor-pointer flex justify-between rounded-lg py-2 w-full "
                                                         >
                                                             <div className="cursor-pointer flex items-center justify-between w-full px-4" onClick={() => setIsRotatedButton2(!isRotatedButton2)}>
                                                                 <span className=" text-xl font-medium">
-                                                                    Explore Our Program
+                                                                    {sliders.secondbtntitle}
                                                                 </span>
                                                                 <div className={`cursor-pointer shrink-0 transition-transform duration-300 ${isRotatedButton2 ? 'rotate-180' : ''}`}>
                                                                     <svg
@@ -428,15 +503,17 @@ const CarouselPieceSlider = () => {
                                                                 </div>
                                                             </div>
                                                         </summary>
-                                                        {/* button 1 */}
+                                                        {/* button 2 */}
                                                         <div className="grid grid-cols-1 gap-4 px-4 py-2">
                                                             <div className="flex-1">
                                                                 <label className=" block text-lg font-medium leading-6 text-white-900">
-                                                                button1 name
+                                                                button2 name
                                                                 </label>
                                                                 <div className="mt-2">
                                                                 <input
                                                                     type="text"
+                                                                    value={sliders.secondbtntitle}
+                                                                    onChange={(e) => handleInputChange(sliders.id, 'secondbtntitle', e.target.value)}
                                                                     className="!border-gray-300 block w-full border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
                                                                 />
                                                                 </div>
@@ -446,8 +523,12 @@ const CarouselPieceSlider = () => {
                                                                 <label for="countries" class="block text-lg font-medium leading-6 text-white-900">
                                                                     Select page option
                                                                 </label>
-                                                                <select class="mt-2 !border-gray-300 block w-full border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6">
-                                                                    <option selected>Choose a page</option>
+                                                                <select
+                                                                    className="mt-2 !border-gray-300 block w-full border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
+                                                                    value={sliders.secondbtnselect}
+                                                                    onChange={(e) => handleInputChange(sliders.id, 'secondbtnselect', e.target.value)}
+                                                                >
+                                                                    <option value="">Choose a page</option>
                                                                     <option value="Home">Home</option>
                                                                     <option value="About">About</option>
                                                                     <option value="Contact">Contact</option>
@@ -460,13 +541,35 @@ const CarouselPieceSlider = () => {
                                                                 </label>
                                                                 <div className="mt-2">
                                                                     <label class="toggle-switch mt-2">
-                                                                        <input type="checkbox" />
+                                                                        <input
+                                                                            type="checkbox"
+                                                                            checked={sliders.secondbtndisplay || false}
+                                                                            onChange={(e) => handleInputChange(sliders.id, 'secondbtndisplay', e.target.checked)}
+                                                                        />
                                                                         <span class="slider"></span>
                                                                     </label>
                                                                 </div>
                                                             </div>
                                                         </div>
                                                     </details>
+                                                </div>
+
+                                                <div className="grid grid-cols-1 gap-4 px-4 py-2 ml-1">
+                                                    <div className="flex flex-row items-center w-full gap-4">
+                                                        <label className="block text-xl font-medium leading-6 text-white-900">
+                                                            Display
+                                                        </label>
+                                                        <div className="mt-2">
+                                                            <label className="toggle-switch mb-1">
+                                                                <input
+                                                                    type="checkbox"
+                                                                    checked={sliders.display || false}
+                                                                    onChange={(e) => handleInputChange(sliders.id, 'display', e.target.checked)}
+                                                                />
+                                                                <span className="slider"></span>
+                                                            </label>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </details>
                                         </li>
@@ -488,6 +591,6 @@ const CarouselPieceSlider = () => {
             </Droppable>
         </DragDropContext>
     )
-}
+});
 
 export default CarouselPieceSlider

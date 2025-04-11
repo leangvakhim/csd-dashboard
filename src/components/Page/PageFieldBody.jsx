@@ -6,14 +6,17 @@ const PageFieldBody = forwardRef((props, pageRef) => {
 
     // useEffect(() => {
     //     if (pageRef && pageRef.current) {
-    //         if (typeof pageRef.current.getPrograms === 'function') {
+    //         console.log("✅ pageRef is set:", pageRef.current);
+
+    //         if (typeof pageRef.current.getSlideshows === 'function') {
+    //             console.log("🎠 getSlideshows() function is ready.");
     //         } else {
-    //         console.warn("❌ getPrograms() is NOT defined on pageRef.current");
+    //             console.warn("❌ getSlideshows() is NOT defined on pageRef.current");
     //         }
     //     } else {
-    //         console.warn("❌ pageRef is missing or not set");
+    //         console.warn("❌ pageRef is missing or not set properly.");
     //     }
-    // }, []);
+    // }, [pageRef]);
 
     return (
         <div className='px-4'>

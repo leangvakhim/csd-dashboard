@@ -53,6 +53,18 @@ const API_ENDPOINTS = {
     createDepartment: `${API_BASEURL}/department/create`,
     updateDepartment: `${API_BASEURL}/department/update`,
 
+    // slideshow
+    getSlideshow: `${API_BASEURL}/slideshow`,
+    createSlideshow: `${API_BASEURL}/slideshow/create`,
+    updateSlideshow: `${API_BASEURL}/slideshow/update`,
+    deleteSlideshow: `${API_BASEURL}/slideshow/visibility`,
+
+    // btnss
+    getBtnss: `${API_BASEURL}/btnss`,
+    createBtnss: `${API_BASEURL}/btnss/create`,
+    updateBtnss: `${API_BASEURL}/btnss/update`,
+    deleteBtnss: `${API_BASEURL}/btnss/visibility`,
+
     // section
     getSection: `${API_BASEURL}/section`,
     getSectionByPage: `${API_BASEURL}/section/by-page`,

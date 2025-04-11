@@ -1,8 +1,19 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } from "react";
 import CarouselPieceSlider from "./CarouselPieceSlider";
+import axios from "axios";
+import { API_ENDPOINTS } from "../../../service/APIConfig";
 
-const CarouselPiece = () => {
+const CarouselPiece = forwardRef((props, ref) => {
     const [isRotatedButton, setIsRotatedButton] = useState(false);
+    const carouselSliderRef = useRef();
+
+    useImperativeHandle(ref, () => ({
+        getSlideshows: async () => {
+            const slidersData = await carouselSliderRef.current?.getSliders?.() || [];
+            // console.log("Raw slideshow from getSlideshows:", slidersData);
+            return slidersData;
+        }
+    }));
 
     return (
         <div className="grid grid-cols-1 gap-4 ">
@@ -54,7 +65,9 @@ const CarouselPiece = () => {
                     </div>
                 </summary>
 
-                <CarouselPieceSlider />
+                <CarouselPieceSlider
+                    ref={carouselSliderRef}
+                />
 
                 <div className="flex flex-row items-center w-full gap-4 mx-6 my-1">
                     <label className="block text-xl font-medium leading-6 text-white-900">
@@ -70,6 +83,6 @@ const CarouselPiece = () => {
             </details>
         </div>
     );
-};
+});
 
 export default CarouselPiece;
