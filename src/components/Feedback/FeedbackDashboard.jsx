@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useEffect } from 'react';
-import { API_ENDPOINTS } from '../../service/APIConfig';
+import { API_ENDPOINTS, API } from '../../service/APIConfig';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
@@ -138,7 +138,7 @@ const FeedbackDashboard = () => {
                                     scope="row"
                                     className="px-6 py-4"
                                 >
-                                    <img src={item.fb_img} alt="" className='size-12 rounded-full' />
+                                    <img src={`${API}/storage/uploads/${item.image?.img}`} alt="" className='size-12 rounded-full' />
                                 </td>
                                 <td className="px-6 py-4">{item.fb_title}</td>
                                 <td className="px-6 py-4">{item.fb_subtitle}</td>
@@ -170,13 +170,13 @@ const FeedbackDashboard = () => {
                                         {activeDropdown === item.fb_id && (
                                             <div className="fixed right-0 mt-2 w-36 mr-8 bg-white border border-gray-300 rounded-md shadow-md z-50">
                                                 <div className="py-1">
-                                                    <a 
+                                                    <a
                                                      onClick={() => handleEdit(item.fb_id)}
                                                     href="#" className="flex gap-2 items-center px-4 py-2 hover:bg-blue-100">
                                                         <i className="ti ti-edit text-gray-500 text-xl"></i>
                                                         <span className="text-sm text-gray-700">Edit</span>
                                                     </a>
-                                                    <a href="#" 
+                                                    <a href="#"
                                                     onClick={() => handleDelete(item.fb_id)}
                                                     className="flex gap-2 items-center px-4 py-2 hover:bg-blue-100">
                                                         <i className="ti ti-trash text-gray-500 text-xl"></i>

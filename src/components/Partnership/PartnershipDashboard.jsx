@@ -1,14 +1,22 @@
-import React, { useState } from 'react'
-import { useEffect } from 'react';
-import { API_ENDPOINTS } from '../../service/APIConfig';
+import React, { useState, useEffect } from 'react';
+import { API_ENDPOINTS, API } from '../../service/APIConfig';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-
 
 const PartnershipDashboard = () => {
     const [activeDropdown, setActiveDropdown] = useState(null);
     const [facultyItems, setFacultyItems] = useState([]);
     const navigate = useNavigate();
+
+    const fetchImageById = async (id) => {
+        try {
+            const response = await axios.get(`${API_ENDPOINTS.getImages}/${id}`);
+            return response.data.data;
+        } catch (error) {
+            console.error(`Failed to fetch image for id ${id}`, error);
+            return null;
+        }
+    };
 
     useEffect(() => {
         const fetchNews = async () => {
@@ -22,7 +30,15 @@ const PartnershipDashboard = () => {
                     newsArray = [];
                 }
 
-                const sortedCareer = newsArray.sort((a, b) => b.ps_order - a.ps_order);
+                const updatedNewsArray = await Promise.all(newsArray.map(async (item) => {
+                    const image = await fetchImageById(item.ps_img);
+                    return {
+                        ...item,
+                        image: image
+                    };
+                }));
+
+                const sortedCareer = updatedNewsArray.sort((a, b) => b.ps_order - a.ps_order);
                 setFacultyItems(sortedCareer);
             } catch (error) {
                 console.error('Failed to fetch partnership:', error);
@@ -37,7 +53,6 @@ const PartnershipDashboard = () => {
         const eventData = response.data;
         navigate('/partnership/partnership-details', { state: { eventData } });
     };
-
 
     const moveItem = async (index, direction) => {
         const newItems = [...facultyItems];
@@ -72,18 +87,6 @@ const PartnershipDashboard = () => {
         await axios.put(`${API_ENDPOINTS.updatePartnershipOrder}`, payload);
     };
 
-    // const duplicateItem = async (id) => {
-    //     try {
-    //         const response = await axios.post(`${API_ENDPOINTS.duplicatePartnership}/${id}`);
-    //         if (response.status === 200) {
-    //             alert("partner duplicated successfully");
-    //             window.location.reload();
-    //         }
-    //     } catch (error) {
-    //         console.error("Error duplicating partner:", error);
-    //     }
-    // };
-
     const handleDelete = async (id) => {
         if (!window.confirm("Are you sure you want to delete of this partnership?")) return;
 
@@ -99,7 +102,6 @@ const PartnershipDashboard = () => {
             console.error("Error toggling visibility:", error);
         }
     };
-
 
     return (
         <div className="relative overflow-x-auto shadow-md px-8">
@@ -134,7 +136,7 @@ const PartnershipDashboard = () => {
                                 scope="row"
                                 className="px-6 py-4"
                             >
-                                <img src={item.ps_img} alt="" className='size-12 p-1' />
+                                <img src={`${API}/storage/uploads/${item.image?.img}`} alt="" className='size-12 p-1' />
                             </td>
                             <td className="px-6 py-4">
                                 {item.ps_type === 1 ? "Scholarship" : item.ps_type === 2 ? "University" : "Unknown"}
