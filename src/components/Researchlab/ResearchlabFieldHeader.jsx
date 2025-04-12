@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const ResearchlabFieldHeader = () => {
+const ResearchlabFieldHeader = ({onSave}) => {
     const navigate = useNavigate();
 
     const returnToPreviousPage = () => {
@@ -73,6 +73,7 @@ const ResearchlabFieldHeader = () => {
                         Return
                     </button>
                     <button
+                    onClick={onSave}
                         className="cursor-pointer bg-blue-600 text-white font-medium px-4 py-2 rounded hover:bg-blue-700"
                     >
                         Save
