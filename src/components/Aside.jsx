@@ -39,7 +39,7 @@ const Aside = () => {
                               { to: '/faculty', icon: 'ti-user', label: 'Faculty' },
                               { to: '/event', icon: 'ti-calendar-event', label: 'Event' },
                               { to: '/news', icon: 'ti-news', label: 'News' },
-                              // { to: '#', icon: 'ti-speakerphone', label: 'Announcement' },
+                              { to: '/announcement', icon: 'ti-speakerphone', label: 'Announcement' },
                               { to: '/career', icon: 'ti-target-arrow', label: 'Career' },
                               { to: '/scholarship', icon: 'ti-school', label: 'Scholarship' },
                               { to: '/research', icon: 'ti-microscope', label: 'Research' },

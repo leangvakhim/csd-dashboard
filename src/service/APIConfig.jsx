@@ -1,5 +1,5 @@
-// const API = "https://52.221.196.157";
-const API = "http://127.0.0.1:8000";
+const API = "https://52.221.196.157";
+// const API = "http://127.0.0.1:8000";
 const API_BASEURL = `${API}/api`;
 
 const API_ENDPOINTS = {
@@ -43,6 +43,29 @@ const API_ENDPOINTS = {
     duplicateNews: `${API_BASEURL}/news/duplicate`,
     updateNewsOrder: `${API_BASEURL}/news/reorder`,
 
+    // banner
+    getBanner: `${API_BASEURL}/banner`,
+    createBanner: `${API_BASEURL}/banner/create`,
+    updateBanner: `${API_BASEURL}/banner/update`,
+
+    // department
+    getDepartment: `${API_BASEURL}/department`,
+    createDepartment: `${API_BASEURL}/department/create`,
+    updateDepartment: `${API_BASEURL}/department/update`,
+
+    // slideshow
+    getSlideshow: `${API_BASEURL}/slideshow`,
+    createSlideshow: `${API_BASEURL}/slideshow/create`,
+    updateSlideshow: `${API_BASEURL}/slideshow/update`,
+    deleteSlideshow: `${API_BASEURL}/slideshow/visibility`,
+    updateSlideshowOrder: `${API_BASEURL}/slideshow/reorder`,
+
+    // btnss
+    getBtnss: `${API_BASEURL}/btnss`,
+    createBtnss: `${API_BASEURL}/btnss/create`,
+    updateBtnss: `${API_BASEURL}/btnss/update`,
+    deleteBtnss: `${API_BASEURL}/btnss/visibility`,
+
     // section
     getSection: `${API_BASEURL}/section`,
     getSectionByPage: `${API_BASEURL}/section/by-page`,
@@ -50,6 +73,7 @@ const API_ENDPOINTS = {
     updateSection: `${API_BASEURL}/section/update`,
     deleteSection: `${API_BASEURL}/section/visibility`,
     updateSectionOrder: `${API_BASEURL}/section/reorder`,
+    syncSection: `${API_BASEURL}/section/sync-section`,
 
     // faculty
     getFaculty: `${API_BASEURL}/faculty`,
@@ -98,6 +122,47 @@ const API_ENDPOINTS = {
     deleteCareer: `${API_BASEURL}/career/visibility`,
     duplicateCareer: `${API_BASEURL}/career/duplicate`,
     updateCareerOrder: `${API_BASEURL}/career/reorder`,
+
+    // feedback
+    getScholarship: `${API_BASEURL}/scholarship`,
+    createScholarship: `${API_BASEURL}/scholarship/create`,
+    updateScholarship: `${API_BASEURL}/scholarship/update`,
+    deleteScholarship: `${API_BASEURL}/scholarship/visibility`,
+    duplicateScholarship: `${API_BASEURL}/scholarship/duplicate`,
+    updateScholarshipOrder: `${API_BASEURL}/scholarship/reorder`,
+
+    // researchlab 
+    getResearchlab: `${API_BASEURL}/rsdl`,
+    createResearchlab: `${API_BASEURL}/rsdl/create`,
+    updateResearchlab: `${API_BASEURL}/rsdl/update`,
+    deleteResearchlab: `${API_BASEURL}/rsdl/visibility`,
+    duplicateResearchlab: `${API_BASEURL}/rsdl/duplicate`,
+    updateResearchlabOrder: `${API_BASEURL}/rsdl/reorder`,
+
+
+    //rsdltag
+    getResearchlabTag: `${API_BASEURL}/rsdltag`,
+    createResearchlabTag: `${API_BASEURL}/rsdltag/create`,
+    updateResearchlabTag: `${API_BASEURL}/rsdltag/update`,
+    deleteResearchlabTag: `${API_BASEURL}/rsdltag/visibility`,
+    duplicateResearchlabTag: `${API_BASEURL}/rsdltag/duplicate`,
+    updateResearchlabTagOrder: `${API_BASEURL}/rsdltag/reorder`,
+
+    // feedback
+    getFeedback: `${API_BASEURL}/feedback`,
+    createFeedback: `${API_BASEURL}/feedback/create`,
+    updateFeedback: `${API_BASEURL}/feedback/update`,
+    deleteFeedback: `${API_BASEURL}/feedback/visibility`,
+    duplicateFeedback: `${API_BASEURL}/feedback/duplicate`,
+    updateFeedbackOrder: `${API_BASEURL}/feedback/reorder`,
+
+    // partnership
+    getPartnership: `${API_BASEURL}/partnership`,
+    createPartnership: `${API_BASEURL}/partnership/create`,
+    updatePartnership: `${API_BASEURL}/partnership/update`,
+    deletePartnership: `${API_BASEURL}/partnership/visibility`,
+    duplicatePartnership: `${API_BASEURL}/partnership/duplicate`,
+    updatePartnershipOrder: `${API_BASEURL}/partnership/reorder`,
 
     // button
     // buttons: `${API_BASEURL}/button`,

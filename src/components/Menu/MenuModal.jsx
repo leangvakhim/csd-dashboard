@@ -29,23 +29,28 @@ const MenuModal = ({ isOpen, onClose, data}) => {
         const fetchMenus = async () => {
             try {
                 const res = await axios.get(API_ENDPOINTS.getMenu);
-                if (res.data && res.data.data) {
-                    const filteredMenus = res.data.data.filter(menu =>
-                        menu.menup_id === null && menu.menu_id !== data?.menu_id
-                    );
-                    setMenuOptions(filteredMenus);
+                if (res.data && Array.isArray(res.data.data)) {
+                const filteredMenus = res.data.data.filter(menu =>
+                    menu.menup_id === null && menu.menu_id !== data?.menu_id
+                );
+                setMenuOptions(filteredMenus);
+                } else {
+                console.error('❌ Invalid menu data structure:', res.data.data);
                 }
             } catch (err) {
-                console.error(' Failed to fetch parent menus:', err);
+                console.error('❌ Failed to fetch parent menus:', err);
             }
         };
 
         const fetchPages = async () => {
             try {
                 const res = await axios.get(API_ENDPOINTS.getPage);
-                if (res.data && res.data.data) {
-                    setPageOptions(res.data.data);
-                }
+                if (res.data && Array.isArray(res.data.data)) {
+                        setPageOptions(res.data.data);
+                    } else {
+                        console.error('❌ Invalid page data structure:', res.data.data);
+                        setPageOptions([]); // fallback
+                    }
             } catch (err) {
                 console.error('❌ Failed to fetch pages:', err);
             }
@@ -60,7 +65,7 @@ const MenuModal = ({ isOpen, onClose, data}) => {
             lang: parseInt(formData.lang) || 1,
             title: formData.title || null,
             menup_id: formData.menup_id ? parseInt(formData.menup_id) : null,
-            display: formData.display ? 1 : 0,
+            display: formData.display === true ? 1 : 0,
             active: formData.active ? 1 : 0,
             p_menu: formData.p_menu ? parseInt(formData.p_menu) : null,
         };
@@ -112,7 +117,7 @@ const MenuModal = ({ isOpen, onClose, data}) => {
     const fetchPages = async () => {
         try {
             const res = await axios.get(API_ENDPOINTS.getPage);
-            if (res.data && res.data.data) {
+            if (res.data && Array.isArray(res.data.data)) {
                 const pages = res.data.data;
                 setPageOptions(pages);
 
@@ -201,7 +206,7 @@ const MenuModal = ({ isOpen, onClose, data}) => {
                                     className="!bg-gray-50 !border !border-gray-300 !text-gray-900 text-sm !rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 "
                                 >
                                     <option value="">Select Page</option>
-                                    {pageOptions.map((page) => (
+                                    {Array.isArray(pageOptions) && pageOptions.map((page) => (
                                         <option key={page.p_id} value={page.p_id}>
                                             {page.p_title}
                                         </option>

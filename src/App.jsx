@@ -23,6 +23,8 @@ import FeedBackField from './components/Feedback/FeedbackField';
 import Partnership from './pages/Partnership';
 import PartnershipField from './components/Partnership/PartnershipField';
 import PageField from './components/Page/PageField';
+import Announcement from './pages/Announcement';
+import AnnouncementField from './components/Announcement/AnnouncementField';
 
 function App() {
 
@@ -39,6 +41,8 @@ function App() {
         <Route path='/event/event-detail' element={<EventsField/>} />
         <Route path='/news' element={<New/>} />
         <Route path='/news/news-details' element={<NewsField />} />
+        <Route path='/announcement' element={<Announcement/>} />
+        <Route path='/announcement/announcement-details' element={<AnnouncementField/>} />
         <Route path='/career' element={<Career/>} />
         <Route path='/career/career-details' element={<CareerField />} />
         <Route path='/scholarship' element={<Scholarship/>} />

@@ -10,6 +10,7 @@ const FacultyField = () => {
     const socialRef = useRef();
     const contactRef = useRef();
     const backgroundRef = useRef();
+    const infoRef = useRef();
     // const infoRef = useRef();
     const [subtitleContent, setSubtitleContent] = useState('');
     const location = useLocation();
@@ -258,7 +259,7 @@ const FacultyField = () => {
                 const key = `${item.fbg_name}-${item.fbg_id}`;
                 if (seen.has(key)) return false;
                 seen.add(key);
-                return item.fbg_name 
+                return item.fbg_name
             })
             : [];
         console.log("Filtered background data:", filteredBG);
@@ -303,34 +304,123 @@ const FacultyField = () => {
         }
         // Perform reorder
         const reorderPayload = filteredBG
-        .filter(item => typeof item.fbg_id === 'number')
-        .map(item => ({
-            fbg_id: item.fbg_id,
-            fbg_order: item.fbg_order
-        }));
+            .filter(item => typeof item.fbg_id === "number")
+            .map(item => ({
+                fbg_id: item.fbg_id,
+                fbg_order: item.fbg_order,
+            }));
         console.log("Reordering backgrounds with payload:", reorderPayload);
 
-        try {
-            const response = await axios.post(API_ENDPOINTS.updateFacultyBGOrder, reorderPayload, {
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
-                }
-            });
-            console.log("Reorder successful:", response.data);
-        } catch (error) {
-            console.error("Detailed error:", {
-                message: error.message,
-                response: error.response?.data,
-                status: error.response?.status,
-                config: error.config
-            });
-            throw error;
+        if (reorderPayload.length > 0) {
+            console.log("🔃 Reordering contacts:", reorderPayload);
+            try {
+                await axios.post(API_ENDPOINTS.updateFacultyBGOrder, reorderPayload, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                    },
+                });
+            } catch (error) {
+                console.error("Error reordering contacts:", error);
+            }
         }
     };
 
 
+    const saveFacultyInfo = async () => {
+        const f_id = formData.f_id;
+        if (!f_id) {
+            console.warn("Cannot save info: missing faculty ID.");
+            return;
+        }
 
+        const infoData = infoRef.current?.getData?.() || [];
+        console.log("Info data:", infoData);
+
+        // Filter duplicates based on title and ID
+        const seen = new Set();
+        const filteredInfo = Array.isArray(infoData)
+            ? infoData.filter(item => {
+                const key = `${item.finfo_title}-${item.finfo_detail}`;
+                if (seen.has(key)) return false;
+                seen.add(key);
+                return item.finfo_title;
+            })
+            : [];
+
+        console.log("Filtered info data:", filteredInfo);
+
+        // Split new vs existing
+        const newInfos = filteredInfo.filter(item => typeof item.finfo_id !== 'number').map(item => ({
+            finfo_order: item.finfo_order,
+            finfo_title: item.finfo_title,
+            finfo_detail: item.finfo_detail,
+            finfo_side: item.finfo_side,
+            display: item.display ?? 1,
+            active: item.active ?? 1
+        }));
+
+        const updateInfos = filteredInfo.filter(item => typeof item.finfo_id === 'number');
+
+        // 🔁 Update existing infos
+        for (const item of updateInfos) {
+            const payload = {
+                finfo_order: item.finfo_order,
+                finfo_title: item.finfo_title,
+                finfo_detail: item.finfo_detail,
+                finfo_side: item.finfo_side,
+                display: item.display ?? 1,
+                active: item.active ?? 1,
+                finfo_f: f_id
+            };
+            console.log(`Updating info ID: ${item.finfo_id} with payload:`, payload);
+            await axios.post(`${API_ENDPOINTS.updateFacultyInfo}/${item.finfo_id}`, payload);
+        }
+
+        // 🆕 Create new infos
+
+        if (newInfos.length > 0) {
+            const createPayload = {
+                f_id: 1,
+                finfo_f: newInfos
+            };
+            console.log("Create Payload:", createPayload);
+            
+            try {
+                await axios.post(API_ENDPOINTS.createFacultyInfo, createPayload);
+                console.log("Created Faculty Infos:", createPayload);
+            } catch (error) {
+                console.error("Error creating Faculty Infos:", error);
+                console.error("Response:", error.response.data);
+            }
+            
+        }
+
+
+
+        const reorderPayload = filteredInfo
+            .filter(item => typeof item.finfo_id === "number")
+            .map(item => ({
+                finfo_id: item.finfo_id,
+                finfo_order: item.finfo_order
+            }));
+
+        if (reorderPayload.length > 0) {
+            console.log("🔃 Reordering infos:", reorderPayload);
+            try {
+                const reorderResponse = await axios.post(API_ENDPOINTS.updateFacultyInfoOrder, reorderPayload, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    }
+                });
+                console.log("Reordered Faculty Infos:", reorderResponse.data);
+            } catch (error) {
+                console.error("Error reordering Faculty Infos:", error.response ? error.response.data : error.message);
+            }
+        }
+
+    };
 
 
 
@@ -340,6 +430,7 @@ const FacultyField = () => {
             await saveFacultySocial();
             await saveFacultyContact();
             await saveFacultyBG();
+            await saveFacultyInfo();
             alert("Faculty information saved successfully!");
         } catch (err) {
             if (err.response?.data?.errors) {
@@ -365,6 +456,7 @@ const FacultyField = () => {
                     socialRef={socialRef}
                     contactRef={contactRef}
                     backgroundRef={backgroundRef}
+                    infoRef={infoRef}
                     initialSocialData={socialRef.current?.getData?.()}
                 />
             </div>

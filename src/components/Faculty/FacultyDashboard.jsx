@@ -53,10 +53,10 @@ const FacultyDashboard = () => {
         // Swap items locally
         [newItems[index], newItems[targetIndex]] = [newItems[targetIndex], newItems[index]];
 
-        // Update f_order values
+        // Update f_order values in ascending order
         const updatedItems = newItems.map((item, i) => ({
             ...item,
-            f_order: newItems.length - i // or i + 1 for ascending order
+            f_order: i + 1
         }));
 
         setFacultyItems(updatedItems);
@@ -144,10 +144,10 @@ const FacultyDashboard = () => {
                                     </span>
                                 </td>
                                 <td className="px-2 py-6 flex gap-2 items-center relative">
-                                    <a href="#" onClick={() => moveItem(index, 'up')} className="font-medium text-gray-900 hover:text-blue-500 hover:underline">
+                                    <a onClick={() => moveItem(index, 'up')} className="cursor-pointer font-medium text-gray-900 hover:text-blue-500 hover:underline">
                                         <i className="ti ti-chevron-up text-xl"></i>
                                     </a> |
-                                    <a href="#" onClick={() => moveItem(index, 'down')} className="font-medium text-gray-900 hover:text-blue-500 hover:underline">
+                                    <a onClick={() => moveItem(index, 'down')} className="cursor-pointer font-medium text-gray-900 hover:text-blue-500 hover:underline">
                                         <i className="ti ti-chevron-down text-xl"></i>
                                     </a> |
                                     <div className="relative">

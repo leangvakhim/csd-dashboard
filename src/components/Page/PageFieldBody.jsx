@@ -1,15 +1,26 @@
 import React, { useEffect, forwardRef } from 'react'
 import PageSection from './PageSection'
 
-const PageFieldBody = forwardRef(({formData, setFormData}, ref) => {
+const PageFieldBody = forwardRef((props, pageRef) => {
+    const { formData, setFormData, page_id } = props;
 
-    useEffect(() => {
-        // console.log("Loaded formData: ", formData);
-    }, [formData]);
+    // useEffect(() => {
+    //     if (pageRef && pageRef.current) {
+    //         console.log("✅ pageRef is set:", pageRef.current);
+
+    //         if (typeof pageRef.current.getSlideshows === 'function') {
+    //             console.log("🎠 getSlideshows() function is ready.");
+    //         } else {
+    //             console.warn("❌ getSlideshows() is NOT defined on pageRef.current");
+    //         }
+    //     } else {
+    //         console.warn("❌ pageRef is missing or not set properly.");
+    //     }
+    // }, [pageRef]);
 
     return (
         <div className='px-4'>
-            <div className="flex flex-row gap-4 px-4 py-2 mb-1">
+            <div className="flex flex-row gap-4 px-4">
                 <div className="flex-1">
                     <label className="block text-xl font-medium leading-6 text-white-900">
                     Title
@@ -55,10 +66,15 @@ const PageFieldBody = forwardRef(({formData, setFormData}, ref) => {
                 </div>
             </div>
             <div>
-                <PageSection ref={ref} />
+                <PageSection
+                    ref={pageRef}
+                    formData={formData}
+                    setFormData={setFormData}
+                    page_id={page_id}
+                />
             </div>
         </div>
     )
-})
+});
 
 export default PageFieldBody;

@@ -1,12 +1,27 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } from "react";
 import MediaLibraryModal from "../../MediaLibraryModal";
+import JoditEditor from 'jodit-react';
+import 'jodit/es5/jodit.css';
+import { API_ENDPOINTS } from "../../../service/APIConfig";
+import axios from "axios";
 
-const ProgramPiece = () => {
+const config = {
+  readonly: false,  // Set to true for read-only mode
+  height: 400,
+  placeholder: 'Start typing...',
+  uploader: {
+    insertImageAsBase64URI: true,  // Enable base64 image upload
+  },
+};
+
+const ProgramPiece = forwardRef((props, ref) => {
   const [isRotatedButton1, setIsRotatedButton1] = useState(false);
   const [isMediaLibraryOpen, setMediaLibraryOpen] = useState(false);
   const [selectedImage1, setSelectedImage1] = useState("");
   const [selectedImage2, setSelectedImage2] = useState("");
   const [currentField, setCurrentField] = useState("");
+  const [detail, setDetail] = useState("");
+  const [title, setTitle] = useState("");
 
   const openMediaLibrary = (field) => {
     setCurrentField(field);
@@ -21,6 +36,35 @@ const ProgramPiece = () => {
     }
     setMediaLibraryOpen(false);
   };
+
+  const getImageIdByUrl = async (url) => {
+    try {
+      const response = await axios.get(API_ENDPOINTS.getImages);
+      const images = Array.isArray(response.data) ? response.data : response.data.data;
+
+      const matchedImage = images.find((img) => img.image_url === url);
+      return matchedImage?.image_id || null;
+    } catch (error) {
+      console.error('❌ Failed to fetch image ID:', error);
+      return null;
+    }
+  };
+
+  useImperativeHandle(ref, () => ({
+     getPrograms: async () => {
+      const img1Id = await getImageIdByUrl(selectedImage1);
+      const img2Id = await getImageIdByUrl(selectedImage2);
+
+      return [
+        {
+          dep_title: title,
+          dep_img1: img1Id,
+          dep_img2: img2Id,
+          dep_detail: detail
+        }
+      ];
+    }
+  }));
 
   return (
     <div className="grid grid-cols-1 gap-4 ">
@@ -88,6 +132,8 @@ const ProgramPiece = () => {
               <input
                 type="text"
                 className="block w-full !border-gray-200 border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
               />
             </div>
           </div>
@@ -281,13 +327,18 @@ const ProgramPiece = () => {
               Detail
             </label>
             <div className="mt-2">
-              <textarea className="!border-gray-300 h-60 block w-full rounded-md border-0 py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-2xl sm:leading-6"></textarea>
+              <JoditEditor
+                value={detail}
+                config={config}
+                onChange={(newContent) => setDetail(newContent)}
+              />
+              {/* <textarea className="!border-gray-300 h-60 block w-full rounded-md border-0 py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-2xl sm:leading-6"></textarea> */}
             </div>
           </div>
         </div>
       </details>
     </div>
   );
-};
+});
 
 export default ProgramPiece;

@@ -60,15 +60,17 @@ const FacultyFieldBackground = forwardRef(({ formData = {}, setFormData = {}, f_
   };
 
   const handleAddBackground = async () => {
+
     const newBackground = {
       id: `${Date.now()}`,
+      f_id: f_id,
       title: `University ${background.length + 1}`,
-      image: null,
-      display: true,
       fbg_name: null,
+      fbg_img: null,
+      display: 0,
     };
-
     setBackground((prevItems) => [...prevItems, newBackground]);
+
   };
 
   const toggleRotation = (id) => {
@@ -82,13 +84,17 @@ const FacultyFieldBackground = forwardRef(({ formData = {}, setFormData = {}, f_
     if (!result.destination) return;
 
     const newBackground = Array.from(background);
-    const [reorderedBackground] = newBackground.splice(
-      result.source.index,
-      1
-    );
+    const [reorderedBackground] = newBackground.splice(result.source.index, 1);
     newBackground.splice(result.destination.index, 0, reorderedBackground);
+    const reorderedItems = newBackground.map((item, index) => ({
+      ...item,
+      fbg_order: index + 1
+    }));
 
-    setBackground(newBackground);
+    // Ensure ordering by social_order before updating state
+    reorderedItems.sort((a, b) => a.fbg_order - b.fbg_order);
+
+    setBackground(reorderedItems);
   };
 
   const openMediaLibrary = (backgroundId, field) => {
@@ -154,22 +160,29 @@ const FacultyFieldBackground = forwardRef(({ formData = {}, setFormData = {}, f_
             const imgRes = await fetch(`${API_ENDPOINTS.getImages}`);
             const imgData = await imgRes.json();
 
-            const formatted = result.data.map(item => {
-              const matched = imgData.data?.find(img => img.image_id === item.fbg_img_id);
+            const formatted = result.data.map((item, index) => {
+              const matchedImage = Array.isArray(imgData?.data)
+                ? imgData.data.find(img => String(img.image_id) === String(item.fbg_img || item.fbg_img_id))
+                : null;
+            
               return {
-                fbg_id: item.fbg_id,
-                title: `University ${item.fbg_order || 1}`,
+                fbg_id: item.fbg_id || null,
+                f_id: f_id,
+                id: String(item.fbg_id || ''), 
+                title: `University ${index + 1}`,  // Auto-incremented title
+                fbg_order: index + 1,              // Set proper fbg_order based on index
                 fbg_name: item.fbg_name || "",
-                fbg_img: matched ? `${API}/storage/uploads/${matched.img}` : null,
-                fbg_img_id: item.fbg_img || null,
-                display: item.display ?? 0,
-                active: item.active ?? 1,
+                fbg_img: matchedImage ? `${API}/storage/uploads/${matchedImage.img}` : null,
+                fbg_img_id: item.fbg_img || item.fbg_img_id || null, 
+                display: Boolean(item.display ?? 0),
+                active: Boolean(item.active ?? 1),
               };
             });
+            
             setBackground(formatted);
           }
         })
-        .catch(err => console.error("❌ Error fetching social data:", err));
+        .catch(err => console.error("❌ Error fetching faculty background data:", err));
     }
   }, [f_id]);
 
