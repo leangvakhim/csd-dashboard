@@ -36,6 +36,7 @@ import { TbSpeakerphone } from "react-icons/tb";
 import { RiQuestionnaireLine } from "react-icons/ri";
 import { TbSchool } from "react-icons/tb";
 import { LuHeartHandshake } from "react-icons/lu";
+import { TbCalendarEvent } from "react-icons/tb";
 import EventsPiece from "./Events/EventsPiece";
 import CarouselPiece from "./Carousel/CarouselPiece";
 import BannerPiece from "./Banner/BannerPiece";
@@ -71,6 +72,7 @@ import ImportantPiece from "./Important/ImportantPiece";
 import PartnerPiece from "./Partner/PartnerPiece";
 import FeedbackPiece from "./Feedback/FeedbackPiece";
 import { API_ENDPOINTS } from "../../service/APIConfig";
+import AnnouncementPiece from "./Announcement/AnnouncementPiece";
 const sectionOptions = [
   {
     type: "Slideshow",
@@ -231,8 +233,14 @@ const sectionOptions = [
   {
     type: "Event",
     component: EventsPiece,
-    icon: TbSpeakerphone,
+    icon: TbCalendarEvent,
     label: "Event",
+  },
+  {
+    type: "Announcement",
+    component: AnnouncementPiece,
+    icon: TbSpeakerphone,
+    label: "Announcement",
   },
   {
     type: "Research",
