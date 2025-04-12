@@ -65,41 +65,40 @@ const PageField = () => {
         // console.log("🔥 savedSectionId:", savedSectionId);
 
         if (slideshows.length > 0 && savedSectionId) {
-            const slideshowPayload = slideshows.map((item) => ({
-                ...item,
-                slider_sec: savedSectionId
-            }));
+            for (const item of slideshows) {
+
+                const payload = {
+                    ...item,
+                    slider_sec: savedSectionId,
+                };
+
+            if (item.slider_id) {
+                    await axios.post(`${API_ENDPOINTS.updateSlideshow}/${item.slider_id}`, { Slideshow: payload });
+                } else {
+                    await axios.post(API_ENDPOINTS.createSlideshow, { Slideshow: payload });
+                }
+            }
+
+            reorderSlideshow();
 
             // console.log("🎓 slideshow sent as array:", slideshowPayload);
-            await axios.post(API_ENDPOINTS.createSlideshow, {Slideshow: slideshowPayload});
+            // await axios.post(API_ENDPOINTS.createSlideshow, {Slideshow: slideshowPayload});
         }
     }
+    const reorderSlideshow = async () => {
+        const slideshows = await pageRef.current?.getSlideshows?.() || [];
 
-    // const saveSection = async (savedPageId) => {
-    //     const sections = pageRef.current?.getSections?.() || [];
+        const slideshowPayload = slideshows.map((slideshow, index) => ({
+            slider_id: slideshow.slider_id,
+            slider_order: index + 1
+        }));
 
-    //     if (sections.length > 0 && savedPageId) {
-    //         const sectionPayload = sections.map((section, index) => ({
-    //             sec_page: savedPageId,
-    //             sec_order: section.sec_order,
-    //             sec_type: section.sec_type,
-    //             lang: section.lang,
-    //             display: section.display ?? 0,
-    //             active: section.active ?? 1,
-    //         }));
-
-    //         const response = await axios.post(API_ENDPOINTS.createSection, { sections: sectionPayload });
-    //         console.log("📦 Sections sent as array:", sectionPayload);
-
-    //         const savedSectionId = Array.isArray(response.data?.data)
-    //             ? response.data.data[0]?.sec_id
-    //             : response.data?.data?.sec_id;
-
-    //         // console.log("📥 savedSectionId:", savedSectionId);
-
-    //         saveDepartment(savedSectionId);
-    //     }
-    // };
+        try {
+            await axios.put(API_ENDPOINTS.updateSlideshowOrder, slideshowPayload);
+        } catch (error) {
+            console.error("Failed to reorder slideshow:", error.response?.data || error.message);
+        }
+    };
 
     const syncSection = async (savedPageId) => {
         const sections = pageRef.current?.getSections?.() || [];
@@ -133,7 +132,7 @@ const PageField = () => {
                 ? response.data.data[0]?.sec_id
                 : response.data?.data?.sec_id;
 
-                console.log("📥 savedSectionId:", savedSectionId);
+                // console.log("📥 savedSectionId:", savedSectionId);
 
                 // saveDepartment(savedSectionId);
                 // saveBanner(savedSectionId);
@@ -177,7 +176,7 @@ const PageField = () => {
 
         try {
             let response;
-            console.log("formData.p_id:", formData.p_id)
+            // console.log("formData.p_id:", formData.p_id)
             if (formData?.p_id) {
                 response = await axios.post(`${API_ENDPOINTS.updatePage}/${formData.p_id}`, payload);
             } else {

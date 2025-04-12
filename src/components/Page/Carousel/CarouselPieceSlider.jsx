@@ -2,28 +2,58 @@ import { forwardRef, useImperativeHandle, useState, useEffect } from "react";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import MediaLibraryModal from '../../MediaLibraryModal';
 import axios from "axios";
-import { API_ENDPOINTS } from "../../../service/APIConfig";
+import { API, API_ENDPOINTS } from "../../../service/APIConfig";
 
-const CarouselPieceSlider = forwardRef((props, ref) => {
+const CarouselPieceSlider = forwardRef(({displaySlideshow}, ref) => {
     const [isRotatedButton1, setIsRotatedButton1] = useState(false);
     const [isRotatedButton2, setIsRotatedButton2] = useState(false);
     const [currentSliderId, setCurrentSliderId] = useState(null);
-    const [currentField, setCurrentField] = useState("");
+    const [currentField, setCurrentField] = useState(null);
     const [isMediaLibraryOpen, setMediaLibraryOpen] = useState(false);
     const [rotatedStates, setRotatedStates] = useState({});
     const [slider, setSlider] = useState([
-    {
-        id: "1",
-        title: "Slider 1",
-        subtitle: "",
-        logo: "",
-        image: "",
-        firstbtntitle: "Button 1",
-        firstbtnselect: "",
-        secondbtntitle: "Button 2",
-        secondbtnselect: ""
+        {
+            id: "1",
+            title: "Slider 1",
+            subtitle: "",
+            logo: "",
+            image: "",
+            firstbtntitle: "Button 1",
+            firstbtnselect: "",
+            secondbtntitle: "Button 2",
+            secondbtnselect: ""
         },
     ]);
+
+    useEffect(() => {
+        const fetchSliders = async () => {
+            try {
+                const response = await axios.get(API_ENDPOINTS.getSlideshow);
+                const rawData = response.data?.data || [];
+                const formattedData = rawData.map(item => ({
+                    id: item.slider_id.toString(),
+                    title: item.slider_title || '',
+                    subtitle: item.slider_text || '',
+                    logo: item.logo?.img ? `${API}/storage/uploads/${item.logo.img}` : '',
+                    image: item.img?.img ? `${API}/storage/uploads/${item.img.img}` : '',
+                    firstbtntitle: item.btn1?.bss_title || '',
+                    firstbtnselect: item.btn1?.bss_routepage || '',
+                    secondbtntitle: item.btn2?.bss_title || '',
+                    secondbtnselect: item.btn2?.bss_routepage || '',
+                    bss_id_btn1: item.btn1?.bss_id || 0,
+                    bss_id_btn2: item.btn2?.bss_id || 0,
+                    display: item.display === 1,
+                    firstbtndisplay: item.btn1?.display === 1,
+                    secondbtndisplay: item.btn2?.display === 1
+                }));
+                setSlider(formattedData);
+            } catch (error) {
+                console.error('Error fetching sliders:', error);
+            }
+        };
+
+        fetchSliders();
+    }, []);
 
     // useEffect(() => {
     //    console.log("📦 Current Slider Data:", slider);
@@ -32,32 +62,51 @@ const CarouselPieceSlider = forwardRef((props, ref) => {
     useImperativeHandle(ref, () => ({
         getSliders: async () => {
             return await Promise.all(slider.map(async item => {
-                let btn1Id = 0;
-                let btn2Id = 0;
+                let btn1Id = item.bss_id_btn1 || 0;
+                let btn2Id = item.bss_id_btn2 || 0;
 
+                // btn1
                 try {
-                    const btn1Res = await axios.post(API_ENDPOINTS.createBtnss, {
-                        bss_title: item.firstbtntitle || '',
-                        bss_routepage: item.firstbtnselect || '',
-                        display: item.firstbtndisplay ? 1 : 0,
-                    });
-                    btn1Id = btn1Res.data?.data?.bss_id || null;
+                    if (btn1Id) {
+                        await axios.post(`${API_ENDPOINTS.updateBtnss}/${btn1Id}`, {
+                            bss_title: item.firstbtntitle || '',
+                            bss_routepage: item.firstbtnselect || '',
+                            display: item.firstbtndisplay ? 1 : 0,
+                        });
+                    } else {
+                        const res1 = await axios.post(API_ENDPOINTS.createBtnss, {
+                            bss_title: item.firstbtntitle || '',
+                            bss_routepage: item.firstbtnselect || '',
+                            display: item.firstbtndisplay ? 1 : 0,
+                        });
+                        btn1Id = res1.data?.data?.bss_id || null;
+                    }
                 } catch (error) {
-                    console.error("Error create btn1:", error);
+                    console.error('btn1 error:', error);
                 }
 
+                // btn2
                 try {
-                    const btn2Res = await axios.post(API_ENDPOINTS.createBtnss, {
-                        bss_title: item.secondbtntitle || '',
-                        bss_routepage: item.secondbtnselect || '',
-                        display: item.secondbtndisplay ? 1 : 0,
-                    });
-                    btn2Id = btn2Res.data?.data?.bss_id || null;
+                    if (btn2Id) {
+                        await axios.post(`${API_ENDPOINTS.updateBtnss}/${btn2Id}`, {
+                            bss_title: item.secondbtntitle || '',
+                            bss_routepage: item.secondbtnselect || '',
+                            display: item.secondbtndisplay ? 1 : 0,
+                        });
+                    } else {
+                        const res2 = await axios.post(API_ENDPOINTS.createBtnss, {
+                            bss_title: item.secondbtntitle || '',
+                            bss_routepage: item.secondbtnselect || '',
+                            display: item.secondbtndisplay ? 1 : 0,
+                        });
+                        btn2Id = res2.data?.data?.bss_id || null;
+                    }
                 } catch (error) {
-                    console.error("Error create btn2:", error);
+                    console.error('btn2 error:', error);
                 }
 
                 return {
+                    slider_id: item.id,
                     slider_title: item.title || '',
                     slider_text: item.subtitle || '',
                     logo: item.logo ? await getImageIdByUrl(item.logo) : 0,
@@ -65,7 +114,8 @@ const CarouselPieceSlider = forwardRef((props, ref) => {
                     btn1: btn1Id,
                     btn2: btn2Id,
                     display: item.display ? 1 : 0,
-                    active: 1
+                    active: 1,
+                    slider_sec: displaySlideshow || 0,
                 }
             }))
         }
@@ -116,7 +166,7 @@ const CarouselPieceSlider = forwardRef((props, ref) => {
                 if (item.id === currentSliderId) {
                     return {
                         ...item,
-                        [currentField]: imageUrl || "", // clear if empty string
+                        [currentField]: imageUrl || null,
                     };
                 }
                 return item;
@@ -143,6 +193,17 @@ const CarouselPieceSlider = forwardRef((props, ref) => {
             } catch (error) {
             console.error('❌ Failed to fetch image ID:', error);
             return null;
+        }
+    };
+
+    const handleDeleteSlider = async (sliderId) => {
+        if (!window.confirm("Are you sure you want to delete this slider?")) return;
+
+        try {
+            await axios.put(`${API_ENDPOINTS.deleteSlideshow}/${sliderId}`);
+            setSlider((prevSlider) => prevSlider.filter((item) => item.id !== sliderId));
+        } catch (error) {
+            console.error('Failed to delete slider:', error);
         }
     };
 
@@ -181,6 +242,7 @@ const CarouselPieceSlider = forwardRef((props, ref) => {
                                                     <span className=' shrink-0 transition-transform duration-500 group-open:-rotate-0 flex gap-2'>
                                                         <div className='block'>
                                                             <svg
+                                                                onClick={() => handleDeleteSlider(sliders.id)}
                                                                 xmlns="http://www.w3.org/2000/svg"
                                                                 fill="none"
                                                                 viewBox="0 0 24 24"
@@ -193,7 +255,7 @@ const CarouselPieceSlider = forwardRef((props, ref) => {
                                                         </div>
                                                         <span
                                                             className={`cursor-pointer shrink-0 transition-transform duration-300 ${
-                                                                    rotatedStates[sliders.id] ? "rotate-180" : ""
+                                                                    rotatedStates[sliders.id] ? "" : "rotate-180"
                                                                     }`}
                                                             >
                                                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="size-6">
@@ -400,174 +462,179 @@ const CarouselPieceSlider = forwardRef((props, ref) => {
                                                 </div>
                                                 {/* Button  */}
                                                 <div className="grid grid-cols-1 sm:!grid-cols-2 gap-4 px-4 py-2">
-                                                    {/* Button 1 */}
-                                                    <details className="group [&_summary::-webkit-details-marker]:hidden border-2 rounded-lg grid-cols-1">
-                                                        <summary
-                                                            className="cursor-pointer flex justify-between rounded-lg py-2 w-full "
-                                                        >
-                                                            <div className="cursor-pointer flex items-center justify-between w-full px-4" onClick={() => setIsRotatedButton1(!isRotatedButton1)}>
-                                                                <span className=" text-xl font-medium">
-                                                                    {sliders.firstbtntitle}
-                                                                </span>
-                                                                <div className={`cursor-pointer shrink-0 transition-transform duration-300 ${isRotatedButton1 ? 'rotate-180' : ''}`}>
-                                                                    <svg
-                                                                        xmlns="http://www.w3.org/2000/svg"
-                                                                        fill="none"
-                                                                        viewBox="0 0 24 24"
-                                                                        stroke-width="1.5"
-                                                                        stroke="currentColor"
-                                                                        className="size-6"
-                                                                    >
-                                                                        <path
-                                                                        stroke-linecap="round"
-                                                                        stroke-linejoin="round"
-                                                                        d="m4.5 15.75 7.5-7.5 7.5 7.5"
-                                                                        />
-                                                                    </svg>
+                                                    {/* left side */}
+                                                    <div className=" flex flex-col gap-2">
+                                                        {/* Button 1 */}
+                                                        <details className=" group [&_summary::-webkit-details-marker]:hidden border-2 rounded-lg grid-cols-1">
+                                                            <summary
+                                                                className="cursor-pointer flex justify-between rounded-lg py-2 w-full "
+                                                            >
+                                                                <div className="cursor-pointer flex items-center justify-between w-full px-4" onClick={() => setIsRotatedButton1(!isRotatedButton1)}>
+                                                                    <span className=" text-xl font-medium">
+                                                                        {sliders.firstbtntitle}
+                                                                    </span>
+                                                                    <div className={`cursor-pointer shrink-0 transition-transform duration-300 ${isRotatedButton1 ? 'rotate-180' : ''}`}>
+                                                                        <svg
+                                                                            xmlns="http://www.w3.org/2000/svg"
+                                                                            fill="none"
+                                                                            viewBox="0 0 24 24"
+                                                                            stroke-width="1.5"
+                                                                            stroke="currentColor"
+                                                                            className="size-6"
+                                                                        >
+                                                                            <path
+                                                                            stroke-linecap="round"
+                                                                            stroke-linejoin="round"
+                                                                            d="m4.5 15.75 7.5-7.5 7.5 7.5"
+                                                                            />
+                                                                        </svg>
+                                                                    </div>
                                                                 </div>
-                                                            </div>
-                                                        </summary>
-                                                        {/* button 1 */}
-                                                        <div className="grid grid-cols-1 gap-4 px-4 py-2">
-                                                            <div className="flex-1">
-                                                                <label className=" block text-lg font-medium leading-6 text-white-900">
-                                                                button1 name
-                                                                </label>
-                                                                <div className="mt-2">
-                                                                <input
-                                                                    type="text"
-                                                                    value={sliders.firstbtntitle}
-                                                                    onChange={(e) => handleInputChange(sliders.id, 'firstbtntitle', e.target.value)}
-                                                                    className="!border-gray-300 block w-full border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
-                                                                />
-                                                                </div>
-                                                            </div>
-
-                                                            <div className="flex-1">
-                                                                <label for="countries" className="block text-lg font-medium leading-6 text-white-900">
-                                                                    Select page option
-                                                                </label>
-                                                                <select
-                                                                    className="mt-2 !border-gray-300 block w-full border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
-                                                                    value={sliders.firstbtnselect}
-                                                                    onChange={(e) => handleInputChange(sliders.id, 'firstbtnselect', e.target.value)}
-                                                                >
-                                                                    <option value="">Choose a page</option>
-                                                                    <option value="Home">Home</option>
-                                                                    <option value="About">About</option>
-                                                                    <option value="Contact">Contact</option>
-                                                                    <option value="Program">Program</option>
-                                                                </select>
-                                                            </div>
-                                                            <div className="flex-1">
-                                                                <label className="block text-xl font-medium leading-6 text-white-900">
-                                                                Display
-                                                                </label>
-                                                                <div className="mt-2">
-                                                                    <label className="toggle-switch mt-2">
+                                                            </summary>
+                                                            {/* button 1 */}
+                                                            <div className="grid grid-cols-1 gap-4 px-4 py-2">
+                                                                <div className="flex-1">
+                                                                    <label className=" block text-lg font-medium leading-6 text-white-900">
+                                                                    button1 name
+                                                                    </label>
+                                                                    <div className="mt-2">
                                                                     <input
-                                                                        type="checkbox"
-                                                                        checked={sliders.firstbtndisplay || false}
-                                                                        onChange={(e) => handleInputChange(sliders.id, 'firstbtndisplay', e.target.checked)}
+                                                                        type="text"
+                                                                        value={sliders.firstbtntitle}
+                                                                        onChange={(e) => handleInputChange(sliders.id, 'firstbtntitle', e.target.value)}
+                                                                        className="!border-gray-300 block w-full border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
                                                                     />
+                                                                    </div>
+                                                                </div>
+
+                                                                <div className="flex-1">
+                                                                    <label for="countries" className="block text-lg font-medium leading-6 text-white-900">
+                                                                        Select page option
+                                                                    </label>
+                                                                    <select
+                                                                        className="mt-2 !border-gray-300 block w-full border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
+                                                                        value={sliders.firstbtnselect}
+                                                                        onChange={(e) => handleInputChange(sliders.id, 'firstbtnselect', e.target.value)}
+                                                                    >
+                                                                        <option value="">Choose a page</option>
+                                                                        <option value="Home">Home</option>
+                                                                        <option value="About">About</option>
+                                                                        <option value="Contact">Contact</option>
+                                                                        <option value="Program">Program</option>
+                                                                    </select>
+                                                                </div>
+                                                                <div className="flex-1">
+                                                                    <label className="block text-xl font-medium leading-6 text-white-900">
+                                                                    Display
+                                                                    </label>
+                                                                    <div className="mt-2">
+                                                                        <label className="toggle-switch mt-2">
+                                                                        <input
+                                                                            type="checkbox"
+                                                                            checked={sliders.firstbtndisplay || false}
+                                                                            onChange={(e) => handleInputChange(sliders.id, 'firstbtndisplay', e.target.checked)}
+                                                                        />
+                                                                            <span className="slider"></span>
+                                                                        </label>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </details>
+                                                        {/* button 2 */}
+                                                        <details className=" group [&_summary::-webkit-details-marker]:hidden border-2 rounded-lg grid-cols-1">
+                                                            <summary
+                                                                className="cursor-pointer flex justify-between rounded-lg py-2 w-full "
+                                                            >
+                                                                <div className="cursor-pointer flex items-center justify-between w-full px-4" onClick={() => setIsRotatedButton2(!isRotatedButton2)}>
+                                                                    <span className=" text-xl font-medium">
+                                                                        {sliders.secondbtntitle}
+                                                                    </span>
+                                                                    <div className={`cursor-pointer shrink-0 transition-transform duration-300 ${isRotatedButton2 ? 'rotate-180' : ''}`}>
+                                                                        <svg
+                                                                            xmlns="http://www.w3.org/2000/svg"
+                                                                            fill="none"
+                                                                            viewBox="0 0 24 24"
+                                                                            stroke-width="1.5"
+                                                                            stroke="currentColor"
+                                                                            class="size-6"
+                                                                        >
+                                                                            <path
+                                                                            stroke-linecap="round"
+                                                                            stroke-linejoin="round"
+                                                                            d="m4.5 15.75 7.5-7.5 7.5 7.5"
+                                                                            />
+                                                                        </svg>
+                                                                    </div>
+                                                                </div>
+                                                            </summary>
+                                                            {/* button 2 */}
+                                                            <div className="grid grid-cols-1 gap-4 px-4 py-2">
+                                                                <div className="flex-1">
+                                                                    <label className=" block text-lg font-medium leading-6 text-white-900">
+                                                                    button2 name
+                                                                    </label>
+                                                                    <div className="mt-2">
+                                                                    <input
+                                                                        type="text"
+                                                                        value={sliders.secondbtntitle}
+                                                                        onChange={(e) => handleInputChange(sliders.id, 'secondbtntitle', e.target.value)}
+                                                                        className="!border-gray-300 block w-full border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
+                                                                    />
+                                                                    </div>
+                                                                </div>
+
+                                                                <div className="flex-1">
+                                                                    <label for="countries" class="block text-lg font-medium leading-6 text-white-900">
+                                                                        Select page option
+                                                                    </label>
+                                                                    <select
+                                                                        className="mt-2 !border-gray-300 block w-full border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
+                                                                        value={sliders.secondbtnselect}
+                                                                        onChange={(e) => handleInputChange(sliders.id, 'secondbtnselect', e.target.value)}
+                                                                    >
+                                                                        <option value="">Choose a page</option>
+                                                                        <option value="Home">Home</option>
+                                                                        <option value="About">About</option>
+                                                                        <option value="Contact">Contact</option>
+                                                                        <option value="Program">Program</option>
+                                                                    </select>
+                                                                </div>
+                                                                <div className="flex-1">
+                                                                    <label className="block text-xl font-medium leading-6 text-white-900">
+                                                                    Display
+                                                                    </label>
+                                                                    <div className="mt-2">
+                                                                        <label class="toggle-switch mt-2">
+                                                                            <input
+                                                                                type="checkbox"
+                                                                                checked={sliders.secondbtndisplay || false}
+                                                                                onChange={(e) => handleInputChange(sliders.id, 'secondbtndisplay', e.target.checked)}
+                                                                            />
+                                                                            <span class="slider"></span>
+                                                                        </label>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </details>
+                                                    </div>
+                                                    {/* right side */}
+                                                    <div>
+                                                        <div className="grid grid-cols-1 gap-4 px-4 py-2">
+                                                            <div className="flex flex-row items-center w-full gap-4">
+                                                                <label className="block text-xl font-medium leading-6 text-white-900">
+                                                                    Display
+                                                                </label>
+                                                                <div className="mt-2">
+                                                                    <label className="toggle-switch mb-1">
+                                                                        <input
+                                                                            type="checkbox"
+                                                                            checked={sliders.display || false}
+                                                                            onChange={(e) => handleInputChange(sliders.id, 'display', e.target.checked)}
+                                                                        />
                                                                         <span className="slider"></span>
                                                                     </label>
                                                                 </div>
                                                             </div>
-                                                        </div>
-                                                    </details>
-                                                        {/* button 2 */}
-                                                    <details className="group [&_summary::-webkit-details-marker]:hidden border-2 rounded-lg grid-cols-1">
-                                                        <summary
-                                                            className="cursor-pointer flex justify-between rounded-lg py-2 w-full "
-                                                        >
-                                                            <div className="cursor-pointer flex items-center justify-between w-full px-4" onClick={() => setIsRotatedButton2(!isRotatedButton2)}>
-                                                                <span className=" text-xl font-medium">
-                                                                    {sliders.secondbtntitle}
-                                                                </span>
-                                                                <div className={`cursor-pointer shrink-0 transition-transform duration-300 ${isRotatedButton2 ? 'rotate-180' : ''}`}>
-                                                                    <svg
-                                                                        xmlns="http://www.w3.org/2000/svg"
-                                                                        fill="none"
-                                                                        viewBox="0 0 24 24"
-                                                                        stroke-width="1.5"
-                                                                        stroke="currentColor"
-                                                                        class="size-6"
-                                                                    >
-                                                                        <path
-                                                                        stroke-linecap="round"
-                                                                        stroke-linejoin="round"
-                                                                        d="m4.5 15.75 7.5-7.5 7.5 7.5"
-                                                                        />
-                                                                    </svg>
-                                                                </div>
-                                                            </div>
-                                                        </summary>
-                                                        {/* button 2 */}
-                                                        <div className="grid grid-cols-1 gap-4 px-4 py-2">
-                                                            <div className="flex-1">
-                                                                <label className=" block text-lg font-medium leading-6 text-white-900">
-                                                                button2 name
-                                                                </label>
-                                                                <div className="mt-2">
-                                                                <input
-                                                                    type="text"
-                                                                    value={sliders.secondbtntitle}
-                                                                    onChange={(e) => handleInputChange(sliders.id, 'secondbtntitle', e.target.value)}
-                                                                    className="!border-gray-300 block w-full border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
-                                                                />
-                                                                </div>
-                                                            </div>
-
-                                                            <div className="flex-1">
-                                                                <label for="countries" class="block text-lg font-medium leading-6 text-white-900">
-                                                                    Select page option
-                                                                </label>
-                                                                <select
-                                                                    className="mt-2 !border-gray-300 block w-full border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
-                                                                    value={sliders.secondbtnselect}
-                                                                    onChange={(e) => handleInputChange(sliders.id, 'secondbtnselect', e.target.value)}
-                                                                >
-                                                                    <option value="">Choose a page</option>
-                                                                    <option value="Home">Home</option>
-                                                                    <option value="About">About</option>
-                                                                    <option value="Contact">Contact</option>
-                                                                    <option value="Program">Program</option>
-                                                                </select>
-                                                            </div>
-                                                            <div className="flex-1">
-                                                                <label className="block text-xl font-medium leading-6 text-white-900">
-                                                                Display
-                                                                </label>
-                                                                <div className="mt-2">
-                                                                    <label class="toggle-switch mt-2">
-                                                                        <input
-                                                                            type="checkbox"
-                                                                            checked={sliders.secondbtndisplay || false}
-                                                                            onChange={(e) => handleInputChange(sliders.id, 'secondbtndisplay', e.target.checked)}
-                                                                        />
-                                                                        <span class="slider"></span>
-                                                                    </label>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </details>
-                                                </div>
-
-                                                <div className="grid grid-cols-1 gap-4 px-4 py-2 ml-1">
-                                                    <div className="flex flex-row items-center w-full gap-4">
-                                                        <label className="block text-xl font-medium leading-6 text-white-900">
-                                                            Display
-                                                        </label>
-                                                        <div className="mt-2">
-                                                            <label className="toggle-switch mb-1">
-                                                                <input
-                                                                    type="checkbox"
-                                                                    checked={sliders.display || false}
-                                                                    onChange={(e) => handleInputChange(sliders.id, 'display', e.target.checked)}
-                                                                />
-                                                                <span className="slider"></span>
-                                                            </label>
                                                         </div>
                                                     </div>
                                                 </div>
