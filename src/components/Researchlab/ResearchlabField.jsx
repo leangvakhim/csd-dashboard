@@ -10,7 +10,7 @@ const ResearchlabField = () => {
     const researchlabTagRef = useRef();
     const location = useLocation();
     const researchlabData = location.state?.researchlabData;
-    
+
     const [formData, setFormData] = useState({
         lang: 1,
         rsdl_title: '',
@@ -56,18 +56,20 @@ const ResearchlabField = () => {
         }));
     };
 
-    const saveResearchlab = async () => {
+    const saveResearchlab = async (imageId) => {
         const isUpdate = !!formData.rsdl_id;
         const payload = {
             lang: formData.lang,
             rsdl_title: formData.rsdl_title || '',
             rsdl_fav: formData.rsdl_fav || '0',
             rsdl_detail: formData.rsdl_detail || '',
-            rsdl_img: formData.rsdl_img || null,
+            rsdl_img: imageId || null,
             rsdl_order: formData.rsdl_order,
             display: formData.display ? 1 : 0,
             active: formData.active ? 1 : 0,
         };
+
+        console.log(payload);
 
         if (!isUpdate) {
             const res = await axios.post(API_ENDPOINTS.createResearchlab, payload);
@@ -76,15 +78,14 @@ const ResearchlabField = () => {
                 ...prev,
                 rsdl_id: createdResearchlab.rsdl_id
             }));
-            return createdResearchlab;
+            return { rsdl_id: createdResearchlab.rsdl_id };
         } else {
             await axios.post(`${API_ENDPOINTS.updateResearchlab}/${formData.rsdl_id}`, payload);
             return { rsdl_id: formData.rsdl_id };
         }
     };
 
-    const saveResearchlabTags = async () => {
-        const rsdl_id = formData.rsdl_id;
+    const saveResearchlabTags = async (rsdl_id) => {
         if (!rsdl_id) {
             console.warn("Cannot save tags: missing researchlab ID.");
             return;
@@ -103,13 +104,15 @@ const ResearchlabField = () => {
             })
             : [];
 
-        // New tags (no rsdlt_id)
-        const newTags = filteredTags.filter(item => typeof item.rsdlt_id !== 'number').map(item => ({
-            rsdlt_title: item.rsdlt_title,
-            rsdlt_img: item.rsdlt_img,
-            display: item.display ?? 1,
-            active: item.active ?? 1
-        }));
+        const newTags = await Promise.all(
+        filteredTags
+            .filter(item => typeof item.rsdlt_id !== 'number')
+            .map(async (item) => ({
+                rsdlt_title: item.rsdlt_title,
+                rsdlt_img: await getImageIdByUrl(item.rsdlt_img),
+                active: item.active ?? 1
+            }))
+        );
 
         // Existing tags (with rsdlt_id)
         const updateTags = filteredTags.filter(item => typeof item.rsdlt_id === 'number');
@@ -129,9 +132,10 @@ const ResearchlabField = () => {
         // Create new tags
         if (newTags.length > 0) {
             const createPayload = {
-                rsdl_id,
-                rsdlt_rsdl: newTags,
+                rsdl_id: rsdl_id,
+                rsdlt_tags: newTags
             };
+            console.log(createPayload)
             await axios.post(API_ENDPOINTS.createResearchlabTag, createPayload);
         }
 
@@ -153,10 +157,33 @@ const ResearchlabField = () => {
         }
     };
 
+    const getImageIdByUrl = async (url) => {
+        try {
+            const response = await axios.get(API_ENDPOINTS.getImages);
+            const images = Array.isArray(response.data) ? response.data : response.data.data;
+
+            const matchedImage = images.find((img) => img.image_url === url);
+            return matchedImage?.image_id || null;
+            } catch (error) {
+            console.error('❌ Failed to fetch image ID:', error);
+            return null;
+        }
+    };
+
     const handleSave = async () => {
         try {
-            await saveResearchlab();
-            await saveResearchlabTags();
+            const imageId = await getImageIdByUrl(formData.rsdl_img);
+            const res = await saveResearchlab(imageId); // Pass imageId directly
+            const newId = res.rsdl_id;
+
+            setFormData(prev => ({
+                ...prev,
+                rsdl_id: newId,
+                rsdl_img: imageId
+            }));
+
+            // Now pass rsdl_id to saveResearchlabTags
+            await saveResearchlabTags(newId);
             alert("Research lab saved successfully!");
         } catch (err) {
             console.error('Error saving research lab:', err);
