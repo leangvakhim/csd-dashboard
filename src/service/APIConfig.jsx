@@ -131,6 +131,22 @@ const API_ENDPOINTS = {
     duplicateScholarship: `${API_BASEURL}/scholarship/duplicate`,
     updateScholarshipOrder: `${API_BASEURL}/scholarship/reorder`,
 
+    // researchlab 
+    getResearchlab: `${API_BASEURL}/rsdl`,
+    createResearchlab: `${API_BASEURL}/rsdl/create`,
+    updateResearchlab: `${API_BASEURL}/rsdl/update`,
+    deleteResearchlab: `${API_BASEURL}/rsdl/visibility`,
+    duplicateResearchlab: `${API_BASEURL}/rsdl/duplicate`,
+    updateResearchlabOrder: `${API_BASEURL}/rsdl/reorder`,
+
+
+    //rsdltag
+    getResearchlabTag: `${API_BASEURL}/rsdltag`,
+    createResearchlabTag: `${API_BASEURL}/rsdltag/create`,
+    updateResearchlabTag: `${API_BASEURL}/rsdltag/update`,
+    deleteResearchlabTag: `${API_BASEURL}/rsdltag/visibility`,
+    duplicateResearchlabTag: `${API_BASEURL}/rsdltag/duplicate`,
+    updateResearchlabTagOrder: `${API_BASEURL}/rsdltag/reorder`,
 
     // feedback
     getFeedback: `${API_BASEURL}/feedback`,
