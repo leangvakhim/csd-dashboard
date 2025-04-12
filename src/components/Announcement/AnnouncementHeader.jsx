@@ -1,14 +1,7 @@
 import React, {useEffect} from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom';
 
-const PageFieldHeader = ({onSave}) => {
-
-    const navigate = useNavigate();
-
-    const returntoPage = () => {
-        navigate("/page");
-    };
-
+const AnnouncementHeader = () => {
     useEffect(() => {
         const handleClickOutside = (event) => {
         const aside = document.getElementById('application-sidebar-brand');
@@ -72,27 +65,17 @@ const PageFieldHeader = ({onSave}) => {
                 </button>
                 </div>
                 <div className="flex items-center gap-4">
-                    <button
-                        onClick={() => returntoPage()}
-                        className="cursor-pointer !bg-red-600 !text-gray-100 font-medium px-4 py-2 rounded hover:!bg-red-700"
-                        aria-current="page"
+                    <Link
+                    to="/announcement/announcement-details"
+                    className="bg-blue-600 text-white font-medium px-4 py-2 rounded hover:bg-blue-700"
+                    aria-current="career"
                     >
-                    Return
-                    </button>
-                </div>
-
-                <div className="flex items-center gap-4">
-                    <button
-                        onClick={onSave}
-                        className="cursor-pointer bg-blue-600 !text-gray-100 font-medium px-4 py-2 rounded hover:bg-blue-700"
-                        aria-current="page"
-                    >
-                    Save
-                    </button>
+                    Add Announcement
+                    </Link>
                 </div>
             </nav>
         </header>
     )
 }
 
-export default PageFieldHeader
+export default AnnouncementHeader

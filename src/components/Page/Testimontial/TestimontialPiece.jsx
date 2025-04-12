@@ -89,7 +89,7 @@ const TestimonialPiece = () => {
         <div className="grid grid-cols-1 gap-4 px-4 py-2 mb-1">
           <div className="flex-1">
             <label className="block text-xl font-medium leading-6 text-white-900">
-              Testimonial
+              Detail
             </label>
             <div className="mt-2">
               <textarea className="!border-gray-300 h-60 block w-full rounded-md border-0 py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-2xl sm:leading-6"></textarea>

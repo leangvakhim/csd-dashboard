@@ -1,21 +1,62 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } from "react";
 import MediaLibraryModal from "../../MediaLibraryModal";
+import axios from "axios";
+import { API_ENDPOINTS } from "../../../service/APIConfig";
 
-const BannerPiece = () => {
+const BannerPiece = forwardRef((props, ref) => {
     const [isRotatedButton1, setIsRotatedButton1] = useState(false);
     const [isMediaLibraryOpen, setMediaLibraryOpen] = useState(false);
     const [selectedImage, setSelectedImage] = useState("");
+    const [title, setTitle] = useState("");
+    const [currentField, setCurrentField] = useState("");
+    const [subtitle, setSubtitle] = useState("");
+    // const [display, setDisplay] = useState(true);
 
-    const openMediaLibrary = () => {
+    const openMediaLibrary = (field) => {
+        setCurrentField(field);
         setMediaLibraryOpen(true);
     };
 
     const handleImageSelect = (imageUrl, field) => {
         if (field === "image") {
-            setSelectedImage(imageUrl ? `${imageUrl}` : "");
+            setSelectedImage(imageUrl);
         }
         setMediaLibraryOpen(false);
     };
+
+    const getImageIdByUrl = async (url) => {
+        try {
+            const response = await axios.get(API_ENDPOINTS.getImages);
+            const images = Array.isArray(response.data) ? response.data : response.data.data;
+
+            const matchedImage = images.find((img) => img.image_url === url);
+            return matchedImage?.image_id || null;
+            } catch (error) {
+            console.error('❌ Failed to fetch image ID:', error);
+            return null;
+        }
+    };
+
+    // useEffect(() => {
+    //   console.log("📦 Current Banner Data", {
+    //     title,
+    //     selectedImage,
+    //     subtitle
+    //   });
+    // }, [title, selectedImage, subtitle]);
+
+    useImperativeHandle(ref, () => ({
+        getBanners: async () => {
+            const imgId = await getImageIdByUrl(selectedImage);
+                return [
+                {
+                    ban_title: title,
+                    ban_img: imgId,
+                    ban_subtitle: subtitle
+                }
+            ];
+        }
+    }));
 
     return (
         <div className="grid grid-cols-1 gap-4 ">
@@ -72,6 +113,8 @@ const BannerPiece = () => {
                         <div className="mt-2">
                         <input
                             type="text"
+                            value={title}
+                            onChange={(e) => setTitle(e.target.value)}
                             className="block w-full !border-gray-200 border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
                         />
                         </div>
@@ -106,7 +149,10 @@ const BannerPiece = () => {
                                         />
                                         <div className="flex gap-3 mt-2 justify-center">
                                             <svg
-                                                onClick={() => openMediaLibrary("image")}
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    openMediaLibrary("image");
+                                                }}
                                                 xmlns="http://www.w3.org/2000/svg"
                                                 fill="none"
                                                 viewBox="0 0 24 24"
@@ -121,7 +167,7 @@ const BannerPiece = () => {
                                                 />
                                             </svg>
                                             <svg
-                                                onClick={() => handleImageSelect("", "image")}
+                                                onClick={() => openMediaLibrary("image")}
                                                 xmlns="http://www.w3.org/2000/svg"
                                                 fill="none"
                                                 viewBox="0 0 24 24"
@@ -165,9 +211,9 @@ const BannerPiece = () => {
                             </label>
                         </div>
                     </div>
-                    {isMediaLibraryOpen && (
+                    {isMediaLibraryOpen && currentField === "image" && (
                         <MediaLibraryModal
-                            onSelect={(imageUrl) => handleImageSelect(imageUrl, "image")}
+                            onSelect={(url) => handleImageSelect(url, "image")}
                             onClose={() => setMediaLibraryOpen(false)}
                         />
                     )}
@@ -177,13 +223,17 @@ const BannerPiece = () => {
                             Subtitle
                         </label>
                         <div className="mt-2">
-                            <textarea className="!border-gray-300 h-60 block w-full rounded-md border-0 py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-2xl sm:leading-6"></textarea>
+                            <textarea
+                                value={subtitle}
+                                onChange={(e) => setSubtitle(e.target.value)}
+                                className="!border-gray-300 h-60 block w-full rounded-md border-0 py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-2xl sm:leading-6"
+                            ></textarea>
                         </div>
                     </div>
                 </div>
             </details>
         </div>
     )
-}
+});
 
 export default BannerPiece

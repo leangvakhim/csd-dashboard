@@ -1,22 +1,62 @@
-import React, {useState} from 'react'
+import React, { useState } from 'react'
 import MediaLibraryModal from '../MediaLibraryModal';
+import { useEffect } from 'react';
+import { API_ENDPOINTS } from '../../service/APIConfig'
 
-const PartnershipFieldBody = () => {
-    const [activeTab, setActiveTab] = useState(1);
+
+const PartnershipFieldBody = ({ formData, setFormData, onImageSelect }) => {
     const [isMediaLibraryOpen, setMediaLibraryOpen] = useState(false);
     const [selectedImage, setSelectedImage] = useState("");
 
+
+    useEffect(() => {
+        if (formData.ps_img) {
+            fetch(`${API_ENDPOINTS.getImages}`)
+                .then(res => res.json())
+                .then(result => {
+                    const matched = result.data.find(img => img.image_id === formData.ps_img);
+                    if (matched) {
+                        setSelectedImage(matched.image_url);
+                    }
+                })
+                .catch(err => console.error("Error fetching image:", err));
+        }
+    }, [formData.ps_img]);
+
+
     const openMediaLibrary = () => {
-        // setCurrentField(field);
         setMediaLibraryOpen(true);
     };
 
-    const handleImageSelect = (imageUrl, field) => {
+    const handleImageSelect = async (imageUrl, field) => {
         if (field === "image") {
             setSelectedImage(imageUrl ? `${imageUrl}` : "");
+            try {
+                const response = await fetch(`${API_ENDPOINTS.getImages}`);
+                const result = await response.json();
+
+                if (result.status_code === "success" && Array.isArray(result.data)) {
+                    const matchedImage = result.data.find(image => image.image_url === imageUrl);
+                    if (matchedImage) {
+                        onImageSelect(matchedImage.image_id);
+                        setFormData(prevData => ({
+                            ...prevData,
+                            ps_img: matchedImage.image_id,
+                        }));
+                    } else {
+                        console.warn("Image not found in API response for URL:", imageUrl);
+                    }
+                }
+            } catch (error) {
+                console.error("Failed to fetch images:", error);
+            }
         }
+
         setMediaLibraryOpen(false);
     };
+
+
+
 
     return (
         <div className='px-8 py-2 mb-1'>
@@ -26,13 +66,15 @@ const PartnershipFieldBody = () => {
                     <div className="flex flex-col sm:!flex-row gap-4 items-center py-2">
                         <div className="flex-1 w-full">
                             <label className="block text-xl font-medium leading-6 text-white-900">
-                            Title
+                                Title
                             </label>
                             <div className="mt-2">
-                            <input
-                                type="text"
-                                className="block w-full !border-gray-200 border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
-                            />
+                                <input
+                                    type="text"
+                                    value={formData.ps_title}
+                                    onChange={(e) => setFormData(prev => ({ ...prev, ps_title: e.target.value }))}
+                                    className="block w-full !border-gray-200 border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
+                                />
                             </div>
                         </div>
 
@@ -41,11 +83,21 @@ const PartnershipFieldBody = () => {
                                 Type
                             </label>
                             <div className='mt-2'>
-                                <select class="!border-gray-300 block w-full border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6">
-                                    <option selected>Choose options</option>
-                                    <option value="1">Scholarship</option>
-                                    <option value="0">University</option>
+                                <select
+                                    value={formData.ps_type ?? ""}
+                                    onChange={(e) => {
+                                        setFormData({
+                                            ...formData,
+                                            ps_type: parseInt(e.target.value, 10),
+                                        });
+                                    }}
+                                    className="!border-gray-300 block w-full border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
+                                >
+                                    <option value="" disabled>Choose options</option>
+                                    <option value={1}>Scholarship</option>
+                                    <option value={2}>University</option>
                                 </select>
+
                             </div>
                         </div>
 
@@ -72,6 +124,8 @@ const PartnershipFieldBody = () => {
                                                 <div className="flex gap-3 mt-2 justify-center">
                                                     <svg
                                                         onClick={() => openMediaLibrary("image")}
+                                                        value={formData.ps_img}
+                                                        onChange={(e) => setFormData({ ...formData, ps_img: e.target.value })}
                                                         xmlns="http://www.w3.org/2000/svg"
                                                         fill="none"
                                                         viewBox="0 0 24 24"
@@ -86,7 +140,9 @@ const PartnershipFieldBody = () => {
                                                         />
                                                     </svg>
                                                     <svg
-                                                        onClick={() => handleImageSelect("", "image")}
+                                                        onClick={() => openMediaLibrary("image")}
+                                                        value={formData.ps_img}
+                                                        onChange={(e) => setFormData({ ...formData, ps_img: e.target.value })}
                                                         xmlns="http://www.w3.org/2000/svg"
                                                         fill="none"
                                                         viewBox="0 0 24 24"
@@ -105,6 +161,8 @@ const PartnershipFieldBody = () => {
                                         ) : (
                                             <div
                                                 onClick={() => openMediaLibrary("image")}
+                                                value={formData.ps_img}
+                                                onChange={(e) => setFormData({ ...formData, ps_img: e.target.value })}
                                                 className="flex flex-col items-center justify-center pt-5 pb-6 "
                                             >
                                                 <svg

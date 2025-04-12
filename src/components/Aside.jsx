@@ -33,192 +33,44 @@ const Aside = () => {
                 <div class="px-6 mt-1" >
                     <nav class=" w-full flex flex-col sidebar-nav">
                         <ul id="sidebarnav" class="text-gray-600 text-sm">
-                            {/* <li class="text-xs font-bold pb-4">
-                                <i class="ti ti-dots nav-small-cap-icon text-lg hidden text-center"></i>
-                                <span>HOME</span>
-                            </li> */}
-
-                            <li class="sidebar-item mb-2">
-                                <Link
-                                    to="/menu"
+                            {[
+                              { to: '/menu', icon: 'ti-category-2', label: 'Menu' },
+                              { to: '/page', icon: 'ti-file-description', label: 'Page' },
+                              { to: '/faculty', icon: 'ti-user', label: 'Faculty' },
+                              { to: '/event', icon: 'ti-calendar-event', label: 'Event' },
+                              { to: '/news', icon: 'ti-news', label: 'News' },
+                              { to: '/announcement', icon: 'ti-speakerphone', label: 'Announcement' },
+                              { to: '/career', icon: 'ti-target-arrow', label: 'Career' },
+                              { to: '/scholarship', icon: 'ti-school', label: 'Scholarship' },
+                              { to: '/research', icon: 'ti-microscope', label: 'Research' },
+                              { to: '/lab', icon: 'ti-cell', label: 'Research Lab' },
+                              { to: '/feedback', icon: 'ti-brand-hipchat', label: 'Feedback' },
+                              { to: '/partnership', icon: 'ti-heart-handshake', label: 'Partnership' },
+                              { to: '/image', icon: 'ti-photo', label: 'Image' },
+                              { to: '#', icon: 'ti-user-circle', label: 'User', external: true },
+                              { to: '#', icon: 'ti-settings', label: 'Setting', external: true },
+                            ].map(({ to, icon, label, external }) => (
+                              <li key={label} className="sidebar-item mb-2">
+                                {external ? (
+                                  <a className="sidebar-link gap-3 py-2 px-3 rounded-md w-full flex items-center hover:text-blue-600 hover:bg-blue-500" href={to}>
+                                    <i className={`ti ${icon} text-xl`}></i>
+                                    <span>{label}</span>
+                                  </a>
+                                ) : (
+                                  <Link
+                                    to={to}
                                     className={`sidebar-link gap-3 px-3 py-2 rounded-md w-full flex items-center ${
-                                        location.pathname.startsWith('/menu')
+                                      location.pathname.startsWith(to)
                                         ? 'bg-blue-600 text-white'
                                         : 'text-gray-700 hover:text-blue-600 hover:bg-blue-500'
                                     }`}
-                                    >
-                                    <i class="ti ti-category-2 text-xl"></i>
-                                    <span>Menu</span>
-                                </Link>
-                            </li>
-
-                            <li class="sidebar-item mb-2">
-                                <Link
-                                    to="/page"
-                                    className={`sidebar-link gap-3 px-3 py-2 rounded-md w-full flex items-center ${
-                                        location.pathname.startsWith('/page')
-                                        ? 'bg-blue-600 text-white'
-                                        : 'text-gray-700 hover:text-blue-600 hover:bg-blue-500'
-                                    }`}
-                                    >
-                                    <i class="ti ti-file-description text-xl"></i>
-                                    <span>Page</span>
-                                </Link>
-                            </li>
-
-                            <li class="sidebar-item mb-2">
-                                <Link
-                                    to="/faculty"
-                                    className={`sidebar-link gap-3 px-3 py-2 rounded-md w-full flex items-center ${
-                                        location.pathname.startsWith('/faculty')
-                                        ? 'bg-blue-600 text-white'
-                                        : 'text-gray-700 hover:text-blue-600 hover:bg-blue-500'
-                                    }`}
-                                    >
-                                    <i class="ti ti-user text-xl"></i>
-                                    <span>Faculty</span>
-                                </Link>
-                            </li>
-
-                            <li class="sidebar-item mb-2">
-                                <Link
-                                    to="/event"
-                                    className={`sidebar-link gap-3 px-3 py-2 rounded-md w-full flex items-center ${
-                                        location.pathname.startsWith('/event')
-                                        ? 'bg-blue-600 text-white'
-                                        : 'text-gray-700 hover:text-blue-600 hover:bg-blue-500'
-                                    }`}
-                                    >
-                                    <i class="ti ti-speakerphone text-xl"></i>
-                                    <span>Event</span>
-                                </Link>
-                            </li>
-
-                            <li class="sidebar-item mb-2">
-                                <Link
-                                    to="/news"
-                                    className={`sidebar-link gap-3 px-3 py-2 rounded-md w-full flex items-center ${
-                                        location.pathname.startsWith('/new')
-                                        ? 'bg-blue-600 text-white'
-                                        : 'text-gray-700 hover:text-blue-600 hover:bg-blue-500'
-                                    }`}
-                                    >
-                                    <i class="ti ti-news text-xl"></i>
-                                    <span>New</span>
-                                </Link>
-                            </li>
-
-                            <li class="sidebar-item mb-2">
-                                <Link
-                                    to="/career"
-                                    className={`sidebar-link gap-3 px-3 py-2 rounded-md w-full flex items-center ${
-                                        location.pathname.startsWith('/career')
-                                        ? 'bg-blue-600 text-white'
-                                        : 'text-gray-700 hover:text-blue-600 hover:bg-blue-500'
-                                    }`}
-                                    >
-                                    <i class="ti ti-target-arrow text-xl"></i>
-                                    <span>Career</span>
-                                </Link>
-                            </li>
-
-                            <li class="sidebar-item mb-2">
-                                <Link
-                                    to="/scholarship"
-                                    className={`sidebar-link gap-3 px-3 py-2 rounded-md w-full flex items-center ${
-                                        location.pathname.startsWith('/scholarship')
-                                        ? 'bg-blue-600 text-white'
-                                        : 'text-gray-700 hover:text-blue-600 hover:bg-blue-500'
-                                    }`}
-                                    >
-                                    <i class="ti ti-school text-xl"></i>
-                                    <span>Scholarship</span>
-                                </Link>
-                            </li>
-
-                            <li class="sidebar-item mb-2">
-                                <Link
-                                    to="/research"
-                                    className={`sidebar-link gap-3 px-3 py-2 rounded-md w-full flex items-center ${
-                                        location.pathname.startsWith('/research')
-                                        ? 'bg-blue-600 text-white'
-                                        : 'text-gray-700 hover:text-blue-600 hover:bg-blue-500'
-                                    }`}
-                                    >
-                                    <i class="ti ti-microscope text-xl"></i>
-                                    <span>Research</span>
-                                </Link>
-                            </li>
-
-                            <li class="sidebar-item mb-2">
-                                <Link
-                                    to="/lab"
-                                    className={`sidebar-link gap-3 px-3 py-2 rounded-md w-full flex items-center ${
-                                        location.pathname.startsWith('/lab')
-                                        ? 'bg-blue-600 text-white'
-                                        : 'text-gray-700 hover:text-blue-600 hover:bg-blue-500'
-                                    }`}
-                                    >
-                                    <i class="ti ti-cell text-xl"></i>
-                                    <span>Research Lab</span>
-                                </Link>
-                            </li>
-
-                            <li class="sidebar-item mb-2">
-                                <Link
-                                    to="/feedback"
-                                    className={`sidebar-link gap-3 px-3 py-2 rounded-md w-full flex items-center ${
-                                        location.pathname.startsWith('/feedback')
-                                        ? 'bg-blue-600 text-white'
-                                        : 'text-gray-700 hover:text-blue-600 hover:bg-blue-500'
-                                    }`}
-                                    >
-                                    <i class="ti ti-brand-hipchat text-xl"></i>
-                                    <span>Feedback</span>
-                                </Link>
-                            </li>
-
-                            <li class="sidebar-item mb-2">
-                                <Link
-                                    to="/partnership"
-                                    className={`sidebar-link gap-3 px-3 py-2 rounded-md w-full flex items-center ${
-                                        location.pathname.startsWith('/partnership')
-                                        ? 'bg-blue-600 text-white'
-                                        : 'text-gray-700 hover:text-blue-600 hover:bg-blue-500'
-                                    }`}
-                                    >
-                                    <i class="ti ti-heart-handshake text-xl"></i>
-                                    <span>Partnership</span>
-                                </Link>
-                            </li>
-
-                            <li class="sidebar-item mb-2">
-                                <Link
-                                    to="/image"
-                                    className={`sidebar-link gap-3 px-3 py-2 rounded-md w-full flex items-center ${
-                                        location.pathname.startsWith('/image')
-                                        ? 'bg-blue-600 text-white'
-                                        : 'text-gray-700 hover:text-blue-600 hover:bg-blue-500'
-                                    }`}
-                                    >
-                                    <i class="ti ti-photo  text-xl"></i>
-                                    <span>Image</span>
-                                </Link>
-                            </li>
-
-                            <li class="sidebar-item mb-2">
-                                <a class="sidebar-link gap-3 py-2 px-3  rounded-md  w-full flex items-center hover:text-blue-600 hover:bg-blue-500" href="#">
-                                    <i class="ti ti-user-circle  text-xl"></i>
-                                    <span>User</span>
-                                </a>
-                            </li>
-
-                            <li class="sidebar-item mb-2">
-                                <a class="sidebar-link gap-3 py-2 px-3  rounded-md  w-full flex items-center hover:text-blue-600 hover:bg-blue-500" href="#">
-                                    <i class="ti ti-settings  text-xl"></i>
-                                    <span>Setting</span>
-                                </a>
-                            </li>
+                                  >
+                                    <i className={`ti ${icon} text-xl`}></i>
+                                    <span>{label}</span>
+                                  </Link>
+                                )}
+                              </li>
+                            ))}
                         </ul>
                     </nav>
                 </div>
