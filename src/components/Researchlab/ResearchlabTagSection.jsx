@@ -139,7 +139,6 @@ const ResearchlabTagSection = forwardRef(({ rsdl_id }, ref) => {
             title: `Tag ${prev.length + 1}`,
             rsdlt_title: null,
             rsdlt_img: null,
-            display: 0,
             active: 1,
         }]);
     }, []);
@@ -189,7 +188,7 @@ const ResearchlabTagSection = forwardRef(({ rsdl_id }, ref) => {
     const removeTagImage = useCallback((id) => {
         setTags(prev =>
             prev.map(tag =>
-                tag.id === id ? { ...tag, rsdlt_img: null } : tag
+                tag.rsdlt_id === id ? { ...tag, rsdlt_img: null } : tag
             )
         );
     }, []);
@@ -216,7 +215,6 @@ const ResearchlabTagSection = forwardRef(({ rsdl_id }, ref) => {
                         title: `Tag ${index + 1}`,
                         rsdlt_title: item.rsdlt_title || '',
                         rsdlt_img: item.rsdlt_img || '',
-                        display: item.display ?? 1,
                         active: item.active ?? 1
                     }));
                     setTags(formattedTags);
