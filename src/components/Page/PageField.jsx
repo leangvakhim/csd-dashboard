@@ -87,9 +87,30 @@ const PageField = () => {
             }
 
             reorderSlideshow();
+        }
+    }
+    const saveService = async (savedSectionId) => {
+        const services = await pageRef.current?.getServices?.() || [];
+        const response = await axios.get(`${API_ENDPOINTS.getService}?ban_sec=${savedSectionId}`);
+        const existingServices = response.data?.data || [];
+        const existingServiceIds = existingServices.map(service => service.s_id);
 
-            // console.log("🎓 slideshow sent as array:", slideshowPayload);
-            // await axios.post(API_ENDPOINTS.createSlideshow, {Slideshow: slideshowPayload});
+        if (services.length > 0 && savedSectionId) {
+            for (const item of services) {
+
+                const payload = {
+                    ...item,
+                    s_sec: savedSectionId,
+                };
+
+            if (item.s_id && existingServiceIds.includes(parseInt(item.s_id))) {
+                    await axios.post(`${API_ENDPOINTS.updateService}/${item.s_id}`, { Service: payload });
+                } else {
+                    await axios.post(API_ENDPOINTS.createService, { Service: [payload] });
+                }
+            }
+
+            reorderService();
         }
     }
     const reorderSlideshow = async () => {
@@ -104,6 +125,20 @@ const PageField = () => {
             await axios.put(API_ENDPOINTS.updateSlideshowOrder, slideshowPayload);
         } catch (error) {
             console.error("Failed to reorder slideshow:", error.response?.data || error.message);
+        }
+    };
+    const reorderService = async () => {
+        const services = await pageRef.current?.getServices?.() || [];
+
+        const servicePayload = services.map((service, index) => ({
+            s_id: service.s_id,
+            s_order: index + 1
+        }));
+
+        try {
+            await axios.put(API_ENDPOINTS.updateServiceOrder, servicePayload);
+        } catch (error) {
+            console.error("Failed to reorder services:", error.response?.data || error.message);
         }
     };
 
@@ -141,7 +176,8 @@ const PageField = () => {
 
                 // console.log("📥 savedSectionId:", savedSectionId);
 
-                saveDepartment(savedSectionId);
+                // saveDepartment(savedSectionId);
+                saveService(savedSectionId);
                 // saveBanner(savedSectionId);
                 // saveSlideshow(savedSectionId);
 
