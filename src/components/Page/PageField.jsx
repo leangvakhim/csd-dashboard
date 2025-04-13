@@ -28,16 +28,21 @@ const PageField = () => {
         const programs = await pageRef.current?.getPrograms?.() || [];
 
         if (programs.length > 0 && savedSectionId) {
-            const programPayload = programs.map((program) => ({
-                dep_sec: savedSectionId,
-                dep_title: program.dep_title || '',
-                dep_detail: program.dep_detail || '',
-                dep_img1: program.dep_img1 || null,
-                dep_img2: program.dep_img2 || null,
-            }));
+            for (const program of programs) {
+                const programPayload = {
+                    dep_sec: savedSectionId,
+                    dep_title: program.dep_title || '',
+                    dep_detail: program.dep_detail || '',
+                    dep_img1: program.dep_img1 || null,
+                    dep_img2: program.dep_img2 || null,
+                };
 
-            // console.log("🎓 Programs sent as array:", programPayload);
-            await axios.post(API_ENDPOINTS.createDepartment, { programs: programPayload });
+                if(program.dep_id){
+                    await axios.post(`${API_ENDPOINTS.updateDepartment}/${program.dep_id}`, { programs: programPayload });
+                } else {
+                    await axios.post(API_ENDPOINTS.createDepartment, { programs: [programPayload] });
+                }
+            }
         }
     }
     const saveBanner = async (savedSectionId) => {
@@ -136,8 +141,8 @@ const PageField = () => {
 
                 // console.log("📥 savedSectionId:", savedSectionId);
 
-                // saveDepartment(savedSectionId);
-                saveBanner(savedSectionId);
+                saveDepartment(savedSectionId);
+                // saveBanner(savedSectionId);
                 // saveSlideshow(savedSectionId);
 
             } catch (error) {
