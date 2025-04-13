@@ -43,19 +43,21 @@ const PageField = () => {
     const saveBanner = async (savedSectionId) => {
         const banners = await pageRef.current?.getBanners?.() || [];
 
-        // console.log("🔥 Raw banners from getBanner:", banners);
-        // console.log("🔥 savedSectionId:", savedSectionId);
-
         if (banners.length > 0 && savedSectionId) {
-            const bannerPayload = banners.map((banner) => ({
-                ban_sec: savedSectionId,
-                ban_title: banner.ban_title || '',
-                ban_subtitle: banner.ban_subtitle || '',
-                ban_img: banner.ban_img || null
-            }));
+            for (const banner of banners) {
+                const bannerPayload = {
+                    ban_sec: savedSectionId,
+                    ban_title: banner.ban_title || '',
+                    ban_subtitle: banner.ban_subtitle || '',
+                    ban_img: banner.ban_img || null
+                };
 
-            // console.log("🎓 Banners sent as array:", bannerPayload);
-            await axios.post(API_ENDPOINTS.createBanner, { banners: bannerPayload });
+                if (banner.ban_id) {
+                    await axios.post(`${API_ENDPOINTS.updateBanner}/${banner.ban_id}`, { banners: bannerPayload });
+                } else {
+                    await axios.post(API_ENDPOINTS.createBanner, { banners: [bannerPayload] });
+                }
+            }
         }
     }
     const saveSlideshow = async (savedSectionId) => {
@@ -136,7 +138,7 @@ const PageField = () => {
 
                 // saveDepartment(savedSectionId);
                 saveBanner(savedSectionId);
-                saveSlideshow(savedSectionId);
+                // saveSlideshow(savedSectionId);
 
             } catch (error) {
                 console.error("Failed to sync section:", error.response?.data || error.message);
@@ -152,11 +154,8 @@ const PageField = () => {
             sec_order: index + 1
         }));
 
-        // console.log("🚚 Section Payload to reorder:", sectionPayload);
-
         try {
             await axios.post(API_ENDPOINTS.updateSectionOrder, sectionPayload);
-            // console.log("✅ Section reordered successfully");
         } catch (error) {
             console.error("❌ Failed to reorder section:", error.response?.data || error.message);
         }

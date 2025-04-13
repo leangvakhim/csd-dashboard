@@ -474,6 +474,7 @@ const PageSection = forwardRef(({ formData = {}, setFormData = {}, page_id }, re
                     }
                   data={section.data}
                   sectionId={section.data?.sec_id || section.id}
+                  pageId={page_id}
                   onDataChange={(newData) => handleDataChange(newData, index)}
                 />
               </div>
