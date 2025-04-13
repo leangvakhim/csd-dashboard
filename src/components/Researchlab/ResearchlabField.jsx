@@ -10,7 +10,6 @@ const ResearchlabField = () => {
     const researchlabTagRef = useRef();
     const location = useLocation();
     const researchlabData = location.state?.researchlabData;
-
     const [formData, setFormData] = useState({
         lang: 1,
         rsdl_title: '',
