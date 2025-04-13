@@ -25,6 +25,8 @@ import PartnershipField from './components/Partnership/PartnershipField';
 import PageField from './components/Page/PageField';
 import Announcement from './pages/Announcement';
 import AnnouncementField from './components/Announcement/AnnouncementField';
+import Setting from './pages/Setting';
+import SettingFieldBody from './components/Setting/SettingFieldBody';
 
 function App() {
 
@@ -56,6 +58,8 @@ function App() {
         <Route path='/partnership' element={<Partnership/>} />
         <Route path='/partnership/partnership-details' element={<PartnershipField />} />
         <Route path='/image' element={<Image/>} />
+        <Route path='/setting' element={<Setting/>} />
+        <Route path='/setting/setting-details' element={<SettingFieldBody/>} />
         <Route path='/login' element={<Login/>} />
       </Routes>
     </Router>

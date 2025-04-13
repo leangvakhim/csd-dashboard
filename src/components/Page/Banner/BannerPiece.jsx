@@ -3,7 +3,7 @@ import MediaLibraryModal from "../../MediaLibraryModal";
 import axios from "axios";
 import { API_ENDPOINTS } from "../../../service/APIConfig";
 
-const BannerPiece = forwardRef((props, ref) => {
+const BannerPiece = forwardRef(({sectionId}, ref) => {
     const [isRotatedButton1, setIsRotatedButton1] = useState(false);
     const [isMediaLibraryOpen, setMediaLibraryOpen] = useState(false);
     const [selectedImage, setSelectedImage] = useState("");
@@ -36,6 +36,29 @@ const BannerPiece = forwardRef((props, ref) => {
             return null;
         }
     };
+
+    useEffect(() => {
+        const fetchBanners = async () => {
+            try {
+
+                const response = await axios.get(`${API_ENDPOINTS.getBanner}?ban_sec=${sectionId}`);
+                const banners = response.data.data || [];
+                if (banners.length > 0) {
+                    setTitle(banners[0].ban_title || '');
+                    setSubtitle(banners[0].ban_subtitle || '');
+                    setSelectedImage(banners[0].ban_img || '');
+                }
+
+            } catch (error) {
+                console.error("Failed to fetch banners:", error);
+            }
+            console.log(`${API_ENDPOINTS.getBanner}?ban_sec=${sectionId}`);
+        };
+
+
+        fetchBanners();
+    }, [sectionId]);
+
 
     // useEffect(() => {
     //   console.log("📦 Current Banner Data", {
@@ -150,7 +173,6 @@ const BannerPiece = forwardRef((props, ref) => {
                                         <div className="flex gap-3 mt-2 justify-center">
                                             <svg
                                                 onClick={(e) => {
-                                                    e.preventDefault();
                                                     openMediaLibrary("image");
                                                 }}
                                                 xmlns="http://www.w3.org/2000/svg"

@@ -48,7 +48,7 @@ const Aside = () => {
                               { to: '/partnership', icon: 'ti-heart-handshake', label: 'Partnership' },
                               { to: '/image', icon: 'ti-photo', label: 'Image' },
                               { to: '#', icon: 'ti-user-circle', label: 'User', external: true },
-                              { to: '#', icon: 'ti-settings', label: 'Setting', external: true },
+                              { to: '/setting', icon: 'ti-settings', label: 'Setting'},
                             ].map(({ to, icon, label, external }) => (
                               <li key={label} className="sidebar-item mb-2">
                                 {external ? (

@@ -37,6 +37,9 @@ import { RiQuestionnaireLine } from "react-icons/ri";
 import { TbSchool } from "react-icons/tb";
 import { LuHeartHandshake } from "react-icons/lu";
 import { TbCalendarEvent } from "react-icons/tb";
+import { AiOutlinePhone } from "react-icons/ai";
+import { TbWorldQuestion } from "react-icons/tb";
+import { TbFocusAuto } from "react-icons/tb";
 import EventsPiece from "./Events/EventsPiece";
 import CarouselPiece from "./Carousel/CarouselPiece";
 import BannerPiece from "./Banner/BannerPiece";
@@ -73,6 +76,9 @@ import PartnerPiece from "./Partner/PartnerPiece";
 import FeedbackPiece from "./Feedback/FeedbackPiece";
 import { API_ENDPOINTS } from "../../service/APIConfig";
 import AnnouncementPiece from "./Announcement/AnnouncementPiece";
+import ContactPiece from "./Contact/ContactPiece";
+import QuestionPiece from "./Question/QuestionPiece";
+import AboutPiece from "./About/AboutPiece";
 const sectionOptions = [
   {
     type: "Slideshow",
@@ -223,6 +229,24 @@ const sectionOptions = [
     component: ImportantPiece,
     icon: BsExclamationTriangle,
     label: "Important",
+  },
+  {
+    type: "Contact",
+    component: ContactPiece,
+    icon: AiOutlinePhone,
+    label: "Contact",
+  },
+  {
+    type: "Question",
+    component: QuestionPiece,
+    icon: TbWorldQuestion,
+    label: "Question",
+  },
+  {
+    type: "About",
+    component: AboutPiece,
+    icon: TbFocusAuto,
+    label: "About",
   },
   {
     type: "New",

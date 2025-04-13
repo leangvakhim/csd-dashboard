@@ -120,7 +120,7 @@ const PageField = () => {
                     active: section.active ?? 1,
                 }));
 
-                console.log("🚀 Section Payload to sync:", sectionPayload);
+                // console.log("🚀 Section Payload to sync:", sectionPayload);
 
             try {
                 const response = await axios.put(API_ENDPOINTS.syncSection, {
@@ -135,7 +135,7 @@ const PageField = () => {
                 // console.log("📥 savedSectionId:", savedSectionId);
 
                 // saveDepartment(savedSectionId);
-                // saveBanner(savedSectionId);
+                saveBanner(savedSectionId);
                 saveSlideshow(savedSectionId);
 
             } catch (error) {
@@ -185,7 +185,6 @@ const PageField = () => {
 
             const savedPageId = response.data?.data?.p_id;
 
-            // saveSection(savedPageId);
             syncSection(savedPageId);
             reorderSection();
 
