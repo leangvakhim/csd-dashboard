@@ -4,13 +4,14 @@ import MediaLibraryModal from '../../MediaLibraryModal';
 import axios from "axios";
 import { API, API_ENDPOINTS } from "../../../service/APIConfig";
 
-const CarouselPieceSlider = forwardRef(({displaySlideshow}, ref) => {
+const CarouselPieceSlider = forwardRef(({displaySlideshow, sectionId, pageId}, ref) => {
     const [isRotatedButton1, setIsRotatedButton1] = useState(false);
     const [isRotatedButton2, setIsRotatedButton2] = useState(false);
     const [currentSliderId, setCurrentSliderId] = useState(null);
     const [currentField, setCurrentField] = useState(null);
     const [isMediaLibraryOpen, setMediaLibraryOpen] = useState(false);
     const [rotatedStates, setRotatedStates] = useState({});
+    const [pages, setPages] = useState({});
     const [slider, setSlider] = useState([
         {
             id: "1",
@@ -28,9 +29,13 @@ const CarouselPieceSlider = forwardRef(({displaySlideshow}, ref) => {
     useEffect(() => {
         const fetchSliders = async () => {
             try {
-                const response = await axios.get(API_ENDPOINTS.getSlideshow);
-                const rawData = response.data?.data || [];
-                const formattedData = rawData.map(item => ({
+                const response = await axios.get(`${API_ENDPOINTS.getSlideshow}?ban_sec=${sectionId}`);
+                const slideshows = response.data?.data || [];
+
+                if (slideshows.length > 0) {
+                const validSlideshows = slideshows.filter(item => item.slider_sec.sec_page === pageId);
+
+                const formattedData = validSlideshows.map(item => ({
                     id: item.slider_id.toString(),
                     title: item.slider_title || '',
                     subtitle: item.slider_text || '',
@@ -46,18 +51,41 @@ const CarouselPieceSlider = forwardRef(({displaySlideshow}, ref) => {
                     firstbtndisplay: item.btn1?.display === 1,
                     secondbtndisplay: item.btn2?.display === 1
                 }));
-                setSlider(formattedData);
+
+                if (formattedData.length > 0) {
+                    setSlider(formattedData);
+                } else {
+                    setSlider([{
+                        id: "1",
+                        title: "Slider 1",
+                        subtitle: "",
+                        logo: "",
+                        image: "",
+                        firstbtntitle: "Button 1",
+                        firstbtnselect: "",
+                        secondbtntitle: "Button 2",
+                        secondbtnselect: ""
+                    }]);
+                }
+            }
             } catch (error) {
                 console.error('Error fetching sliders:', error);
             }
         };
 
+        const fetchPages = async () => {
+            try{
+                const response = await axios.get(API_ENDPOINTS.getPage);
+                const page = response.data?.data || [];
+                setPages(page);
+            } catch (error) {
+                console.error('Error fetching sliders:', error);
+            }
+        }
+
+        fetchPages();
         fetchSliders();
     }, []);
-
-    // useEffect(() => {
-    //    console.log("📦 Current Slider Data:", slider);
-    // }, [slider]);
 
     useImperativeHandle(ref, () => ({
         getSliders: async () => {
@@ -123,7 +151,7 @@ const CarouselPieceSlider = forwardRef(({displaySlideshow}, ref) => {
 
     const handleAddSlider = () => {
         const newSlider = {
-            id: `${Date.now()}`,
+            id: (slider.length + 1).toString(),
             title: `Slider ${slider.length + 1}`,
             subtitle: "",
             logo: "",
@@ -255,7 +283,7 @@ const CarouselPieceSlider = forwardRef(({displaySlideshow}, ref) => {
                                                         </div>
                                                         <span
                                                             className={`cursor-pointer shrink-0 transition-transform duration-300 ${
-                                                                    rotatedStates[sliders.id] ? "" : "rotate-180"
+                                                                    rotatedStates[sliders.id] ? "rotate-180" : ""
                                                                     }`}
                                                             >
                                                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="size-6">
@@ -516,11 +544,12 @@ const CarouselPieceSlider = forwardRef(({displaySlideshow}, ref) => {
                                                                         value={sliders.firstbtnselect}
                                                                         onChange={(e) => handleInputChange(sliders.id, 'firstbtnselect', e.target.value)}
                                                                     >
-                                                                        <option value="">Choose a page</option>
-                                                                        <option value="Home">Home</option>
-                                                                        <option value="About">About</option>
-                                                                        <option value="Contact">Contact</option>
-                                                                        <option value="Program">Program</option>
+                                                                    <option value="">Choose a page</option>
+                                                                    {Array.isArray(pages) && pages.map((page) => (
+                                                                        <option key={page.p_id} value={page.p_title}>
+                                                                            {page.p_title}
+                                                                        </option>
+                                                                    ))}
                                                                     </select>
                                                                 </div>
                                                                 <div className="flex-1">
@@ -593,10 +622,11 @@ const CarouselPieceSlider = forwardRef(({displaySlideshow}, ref) => {
                                                                         onChange={(e) => handleInputChange(sliders.id, 'secondbtnselect', e.target.value)}
                                                                     >
                                                                         <option value="">Choose a page</option>
-                                                                        <option value="Home">Home</option>
-                                                                        <option value="About">About</option>
-                                                                        <option value="Contact">Contact</option>
-                                                                        <option value="Program">Program</option>
+                                                                        {Array.isArray(pages) && pages.map((page) => (
+                                                                            <option key={page.p_id} value={page.p_title}>
+                                                                                {page.p_title}
+                                                                            </option>
+                                                                        ))}
                                                                     </select>
                                                                 </div>
                                                                 <div className="flex-1">

@@ -2,26 +2,28 @@ import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } f
 import MediaLibraryModal from "../../MediaLibraryModal";
 import JoditEditor from 'jodit-react';
 import 'jodit/es5/jodit.css';
-import { API_ENDPOINTS } from "../../../service/APIConfig";
+import { API, API_ENDPOINTS } from "../../../service/APIConfig";
 import axios from "axios";
+import { placeholder } from "jodit/esm/plugins/placeholder/placeholder";
 
 const config = {
   readonly: false,  // Set to true for read-only mode
   height: 400,
-  placeholder: 'Start typing...',
   uploader: {
     insertImageAsBase64URI: true,  // Enable base64 image upload
   },
 };
 
-const ProgramPiece = forwardRef((props, ref) => {
+const ProgramPiece = forwardRef(({sectionId, pageId}, ref) => {
   const [isRotatedButton1, setIsRotatedButton1] = useState(false);
   const [isMediaLibraryOpen, setMediaLibraryOpen] = useState(false);
   const [selectedImage1, setSelectedImage1] = useState("");
   const [selectedImage2, setSelectedImage2] = useState("");
   const [currentField, setCurrentField] = useState("");
+  const [displayDepartment, setDisplayDepartment] = useState(0);
   const [detail, setDetail] = useState("");
   const [title, setTitle] = useState("");
+  const [depId, setDepId] = useState(null);
 
   const openMediaLibrary = (field) => {
     setCurrentField(field);
@@ -57,6 +59,7 @@ const ProgramPiece = forwardRef((props, ref) => {
 
       return [
         {
+          dep_id: depId,
           dep_title: title,
           dep_img1: img1Id,
           dep_img2: img2Id,
@@ -65,6 +68,58 @@ const ProgramPiece = forwardRef((props, ref) => {
       ];
     }
   }));
+
+  const handleToggleDisplay = async () => {
+    try {
+        const newDisplay = displayDepartment === 1 ? 0 : 1;
+        await axios.post(`${API_ENDPOINTS.updateSection}/${sectionId}`, {
+            sec_id: sectionId,
+            display: newDisplay,
+        });
+        setDisplayDepartment(newDisplay);
+    } catch (error) {
+        console.error("Failed to update display:", error);
+    }
+  };
+
+  useEffect(() => {
+    const fetchDepartments = async () => {
+      try {
+        const response = await axios.get(`${API_ENDPOINTS.getDepartment}?ban_sec=${sectionId}`);
+        const departments = response.data.data || [];
+        if (departments.length > 0) {
+          const department = departments.find(item => item.section.sec_page === pageId);
+          if (department) {
+            setDepId(department.dep_id || null);
+            setTitle(department.dep_title || '');
+            setDetail(department.dep_detail || '');
+            setSelectedImage1(department.image1 ? `${API}/storage/uploads/${department.image1.img}` : '');
+            setSelectedImage2(department.image2 ? `${API}/storage/uploads/${department.image2.img}` : '');
+          }
+        }
+
+        const sectionRes = await axios.get(`${API_ENDPOINTS.getSection}/${sectionId}`);
+        const sectionData = sectionRes.data.data;
+        setDisplayDepartment(sectionData.display || 0);
+
+      } catch (error) {
+          console.error("Failed to fetch banners:", error);
+      }
+    };
+
+    fetchDepartments();
+  },[sectionId]);
+
+  const handleDeleteSection = async () => {
+    if (!window.confirm("Are you sure you want to delete this section?")) return;
+
+    try {
+        await axios.put(`${API_ENDPOINTS.deleteSection}/${sectionId}`);
+        window.location.reload();
+    } catch (error) {
+        console.error('Failed to delete section:', error);
+    }
+  };
 
   return (
     <div className="grid grid-cols-1 gap-4 ">
@@ -86,6 +141,7 @@ const ProgramPiece = forwardRef((props, ref) => {
             </div>
             <div className="flex gap-1">
               <svg
+                onClick={() => handleDeleteSection()}
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
@@ -144,7 +200,10 @@ const ProgramPiece = forwardRef((props, ref) => {
             </label>
             <div className="mt-2">
               <label class="toggle-switch mt-2">
-                <input type="checkbox" />
+                <input type="checkbox"
+                  checked={displayDepartment === 1}
+                  onChange={handleToggleDisplay}
+                />
                 <span class="slider"></span>
               </label>
             </div>
@@ -332,7 +391,6 @@ const ProgramPiece = forwardRef((props, ref) => {
                 config={config}
                 onChange={(newContent) => setDetail(newContent)}
               />
-              {/* <textarea className="!border-gray-300 h-60 block w-full rounded-md border-0 py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-2xl sm:leading-6"></textarea> */}
             </div>
           </div>
         </div>

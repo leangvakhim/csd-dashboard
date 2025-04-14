@@ -1,16 +1,17 @@
 import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } from "react";
 import MediaLibraryModal from "../../MediaLibraryModal";
 import axios from "axios";
-import { API_ENDPOINTS } from "../../../service/APIConfig";
+import { API, API_ENDPOINTS } from "../../../service/APIConfig";
 
-const BannerPiece = forwardRef((props, ref) => {
+const BannerPiece = forwardRef(({sectionId, pageId}, ref) => {
     const [isRotatedButton1, setIsRotatedButton1] = useState(false);
     const [isMediaLibraryOpen, setMediaLibraryOpen] = useState(false);
     const [selectedImage, setSelectedImage] = useState("");
     const [title, setTitle] = useState("");
     const [currentField, setCurrentField] = useState("");
     const [subtitle, setSubtitle] = useState("");
-    // const [display, setDisplay] = useState(true);
+    const [banId, setBanId] = useState(null);
+    const [displayBanner, setDisplayBanner] = useState(0);
 
     const openMediaLibrary = (field) => {
         setCurrentField(field);
@@ -37,19 +38,42 @@ const BannerPiece = forwardRef((props, ref) => {
         }
     };
 
-    // useEffect(() => {
-    //   console.log("📦 Current Banner Data", {
-    //     title,
-    //     selectedImage,
-    //     subtitle
-    //   });
-    // }, [title, selectedImage, subtitle]);
+    useEffect(() => {
+        const fetchBanners = async () => {
+            try {
+
+                const response = await axios.get(`${API_ENDPOINTS.getBanner}?ban_sec=${sectionId}`);
+                const banners = response.data.data || [];
+                if (banners.length > 0) {
+                    const banner = banners.find(item => item.section.sec_page === pageId);
+
+                    if (banner) {
+                        setBanId(banner.ban_id || null);
+                        setTitle(banner.ban_title || '');
+                        setSubtitle(banner.ban_subtitle || '');
+                        setSelectedImage(banner.image ? `${API}/storage/uploads/${banner.image.img}` : '');
+                    }
+                }
+
+                const sectionRes = await axios.get(`${API_ENDPOINTS.getSection}/${sectionId}`);
+                const sectionData = sectionRes.data.data;
+                setDisplayBanner(sectionData.display || 0);
+
+            } catch (error) {
+                console.error("Failed to fetch banners:", error);
+            }
+        };
+
+
+        fetchBanners();
+    }, [sectionId]);
 
     useImperativeHandle(ref, () => ({
         getBanners: async () => {
             const imgId = await getImageIdByUrl(selectedImage);
                 return [
                 {
+                    ban_id: banId,
                     ban_title: title,
                     ban_img: imgId,
                     ban_subtitle: subtitle
@@ -57,6 +81,30 @@ const BannerPiece = forwardRef((props, ref) => {
             ];
         }
     }));
+
+    const handleToggleDisplay = async () => {
+        try {
+            const newDisplay = displayBanner === 1 ? 0 : 1;
+            await axios.post(`${API_ENDPOINTS.updateSection}/${sectionId}`, {
+                sec_id: sectionId,
+                display: newDisplay,
+            });
+            setDisplayBanner(newDisplay);
+        } catch (error) {
+            console.error("Failed to update display:", error);
+        }
+    };
+
+    const handleDeleteSection = async () => {
+        if (!window.confirm("Are you sure you want to delete this section?")) return;
+
+        try {
+            await axios.put(`${API_ENDPOINTS.deleteSection}/${sectionId}`);
+            window.location.reload();
+        } catch (error) {
+            console.error('Failed to delete section:', error);
+        }
+    };
 
     return (
         <div className="grid grid-cols-1 gap-4 ">
@@ -75,6 +123,7 @@ const BannerPiece = forwardRef((props, ref) => {
                         </div>
                         <div className="flex gap-1">
                             <svg
+                                onClick={() => handleDeleteSection()}
                                 xmlns="http://www.w3.org/2000/svg"
                                 fill="none"
                                 viewBox="0 0 24 24"
@@ -125,10 +174,14 @@ const BannerPiece = forwardRef((props, ref) => {
                         Display
                         </label>
                         <div className="mt-2">
-                        <label class="toggle-switch mt-2">
-                            <input type="checkbox" />
-                            <span class="slider"></span>
-                        </label>
+                            <label className="toggle-switch mt-2">
+                                <input
+                                    type="checkbox"
+                                    checked={displayBanner === 1}
+                                    onChange={handleToggleDisplay}
+                                />
+                                <span className="slider"></span>
+                            </label>
                         </div>
                     </div>
                 </div>
@@ -149,10 +202,7 @@ const BannerPiece = forwardRef((props, ref) => {
                                         />
                                         <div className="flex gap-3 mt-2 justify-center">
                                             <svg
-                                                onClick={(e) => {
-                                                    e.preventDefault();
-                                                    openMediaLibrary("image");
-                                                }}
+                                                onClick={() => openMediaLibrary("image")}
                                                 xmlns="http://www.w3.org/2000/svg"
                                                 fill="none"
                                                 viewBox="0 0 24 24"
@@ -167,7 +217,7 @@ const BannerPiece = forwardRef((props, ref) => {
                                                 />
                                             </svg>
                                             <svg
-                                                onClick={() => openMediaLibrary("image")}
+                                                onClick={() => handleImageSelect("", "image")}
                                                 xmlns="http://www.w3.org/2000/svg"
                                                 fill="none"
                                                 viewBox="0 0 24 24"
