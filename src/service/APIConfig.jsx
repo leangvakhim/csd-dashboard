@@ -48,6 +48,11 @@ const API_ENDPOINTS = {
     createBanner: `${API_BASEURL}/banner/create`,
     updateBanner: `${API_BASEURL}/banner/update`,
 
+    // academic
+    getAcademic: `${API_BASEURL}/academic`,
+    createAcademic: `${API_BASEURL}/academic/create`,
+    updateAcademic: `${API_BASEURL}/academic/update`,
+
     // department
     getDepartment: `${API_BASEURL}/department`,
     createDepartment: `${API_BASEURL}/department/create`,
