@@ -60,6 +60,13 @@ const API_ENDPOINTS = {
     deleteSlideshow: `${API_BASEURL}/slideshow/visibility`,
     updateSlideshowOrder: `${API_BASEURL}/slideshow/reorder`,
 
+    // service
+    getService: `${API_BASEURL}/service`,
+    createService: `${API_BASEURL}/service/create`,
+    updateService: `${API_BASEURL}/service/update`,
+    deleteService: `${API_BASEURL}/service/visibility`,
+    updateServiceOrder: `${API_BASEURL}/service/reorder`,
+
     // btnss
     getBtnss: `${API_BASEURL}/btnss`,
     createBtnss: `${API_BASEURL}/btnss/create`,
