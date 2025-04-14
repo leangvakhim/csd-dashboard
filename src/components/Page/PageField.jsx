@@ -91,6 +91,44 @@ const PageField = () => {
             }
         }
     }
+    const saveAcademic = async (savedSectionId, savedPageId) => {
+        const academics = await pageRef.current?.getAcademics?.() || [];
+        const response = await axios.get(`${API_ENDPOINTS.getAcademic}?ban_sec=${savedSectionId}`);
+        const existingServices = response.data?.data || [];
+        const existingServiceIds = existingServices.map(service => service.acad_id);
+
+        if (academics.length > 0 && savedSectionId) {
+            for (const academic of academics) {
+                const acad_sec = academic.acad_sec || savedSectionId;
+                const page_id = academic.page_id || savedPageId;
+                const academicPayload = {
+                    acad_sec: acad_sec,
+                    acad_title: academic.acad_title || '',
+                    acad_detail: academic.acad_detail || '',
+                    acad_img: academic.acad_img || null,
+                    acad_btntext1: academic.acad_btntext1 || '',
+                    acad_btntext2: academic.acad_btntext2 || '',
+                    acad_routepage: academic.acad_routepage || '',
+                    acad_routetext: academic.acad_routetext || '',
+                    page_id: page_id,
+                };
+
+                if (
+                    academic.acad_id &&
+                    existingServiceIds.includes(parseInt(academic.acad_id)) &&
+                    parseInt(acad_sec) === parseInt(savedSectionId) &&
+                    parseInt(page_id) === parseInt(savedPageId)
+                ) {
+                    await axios.post(`${API_ENDPOINTS.updateAcademic}/${academic.acad_id}`, { academics: academicPayload });
+                } else {
+                    if (!academic.acad_id || !existingServiceIds.includes(parseInt(academic.acad_id))) {
+                        await axios.post(API_ENDPOINTS.createAcademic, { academics: [academicPayload] });
+                    }
+                }
+            }
+        }
+    }
+
     const saveSlideshow = async (savedSectionId, savedPageId) => {
         const slideshows = await pageRef.current?.getSlideshows?.() || [];
         const response = await axios.get(`${API_ENDPOINTS.getSlideshow}?ban_sec=${savedSectionId}`);
@@ -204,7 +242,6 @@ const PageField = () => {
                 sec_order: section.sec_order,
                 sec_type: section.sec_type,
                 lang: section.lang,
-                display: section.display ?? 0,
                 active: section.active ?? 1,
             }));
 
@@ -224,6 +261,7 @@ const PageField = () => {
                 // saveService(savedSectionId, savedPageId);
                 saveBanner(savedSectionId, savedPageId);
                 // saveSlideshow(savedSectionId, savedPageId);
+                // saveAcademic(savedSectionId, savedPageId);
 
             } catch (error) {
                 console.error("Failed to sync section:", error.response?.data || error.message);

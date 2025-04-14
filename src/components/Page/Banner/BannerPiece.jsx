@@ -45,9 +45,9 @@ const BannerPiece = forwardRef(({sectionId, pageId}, ref) => {
                 const response = await axios.get(`${API_ENDPOINTS.getBanner}?ban_sec=${sectionId}`);
                 const banners = response.data.data || [];
                 if (banners.length > 0) {
-                    const banner = banners[0];
+                    const banner = banners.find(item => item.section.sec_page === pageId);
 
-                    if (banner.section && banner.section.sec_page === pageId) {
+                    if (banner) {
                         setBanId(banner.ban_id || null);
                         setTitle(banner.ban_title || '');
                         setSubtitle(banner.ban_subtitle || '');
