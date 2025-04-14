@@ -24,72 +24,108 @@ const PageField = () => {
         }
     }, [pageData]);
 
-    const saveDepartment = async (savedSectionId) => {
+    const saveDepartment = async (savedSectionId, savedPageId) => {
         const programs = await pageRef.current?.getPrograms?.() || [];
+        const response = await axios.get(`${API_ENDPOINTS.getDepartment}?ban_sec=${savedSectionId}`);
+        const existingServices = response.data?.data || [];
+        const existingServiceIds = existingServices.map(service => service.dep_id);
 
         if (programs.length > 0 && savedSectionId) {
             for (const program of programs) {
+                const dep_sec = program.dep_sec || savedSectionId;
+                const page_id = program.page_id || savedPageId;
                 const programPayload = {
-                    dep_sec: savedSectionId,
+                    dep_sec: dep_sec,
                     dep_title: program.dep_title || '',
                     dep_detail: program.dep_detail || '',
                     dep_img1: program.dep_img1 || null,
                     dep_img2: program.dep_img2 || null,
+                    page_id: page_id,
                 };
 
-                if(program.dep_id){
+                if(
+                    program.dep_id &&
+                    existingServiceIds.includes(parseInt(program.dep_id)) &&
+                    parseInt(dep_sec) === parseInt(savedSectionId) &&
+                    parseInt(page_id) === parseInt(savedPageId)
+                ){
                     await axios.post(`${API_ENDPOINTS.updateDepartment}/${program.dep_id}`, { programs: programPayload });
                 } else {
-                    await axios.post(API_ENDPOINTS.createDepartment, { programs: [programPayload] });
+                    if (!program.dep_id || !existingServiceIds.includes(parseInt(program.dep_id))) {
+                        await axios.post(API_ENDPOINTS.createDepartment, { programs: [programPayload] });
+                    }
                 }
             }
         }
     }
-    const saveBanner = async (savedSectionId) => {
+    const saveBanner = async (savedSectionId, savedPageId) => {
         const banners = await pageRef.current?.getBanners?.() || [];
+        const response = await axios.get(`${API_ENDPOINTS.getBanner}?ban_sec=${savedSectionId}`);
+        const existingServices = response.data?.data || [];
+        const existingServiceIds = existingServices.map(service => service.ban_id);
 
         if (banners.length > 0 && savedSectionId) {
             for (const banner of banners) {
+                const ban_sec = banner.dep_sec || savedSectionId;
+                const page_id = banner.page_id || savedPageId;
                 const bannerPayload = {
-                    ban_sec: savedSectionId,
+                    ban_sec: ban_sec,
                     ban_title: banner.ban_title || '',
                     ban_subtitle: banner.ban_subtitle || '',
-                    ban_img: banner.ban_img || null
+                    ban_img: banner.ban_img || null,
+                    page_id: page_id,
                 };
 
-                if (banner.ban_id) {
+                if (
+                    banner.ban_id &&
+                    existingServiceIds.includes(parseInt(banner.ban_id)) &&
+                    parseInt(ban_sec) === parseInt(savedSectionId) &&
+                    parseInt(page_id) === parseInt(savedPageId)
+                ) {
                     await axios.post(`${API_ENDPOINTS.updateBanner}/${banner.ban_id}`, { banners: bannerPayload });
                 } else {
-                    await axios.post(API_ENDPOINTS.createBanner, { banners: [bannerPayload] });
+                    if (!banner.ban_id || !existingServiceIds.includes(parseInt(banner.ban_id))) {
+                        await axios.post(API_ENDPOINTS.createBanner, { banners: [bannerPayload] });
+                    }
                 }
             }
         }
     }
-    const saveSlideshow = async (savedSectionId) => {
+    const saveSlideshow = async (savedSectionId, savedPageId) => {
         const slideshows = await pageRef.current?.getSlideshows?.() || [];
-
-        // console.log("🔥 Raw slideshow from getSlideshows:", slideshows);
-        // console.log("🔥 savedSectionId:", savedSectionId);
+        const response = await axios.get(`${API_ENDPOINTS.getSlideshow}?ban_sec=${savedSectionId}`);
+        const existingServices = response.data?.data || [];
+        const existingServiceIds = existingServices.map(service => service.slider_id);
 
         if (slideshows.length > 0 && savedSectionId) {
             for (const item of slideshows) {
+                const slider_sec = item.slider_sec || savedSectionId;
+                const page_id = item.page_id || savedPageId;
 
                 const payload = {
                     ...item,
-                    slider_sec: savedSectionId,
+                    slider_sec: slider_sec,
+                    page_id: page_id,
                 };
 
-            if (item.slider_id) {
+            if (
+                item.slider_id &&
+                existingServiceIds.includes(parseInt(item.slider_id)) &&
+                parseInt(slider_sec) === parseInt(savedSectionId) &&
+                parseInt(page_id) === parseInt(savedPageId)
+            ) {
                     await axios.post(`${API_ENDPOINTS.updateSlideshow}/${item.slider_id}`, { Slideshow: payload });
                 } else {
-                    await axios.post(API_ENDPOINTS.createSlideshow, { Slideshow: payload });
+                    if (!item.s_id || !existingServiceIds.includes(parseInt(item.s_id))) {
+                        await axios.post(API_ENDPOINTS.createSlideshow, { Slideshow: [payload] });
+                    }
                 }
             }
 
-            reorderSlideshow();
+            if (slideshows.length > 0) {reorderSlideshow();}
         }
     }
-    const saveService = async (savedSectionId) => {
+    const saveService = async (savedSectionId, savedPageId) => {
         const services = await pageRef.current?.getServices?.() || [];
         const response = await axios.get(`${API_ENDPOINTS.getService}?ban_sec=${savedSectionId}`);
         const existingServices = response.data?.data || [];
@@ -97,27 +133,37 @@ const PageField = () => {
 
         if (services.length > 0 && savedSectionId) {
             for (const item of services) {
+                const s_sec = item.s_sec || savedSectionId;
+                const page_id = item.page_id || savedPageId;
 
                 const payload = {
                     ...item,
-                    s_sec: savedSectionId,
+                    s_sec: s_sec,
+                    page_id: page_id,
                 };
 
-            if (item.s_id && existingServiceIds.includes(parseInt(item.s_id))) {
+            if (
+                item.s_id &&
+                existingServiceIds.includes(parseInt(item.s_id)) &&
+                parseInt(s_sec) === parseInt(savedSectionId) &&
+                parseInt(page_id) === parseInt(savedPageId)
+            ) {
                     await axios.post(`${API_ENDPOINTS.updateService}/${item.s_id}`, { Service: payload });
                 } else {
-                    await axios.post(API_ENDPOINTS.createService, { Service: [payload] });
+                    if (!item.s_id || !existingServiceIds.includes(parseInt(item.s_id))) {
+                        await axios.post(API_ENDPOINTS.createService, { Service: [payload] });
+                    }
                 }
             }
 
-            reorderService();
+            if (services.length > 0) { reorderService(); }
         }
     }
     const reorderSlideshow = async () => {
         const slideshows = await pageRef.current?.getSlideshows?.() || [];
 
         const slideshowPayload = slideshows.map((slideshow, index) => ({
-            slider_id: slideshow.slider_id,
+            slider_id: parseInt(slideshow.slider_id),
             slider_order: index + 1
         }));
 
@@ -131,7 +177,7 @@ const PageField = () => {
         const services = await pageRef.current?.getServices?.() || [];
 
         const servicePayload = services.map((service, index) => ({
-            s_id: service.s_id,
+            s_id: parseInt(service.s_id),
             s_order: index + 1
         }));
 
@@ -152,17 +198,15 @@ const PageField = () => {
         }
 
         if (savedPageId) {
-                const sectionPayload = sections.map((section, index) => ({
-                    sec_id: section.sec_id || null,
-                    sec_page: savedPageId,
-                    sec_order: section.sec_order,
-                    sec_type: section.sec_type,
-                    lang: section.lang,
-                    display: section.display ?? 0,
-                    active: section.active ?? 1,
-                }));
-
-                // console.log("🚀 Section Payload to sync:", sectionPayload);
+            const sectionPayload = sections.map((section, index) => ({
+                sec_id: section.sec_id || null,
+                sec_page: savedPageId,
+                sec_order: section.sec_order,
+                sec_type: section.sec_type,
+                lang: section.lang,
+                display: section.display ?? 0,
+                active: section.active ?? 1,
+            }));
 
             try {
                 const response = await axios.put(API_ENDPOINTS.syncSection, {
@@ -176,10 +220,10 @@ const PageField = () => {
 
                 // console.log("📥 savedSectionId:", savedSectionId);
 
-                // saveDepartment(savedSectionId);
-                saveService(savedSectionId);
-                // saveBanner(savedSectionId);
-                // saveSlideshow(savedSectionId);
+                // saveDepartment(savedSectionId, savedPageId);
+                // saveService(savedSectionId, savedPageId);
+                saveBanner(savedSectionId, savedPageId);
+                // saveSlideshow(savedSectionId, savedPageId);
 
             } catch (error) {
                 console.error("Failed to sync section:", error.response?.data || error.message);
@@ -212,11 +256,9 @@ const PageField = () => {
             menu_id: formData.p_menu ?? null
         };
 
-        // console.log("🟡 Payload to send:", payload);
 
         try {
             let response;
-            // console.log("formData.p_id:", formData.p_id)
             if (formData?.p_id) {
                 response = await axios.post(`${API_ENDPOINTS.updatePage}/${formData.p_id}`, payload);
             } else {

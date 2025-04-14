@@ -47,7 +47,6 @@ const BannerPiece = forwardRef(({sectionId, pageId}, ref) => {
                 if (banners.length > 0) {
                     const banner = banners[0];
 
-                    // Check if section's page is correct
                     if (banner.section && banner.section.sec_page === pageId) {
                         setBanId(banner.ban_id || null);
                         setTitle(banner.ban_title || '');
@@ -203,9 +202,7 @@ const BannerPiece = forwardRef(({sectionId, pageId}, ref) => {
                                         />
                                         <div className="flex gap-3 mt-2 justify-center">
                                             <svg
-                                                onClick={(e) => {
-                                                    openMediaLibrary("image");
-                                                }}
+                                                onClick={() => openMediaLibrary("image")}
                                                 xmlns="http://www.w3.org/2000/svg"
                                                 fill="none"
                                                 viewBox="0 0 24 24"
@@ -220,7 +217,7 @@ const BannerPiece = forwardRef(({sectionId, pageId}, ref) => {
                                                 />
                                             </svg>
                                             <svg
-                                                onClick={() => openMediaLibrary("image")}
+                                                onClick={() => handleImageSelect("", "image")}
                                                 xmlns="http://www.w3.org/2000/svg"
                                                 fill="none"
                                                 viewBox="0 0 24 24"

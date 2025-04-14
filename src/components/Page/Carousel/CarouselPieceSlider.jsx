@@ -11,6 +11,7 @@ const CarouselPieceSlider = forwardRef(({displaySlideshow, sectionId, pageId}, r
     const [currentField, setCurrentField] = useState(null);
     const [isMediaLibraryOpen, setMediaLibraryOpen] = useState(false);
     const [rotatedStates, setRotatedStates] = useState({});
+    const [pages, setPages] = useState({});
     const [slider, setSlider] = useState([
         {
             id: "1",
@@ -72,12 +73,19 @@ const CarouselPieceSlider = forwardRef(({displaySlideshow, sectionId, pageId}, r
             }
         };
 
+        const fetchPages = async () => {
+            try{
+                const response = await axios.get(API_ENDPOINTS.getPage);
+                const page = response.data?.data || [];
+                setPages(page);
+            } catch (error) {
+                console.error('Error fetching sliders:', error);
+            }
+        }
+
+        fetchPages();
         fetchSliders();
     }, []);
-
-    // useEffect(() => {
-    //    console.log("📦 Current Slider Data:", slider);
-    // }, [slider]);
 
     useImperativeHandle(ref, () => ({
         getSliders: async () => {
@@ -143,7 +151,7 @@ const CarouselPieceSlider = forwardRef(({displaySlideshow, sectionId, pageId}, r
 
     const handleAddSlider = () => {
         const newSlider = {
-            id: `${Date.now()}`,
+            id: (slider.length + 1).toString(),
             title: `Slider ${slider.length + 1}`,
             subtitle: "",
             logo: "",
@@ -536,11 +544,12 @@ const CarouselPieceSlider = forwardRef(({displaySlideshow, sectionId, pageId}, r
                                                                         value={sliders.firstbtnselect}
                                                                         onChange={(e) => handleInputChange(sliders.id, 'firstbtnselect', e.target.value)}
                                                                     >
-                                                                        <option value="">Choose a page</option>
-                                                                        <option value="Home">Home</option>
-                                                                        <option value="About">About</option>
-                                                                        <option value="Contact">Contact</option>
-                                                                        <option value="Program">Program</option>
+                                                                    <option value="">Choose a page</option>
+                                                                    {Array.isArray(pages) && pages.map((page) => (
+                                                                        <option key={page.p_id} value={page.p_title}>
+                                                                            {page.p_title}
+                                                                        </option>
+                                                                    ))}
                                                                     </select>
                                                                 </div>
                                                                 <div className="flex-1">
@@ -613,10 +622,11 @@ const CarouselPieceSlider = forwardRef(({displaySlideshow, sectionId, pageId}, r
                                                                         onChange={(e) => handleInputChange(sliders.id, 'secondbtnselect', e.target.value)}
                                                                     >
                                                                         <option value="">Choose a page</option>
-                                                                        <option value="Home">Home</option>
-                                                                        <option value="About">About</option>
-                                                                        <option value="Contact">Contact</option>
-                                                                        <option value="Program">Program</option>
+                                                                        {Array.isArray(pages) && pages.map((page) => (
+                                                                            <option key={page.p_id} value={page.p_title}>
+                                                                                {page.p_title}
+                                                                            </option>
+                                                                        ))}
                                                                     </select>
                                                                 </div>
                                                                 <div className="flex-1">
