@@ -3,8 +3,6 @@ const API = "https://52.221.196.157";
 const API_BASEURL = `${API}/api`;
 
 const API_ENDPOINTS = {
-    // text
-    // texts: `${API_BASEURL}/text`,
 
     // images
     getImages: `${API_BASEURL}/images`,
@@ -57,6 +55,11 @@ const API_ENDPOINTS = {
     getDepartment: `${API_BASEURL}/department`,
     createDepartment: `${API_BASEURL}/department/create`,
     updateDepartment: `${API_BASEURL}/department/update`,
+
+    // information
+    getText: `${API_BASEURL}/text`,
+    createText: `${API_BASEURL}/text/create`,
+    updateText: `${API_BASEURL}/text/update`,
 
     // slideshow
     getSlideshow: `${API_BASEURL}/slideshow`,

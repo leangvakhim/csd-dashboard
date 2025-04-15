@@ -91,6 +91,39 @@ const PageField = () => {
             }
         }
     }
+    const saveInformation = async (savedSectionId, savedPageId) => {
+        const informations = await pageRef.current?.getInformations?.() || [];
+        const response = await axios.get(`${API_ENDPOINTS.getText}?ban_sec=${savedSectionId}`);
+        const existingServices = response.data?.data || [];
+        const existingServiceIds = existingServices.map(service => service.text_id);
+
+        if (informations.length > 0 && savedSectionId) {
+            for (const information of informations) {
+                const text_sec = information.text_sec || savedSectionId;
+                const page_id = information.page_id || savedPageId;
+                const informationPayload = {
+                    text_sec: text_sec,
+                    title: information.title || '',
+                    desc: information.desc || '',
+                    text_type: information.text_type || null,
+                    page_id: page_id,
+                };
+
+                if (
+                    information.text_id &&
+                    existingServiceIds.includes(parseInt(information.text_id)) &&
+                    parseInt(text_sec) === parseInt(savedSectionId) &&
+                    parseInt(page_id) === parseInt(savedPageId)
+                ) {
+                    await axios.post(`${API_ENDPOINTS.updateText}/${information.text_id}`, { texts: informationPayload });
+                } else {
+                    if (!information.text_id || !existingServiceIds.includes(parseInt(information.text_id))) {
+                        await axios.post(API_ENDPOINTS.createText, { texts: [informationPayload] });
+                    }
+                }
+            }
+        }
+    }
     const saveAcademic = async (savedSectionId, savedPageId) => {
         const academics = await pageRef.current?.getAcademics?.() || [];
         const response = await axios.get(`${API_ENDPOINTS.getAcademic}?ban_sec=${savedSectionId}`);
@@ -259,7 +292,8 @@ const PageField = () => {
 
                 // saveDepartment(savedSectionId, savedPageId);
                 // saveService(savedSectionId, savedPageId);
-                saveBanner(savedSectionId, savedPageId);
+                // saveBanner(savedSectionId, savedPageId);
+                saveInformation(savedSectionId, savedPageId);
                 // saveSlideshow(savedSectionId, savedPageId);
                 // saveAcademic(savedSectionId, savedPageId);
 
