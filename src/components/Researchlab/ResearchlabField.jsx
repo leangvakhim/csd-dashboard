@@ -84,102 +84,96 @@ const ResearchlabField = () => {
         }
     };
 
-    const saveResearchlabTags = async (rsdl_id) => {
-        try {
-            if (!rsdl_id) {
-                console.warn("Cannot save tags: missing researchlab ID.");
-                return;
-            }
+    const saveResearchlabTags = async () => {
+        const rsdl_id = formData.rsdl_id;
+        if (!rsdl_id) {
+            console.warn("Cannot save tags: missing researchlab ID.");
+            return;
+        }
     
-            const tagData = researchlabTagRef.current?.getData?.() || [];
+        const tagData = researchlabTagRef.current?.getData?.() || [];
+        console.log("Raw tag data:", tagData);
     
-            // Remove duplicates
-            const seen = new Set();
-            const filteredTags = Array.isArray(tagData)
-                ? tagData.filter(item => {
-                    const key = `${item.rsdlt_title}-${item.rsdlt_img}`;
-                    if (seen.has(key)) return false;
-                    seen.add(key);
-                    return item.rsdlt_title;
-                })
-                : [];
+        const seen = new Set();
+        const filteredTags = Array.isArray(tagData)
+            ? tagData.filter(item => {
+                const key = `${item.rsdlt_title}-${item.rsdlt_id}`;
+                if (seen.has(key)) return false;
+                seen.add(key);
+                return item.rsdlt_title;
+            })
+            : [];
+        console.log("Filtered tag data:", filteredTags);
     
-            
+        const newTags = await Promise.all(
+            filteredTags
+                .filter(item => typeof item.rsdlt_id !== 'number')
+                .map(async (item) => ({
+                    rsdlt_title: item.rsdlt_title,
+                    rsdlt_img: await getImageIdByUrl(item.rsdlt_img),
+                    display: item.display ?? 1,
+                    active: item.active ?? 1,
+                    rsdlt_order: item.rsdlt_order || 0,
+                }))
+        );
+        console.log("New tags to create:", newTags);
     
-            const newTags = filteredTags.filter(item => typeof item.rsdlt_id !== 'number').map(item => ({
+        const updateTags = filteredTags.filter(item => typeof item.rsdlt_id === 'number');
+        console.log("Tags to update:", updateTags);
+    
+        for (const item of updateTags) {
+            const payload = {
                 rsdlt_title: item.rsdlt_title,
-                rsdlt_img: item.rsdlt_img,
-                active: item.active ?? 1
+                rsdlt_img: item.rsdlt_img_id, // Potential Issue 1: Assuming rsdlt_img_id exists
+                display: item.display ?? 1,
+                active: item.active ?? 1,
+                rsdlt_rsdl: rsdl_id // Potential Issue 2: Is this field updatable?
+            };
+            console.log(`Updating tag ID: ${item.rsdlt_id} with payload:`, payload);
+            try {
+                await axios.post(`${API_ENDPOINTS.updateResearchlabTag}/${item.rsdlt_id}`, payload);
+            } catch (error) {
+                console.error(`Error updating tag ID: ${item.rsdlt_id}`, error.response?.data || error.message);
+            }
+        }
+    
+        // Perform create
+        if (newTags.length > 0) {
+            const createPayload = {
+                rsdl_id,
+                rsdlt_tags: newTags,
+            };
+            try {
+                await axios.post(API_ENDPOINTS.createResearchlabTag, createPayload);
+                console.log("🆕 Create Payload:", createPayload);
+            } catch (error) {
+                console.error("Error creating tags:", error);
+            }
+        }
+    
+        // Perform reorder
+        const reorderPayload = filteredTags
+            .filter(item => typeof item.rsdlt_id === "number")
+            .map(item => ({
+                rsdlt_id: item.rsdlt_id,
+                order: item.rsdlt_order || 0,
             }));
-            // Update existing tags
-            for (const item of filteredTags.filter(item => typeof item.rsdlt_id === 'number')) {
-                try {
-                    const payload = {
-                        rsdlt_title: item.rsdlt_title,
-                        rsdlt_img: item.rsdlt_img,
-                        active: item.active ?? 1,
-                        rsdlt_rsdl: rsdl_id,
-                    };
-                    await axios.post(`${API_ENDPOINTS.updateResearchlabTag}/${item.rsdlt_id}`, payload, {
-                        headers: {
-                            'Content-Type': 'application/json',
-                        }
-                    });
-                } catch (error) {
-                    console.error(`Failed to update tag ${item.rsdlt_id}:`, error.response?.data || error.message);
-                }
-            }
+        console.log("Reordering tags with payload:", reorderPayload);
     
-            // Create new tags
-            if (newTags.length > 0) {
-                try {
-                    const createPayload = {
-                        rsdl_id,
-                        rsdlt_tags: newTags
-                    };
-                    console.log('Creating tags with payload:', createPayload);
-                    
-                    const response = await axios.post(API_ENDPOINTS.createResearchlabTag, createPayload, {
-                        headers: {
-                            'Content-Type': 'application/json',
-                        }
-                    });
-                    
-                    console.log('Create tags response:', response.data);
-                } catch (error) {
-                    console.error('Failed to create new tags:', {
-                        error: error.response?.data || error.message,
-                        request: error.config?.data
-                    });
-                    throw error; // Re-throw if you want calling code to handle it
-                }
+        if (reorderPayload.length > 0) {
+            try {
+                await axios.post(API_ENDPOINTS.updateResearchlabTagOrder, reorderPayload, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                    },
+                });
+            } catch (error) {
+                console.error("Error reordering tags:", error);
             }
-    
-            // Reorder tags
-            const reorderPayload = filteredTags
-                .filter(item => typeof item.rsdlt_id === 'number')
-                .map(item => ({
-                    rsdlt_id: item.rsdlt_id,
-                    order: item.rsdlt_order || 0,
-                }));
-    
-            if (reorderPayload.length > 0) {
-                try {
-                    await axios.post(API_ENDPOINTS.updateResearchlabTagOrder, reorderPayload, {
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Accept': 'application/json',
-                        },
-                    });
-                } catch (error) {
-                    console.error('Failed to reorder tags:', error.response?.data || error.message);
-                }
-            }
-        } catch (error) {
-            console.error('Unexpected error in saveResearchlabTags:', error);
-            throw error;
         }
     };
+    
 
     const getImageIdByUrl = async (url) => {
         try {
@@ -206,6 +200,7 @@ const ResearchlabField = () => {
                 rsdl_img: imageId
             }));
 
+            console.log("res", res)
             // Now pass rsdl_id to saveResearchlabTags
             await saveResearchlabTags(newId);
             alert("Research lab saved successfully!");
