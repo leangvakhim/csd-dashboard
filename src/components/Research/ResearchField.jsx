@@ -12,11 +12,13 @@ const ResearchField = () => {
     const researchData = location.state?.researchData;
     const [formData, setFormData] = useState({
         lang: 1,
-        f_name: null,
-        f_position: null,
-        f_portfolio: null,
+        rsd_title: null,
+        rsd_img: null,
+        rsd_subtitle: null,
+        rsd_lead: null,
+        rsd_fav: null,
+        rsd_order: 1,
         display: true,
-        f_img: null,
         active: 1,
     });
 
@@ -34,35 +36,36 @@ const ResearchField = () => {
     };
 
     const saveResearch = async () => {
-        const isUpdate = !!formData.f_id;
+        const isUpdate = !!formData.rsd_id;
         const payload = {
             lang: formData.lang,
             rsd_title: formData.rsd_title || '',
             rsd_subtitle: formData.rsd_subtitle || '',
             rsd_lead: formData.rsd_lead || '',
-            f_img: formData.f_img || null,
+            rsd_fav: formData.rsd_fav || null,
+            rsd_img: formData.rsd_img,
+            rsd_order: formData.rsd_order,
             display: formData.display ? 1 : 0,
             active: formData.active ? 1 : 0,
         };
 
         if (!isUpdate) {
-            const res = await axios.post(API_ENDPOINTS.createFaculty, payload);
-            const createdFaculty = res.data.data;
+            const res = await axios.post(API_ENDPOINTS.createResearch, payload);
+            const createdResearch = res.data.data;
             setFormData(prev => ({
                 ...prev,
-                f_id: createdFaculty.f_id
+                rsd_id: createdResearch.rsd_id
             }));
-            return createdFaculty;
+            return createdResearch;
         } else {
-            await axios.post(`${API_ENDPOINTS.updateFaculty}/${formData.f_id}`, payload);
-            return { f_id: formData.f_id };
+            await axios.post(`${API_ENDPOINTS.updateResearch}/${formData.rsd_id}`, payload);
+            return { rsd_id: formData.rsd_id };
         }
     };
 
     const handleSave = async () => {
         try {
             await saveResearch();
-
             alert("Research saved successfully!");
         } catch (err) {
             if (err.response?.data?.errors) {
@@ -83,6 +86,7 @@ const ResearchField = () => {
                     formData={formData}
                     onImageSelect={handleImageSelect}
                     setFormData={setFormData}
+                    researchRef={researchRef}
                 />
             </div>
         </div>

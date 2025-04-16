@@ -1,5 +1,5 @@
-const API = "https://52.221.196.157";
-// const API = "http://127.0.0.1:8000";
+// const API = "https://52.221.196.157";
+const API = "http://127.0.0.1:8000";
 const API_BASEURL = `${API}/api`;
 
 const API_ENDPOINTS = {
@@ -162,6 +162,14 @@ const API_ENDPOINTS = {
     deleteScholarship: `${API_BASEURL}/scholarship/visibility`,
     duplicateScholarship: `${API_BASEURL}/scholarship/duplicate`,
     updateScholarshipOrder: `${API_BASEURL}/scholarship/reorder`,
+    
+
+    getResearch: `${API_BASEURL}/rsd`,
+    createResearch: `${API_BASEURL}/rsd/create`,
+    updateResearch: `${API_BASEURL}/rsd/update`,
+    deleteResearch: `${API_BASEURL}/rsd/visibility`,
+    duplicateResearch: `${API_BASEURL}/rsd/duplicate`,
+    updateResearchOrder: `${API_BASEURL}/rsd/reorder`,
 
     // researchlab
     getResearchlab: `${API_BASEURL}/rsdl`,
