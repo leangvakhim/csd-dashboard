@@ -100,7 +100,7 @@ const ResearchlabFieldBody = ({
                             <div className="mt-2">
                                 <input
                                     name="rsdl_title"
-                                    value={formData.rsdl_title || ''}
+                                    value={formData.rsdl_title}
                                     onChange={handleInputChange}
                                     type="text"
                                     className="block w-full !border-gray-200 border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
@@ -115,7 +115,7 @@ const ResearchlabFieldBody = ({
                             <div className="mt-2">
                                 <select
                                     name="rsdl_fav"
-                                    value={formData.rsdl_fav || ''}
+                                    value={formData.rsdl_fav}
                                     onChange={handleInputChange}
                                     className="!border-gray-300 block w-full border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6">
                                     <option value="" disabled>Choose options</option>

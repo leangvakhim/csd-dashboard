@@ -1,57 +1,107 @@
-import React, {useState} from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import MediaLibraryModal from '../MediaLibraryModal';
 import ResearchFieldSection from './ResearchFieldSection';
+import { API_ENDPOINTS } from '../../service/APIConfig';
 
-const ResearchFieldBody = () => {
-    const [activeTab, setActiveTab] = useState(1);
+
+const ResearchFieldBody = ({
+    formData,
+    setFormData,
+    onImageSelect,
+}) => {
+    const [activeTab, setActiveTab] = useState(formData.lang || 1);
     const [isMediaLibraryOpen, setMediaLibraryOpen] = useState(false);
     const [selectedImage, setSelectedImage] = useState("");
 
+    useEffect(() => {
+        if (formData.lang) {
+            setActiveTab(formData.lang);
+        }
+    }, [formData.lang]);
+
+    useEffect(() => {
+        if (formData.rsd_img) {
+            fetch(`${API_ENDPOINTS.getImages}`)
+                .then(res => res.json())
+                .then(result => {
+                    const matched = result.data.find(img => img.image_id === formData.f_img);
+                    if (matched) {
+                        setSelectedImage(matched.image_url);
+                    }
+                })
+                .catch(err => console.error("Error fetching image:", err));
+        }
+    }, [formData.rsd_img]);
+
+    useEffect(() => {
+        // console.log("Loaded formData:", formData);
+
+        if (typeof formData.display !== 'boolean') {
+            setFormData(prev => ({
+                ...prev,
+                display: !!parseInt(prev.display)
+            }));
+        }
+    }, [formData]);
+
     const openMediaLibrary = () => {
-        // setCurrentField(field);
         setMediaLibraryOpen(true);
     };
 
-    const handleImageSelect = (imageUrl, field) => {
+    const handleImageSelect = async (imageUrl, field) => {
         if (field === "image") {
             setSelectedImage(imageUrl ? `${imageUrl}` : "");
+            try {
+                const response = await fetch(`${API_ENDPOINTS.getImages}`);
+                const result = await response.json();
+
+                if (result.status_code === "success" && Array.isArray(result.data)) {
+                    const matchedImage = result.data.find(image => image.image_url === imageUrl);
+                    if (matchedImage) {
+                        onImageSelect(matchedImage.image_id);
+                        setFormData(prevData => ({
+                            ...prevData,
+                            rsd_img: matchedImage.image_id,
+                        }));
+                    } else {
+                        console.warn("Image not found in API response for URL:", imageUrl);
+                    }
+                }
+            } catch (error) {
+                console.error("Failed to fetch images:", error);
+            }
         }
+
         setMediaLibraryOpen(false);
     };
+
 
     return (
         <div className='sm:px-8 px-2 py-2 mb-1'>
             <div className="tabs">
                 <div className="flex">
                     <ul className="flex items-center h-12 bg-gray-100 rounded-lg transition-all duration-300 p-2 overflow-hidden">
-                        <li>
-                            <a
-                                href="javascript:void(0)"
-                                className={`mx-2 inline-block py-1.5 px-6 text-gray-600 hover:text-gray-800 font-medium ${
-                                    activeTab === 1
-                                        ? 'bg-white rounded-lg text-gray-600'
-                                        : 'tablink'
-                                } whitespace-nowrap`}
-                                onClick={() => setActiveTab(1)}
-                                role="tab"
-                            >
-                                English
-                            </a>
-                        </li>
-                        <li>
-                            <a
-                                href="javascript:void(0)"
-                                className={`mx-2 inline-block py-1.5 px-6 text-gray-600 hover:text-gray-800 font-medium ${
-                                    activeTab === 2
-                                        ? 'bg-white rounded-lg text-gray-600'
-                                        : 'tablink'
-                                } whitespace-nowrap`}
-                                onClick={() => setActiveTab(2)}
-                                role="tab"
-                            >
-                                Khmer
-                            </a>
-                        </li>
+                        {[
+                            { id: 1, label: "English" },
+                            { id: 2, label: "Khmer" },
+                            // { id: 3, label: "Chinese" },
+                            // { id: 4, label: "French" }
+                        ].map(langOption => (
+                            <li key={langOption.id}>
+                                <a
+                                    href="javascript:void(0)"
+                                    className={`mx-2 inline-block py-1.5 px-6 text-gray-600 hover:text-gray-800 font-medium ${activeTab === langOption.id ? 'bg-white rounded-lg text-gray-600' : 'tablink'
+                                        } whitespace-nowrap`}
+                                    onClick={() => {
+                                        setActiveTab(langOption.id);
+                                        setFormData(prev => ({ ...prev, lang: langOption.id }));
+                                    }}
+                                    role="tab"
+                                >
+                                    {langOption.label}
+                                </a>
+                            </li>
+                        ))}
                     </ul>
                 </div>
                 <div className="mt-3">
@@ -59,25 +109,29 @@ const ResearchFieldBody = () => {
                     <div className="flex flex-row gap-4 py-2">
                         <div className="flex-1">
                             <label className="block text-xl font-medium leading-6 text-white-900">
-                            Title
+                                Title
                             </label>
                             <div className="mt-2">
-                            <input
-                                type="text"
-                                className="block w-full !border-gray-200 border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
-                            />
+                                <input
+                                    type="text"
+                                    value={formData.rsd_title || ""}
+                                    onChange={(e) => setFormData({ ...formData, rsd_title: e.target.value })}
+                                    className="block w-full !border-gray-200 border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
+                                />
                             </div>
                         </div>
 
                         <div className="flex-non">
                             <label className="block text-xl font-medium leading-6 text-white-900">
-                            Display
+                                Display
                             </label>
                             <div className="mt-2">
-                            <label class="toggle-switch mt-2">
-                                <input type="checkbox" />
-                                <span class="slider"></span>
-                            </label>
+                                <label class="toggle-switch mt-2">
+                                    <input type="checkbox"
+                                        value={formData.display}
+                                        onChange={(e) => setFormData({ ...formData, display: e.target.value })} />
+                                    <span class="slider"></span>
+                                </label>
                             </div>
                         </div>
                     </div>
@@ -85,13 +139,15 @@ const ResearchFieldBody = () => {
                     <div className="flex flex-row gap-4 py-2 mb-1">
                         <div className="flex-1">
                             <label className="block text-xl font-medium leading-6 text-white-900">
-                            Lead person
+                                Lead person
                             </label>
                             <div className="mt-2">
-                            <input
-                                type="text"
-                                className="block w-full !border-gray-200 border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
-                            />
+                                <input
+                                    type="text"
+                                    value={formData.rsd_lead}
+                                    onChange={(e) => setFormData({ ...formData, rsd_lead: e.target.value })}
+                                    className="block w-full !border-gray-200 border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
+                                />
                             </div>
                         </div>
 
@@ -100,10 +156,13 @@ const ResearchFieldBody = () => {
                                 Favourite
                             </label>
                             <div className='mt-2'>
-                                <select class="!border-gray-300 block w-full border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6">
-                                    <option selected>Choose a display options</option>
-                                    <option value="1">Yes</option>
-                                    <option value="0">No</option>
+                                <select
+                                    value={formData.rsd_fav}
+                                    onChange={(e) => setFormData({ ...formData, rsd_fav: e.target.value })}
+                                    className="mt-2 block w-full border !border-gray-300 rounded-md py-2 pl-2 text-gray-900 shadow-sm focus:ring-2 focus:ring-indigo-500"
+                                >
+                                    <option value={true}>Yes</option>
+                                    <option value={false}>No</option>
                                 </select>
                             </div>
                         </div>
@@ -129,6 +188,8 @@ const ResearchFieldBody = () => {
                                                 <div className="flex gap-3 mt-2 justify-center">
                                                     <svg
                                                         onClick={() => openMediaLibrary("image")}
+                                                        value={formData.rsd_img}
+                                                        onChange={(e) => setFormData({ ...formData, rsd_img: e.target.value })}
                                                         xmlns="http://www.w3.org/2000/svg"
                                                         fill="none"
                                                         viewBox="0 0 24 24"
@@ -144,6 +205,8 @@ const ResearchFieldBody = () => {
                                                     </svg>
                                                     <svg
                                                         onClick={() => handleImageSelect("", "image")}
+                                                        value={formData.rsd_img}
+                                                        onChange={(e) => setFormData({ ...formData, rsd_img: e.target.value })}
                                                         xmlns="http://www.w3.org/2000/svg"
                                                         fill="none"
                                                         viewBox="0 0 24 24"
@@ -162,6 +225,8 @@ const ResearchFieldBody = () => {
                                         ) : (
                                             <div
                                                 onClick={() => openMediaLibrary("image")}
+                                                value={formData.rsd_img}
+                                                onChange={(e) => setFormData({ ...formData, rsd_img: e.target.value })}
                                                 className="flex flex-col items-center justify-center pt-5 pb-6 "
                                             >
                                                 <svg
@@ -199,7 +264,10 @@ const ResearchFieldBody = () => {
                                     Subtitle
                                 </label>
                                 <div className="mt-2">
-                                    <textarea className="!border-gray-300 h-60 block w-full rounded-md border-0 py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-2xl sm:leading-6"></textarea>
+                                    <textarea 
+                                     value={formData.rsd_subtitle}
+                                     onChange={(e) => setFormData({ ...formData, rsd_subtitle: e.target.value })}
+                                     className="!border-gray-300 h-60 block w-full rounded-md border-0 py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-2xl sm:leading-6"></textarea>
                                 </div>
                             </div>
                         </div>
@@ -207,7 +275,7 @@ const ResearchFieldBody = () => {
                     {/* Fourth row */}
                     <div>
                         <div className="grid grid-cols-1 gap-4 py-2">
-                            <ResearchFieldSection/>
+                            <ResearchFieldSection />
                         </div>
                     </div>
                 </div>
