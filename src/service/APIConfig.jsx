@@ -61,6 +61,11 @@ const API_ENDPOINTS = {
     createText: `${API_BASEURL}/text/create`,
     updateText: `${API_BASEURL}/text/update`,
 
+    // gallery
+    getGallery: `${API_BASEURL}/gallery`,
+    createGallery: `${API_BASEURL}/gallery/create`,
+    updateGallery: `${API_BASEURL}/gallery/update`,
+
     // acad-facilities
     getAcadFacilities: `${API_BASEURL}/acad-facilities`,
     createAcadFacilities: `${API_BASEURL}/acad-facilities/create`,

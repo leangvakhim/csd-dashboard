@@ -162,6 +162,44 @@ const PageField = () => {
             }
         }
     }
+    const saveGallery = async (savedSectionId, savedPageId) => {
+        const galleries = await pageRef.current?.getGallery?.() || [];
+        const response = await axios.get(`${API_ENDPOINTS.getGallery}?gal_sec=${savedSectionId}`);
+        const existingGalleries = response.data?.data || [];
+        const existingGalleryIds = existingGalleries.map(service => service.gal_id);
+
+        if (galleries.length > 0 && savedSectionId) {
+            for (const gallery of galleries) {
+                const gal_sec = gallery.gal_sec || savedSectionId;
+                const page_id = gallery.page_id || savedPageId;
+                const galleryPayload = {
+                    gal_sec: gal_sec,
+                    gal_img1: gallery.gal_img1,
+                    gal_img2: gallery.gal_img2,
+                    gal_img3: gallery.gal_img3,
+                    gal_img4: gallery.gal_img4,
+                    gal_img5: gallery.gal_img5,
+                    gal_text: gallery.gal_text,
+                    page_id: page_id,
+                };
+
+                console.log("Payload: ",galleryPayload);
+
+                if (
+                    gallery.gal_id &&
+                    existingGalleryIds.includes(parseInt(gallery.gal_id)) &&
+                    parseInt(gal_sec) === parseInt(savedSectionId) &&
+                    parseInt(page_id) === parseInt(savedPageId)
+                ) {
+                    await axios.post(`${API_ENDPOINTS.updateGallery}/${gallery.gal_id}`, { gallery: galleryPayload });
+                } else {
+                    if (!gallery.gal_id || !existingGalleryIds.includes(parseInt(gallery.gal_id))) {
+                        await axios.post(API_ENDPOINTS.createGallery, { gallery: [galleryPayload] });
+                    }
+                }
+            }
+        }
+    }
 
     // hybrid
     const saveFacilties = async (savedSectionId, savedPageId) => {
@@ -396,9 +434,10 @@ const PageField = () => {
                 // saveInformation(savedSectionId, savedPageId);
                 // saveSlideshow(savedSectionId, savedPageId);
                 // saveAcademic(savedSectionId, savedPageId);
+                saveGallery(savedSectionId, savedPageId);
 
                 // hybrid
-                saveFacilties(savedSectionId, savedPageId);
+                // saveFacilties(savedSectionId, savedPageId);
 
             } catch (error) {
                 console.error("Failed to sync section:", error.response?.data || error.message);

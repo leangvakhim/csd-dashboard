@@ -1,17 +1,23 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } from "react";
 import MediaLibraryModal from "../../MediaLibraryModal";
+import axios from "axios";
+import { API_ENDPOINTS, API } from "../../../service/APIConfig";
 
-const GalleyPiece = () => {
+const GalleyPiece = forwardRef(({sectionId, pageId}, ref) => {
   const [isRotatedButton1, setIsRotatedButton1] = useState(false);
   const [isMediaLibraryOpen, setMediaLibraryOpen] = useState(false);
   const [currentField, setCurrentField] = useState("");
+  const [galId, setGalId] = useState(0);
+  const [galTitle, setGalTitle] = useState('');
+  const [galSubTitle, setGalSubTitle] = useState('');
+  const [displayGallery, setDisplayGallery] = useState(0);
   const [selectedImages, setSelectedImages] = useState({
-  image1: "",
-  image2: "",
-  image3: "",
-  image4: "",
-  image5: ""
-});
+    image1: "",
+    image2: "",
+    image3: "",
+    image4: "",
+    image5: ""
+  });
 
 
   const openMediaLibrary = (field) => {
@@ -23,6 +29,145 @@ const GalleyPiece = () => {
     setSelectedImages(prev => ({ ...prev, [field]: imageUrl }));
     setMediaLibraryOpen(false);
   };
+
+  const getImageIdByUrl = async (url) => {
+    try {
+      const response = await axios.get(API_ENDPOINTS.getImages);
+      const images = Array.isArray(response.data) ? response.data : response.data.data;
+
+      const matchedImage = images.find((img) => img.image_url === url);
+      return matchedImage?.image_id || null;
+      } catch (error) {
+      console.error('❌ Failed to fetch image ID:', error);
+      return null;
+    }
+  };
+
+  useImperativeHandle(ref, () => ({
+    getGallery: async () => {
+      let textId;
+
+      try {
+        const response = await axios.get(`${API_ENDPOINTS.getGallery}?gal_sec=${sectionId}`);
+        const galleries = response.data.data || [];
+        const currentGallery = galleries.find(item =>
+          item.section &&
+          item.section.sec_page === pageId &&
+          item.gal_sec === sectionId &&
+          item.text?.text_type === 4
+        );
+        if (currentGallery?.text?.text_id) {
+          textId = currentGallery.text.text_id;
+        }
+      } catch (error) {
+        console.error("Failed to check existing gallery:", error);
+      }
+
+      if (textId) {
+        const updatePayload = {
+          text_id: textId,
+          title: galTitle,
+          desc: galSubTitle,
+          text_type: 4,
+          text_sec: sectionId,
+        };
+        const textRes = await axios.post(`${API_ENDPOINTS.updateText}/${textId}`, { texts: updatePayload });
+        textId = textRes.data.data?.text_id;
+      } else {
+        const textPayload = {
+          title: galTitle,
+          desc: galSubTitle,
+          text_type: 4,
+          text_sec: sectionId,
+        };
+        const textRes = await axios.post(`${API_ENDPOINTS.createText}`, { texts: [textPayload] });
+        textId = textRes.data.data?.text_id;
+      }
+
+      const imageId1 = await getImageIdByUrl(selectedImages.image1);
+      const imageId2 = await getImageIdByUrl(selectedImages.image2);
+      const imageId3 = await getImageIdByUrl(selectedImages.image3);
+      const imageId4 = await getImageIdByUrl(selectedImages.image4);
+      const imageId5 = await getImageIdByUrl(selectedImages.image5);
+
+      const data = {
+        gal_id: galId,
+        gal_sec: sectionId,
+        gal_text: textId,
+        gal_img1: imageId1,
+        gal_img2: imageId2,
+        gal_img3: imageId3,
+        gal_img4: imageId4,
+        gal_img5: imageId5,
+      };
+
+      console.log("Data is: ", data);
+
+      return [data];
+    }
+  }));
+
+  const handleToggleDisplay = async () => {
+    try {
+        const newDisplay = displayGallery === 1 ? 0 : 1;
+        await axios.post(`${API_ENDPOINTS.updateSection}/${sectionId}`, {
+            sec_id: sectionId,
+            display: newDisplay,
+        });
+        setDisplayGallery(newDisplay);
+    } catch (error) {
+        console.error("Failed to update display:", error);
+    }
+  };
+
+  const handleDeleteSection = async () => {
+    if (!window.confirm("Are you sure you want to delete this section?")) return;
+
+    try {
+        await axios.put(`${API_ENDPOINTS.deleteSection}/${sectionId}`);
+        window.location.reload();
+    } catch (error) {
+        console.error('Failed to delete section:', error);
+    }
+  };
+
+  useEffect(() => {
+    const fetchFacitlies = async () => {
+      try {
+        const response = await axios.get(`${API_ENDPOINTS.getGallery}?gal_sec=${sectionId}`);
+        const galleries = response.data.data || [];
+        if (galleries.length > 0) {
+          const gallery = galleries.find(item =>
+            item?.section?.sec_page === pageId &&
+            item.gal_sec === sectionId &&
+            item.text?.text_type === 4
+          );
+
+          if (gallery) {
+            setGalId(gallery.gal_id || null);
+            setGalTitle(gallery.text?.title || '');
+            setGalSubTitle(gallery.text?.desc || '');
+            setSelectedImages({
+              image1: gallery.image1?.img ? `${API}/storage/uploads/${gallery.image1.img}` : '',
+              image2: gallery.image2?.img ? `${API}/storage/uploads/${gallery.image2.img}` : '',
+              image3: gallery.image3?.img ? `${API}/storage/uploads/${gallery.image3.img}` : '',
+              image4: gallery.image4?.img ? `${API}/storage/uploads/${gallery.image4.img}` : '',
+              image5: gallery.image5?.img ? `${API}/storage/uploads/${gallery.image5.img}` : '',
+            });
+          }
+        }
+
+        const sectionRes = await axios.get(`${API_ENDPOINTS.getSection}/${sectionId}`);
+        const sectionData = sectionRes.data.data;
+        setDisplayGallery(sectionData.display || 0);
+      } catch (error) {
+        console.error("Failed to fetch gallery:", error);
+      }
+    };
+
+
+    fetchFacitlies();
+  }, [sectionId]);
 
   return (
     <div className="grid grid-cols-1 gap-4 ">
@@ -44,6 +189,7 @@ const GalleyPiece = () => {
             </div>
             <div className="flex gap-1">
               <svg
+                onClick={() => handleDeleteSection()}
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
@@ -88,6 +234,8 @@ const GalleyPiece = () => {
             </label>
             <div className="mt-2">
               <input
+                value={galTitle}
+                onChange={(e) => setGalTitle(e.target.value)}
                 type="text"
                 className="block w-full !border-gray-200 border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
               />
@@ -100,7 +248,10 @@ const GalleyPiece = () => {
             </label>
             <div className="mt-2">
               <label class="toggle-switch mt-2">
-                <input type="checkbox" />
+                <input type="checkbox"
+                  checked={displayGallery === 1}
+                  onChange={handleToggleDisplay}
+                />
                 <span class="slider"></span>
               </label>
             </div>
@@ -113,7 +264,10 @@ const GalleyPiece = () => {
               Subtitle
             </label>
             <div className="mt-2">
-              <textarea className="!border-gray-300 h-60 block w-full rounded-md border-0 py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-2xl sm:leading-6"></textarea>
+              <textarea
+                value={galSubTitle}
+                onChange={(e) => setGalSubTitle(e.target.value)}
+                className="!border-gray-300 h-60 block w-full rounded-md border-0 py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-2xl sm:leading-6"></textarea>
             </div>
           </div>
           {["image1", "image2", "image3", "image4", "image5"].map((field, index) => (
@@ -195,6 +349,6 @@ const GalleyPiece = () => {
       </details>
     </div>
   );
-};
+});
 
 export default GalleyPiece;
