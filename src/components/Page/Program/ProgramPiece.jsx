@@ -88,7 +88,7 @@ const ProgramPiece = forwardRef(({sectionId, pageId}, ref) => {
         const response = await axios.get(`${API_ENDPOINTS.getDepartment}?ban_sec=${sectionId}`);
         const departments = response.data.data || [];
         if (departments.length > 0) {
-          const department = departments.find(item => item.section.sec_page === pageId);
+          const department = departments.find(item => item?.section?.sec_page === pageId);
           if (department) {
             setDepId(department.dep_id || null);
             setTitle(department.dep_title || '');

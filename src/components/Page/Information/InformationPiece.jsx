@@ -16,9 +16,8 @@ const ProgramPiece = forwardRef(({sectionId, pageId}, ref) => {
 
         const response = await axios.get(`${API_ENDPOINTS.getText}?text_sec=${sectionId}`);
         const informations = response.data.data || [];
-        console.log(informations);
         if (informations.length > 0) {
-          const information = informations.find(item => item.text_sec.sec_page === pageId);
+          const information = informations.find(item => item?.text_sec?.sec_page === pageId);
           // console.log(information);
           if (information) {
             setTextId(information.text_id || null);

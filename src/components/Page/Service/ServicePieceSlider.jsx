@@ -117,7 +117,7 @@ const ServicePieceSlider = forwardRef(({sectionId, pageId}, ref) => {
             const services = response.data?.data || [];
 
             if (services.length > 0) {
-            const validServices = services.filter(item => item.section.sec_page === pageId);
+            const validServices = services.filter(item => item?.section?.sec_page === pageId);
 
             const formattedData = validServices.map(item => ({
               id: item.s_id.toString(),
