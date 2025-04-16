@@ -66,10 +66,15 @@ const API_ENDPOINTS = {
     createGallery: `${API_BASEURL}/gallery/create`,
     updateGallery: `${API_BASEURL}/gallery/update`,
 
-    // acad-facilities
+    // acad-facilities(facilities)
     getAcadFacilities: `${API_BASEURL}/acad-facilities`,
     createAcadFacilities: `${API_BASEURL}/acad-facilities/create`,
     updateAcadFacilities: `${API_BASEURL}/acad-facilities/update`,
+
+    // ras(specialization)
+    getSpecialization: `${API_BASEURL}/ras`,
+    createSpecialization: `${API_BASEURL}/ras/create`,
+    updateSpecialization: `${API_BASEURL}/ras/update`,
 
     // subservice
     getSubserviceAF: `${API_BASEURL}/subservice`,
@@ -77,6 +82,10 @@ const API_ENDPOINTS = {
     updateSubserviceAF: `${API_BASEURL}/subservice/update-af`,
     deleteSubserviceAF: `${API_BASEURL}/subservice/visibility-af`,
     updateSubserviceAFOrder: `${API_BASEURL}/subservice/reorder-af`,
+    createSubserviceRAS: `${API_BASEURL}/subservice/create-ras`,
+    updateSubserviceRAS: `${API_BASEURL}/subservice/update-ras`,
+    deleteSubserviceRAS: `${API_BASEURL}/subservice/visibility-ras`,
+    updateSubserviceRASOrder: `${API_BASEURL}/subservice/reorder-ras`,
 
     // slideshow
     getSlideshow: `${API_BASEURL}/slideshow`,
