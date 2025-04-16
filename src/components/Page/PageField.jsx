@@ -125,6 +125,37 @@ const PageField = () => {
             }
         }
     }
+    const saveTestimonial = async (savedSectionId, savedPageId) => {
+        const testimonials = await pageRef.current?.getTestimonials?.() || [];
+        const response = await axios.get(`${API_ENDPOINTS.getTestimonial}?t_sec=${savedSectionId}`);
+        const existingServices = response.data?.data || [];
+        const existingServiceIds = existingServices.map(service => service.t_id);
+
+        if (testimonials.length > 0 && savedSectionId) {
+            for (const testimonial of testimonials) {
+                const t_sec = testimonial.t_sec || savedSectionId;
+                const page_id = testimonial.page_id || savedPageId;
+                const testimonialPayload = {
+                    t_sec: t_sec,
+                    t_title: testimonial.t_title || '',
+                    page_id: page_id,
+                };
+
+                if (
+                    testimonial.t_id &&
+                    existingServiceIds.includes(parseInt(testimonial.t_id)) &&
+                    parseInt(t_sec) === parseInt(savedSectionId) &&
+                    parseInt(page_id) === parseInt(savedPageId)
+                ) {
+                    await axios.post(`${API_ENDPOINTS.updateTestimonial}/${testimonial.t_id}`, { testimonials: testimonialPayload });
+                } else {
+                    if (!testimonial.t_id || !existingServiceIds.includes(parseInt(testimonial.t_id))) {
+                        await axios.post(API_ENDPOINTS.createTestimonial, { testimonials: [testimonialPayload] });
+                    }
+                }
+            }
+        }
+    }
     const saveAcademic = async (savedSectionId, savedPageId) => {
         const academics = await pageRef.current?.getAcademics?.() || [];
         const response = await axios.get(`${API_ENDPOINTS.getAcademic}?ban_sec=${savedSectionId}`);
@@ -533,6 +564,7 @@ const PageField = () => {
                 // single
                 // saveBanner(savedSectionId, savedPageId);
                 // saveInformation(savedSectionId, savedPageId);
+                saveTestimonial(savedSectionId, savedPageId);
                 // saveSlideshow(savedSectionId, savedPageId);
                 // saveAcademic(savedSectionId, savedPageId);
                 // saveGallery(savedSectionId, savedPageId);

@@ -1,7 +1,73 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } from "react";
+import axios from "axios";
+import { API_ENDPOINTS } from "../../../service/APIConfig";
 
-const TestimonialPiece = () => {
+const TestimonialPiece = forwardRef(({sectionId, pageId}, ref) => {
   const [isRotatedButton1, setIsRotatedButton1] = useState(false);
+  const [tId, setTId] = useState("");
+  const [title, setTitle] = useState("");
+  const [displayTestimonial, setDisplayTestimonial] = useState(0);
+
+  useEffect(() => {
+    const fetchTestimonials = async () => {
+      try {
+
+        const response = await axios.get(`${API_ENDPOINTS.getTestimonial}?t_sec=${sectionId}`);
+        const testimonials = response.data.data || [];
+        if (testimonials.length > 0) {
+          const testimonial = testimonials.find(item => item?.section?.sec_page === pageId);
+          if (testimonial) {
+            setTId(testimonial.t_id || null);
+            setTitle(testimonial.t_title || '');
+          }
+        }
+
+        const sectionRes = await axios.get(`${API_ENDPOINTS.getSection}/${sectionId}`);
+        const sectionData = sectionRes.data.data;
+        setDisplayTestimonial(sectionData.display || 0);
+
+      } catch (error) {
+          console.error("Failed to fetch informtaion:", error);
+      }
+    };
+
+    fetchTestimonials();
+  }, [sectionId]);
+
+  useImperativeHandle(ref, () => ({
+    getTestimonials: async () => {
+        return [
+        {
+            t_id: tId,
+            t_title: title,
+        }
+      ];
+    }
+  }));
+
+  const handleToggleDisplay = async () => {
+    try {
+        const newDisplay = displayTestimonial === 1 ? 0 : 1;
+        await axios.post(`${API_ENDPOINTS.updateSection}/${sectionId}`, {
+            sec_id: sectionId,
+            display: newDisplay,
+        });
+        setDisplayTestimonial(newDisplay);
+    } catch (error) {
+        console.error("Failed to update display:", error);
+    }
+  };
+
+  const handleDeleteSection = async () => {
+    if (!window.confirm("Are you sure you want to delete this section?")) return;
+
+    try {
+        await axios.put(`${API_ENDPOINTS.deleteSection}/${sectionId}`);
+        window.location.reload();
+    } catch (error) {
+        console.error('Failed to delete section:', error);
+    }
+  };
 
   return (
     <div className="grid grid-cols-1 gap-4 ">
@@ -23,6 +89,7 @@ const TestimonialPiece = () => {
             </div>
             <div className="flex gap-1">
               <svg
+                onClick={() => handleDeleteSection()}
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
@@ -60,7 +127,7 @@ const TestimonialPiece = () => {
           </div>
         </summary>
         {/* Row 1 */}
-        <div className="flex flex-row gap-2 px-4 py-2">
+        <div className="flex flex-row gap-2 px-4 py-2 mb-2">
           <div className="flex-1">
             <label className="block text-xl font-medium leading-6 text-white-900">
               Title
@@ -68,6 +135,8 @@ const TestimonialPiece = () => {
             <div className="mt-2">
               <input
                 type="text"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
                 className="block w-full !border-gray-200 border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
               />
             </div>
@@ -79,26 +148,19 @@ const TestimonialPiece = () => {
             </label>
             <div className="mt-2">
               <label class="toggle-switch mt-2">
-                <input type="checkbox" />
+                <input
+                  type="checkbox"
+                  checked={displayTestimonial === 1}
+                  onChange={handleToggleDisplay}
+                  />
                 <span class="slider"></span>
               </label>
-            </div>
-          </div>
-        </div>
-        {/* Row 2 */}
-        <div className="grid grid-cols-1 gap-4 px-4 py-2 mb-1">
-          <div className="flex-1">
-            <label className="block text-xl font-medium leading-6 text-white-900">
-              Detail
-            </label>
-            <div className="mt-2">
-              <textarea className="!border-gray-300 h-60 block w-full rounded-md border-0 py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-2xl sm:leading-6"></textarea>
             </div>
           </div>
         </div>
       </details>
     </div>
   );
-};
+});
 
 export default TestimonialPiece;

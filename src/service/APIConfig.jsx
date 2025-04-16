@@ -61,6 +61,11 @@ const API_ENDPOINTS = {
     createText: `${API_BASEURL}/text/create`,
     updateText: `${API_BASEURL}/text/update`,
 
+    // testimonial
+    getTestimonial: `${API_BASEURL}/testimonial`,
+    createTestimonial: `${API_BASEURL}/testimonial/create`,
+    updateTestimonial: `${API_BASEURL}/testimonial/update`,
+
     // gallery
     getGallery: `${API_BASEURL}/gallery`,
     createGallery: `${API_BASEURL}/gallery/create`,
