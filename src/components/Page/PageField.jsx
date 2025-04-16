@@ -24,6 +24,7 @@ const PageField = () => {
         }
     }, [pageData]);
 
+    // Single
     const saveDepartment = async (savedSectionId, savedPageId) => {
         const programs = await pageRef.current?.getPrograms?.() || [];
         const response = await axios.get(`${API_ENDPOINTS.getDepartment}?ban_sec=${savedSectionId}`);
@@ -162,6 +163,85 @@ const PageField = () => {
         }
     }
 
+    // hybrid
+    const saveFacilties = async (savedSectionId, savedPageId) => {
+        const acadFacilities = await pageRef.current?.getFacilities?.() || [];
+        const response = await axios.get(`${API_ENDPOINTS.getAcadFacilities}?af_sec=${savedSectionId}`);
+        const existingServices = response.data?.data || [];
+        const existingServiceIds = existingServices.map(service => service.af_id);
+
+        if (acadFacilities.length > 0 && savedSectionId) {
+            for (const acadFacility of acadFacilities) {
+                const af_sec = acadFacility.af_sec || savedSectionId;
+                const page_id = acadFacility.page_id || savedPageId;
+
+                const acadFacilitiesPayload = {
+                    af_sec: af_sec,
+                    af_img: acadFacility.af_img,
+                    af_text: acadFacility.af_text,
+                    page_id: page_id,
+                };
+
+                if (
+                    acadFacility.af_id &&
+                    existingServiceIds.includes(parseInt(acadFacility.af_id)) &&
+                    parseInt(af_sec) === parseInt(savedSectionId) &&
+                    parseInt(page_id) === parseInt(savedPageId)
+                ) {
+                    await axios.post(`${API_ENDPOINTS.updateAcadFacilities}/${acadFacility.af_id}`, { facilities: acadFacilitiesPayload });
+                    await saveAcadFacilitySliders(acadFacility.af_id, acadFacility.subservices || []);
+
+                } else {
+                    if (!acadFacility.af_id || !existingServiceIds.includes(parseInt(acadFacility.af_id))) {
+                        const res = await axios.post(API_ENDPOINTS.createAcadFacilities, { facilities: [acadFacilitiesPayload] });
+                        const createdId = res.data?.data?.[0]?.af_id;
+                        if (createdId) {
+                            await saveAcadFacilitySliders(acadFacility.af_id, acadFacility.subservices || []);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    const saveAcadFacilitySliders = async (facilityId, sliders) => {
+        if (!facilityId || !Array.isArray(sliders)) return;
+
+        const res = await axios.get(`${API_ENDPOINTS.getSubserviceAF}?ss_af=${facilityId}`);
+        const raw = res.data?.data;
+        const existingSubservices = Array.isArray(raw) ? raw : raw ? [raw] : [];
+        const existingSubIds = existingSubservices.map(item => item.ss_id);
+
+        for (const ss of sliders) {
+            const ssPayload = {
+                ss_af: facilityId,
+                ss_ras: null,
+                ss_title: ss.title,
+                ss_subtitle: ss.subtitle,
+                ss_img: ss.image,
+                display: ss.display,
+            };
+            const ssId = ss.id || ss.ss_id;
+
+            try {
+                if (
+                    ssId &&
+                    existingSubIds.includes(parseInt(ssId))
+                ) {
+                    await axios.post(`${API_ENDPOINTS.updateSubserviceAF}/${ssId}`, { subservice: ssPayload });
+                } else {
+                    if (!ssId || !existingSubIds.includes(parseInt(ssId))) {
+                        await axios.post(API_ENDPOINTS.createSubserviceAF, { subservice: [ssPayload] });
+                    }
+                }
+            } catch (error) {
+                console.error("❌ Failed to save subservice:", error.response?.data || error.message);
+            }
+        }
+
+        if (sliders.length > 0) { await reorderAcadFacilitySliders(facilityId); }
+    };
+
+    // sliders
     const saveSlideshow = async (savedSectionId, savedPageId) => {
         const slideshows = await pageRef.current?.getSlideshows?.() || [];
         const response = await axios.get(`${API_ENDPOINTS.getSlideshow}?ban_sec=${savedSectionId}`);
@@ -258,6 +338,23 @@ const PageField = () => {
             console.error("Failed to reorder services:", error.response?.data || error.message);
         }
     };
+    const reorderAcadFacilitySliders = async (facilityId) => {
+        const acadFacilities = await pageRef.current?.getFacilities?.() || [];
+        const targetFacility = acadFacilities.find(f => parseInt(f.af_id) === parseInt(facilityId));
+
+        if (!targetFacility || !Array.isArray(targetFacility.subservices)) return;
+
+        const reorderedPayload = targetFacility.subservices.map((item, index) => ({
+            ss_id: parseInt(item.ss_id || item.id),
+            ss_order: index + 1,
+        }));
+
+        try {
+            const response = await axios.post(API_ENDPOINTS.updateSubserviceAFOrder, reorderedPayload);
+        } catch (error) {
+            console.error("❌ Failed to reorder academic facility sliders:", error.response?.data || error.message);
+        }
+    };
 
     const syncSection = async (savedPageId) => {
         const sections = pageRef.current?.getSections?.() || [];
@@ -290,12 +387,18 @@ const PageField = () => {
 
                 // console.log("📥 savedSectionId:", savedSectionId);
 
+                // sliders
                 // saveDepartment(savedSectionId, savedPageId);
                 // saveService(savedSectionId, savedPageId);
+
+                // single
                 // saveBanner(savedSectionId, savedPageId);
-                saveInformation(savedSectionId, savedPageId);
+                // saveInformation(savedSectionId, savedPageId);
                 // saveSlideshow(savedSectionId, savedPageId);
                 // saveAcademic(savedSectionId, savedPageId);
+
+                // hybrid
+                saveFacilties(savedSectionId, savedPageId);
 
             } catch (error) {
                 console.error("Failed to sync section:", error.response?.data || error.message);

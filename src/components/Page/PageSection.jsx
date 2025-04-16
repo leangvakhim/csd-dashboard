@@ -317,6 +317,7 @@ const PageSection = forwardRef(({ formData = {}, setFormData = {}, page_id }, re
   const servicePieceRef = useRef();
   const academicPieceRef = useRef();
   const informationPieceRef = useRef();
+  const facilitiesPieceRef = useRef();
   const [showSection, setShowSection] = useState(false);
   const [selectedSections, setSelectedSections] = useState([]);
 
@@ -391,6 +392,7 @@ const PageSection = forwardRef(({ formData = {}, setFormData = {}, page_id }, re
     getServices: () => servicePieceRef.current?.getServices?.() || [],
     getAcademics: () => academicPieceRef.current?.getAcademics?.() || [],
     getInformations: () => informationPieceRef.current?.getInformations?.() || [],
+    getFacilities: () => facilitiesPieceRef.current?.getFacilities?.() || [],
   }));
 
   const handleAddPage = () => {
@@ -479,6 +481,7 @@ const PageSection = forwardRef(({ formData = {}, setFormData = {}, page_id }, re
                       : section.type === "Service" ? servicePieceRef
                       : section.type === "Academic" ? academicPieceRef
                       : section.type === "Information" ? informationPieceRef
+                      : section.type === "Facilities" ? facilitiesPieceRef
                       : null
                     }
                   data={section.data}

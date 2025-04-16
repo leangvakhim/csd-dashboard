@@ -61,6 +61,18 @@ const API_ENDPOINTS = {
     createText: `${API_BASEURL}/text/create`,
     updateText: `${API_BASEURL}/text/update`,
 
+    // acad-facilities
+    getAcadFacilities: `${API_BASEURL}/acad-facilities`,
+    createAcadFacilities: `${API_BASEURL}/acad-facilities/create`,
+    updateAcadFacilities: `${API_BASEURL}/acad-facilities/update`,
+
+    // subservice
+    getSubserviceAF: `${API_BASEURL}/subservice`,
+    createSubserviceAF: `${API_BASEURL}/subservice/create-af`,
+    updateSubserviceAF: `${API_BASEURL}/subservice/update-af`,
+    deleteSubserviceAF: `${API_BASEURL}/subservice/visibility-af`,
+    updateSubserviceAFOrder: `${API_BASEURL}/subservice/reorder-af`,
+
     // slideshow
     getSlideshow: `${API_BASEURL}/slideshow`,
     createSlideshow: `${API_BASEURL}/slideshow/create`,
