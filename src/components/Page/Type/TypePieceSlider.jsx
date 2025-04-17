@@ -1,33 +1,52 @@
-import React, { useState } from "react";
+import React, { useState, forwardRef, useImperativeHandle, useEffect } from "react";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import JoditEditor from 'jodit-react';
+import 'jodit/es5/jodit.css';
+import axios from "axios";
+import { API_ENDPOINTS, API } from "../../../service/APIConfig";
 
-const TypePieceSlider = () => {
+const config = {
+  readonly: false,  // Set to true for read-only mode
+  height: 400,
+  uploader: {
+    insertImageAsBase64URI: true,  // Enable base64 image upload
+  },
+};
+
+const TypePieceSlider = forwardRef(({typeId}, ref) => {
   const [rotatedStates, setRotatedStates] = useState({});
   const [slider, setSlider] = useState([
     {
       id: "1",
       title: "type 1",
       subtitle: "",
-      logo: "",
-      image: "",
-      firstbtntitle: "",
-      firstbtnselect: "",
-      secondbtntitle: "",
-      secondbtnselect: "",
+      display: 0,
     },
   ]);
 
+  useImperativeHandle(ref, () => ({
+    getSubTypeSliders: async () => {
+      const updatedSliders = await Promise.all(
+        slider.map(async (slide) => {
+          return {
+            stse_title: slide.title,
+            stse_detail: slide.subtitle,
+            display: slide.display,
+            stse_id: slide.id,
+          };
+        })
+      );
+
+      return updatedSliders;
+    },
+  }));
+
   const handleAddSlider = () => {
     const newSlider = {
-      id: `${Date.now()}`,
+      id: (slider.length + 1).toString(),
       title: `type ${slider.length + 1}`,
       subtitle: "",
-      logo: "",
-      image: "",
-      firstbtntitle: "",
-      firstbtnselect: "",
-      secondbtntitle: "",
-      secondbtnselect: "",
+      display: 0,
     };
 
     setSlider([...slider, newSlider]);
@@ -48,6 +67,54 @@ const TypePieceSlider = () => {
     newSlider.splice(result.destination.index, 0, reorderedSlider);
 
     setSlider(newSlider);
+  };
+
+  useEffect(() => {
+    const fetchSliders = async () => {
+      try {
+        const response = await axios.get(API_ENDPOINTS.getSubType);
+        const data = response.data?.data;
+
+        const subservices = Array.isArray(data) ? data : [data];
+
+        if (subservices.length > 0 && typeId) {
+          const validSubservices = subservices.filter(item => item.stse_tse === typeId);
+
+          const formattedData = validSubservices.map(item => ({
+            id: item.stse_id.toString(),
+            title: item.stse_title || '',
+            subtitle: item.stse_detail || '',
+            display: item.display,
+          }));
+
+          if (formattedData.length > 0) {
+            setSlider(formattedData);
+          } else {
+            setSlider([{
+              id: "1",
+              title: "type 1",
+              subtitle: "",
+              display: 0,
+            }]);
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching sliders:', error);
+      }
+    };
+
+    fetchSliders();
+  }, [typeId]);
+
+  const handleDeleteSlider = async (typeId) => {
+    if (!window.confirm("Are you sure you want to delete this slider?")) return;
+
+    try {
+        await axios.put(`${API_ENDPOINTS.deleteSubType}/${typeId}`);
+        setSlider((prevSlider) => prevSlider.filter((item) => item.id !== typeId));
+    } catch (error) {
+        console.error('Failed to delete slider:', error);
+    }
   };
 
   return (
@@ -100,6 +167,7 @@ const TypePieceSlider = () => {
                           <span className=" shrink-0 transition-transform duration-500 group-open:-rotate-0 flex gap-2">
                             <div className="block">
                               <svg
+                                onClick={() => handleDeleteSlider(sliders.id)}
                                 xmlns="http://www.w3.org/2000/svg"
                                 fill="none"
                                 viewBox="0 0 24 24"
@@ -145,6 +213,12 @@ const TypePieceSlider = () => {
                             </label>
                             <div className="mt-2">
                               <input
+                                value={sliders.title}
+                                onChange={(e) => {
+                                  const updatedSlider = [...slider];
+                                  updatedSlider[index].title = e.target.value;
+                                  setSlider(updatedSlider);
+                                }}
                                 type="text"
                                 className="!border-gray-300 block w-full border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
                               />
@@ -156,7 +230,15 @@ const TypePieceSlider = () => {
                             </label>
                             <div className="mt-2">
                               <label class="toggle-switch mt-2">
-                                <input type="checkbox" />
+                                <input
+                                  type="checkbox"
+                                  checked={sliders.display === 1}
+                                  onChange={(e) => {
+                                    const updatedSlider = [...slider];
+                                    updatedSlider[index].display = e.target.checked ? 1 : 0;
+                                    setSlider(updatedSlider);
+                                  }}
+                                  />
                                 <span class="slider"></span>
                               </label>
                             </div>
@@ -169,7 +251,16 @@ const TypePieceSlider = () => {
                               Subtitle
                             </label>
                             <div className="mt-2">
-                              <textarea className="!border-gray-300 h-60 block w-full rounded-md border-0 py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-2xl sm:leading-6"></textarea>
+                              <JoditEditor
+                                  value={sliders.subtitle}
+                                  config={config}
+                                  onChange={(newContent) => {
+                                    const updatedSliders = slider.map((item) =>
+                                      item.id === sliders.id ? { ...item, subtitle: newContent } : item
+                                    );
+                                    setSlider(updatedSliders);
+                                  }}
+                                />
                             </div>
                           </div>
                         </div>
@@ -204,6 +295,6 @@ const TypePieceSlider = () => {
       </Droppable>
     </DragDropContext>
   );
-};
+});
 
 export default TypePieceSlider;

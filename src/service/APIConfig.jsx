@@ -81,6 +81,18 @@ const API_ENDPOINTS = {
     createSpecialization: `${API_BASEURL}/ras/create`,
     updateSpecialization: `${API_BASEURL}/ras/update`,
 
+    // tse(type)
+    getType: `${API_BASEURL}/tse`,
+    createType: `${API_BASEURL}/tse/create`,
+    updateType: `${API_BASEURL}/tse/update`,
+
+    // subtse(subtype)
+    getSubType: `${API_BASEURL}/subtse`,
+    createSubType: `${API_BASEURL}/subtse/create`,
+    updateSubType: `${API_BASEURL}/subtse/update`,
+    deleteSubType: `${API_BASEURL}/subtse/visibility`,
+    updateSubTypeOrder: `${API_BASEURL}/subtse/reorder`,
+
     // subservice
     getSubserviceAF: `${API_BASEURL}/subservice`,
     createSubserviceAF: `${API_BASEURL}/subservice/create-af`,

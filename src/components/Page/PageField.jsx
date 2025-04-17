@@ -393,6 +393,80 @@ const PageField = () => {
 
         if (sliders.length > 0) { await reorderSpecializationSliders(specializationId); }
     };
+    const saveType = async (savedSectionId, savedPageId) => {
+        const types = await pageRef.current?.getTypes?.() || [];
+        const response = await axios.get(`${API_ENDPOINTS.getType}?tse_sec=${savedSectionId}`);
+        const existingServices = response.data?.data || [];
+        const existingServiceIds = existingServices.map(service => service.tse_id);
+
+        if (types.length > 0 && savedSectionId) {
+            for (const type of types) {
+                const tse_sec = type.tse_sec || savedSectionId;
+                const page_id = type.page_id || savedPageId;
+
+                const TypePayload = {
+                    tse_sec: tse_sec,
+                    tse_text: type.tse_text,
+                    tse_type: parseInt(type.tse_type),
+                    page_id: page_id,
+                };
+
+                if (
+                    type.tse_id &&
+                    existingServiceIds.includes(parseInt(type.tse_id)) &&
+                    parseInt(tse_sec) === parseInt(savedSectionId) &&
+                    parseInt(page_id) === parseInt(savedPageId)
+                ) {
+                    await axios.post(`${API_ENDPOINTS.updateType}/${type.tse_id}`, { type: TypePayload });
+                    await saveSubTypeSliders(type.tse_id, type.subtypes || []);
+                } else {
+                    if (!type.tse_id|| !existingServiceIds.includes(parseInt(type.tse_id))) {
+                        const res = await axios.post(API_ENDPOINTS.createType, { type: [TypePayload] });
+                        const createdId = res.data?.data?.[0]?.tse_id;
+                        if (createdId) {
+                            await saveSubTypeSliders(type.tse_id, type.subtypes || []);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    const saveSubTypeSliders = async (typeId, sliders) => {
+        if (!typeId || !Array.isArray(sliders)) return;
+
+        const res = await axios.get(`${API_ENDPOINTS.getSubType}?tse_sec=${typeId}`);
+        const raw = res.data?.data;
+        const existingSubservices = Array.isArray(raw) ? raw : raw ? [raw] : [];
+        const existingSubIds = existingSubservices
+            .map(item => item.stse_id);
+
+        for (const stse of sliders) {
+            const stsePayload = {
+                stse_tse: typeId,
+                stse_title: stse.stse_title,
+                stse_detail: stse.stse_detail,
+                display: stse.display,
+            };
+            const stseId = stse.id || stse.stse_id;
+
+            try {
+                if (
+                    stseId &&
+                    existingSubIds.includes(parseInt(stseId))
+                ) {
+                    await axios.post(`${API_ENDPOINTS.updateSubType}/${stseId}`, { subtse: stsePayload });
+                } else {
+                    if (!stseId || !existingSubIds.includes(parseInt(stseId))) {
+                        await axios.post(API_ENDPOINTS.createSubType, { subtse: [stsePayload] });
+                    }
+                }
+            } catch (error) {
+                console.error("❌ Failed to save subtse:", error.response?.data || error.message);
+            }
+        }
+
+        if (sliders.length > 0) { await reorderSubtseSliders(typeId); }
+    }
 
     // sliders
     const saveSlideshow = async (savedSectionId, savedPageId) => {
@@ -525,6 +599,24 @@ const PageField = () => {
             console.error("❌ Failed to reorder academic facility sliders:", error.response?.data || error.message);
         }
     };
+    const reorderSubtseSliders = async (typeId) => {
+        console.log("Type id is: ",typeId);
+        const types = await pageRef.current?.getTypes?.() || [];
+        const targetType = types.find(f => parseInt(f.tse_id) === parseInt(typeId));
+
+        if (!targetType || !Array.isArray(targetType.subtypes)) return;
+
+        const reorderedPayload = targetType.subtypes.map((item, index) => ({
+            stse_id: parseInt(item.stse_id || item.id),
+            stse_order: index + 1,
+        }));
+
+        try {
+            const response = await axios.post(API_ENDPOINTS.updateSubTypeOrder, reorderedPayload);
+        } catch (error) {
+            console.error("❌ Failed to reorder subtse sliders:", error.response?.data || error.message);
+        }
+    };
 
     const syncSection = async (savedPageId) => {
         const sections = pageRef.current?.getSections?.() || [];
@@ -564,13 +656,14 @@ const PageField = () => {
                 // single
                 // saveBanner(savedSectionId, savedPageId);
                 // saveInformation(savedSectionId, savedPageId);
-                saveTestimonial(savedSectionId, savedPageId);
+                // saveTestimonial(savedSectionId, savedPageId);
                 // saveSlideshow(savedSectionId, savedPageId);
                 // saveAcademic(savedSectionId, savedPageId);
                 // saveGallery(savedSectionId, savedPageId);
 
                 // hybrid
                 // saveFacilties(savedSectionId, savedPageId);
+                // saveType(savedSectionId, savedPageId);
                 // saveSpecializations(savedSectionId, savedPageId);
 
             } catch (error) {

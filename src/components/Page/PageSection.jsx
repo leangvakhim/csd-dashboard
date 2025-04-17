@@ -321,6 +321,7 @@ const PageSection = forwardRef(({ formData = {}, setFormData = {}, page_id }, re
   const galleryPieceRef = useRef();
   const specializationPieceRef = useRef();
   const testimonialPieceRef = useRef();
+  const typePieceRef = useRef();
   const [showSection, setShowSection] = useState(false);
   const [selectedSections, setSelectedSections] = useState([]);
 
@@ -399,6 +400,7 @@ const PageSection = forwardRef(({ formData = {}, setFormData = {}, page_id }, re
     getGallery: () => galleryPieceRef.current?.getGallery?.() || [],
     getSpecializations: () => specializationPieceRef.current?.getSpecializations?.() || [],
     getTestimonials: () => testimonialPieceRef.current?.getTestimonials?.() || [],
+    getTypes: () => typePieceRef.current?.getTypes?.() || [],
   }));
 
   const handleAddPage = () => {
@@ -491,6 +493,7 @@ const PageSection = forwardRef(({ formData = {}, setFormData = {}, page_id }, re
                       : section.type === "Gallery" ? galleryPieceRef
                       : section.type === "Specialization" ? specializationPieceRef
                       : section.type === "Testimonial" ? testimonialPieceRef
+                      : section.type === "Type" ? typePieceRef
                       : null
                     }
                   data={section.data}
