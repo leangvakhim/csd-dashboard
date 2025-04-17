@@ -61,6 +61,11 @@ const API_ENDPOINTS = {
     createCriteria: `${API_BASEURL}/gc/create`,
     updateCriteria: `${API_BASEURL}/gc/update`,
 
+    // rason(Add On of CSD)
+    getAddOnCSD: `${API_BASEURL}/rason`,
+    createAddOnCSD: `${API_BASEURL}/rason/create`,
+    updateAddOnCSD: `${API_BASEURL}/rason/update`,
+
     // information
     getText: `${API_BASEURL}/text`,
     createText: `${API_BASEURL}/text/create`,

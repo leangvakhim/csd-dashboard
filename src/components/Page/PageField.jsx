@@ -349,7 +349,7 @@ const PageField = () => {
     };
     const saveSpecializations = async (savedSectionId, savedPageId) => {
         const Specializations = await pageRef.current?.getSpecializations?.() || [];
-        const response = await axios.get(`${API_ENDPOINTS.getSpecialization}?af_sec=${savedSectionId}`);
+        const response = await axios.get(`${API_ENDPOINTS.getSpecialization}?ras_sec=${savedSectionId}`);
         const existingServices = response.data?.data || [];
         const existingServiceIds = existingServices.map(service => service.ras_id);
 
@@ -365,8 +365,6 @@ const PageField = () => {
                     ras_text: specialization.ras_text,
                     page_id: page_id,
                 };
-
-                console.log("Payload is: ", specializationPayload);
 
                 if (
                     specialization.ras_id &&
@@ -414,11 +412,9 @@ const PageField = () => {
                     ssId &&
                     existingSubIds.includes(parseInt(ssId))
                 ) {
-                    console.log("Update");
                     await axios.post(`${API_ENDPOINTS.updateSubserviceRAS}/${ssId}`, { subservice: ssPayload });
                 } else {
                     if (!ssId || !existingSubIds.includes(parseInt(ssId))) {
-                    console.log("Create");
                         await axios.post(API_ENDPOINTS.createSubserviceRAS, { subservice: [ssPayload] });
                     }
                 }
@@ -503,6 +499,122 @@ const PageField = () => {
 
         if (sliders.length > 0) { await reorderSubtseSliders(typeId); }
     }
+    const saveCSD = async (savedSectionId, savedPageId) => {
+        const csds = await pageRef.current?.getCSDs?.() || [];
+        const response = await axios.get(`${API_ENDPOINTS.getSpecialization}?ras_sec=${savedSectionId}`);
+        const existingServices = response.data?.data || [];
+        const existingServiceIds = existingServices.map(service => service.ras_id);
+
+        if (csds.length > 0 && savedSectionId) {
+            for (const csd of csds) {
+                const ras_sec = csd.ras_sec || savedSectionId;
+                const page_id = csd.page_id || savedPageId;
+
+                const csdPayload = {
+                    ras_sec: ras_sec,
+                    ras_img1: csd.ras_img1,
+                    ras_img2: csd.ras_img2,
+                    ras_text: csd.ras_text,
+                    page_id: page_id,
+                };
+
+                if (
+                    csd.ras_id &&
+                    existingServiceIds.includes(parseInt(csd.ras_id)) &&
+                    parseInt(ras_sec) === parseInt(savedSectionId) &&
+                    parseInt(page_id) === parseInt(savedPageId)
+                ) {
+                    await axios.post(`${API_ENDPOINTS.updateSpecialization}/${csd.ras_id}`, { specialization: csdPayload });
+                    await saveCSDSliders(csd.ras_id, csd.subservices || []);
+                    await saveCSDAddOn(csd.ras_id, csd.rasons || []);
+                } else {
+                    if (!csd.ras_id || !existingServiceIds.includes(parseInt(csd.ras_id))) {
+                        const res = await axios.post(API_ENDPOINTS.createSpecialization, { specialization: [csdPayload] });
+                        const createdId = res.data?.data?.[0]?.ras_id;
+                        if (createdId) {
+                            await saveCSDSliders(csd.ras_id, csd.subservices || []);
+                            await saveCSDAddOn(csd.ras_id, csd.rasons || []);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    const saveCSDSliders = async (csdId, sliders) => {
+        if (!csdId || !Array.isArray(sliders)) return;
+
+        const res = await axios.get(`${API_ENDPOINTS.getSubserviceAF}?ss_ras=${csdId}`);
+        const raw = res.data?.data;
+        const existingSubservices = Array.isArray(raw) ? raw : raw ? [raw] : [];
+        const existingSubIds = existingSubservices
+            .filter(item => item.ss_af === null)
+            .map(item => item.ss_id);
+
+        for (const ss of sliders) {
+            const ssPayload = {
+                ss_af: null,
+                ss_ras: csdId,
+                ss_title: ss.title,
+                ss_subtitle: ss.subtitle,
+                ss_img: ss.image,
+                display: ss.display,
+            };
+            const ssId = ss.id || ss.ss_id;
+
+            try {
+                if (
+                    ssId &&
+                    existingSubIds.includes(parseInt(ssId))
+                ) {
+                    await axios.post(`${API_ENDPOINTS.updateSubserviceRAS}/${ssId}`, { subservice: ssPayload });
+                } else {
+                    if (!ssId || !existingSubIds.includes(parseInt(ssId))) {
+                        await axios.post(API_ENDPOINTS.createSubserviceRAS, { subservice: [ssPayload] });
+                    }
+                }
+            } catch (error) {
+                console.error("❌ Failed to save subservice:", error.response?.data || error.message);
+            }
+        }
+
+        if (sliders.length > 0) { await reorderCSDSliders(csdId); }
+    };
+    const saveCSDAddOn = async (csdId, sliders) => {
+        if (!csdId || !Array.isArray(sliders)) return;
+
+        const res = await axios.get(`${API_ENDPOINTS.getAddOnCSD}?rason_ras=${csdId}`);
+        const raw = res.data?.data;
+        const existingSubservices = Array.isArray(raw) ? raw : raw ? [raw] : [];
+        const existingSubIds = existingSubservices
+            .map(item => item.rason_id);
+
+        for (const rason of sliders) {
+            const rasonPayload = {
+                rason_ras: csdId,
+                rason_title: rason.rason_title,
+                rason_subtitle: rason.rason_subtitle,
+                rason_amount: rason.rason_amount,
+            };
+            const ssId = rason.id || rason.rason_id;
+
+            try {
+                if (
+                    ssId &&
+                    existingSubIds.includes(parseInt(ssId))
+                ) {
+                    await axios.post(`${API_ENDPOINTS.updateAddOnCSD}/${ssId}`, { rasons: rasonPayload });
+                } else {
+                    if (!ssId || !existingSubIds.includes(parseInt(ssId))) {
+                        await axios.post(API_ENDPOINTS.createAddOnCSD, { rasons: [rasonPayload] });
+                    }
+                }
+            } catch (error) {
+                console.error("❌ Failed to save rason:", error.response?.data || error.message);
+            }
+        }
+
+        if (sliders.length > 0) { await reorderCSDSliders(csdId); }
+    };
 
     // sliders
     const saveSlideshow = async (savedSectionId, savedPageId) => {
@@ -653,6 +765,23 @@ const PageField = () => {
             console.error("❌ Failed to reorder subtse sliders:", error.response?.data || error.message);
         }
     };
+    const reorderCSDSliders = async (csdId) => {
+        const csds = await pageRef.current?.getCSDs?.() || [];
+        const targetCSD = csds.find(f => parseInt(f.ras_id) === parseInt(csdId));
+
+        if (!targetCSD || !Array.isArray(targetCSD.subservices)) return;
+
+        const reorderedPayload = targetCSD.subservices.map((item, index) => ({
+            ss_id: parseInt(item.ss_id || item.id),
+            ss_order: index + 1,
+        }));
+
+        try {
+            const response = await axios.post(API_ENDPOINTS.updateSubserviceRASOrder, reorderedPayload);
+        } catch (error) {
+            console.error("❌ Failed to reorder academic facility sliders:", error.response?.data || error.message);
+        }
+    };
 
     const syncSection = async (savedPageId) => {
         const sections = pageRef.current?.getSections?.() || [];
@@ -696,12 +825,13 @@ const PageField = () => {
                 // saveAcademic(savedSectionId, savedPageId);
                 // saveGallery(savedSectionId, savedPageId);
                 // saveDepartment(savedSectionId, savedPageId);
-                saveCriteria(savedSectionId, savedPageId);
+                // saveCriteria(savedSectionId, savedPageId);
 
                 // hybrid
                 // saveFacilties(savedSectionId, savedPageId);
                 // saveType(savedSectionId, savedPageId);
                 // saveSpecializations(savedSectionId, savedPageId);
+                // saveCSD(savedSectionId, savedPageId);
 
             } catch (error) {
                 console.error("Failed to sync section:", error.response?.data || error.message);

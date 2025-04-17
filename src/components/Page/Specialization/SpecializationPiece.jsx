@@ -91,8 +91,6 @@ const SpecializationPiece = forwardRef(({sectionId, pageId}, ref) => {
         subservices: await subserviceRef.current?.getSubserviceSlidersRAS(),
       };
 
-      console.log("Data is: ", data);
-
       return [data];
     }
   }));
