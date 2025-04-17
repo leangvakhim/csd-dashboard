@@ -56,6 +56,11 @@ const API_ENDPOINTS = {
     createDepartment: `${API_BASEURL}/department/create`,
     updateDepartment: `${API_BASEURL}/department/update`,
 
+    // gc(criteria)
+    getCriteria: `${API_BASEURL}/gc`,
+    createCriteria: `${API_BASEURL}/gc/create`,
+    updateCriteria: `${API_BASEURL}/gc/update`,
+
     // information
     getText: `${API_BASEURL}/text`,
     createText: `${API_BASEURL}/text/create`,

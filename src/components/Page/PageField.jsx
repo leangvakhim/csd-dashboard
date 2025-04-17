@@ -231,6 +231,42 @@ const PageField = () => {
             }
         }
     }
+    const saveCriteria = async (savedSectionId, savedPageId) => {
+        const criterias = await pageRef.current?.getCriterias?.() || [];
+        const response = await axios.get(`${API_ENDPOINTS.getCriteria}?gc_sec=${savedSectionId}`);
+        const existingServices = response.data?.data || [];
+        const existingServiceIds = existingServices.map(service => service.gc_id);
+
+        if (criterias.length > 0 && savedSectionId) {
+            for (const criteria of criterias) {
+                const gc_sec = criteria.gc_sec || savedSectionId;
+                const page_id = criteria.page_id || savedPageId;
+                const criteriaPayload = {
+                    gc_sec: gc_sec,
+                    gc_title: criteria.gc_title || '',
+                    gc_tag: criteria.gc_tag || '',
+                    gc_type: criteria.gc_type || '',
+                    gc_detail: criteria.gc_detail || '',
+                    gc_img1: criteria.gc_img1 || null,
+                    gc_img2: criteria.gc_img2 || null,
+                    page_id: page_id,
+                };
+
+                if(
+                    criteria.gc_id &&
+                    existingServiceIds.includes(parseInt(criteria.gc_id)) &&
+                    parseInt(gc_sec) === parseInt(savedSectionId) &&
+                    parseInt(page_id) === parseInt(savedPageId)
+                ){
+                    await axios.post(`${API_ENDPOINTS.updateCriteria}/${criteria.gc_id}`, { criteria: criteriaPayload });
+                } else {
+                    if (!criteria.gc_id || !existingServiceIds.includes(parseInt(criteria.gc_id))) {
+                        await axios.post(API_ENDPOINTS.createCriteria, { criteria: [criteriaPayload] });
+                    }
+                }
+            }
+        }
+    }
 
     // hybrid
     const saveFacilties = async (savedSectionId, savedPageId) => {
@@ -650,16 +686,17 @@ const PageField = () => {
                 // console.log("📥 savedSectionId:", savedSectionId);
 
                 // sliders
-                // saveDepartment(savedSectionId, savedPageId);
+                // saveSlideshow(savedSectionId, savedPageId);
                 // saveService(savedSectionId, savedPageId);
 
                 // single
                 // saveBanner(savedSectionId, savedPageId);
                 // saveInformation(savedSectionId, savedPageId);
                 // saveTestimonial(savedSectionId, savedPageId);
-                // saveSlideshow(savedSectionId, savedPageId);
                 // saveAcademic(savedSectionId, savedPageId);
                 // saveGallery(savedSectionId, savedPageId);
+                // saveDepartment(savedSectionId, savedPageId);
+                saveCriteria(savedSectionId, savedPageId);
 
                 // hybrid
                 // saveFacilties(savedSectionId, savedPageId);

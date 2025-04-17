@@ -1,12 +1,30 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } from "react";
 import MediaLibraryModal from "../../MediaLibraryModal";
+import JoditEditor from 'jodit-react';
+import 'jodit/es5/jodit.css';
+import axios from "axios";
+import { API_ENDPOINTS, API } from "../../../service/APIConfig";
 
-const CriteriaPiece = () => {
+const config = {
+  readonly: false,  // Set to true for read-only mode
+  height: 400,
+  uploader: {
+    insertImageAsBase64URI: true,  // Enable base64 image upload
+  },
+};
+
+const CriteriaPiece = forwardRef(({sectionId, pageId}, ref) => {
   const [isRotatedButton, setIsRotatedButton] = useState(false);
   const [isMediaLibraryOpen, setMediaLibraryOpen] = useState(false);
   const [selectedImage1, setSelectedImage1] = useState("");
   const [selectedImage2, setSelectedImage2] = useState("");
+  const [displayCriteria, setDisplayCriteria] = useState(0);
+  const [detail, setDetail] = useState("");
   const [currentField, setCurrentField] = useState("");
+  const [criteriaTitle, setCriteriaTitle] = useState("");
+  const [criteriaTag, setCriteriaTag] = useState("");
+  const [criteriaType, setCriteriaType] = useState("");
+  const [criteriaId, setCriteriaId] = useState(null);
 
   const openMediaLibrary = (field) => {
     setCurrentField(field);
@@ -20,6 +38,92 @@ const CriteriaPiece = () => {
         setSelectedImage2(imageUrl);
     }
     setMediaLibraryOpen(false);
+  };
+
+  const getImageIdByUrl = async (url) => {
+    try {
+      const response = await axios.get(API_ENDPOINTS.getImages);
+      const images = Array.isArray(response.data) ? response.data : response.data.data;
+
+      const matchedImage = images.find((img) => img.image_url === url);
+      return matchedImage?.image_id || null;
+    } catch (error) {
+      console.error('❌ Failed to fetch image ID:', error);
+      return null;
+    }
+  };
+
+  useImperativeHandle(ref, () => ({
+     getCriterias: async () => {
+      const img1Id = await getImageIdByUrl(selectedImage1);
+      const img2Id = await getImageIdByUrl(selectedImage2);
+
+      return [
+        {
+          gc_id: criteriaId,
+          gc_title: criteriaTitle,
+          gc_tag: criteriaTag,
+          gc_type: criteriaType,
+          gc_img1: img1Id,
+          gc_img2: img2Id,
+          gc_detail: detail
+        }
+      ];
+    }
+  }));
+
+  const handleToggleDisplay = async () => {
+    try {
+        const newDisplay = displayCriteria === 1 ? 0 : 1;
+        await axios.post(`${API_ENDPOINTS.updateSection}/${sectionId}`, {
+            sec_id: sectionId,
+            display: newDisplay,
+        });
+        setDisplayCriteria(newDisplay);
+    } catch (error) {
+        console.error("Failed to update display:", error);
+    }
+  };
+
+  useEffect(() => {
+    const fetchCriterias = async () => {
+      try {
+        const response = await axios.get(`${API_ENDPOINTS.getCriteria}?gc_sec=${sectionId}`);
+        const criterias = response.data.data || [];
+        if (criterias.length > 0) {
+          const criteria = criterias.find(item => item?.section?.sec_page === pageId);
+          if (criteria) {
+            setCriteriaId(criteria.gc_id || null);
+            setCriteriaTitle(criteria.gc_title || '');
+            setCriteriaTag(criteria.gc_tag || '');
+            setCriteriaType(criteria.gc_type || '');
+            setDetail(criteria.gc_detail || '');
+            setSelectedImage1(criteria.gc_img1 ? `${API}/storage/uploads/${criteria.image1.img}` : '');
+            setSelectedImage2(criteria.gc_img2 ? `${API}/storage/uploads/${criteria.image2.img}` : '');
+          }
+        }
+
+        const sectionRes = await axios.get(`${API_ENDPOINTS.getSection}/${sectionId}`);
+        const sectionData = sectionRes.data.data;
+        setDisplayCriteria(sectionData.display || 0);
+
+      } catch (error) {
+          console.error("Failed to fetch criterias:", error);
+      }
+    };
+
+    fetchCriterias();
+  },[sectionId]);
+
+  const handleDeleteSection = async () => {
+    if (!window.confirm("Are you sure you want to delete this section?")) return;
+
+    try {
+        await axios.put(`${API_ENDPOINTS.deleteSection}/${sectionId}`);
+        window.location.reload();
+    } catch (error) {
+        console.error('Failed to delete section:', error);
+    }
   };
 
   return (
@@ -42,6 +146,7 @@ const CriteriaPiece = () => {
             </div>
             <div className="flex gap-1">
               <svg
+                onClick={() => handleDeleteSection()}
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
@@ -57,7 +162,7 @@ const CriteriaPiece = () => {
               </svg>
               <div
                 className={`cursor-pointer shrink-0 transition-transform duration-300
-                                    ${isRotatedButton ? "rotate-180" : ""}`}
+                ${isRotatedButton ? "rotate-180" : ""}`}
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -77,7 +182,7 @@ const CriteriaPiece = () => {
             </div>
           </div>
         </summary>
-
+        {/* row 1 */}
         <div className="flex flex-row gap-4 px-4 py-2">
           <div className="flex-1">
             <label className="block text-xl font-medium leading-6 text-white-900">
@@ -85,6 +190,8 @@ const CriteriaPiece = () => {
             </label>
             <div className="mt-2">
               <input
+                value={criteriaTitle}
+                onChange={(e) => setCriteriaTitle(e.target.value)}
                 type="text"
                 className="block w-full !border-gray-200 border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
               />
@@ -97,23 +204,48 @@ const CriteriaPiece = () => {
             </label>
             <div className="mt-2">
               <label class="toggle-switch mt-2">
-                <input type="checkbox" />
+                <input
+                  checked={displayCriteria === 1}
+                  onChange={handleToggleDisplay}
+                  type="checkbox" />
                 <span class="slider"></span>
               </label>
             </div>
           </div>
         </div>
-        {/* Subtitle */}
-        <div className="grid grid-cols-1 gap-4 px-4 py-2 mb-1">
+        {/* row 2 */}
+        <div className="flex flex-row gap-4 px-4 py-2">
           <div className="flex-1">
             <label className="block text-xl font-medium leading-6 text-white-900">
-              Subtitle
+              Tags
             </label>
             <div className="mt-2">
-              <textarea className="!border-gray-300 h-60 block w-full rounded-md border-0 py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-2xl sm:leading-6"></textarea>
+              <input
+                value={criteriaTag}
+                onChange={(e) => setCriteriaTag(e.target.value)}
+                type="text"
+                className="block w-full !border-gray-200 border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
+              />
             </div>
           </div>
+
+          <div className="flex-1">
+            <label
+              for="countries"
+              class="block text-xl font-medium leading-6 text-white-900"
+            >
+              Type
+            </label>
+            <select
+              value={criteriaType}
+              onChange={(e) => setCriteriaType(e.target.value)}
+              class="mt-2 !border-gray-300 block w-full border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6">
+              <option value="1">left images</option>
+              <option value="2">right images</option>
+            </select>
+          </div>
         </div>
+        {/* row 3 */}
         <div className="grid grid-cols-2 gap-4 px-4 py-2 mb-1">
           <div className="flex-1">
             <label className="block text-xl font-medium leading-6 text-white-900">
@@ -280,9 +412,24 @@ const CriteriaPiece = () => {
               />
           )}
         </div>
+        {/* row 4 */}
+        <div className="grid grid-cols-1 gap-4 px-4 py-2 mb-1">
+          <div className="flex-1">
+            <label className="block text-xl font-medium leading-6 text-white-900">
+              Subtitle
+            </label>
+            <div className="mt-2">
+              <JoditEditor
+                value={detail}
+                config={config}
+                onChange={(newContent) => setDetail(newContent)}
+              />
+            </div>
+          </div>
+        </div>
       </details>
     </div>
   );
-};
+});
 
 export default CriteriaPiece;
