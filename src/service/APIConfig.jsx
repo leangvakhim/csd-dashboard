@@ -56,6 +56,11 @@ const API_ENDPOINTS = {
     createDepartment: `${API_BASEURL}/department/create`,
     updateDepartment: `${API_BASEURL}/department/update`,
 
+    // apd (available)
+    getAvailable: `${API_BASEURL}/apd`,
+    createAvailable: `${API_BASEURL}/apd/create`,
+    updateAvailable: `${API_BASEURL}/apd/update`,
+
     // umd (unlock)
     getUnlock: `${API_BASEURL}/umd`,
     createUnlock: `${API_BASEURL}/umd/create`,
@@ -112,6 +117,13 @@ const API_ENDPOINTS = {
     updateSubType: `${API_BASEURL}/subtse/update`,
     deleteSubType: `${API_BASEURL}/subtse/visibility`,
     updateSubTypeOrder: `${API_BASEURL}/subtse/reorder`,
+
+    // subapd(subavailable)
+    getSubAvailable: `${API_BASEURL}/subapd`,
+    createSubAvailable: `${API_BASEURL}/subapd/create`,
+    updateSubAvailable: `${API_BASEURL}/subapd/update`,
+    deleteSubAvailable: `${API_BASEURL}/subapd/visibility`,
+    updateSubAvailableOrder: `${API_BASEURL}/subapd/reorder`,
 
     // year(sub studydegree)
     getSubStudyDegree: `${API_BASEURL}/year`,

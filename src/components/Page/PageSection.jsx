@@ -326,6 +326,7 @@ const PageSection = forwardRef(({ formData = {}, setFormData = {}, page_id }, re
   const csdPieceRef = useRef();
   const unlockPieceRef = useRef();
   const studyPieceRef = useRef();
+  const availablePieceRef = useRef();
   const [showSection, setShowSection] = useState(false);
   const [selectedSections, setSelectedSections] = useState([]);
 
@@ -409,6 +410,7 @@ const PageSection = forwardRef(({ formData = {}, setFormData = {}, page_id }, re
     getCSDs: () => csdPieceRef.current?.getCSDs?.() || [],
     getUnlocks: () => unlockPieceRef.current?.getUnlocks?.() || [],
     getStudys: () => studyPieceRef.current?.getStudys?.() || [],
+    getAvailables: () => availablePieceRef.current?.getAvailables?.() || [],
   }));
 
   const handleAddPage = () => {
@@ -506,6 +508,7 @@ const PageSection = forwardRef(({ formData = {}, setFormData = {}, page_id }, re
                       : section.type === "CSD" ? csdPieceRef
                       : section.type === "Unlock" ? unlockPieceRef
                       : section.type === "Study" ? studyPieceRef
+                      : section.type === "Avaialable" ? availablePieceRef
                       : null
                     }
                   data={section.data}

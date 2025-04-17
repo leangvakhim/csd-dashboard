@@ -680,7 +680,7 @@ const PageField = () => {
                 } else {
                     if (!study.std_id|| !existingServiceIds.includes(parseInt(study.std_id))) {
                         const res = await axios.post(API_ENDPOINTS.createStudy, { study: [StudyPayload] });
-                        const createdId = res.data?.data?.[0]?.tse_id;
+                        const createdId = res.data?.data?.[0]?.std_id;
                         if (createdId) {
                             await saveSubStudyDegreeSliders(study.std_id, study.substudys || []);
                         }
@@ -692,7 +692,7 @@ const PageField = () => {
     const saveSubStudyDegreeSliders = async (studyId, sliders) => {
         if (!studyId || !Array.isArray(sliders)) return;
 
-        const res = await axios.get(`${API_ENDPOINTS.getSubStudyDegree}?y_sec=${studyId}`);
+        const res = await axios.get(`${API_ENDPOINTS.getSubStudyDegree}?y_std=${studyId}`);
         const raw = res.data?.data;
         const existingSubservices = Array.isArray(raw) ? raw : raw ? [raw] : [];
         const existingSubIds = existingSubservices
@@ -725,6 +725,80 @@ const PageField = () => {
         }
 
         if (sliders.length > 0) { await reorderSubStudyDegreeSliders(studyId); }
+    };
+    const saveAvailable = async (savedSectionId, savedPageId) => {
+        const availables = await pageRef.current?.getAvailables?.() || [];
+        const response = await axios.get(`${API_ENDPOINTS.getAvailable}?apd_sec=${savedSectionId}`);
+        const existingServices = response.data?.data || [];
+        const existingServiceIds = existingServices.map(service => service.apd_id);
+
+        if (availables.length > 0 && savedSectionId) {
+            for (const available of availables) {
+                const apd_sec = available.apd_sec || savedSectionId;
+                const page_id = available.page_id || savedPageId;
+
+                const AvailablePayload = {
+                    apd_sec: apd_sec,
+                    apd_title: available.apd_title,
+                    page_id: page_id,
+                };
+
+                if (
+                    available.apd_id &&
+                    existingServiceIds.includes(parseInt(available.apd_id)) &&
+                    parseInt(apd_sec) === parseInt(savedSectionId) &&
+                    parseInt(page_id) === parseInt(savedPageId)
+                ) {
+                    await axios.post(`${API_ENDPOINTS.updateAvailable}/${available.apd_id}`, { available: AvailablePayload });
+                    await saveSubAvailableSliders(available.apd_id, available.subavailables || []);
+                } else {
+                    if (!available.apd_id|| !existingServiceIds.includes(parseInt(available.apd_id))) {
+                        const res = await axios.post(API_ENDPOINTS.createAvailable, { available: [AvailablePayload] });
+                        const createdId = res.data?.data?.[0]?.apd_id;
+                        if (createdId) {
+                            await saveSubAvailableSliders(available.apd_id, available.subavailables || []);
+                        }
+                    }
+                }
+            }
+        }
+    };
+    const saveSubAvailableSliders = async (availableId, sliders) => {
+        if (!availableId || !Array.isArray(sliders)) return;
+
+        const res = await axios.get(`${API_ENDPOINTS.getSubAvailable}?sapd_apd=${availableId}`);
+        const raw = res.data?.data;
+        const existingSubservices = Array.isArray(raw) ? raw : raw ? [raw] : [];
+        const existingSubIds = existingSubservices
+            .map(item => item.sapd_id);
+
+        for (const subavailable of sliders) {
+            const subAvailablePayload = {
+                sapd_apd: availableId,
+                sapd_title: subavailable.sapd_title,
+                sapd_img: subavailable.sapd_image,
+                sapd_routepage: subavailable.sapd_routepage,
+                display: subavailable.display,
+            };
+            const sapdId = subavailable.id || subavailable.sapd_id;
+
+            try {
+                if (
+                    sapdId &&
+                    existingSubIds.includes(parseInt(sapdId))
+                ) {
+                    await axios.post(`${API_ENDPOINTS.updateSubAvailable}/${sapdId}`, { subapd: subAvailablePayload });
+                } else {
+                    if (!sapdId || !existingSubIds.includes(parseInt(sapdId))) {
+                        await axios.post(API_ENDPOINTS.createSubAvailable, { subapd: [subAvailablePayload] });
+                    }
+                }
+            } catch (error) {
+                console.error("❌ Failed to save subapd:", error.response?.data || error.message);
+            }
+        }
+
+        if (sliders.length > 0) { await reorderSubAvailableSliders(availableId); }
     };
 
     // sliders
@@ -893,10 +967,8 @@ const PageField = () => {
         }
     };
     const reorderSubStudyDegreeSliders = async (studyId) => {
-        console.log("Study Id is: ", studyId);
         const years = await pageRef.current?.getStudys?.() || [];
         const targetYear = years.find(f => parseInt(f.std_id) === parseInt(studyId));
-        console.log("targetYear is: ", targetYear);
 
         if (!targetYear || !Array.isArray(targetYear.substudys)) return;
 
@@ -909,6 +981,23 @@ const PageField = () => {
 
         try {
             const response = await axios.post(API_ENDPOINTS.updateSubStudyDegreeOrder, reorderedPayload);
+        } catch (error) {
+            console.error("❌ Failed to reorder subtse sliders:", error.response?.data || error.message);
+        }
+    };
+    const reorderSubAvailableSliders = async (availableId) => {
+        const availables = await pageRef.current?.getAvailables?.() || [];
+        const targetAvailable = availables.find(f => parseInt(f.apd_id) === parseInt(availableId));
+
+        if (!targetAvailable || !Array.isArray(targetAvailable.subavailables)) return;
+
+        const reorderedPayload = targetAvailable.subavailables.map((item, index) => ({
+            sapd_id: parseInt(item.sapd_id || item.id),
+            sapd_order: index + 1,
+        }));
+
+        try {
+            const response = await axios.post(API_ENDPOINTS.updateSubAvailableOrder, reorderedPayload);
         } catch (error) {
             console.error("❌ Failed to reorder subtse sliders:", error.response?.data || error.message);
         }
@@ -964,7 +1053,8 @@ const PageField = () => {
                 // saveType(savedSectionId, savedPageId);
                 // saveSpecializations(savedSectionId, savedPageId);
                 // saveCSD(savedSectionId, savedPageId);
-                saveStudy(savedSectionId, savedPageId);
+                // saveStudy(savedSectionId, savedPageId);
+                saveAvailable(savedSectionId, savedPageId);
 
             } catch (error) {
                 console.error("Failed to sync section:", error.response?.data || error.message);
