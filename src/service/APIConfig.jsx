@@ -56,6 +56,11 @@ const API_ENDPOINTS = {
     createDepartment: `${API_BASEURL}/department/create`,
     updateDepartment: `${API_BASEURL}/department/update`,
 
+    // umd (unlock)
+    getUnlock: `${API_BASEURL}/umd`,
+    createUnlock: `${API_BASEURL}/umd/create`,
+    updateUnlock: `${API_BASEURL}/umd/update`,
+
     // gc(criteria)
     getCriteria: `${API_BASEURL}/gc`,
     createCriteria: `${API_BASEURL}/gc/create`,

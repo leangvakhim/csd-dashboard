@@ -267,6 +267,41 @@ const PageField = () => {
             }
         }
     }
+    const saveUnlock = async (savedSectionId, savedPageId) => {
+        const unlocks = await pageRef.current?.getUnlocks?.() || [];
+        const response = await axios.get(`${API_ENDPOINTS.getUnlock}?umd_sec=${savedSectionId}`);
+        const existingServices = response.data?.data || [];
+        const existingServiceIds = existingServices.map(service => service.umd_id);
+
+        if (unlocks.length > 0 && savedSectionId) {
+            for (const unlock of unlocks) {
+                const umd_sec = unlock.umd_sec || savedSectionId;
+                const page_id = unlock.page_id || savedPageId;
+                const unlockPayload = {
+                    umd_sec: umd_sec,
+                    umd_title: unlock.umd_title || '',
+                    umd_detail: unlock.umd_detail || '',
+                    umd_img: unlock.umd_img || null,
+                    umd_routepage: unlock.umd_routepage || '',
+                    umd_btntext: unlock.umd_btntext || '',
+                    page_id: page_id,
+                };
+
+                if(
+                    unlock.umd_id &&
+                    existingServiceIds.includes(parseInt(unlock.umd_id)) &&
+                    parseInt(umd_sec) === parseInt(savedSectionId) &&
+                    parseInt(page_id) === parseInt(savedPageId)
+                ){
+                    await axios.post(`${API_ENDPOINTS.updateUnlock}/${unlock.umd_id}`, { unlock: unlockPayload });
+                } else {
+                    if (!unlock.umd_id || !existingServiceIds.includes(parseInt(unlock.umd_id))) {
+                        await axios.post(API_ENDPOINTS.createUnlock, { unlock: [unlockPayload] });
+                    }
+                }
+            }
+        }
+    }
 
     // hybrid
     const saveFacilties = async (savedSectionId, savedPageId) => {
@@ -826,6 +861,7 @@ const PageField = () => {
                 // saveGallery(savedSectionId, savedPageId);
                 // saveDepartment(savedSectionId, savedPageId);
                 // saveCriteria(savedSectionId, savedPageId);
+                saveUnlock(savedSectionId, savedPageId);
 
                 // hybrid
                 // saveFacilties(savedSectionId, savedPageId);
