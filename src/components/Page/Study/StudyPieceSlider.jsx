@@ -1,36 +1,38 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, forwardRef, useImperativeHandle, useEffect } from "react";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import 'jodit/es5/jodit.css';
 import JoditEditor from 'jodit-react';
+import axios from "axios";
+import { API_ENDPOINTS } from "../../../service/APIConfig";
 
 const config = {
     readonly: false,
     height: 400,
     iframe: false,
-    placeholder: 'Start typing...',
     uploader: {
         insertImageAsBase64URI: true,
     },
 };
 
-const StudyPieceOne = () => {
+const StudyPieceOne = forwardRef(({studyId}, ref) => {
     const [rotatedStates, setRotatedStates] = useState({});
-    const [subtitleContent, setSubtitleContent] = useState('');
     const [slider, setSlider] = useState([
         {
             id: "1",
-            title: "study 1",
+            title: "year 1",
             subtitle: "",
-            desc: "",
+            detail: "",
+            display: 0,
         },
     ]);
 
     const handleAddSlider = () => {
         const newSlider = {
-            id: `${Date.now()}`,
-            title: `study ${slider.length + 1}`,
+            id: (slider.length + 1).toString(),
+            title: `year ${slider.length + 1}`,
             subtitle: "",
-            desc: "",
+            detail: "",
+            display: 0,
         };
 
         setSlider([...slider, newSlider]);
@@ -51,6 +53,75 @@ const StudyPieceOne = () => {
         newSlider.splice(result.destination.index, 0, reorderedSlider);
 
         setSlider(newSlider);
+    };
+
+    useImperativeHandle(ref, () => ({
+        getSubStudySliders: async () => {
+          const updatedSliders = await Promise.all(
+            slider.map(async (slide) => {
+              return {
+                y_title: slide.title,
+                y_subtitle: slide.subtitle,
+                y_detail: slide.detail,
+                display: slide.display ? 1 : 0,
+                id: slide.id,
+              };
+            })
+          );
+
+          return updatedSliders;
+        },
+    }));
+
+    useEffect(() => {
+        const fetchSliders = async () => {
+        try {
+            const response = await axios.get(API_ENDPOINTS.getSubStudyDegree);
+            const data = response.data?.data;
+
+            const subservices = Array.isArray(data) ? data : [data];
+
+            if (subservices.length > 0 && studyId) {
+            const validSubservices = subservices.filter(item => item.y_std === studyId);
+
+
+            const formattedData = validSubservices.map(item => ({
+                id: item.y_id.toString(),
+                title: item.y_title || '',
+                subtitle: item.y_subtitle || '',
+                detail: item.y_detail || '',
+                display: item.display === 1 || item.display === true,
+            }));
+
+            if (formattedData.length > 0) {
+                setSlider(formattedData);
+            } else {
+                setSlider([{
+                id: "1",
+                title: "year 1",
+                subtitle: "",
+                detail: "",
+                display: 0
+                }]);
+            }
+            }
+        } catch (error) {
+            console.error('Error fetching sliders:', error);
+        }
+        };
+
+        fetchSliders();
+    }, [studyId]);
+
+    const handleDeleteSlider = async (sliderId) => {
+        if (!window.confirm("Are you sure you want to delete this slider?")) return;
+
+        try {
+            await axios.put(`${API_ENDPOINTS.deleteSubStudyDegree}/${sliderId}`);
+            setSlider((prevSlider) => prevSlider.filter((item) => item.id !== sliderId));
+        } catch (error) {
+            console.error('Failed to delete slider:', error);
+        }
     };
 
     return (
@@ -102,6 +173,7 @@ const StudyPieceOne = () => {
                                                     <span className=" shrink-0 transition-transform duration-500 group-open:-rotate-0 flex gap-2">
                                                         <div className="block">
                                                             <svg
+                                                                onClick={() => handleDeleteSlider(sliders.id)}
                                                                 xmlns="http://www.w3.org/2000/svg"
                                                                 fill="none"
                                                                 viewBox="0 0 24 24"
@@ -146,6 +218,12 @@ const StudyPieceOne = () => {
                                                         </label>
                                                         <div className="mt-2">
                                                             <input
+                                                                value={sliders.title}
+                                                                onChange={(e) => {
+                                                                    const updatedSlider = [...slider];
+                                                                    updatedSlider[index].title = e.target.value;
+                                                                    setSlider(updatedSlider);
+                                                                }}
                                                                 type="text"
                                                                 className="!border-gray-300 block w-full border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
                                                             />
@@ -157,6 +235,12 @@ const StudyPieceOne = () => {
                                                         </label>
                                                         <div className="mt-2">
                                                             <input
+                                                                value={sliders.subtitle}
+                                                                onChange={(e) => {
+                                                                    const updatedSlider = [...slider];
+                                                                    updatedSlider[index].subtitle = e.target.value;
+                                                                    setSlider(updatedSlider);
+                                                                }}
                                                                 type="text"
                                                                 className="!border-gray-300 block w-full border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
                                                             />
@@ -168,7 +252,14 @@ const StudyPieceOne = () => {
                                                         </label>
                                                         <div className="mt-2">
                                                             <label class="toggle-switch mt-2">
-                                                                <input type="checkbox" />
+                                                                <input
+                                                                    checked={sliders.display}
+                                                                    onChange={(e) => {
+                                                                        const updatedSlider = [...slider];
+                                                                        updatedSlider[index].display = e.target.checked;
+                                                                        setSlider(updatedSlider);
+                                                                    }}
+                                                                    type="checkbox" />
                                                                 <span class="slider"></span>
                                                             </label>
                                                         </div>
@@ -182,9 +273,14 @@ const StudyPieceOne = () => {
                                                         </label>
                                                         <div className="mt-2 cursor-text">
                                                             <JoditEditor
-                                                                value={subtitleContent}
+                                                                value={sliders.detail}
                                                                 config={config}
-                                                                onChange={(newContent) => setSubtitleContent(newContent)}
+                                                                onChange={(newContent) => {
+                                                                    const updatedSliders = slider.map((item) =>
+                                                                    item.id === sliders.id ? { ...item, detail: newContent } : item
+                                                                    );
+                                                                    setSlider(updatedSliders);
+                                                                }}
                                                             />
                                                         </div>
                                                     </div>
@@ -220,6 +316,6 @@ const StudyPieceOne = () => {
             </Droppable>
         </DragDropContext>
     );
-};
+});
 
 export default StudyPieceOne;

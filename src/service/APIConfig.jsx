@@ -61,6 +61,11 @@ const API_ENDPOINTS = {
     createUnlock: `${API_BASEURL}/umd/create`,
     updateUnlock: `${API_BASEURL}/umd/update`,
 
+    // study-degree (study)
+    getStudy: `${API_BASEURL}/study-degree`,
+    createStudy: `${API_BASEURL}/study-degree/create`,
+    updateStudy: `${API_BASEURL}/study-degree/update`,
+
     // gc(criteria)
     getCriteria: `${API_BASEURL}/gc`,
     createCriteria: `${API_BASEURL}/gc/create`,
@@ -107,6 +112,13 @@ const API_ENDPOINTS = {
     updateSubType: `${API_BASEURL}/subtse/update`,
     deleteSubType: `${API_BASEURL}/subtse/visibility`,
     updateSubTypeOrder: `${API_BASEURL}/subtse/reorder`,
+
+    // year(sub studydegree)
+    getSubStudyDegree: `${API_BASEURL}/year`,
+    createSubStudyDegree: `${API_BASEURL}/year/create`,
+    updateSubStudyDegree: `${API_BASEURL}/year/update`,
+    deleteSubStudyDegree: `${API_BASEURL}/year/visibility`,
+    updateSubStudyDegreeOrder: `${API_BASEURL}/year/reorder`,
 
     // subservice
     getSubserviceAF: `${API_BASEURL}/subservice`,
