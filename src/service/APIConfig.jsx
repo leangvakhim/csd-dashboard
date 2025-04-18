@@ -66,6 +66,11 @@ const API_ENDPOINTS = {
     createUnlock: `${API_BASEURL}/umd/create`,
     updateUnlock: `${API_BASEURL}/umd/update`,
 
+    // fee
+    getFee: `${API_BASEURL}/fee`,
+    createFee: `${API_BASEURL}/fee/create`,
+    updateFee: `${API_BASEURL}/fee/update`,
+
     // study-degree (study)
     getStudy: `${API_BASEURL}/study-degree`,
     createStudy: `${API_BASEURL}/study-degree/create`,

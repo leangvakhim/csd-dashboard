@@ -1,12 +1,17 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } from "react";
 import MediaLibraryModal from "../../MediaLibraryModal";
+import axios from "axios";
+import { API_ENDPOINTS, API } from "../../../service/APIConfig";
 
-
-const FeePiece = () => {
+const FeePiece = forwardRef(({sectionId, pageId}, ref) => {
     const [isRotatedButton1, setIsRotatedButton1] = useState(false);
     const [isMediaLibraryOpen, setMediaLibraryOpen] = useState(false);
     const [selectedImage, setSelectedImage] = useState("");
-
+    const [detail, setDetail] = useState("");
+    const [title, setTitle] = useState("");
+    const [feeId, setFeeId] = useState(null);
+    const [price, setPrice] = useState(null);
+    const [displayFee, setDisplayFee] = useState(0);
 
     const openMediaLibrary = () => {
         setMediaLibraryOpen(true);
@@ -19,6 +24,86 @@ const FeePiece = () => {
         setMediaLibraryOpen(false);
     };
 
+    const getImageIdByUrl = async (url) => {
+        try {
+        const response = await axios.get(API_ENDPOINTS.getImages);
+        const images = Array.isArray(response.data) ? response.data : response.data.data;
+
+        const matchedImage = images.find((img) => img.image_url === url);
+        return matchedImage?.image_id || null;
+        } catch (error) {
+        console.error('❌ Failed to fetch image ID:', error);
+        return null;
+        }
+    };
+
+    useImperativeHandle(ref, () => ({
+        getFees: async () => {
+        const imgId = await getImageIdByUrl(selectedImage);
+
+        return [
+            {
+            fe_id: feeId,
+            fe_title: title,
+            fe_img: imgId,
+            fe_desc: detail,
+            fe_price: price,
+            }
+        ];
+        }
+    }));
+
+    const handleToggleDisplay = async () => {
+        try {
+            const newDisplay = displayFee === 1 ? 0 : 1;
+            await axios.post(`${API_ENDPOINTS.updateSection}/${sectionId}`, {
+                sec_id: sectionId,
+                display: newDisplay,
+            });
+            setDisplayFee(newDisplay);
+        } catch (error) {
+            console.error("Failed to update display:", error);
+        }
+    };
+
+    useEffect(() => {
+        const fetchFees = async () => {
+        try {
+            const response = await axios.get(`${API_ENDPOINTS.getFee}?fe_sec=${sectionId}`);
+            const fees = response.data.data || [];
+            if (fees.length > 0) {
+            const fee = fees.find(item => item?.section?.sec_page === pageId);
+            if (fee) {
+                setFeeId(fee.fe_id || null);
+                setTitle(fee.fe_title || '');
+                setDetail(fee.fe_desc || '');
+                setPrice(fee.fe_price || '');
+                setSelectedImage(fee.fe_img ? `${API}/storage/uploads/${fee.image.img}` : '');
+            }
+            }
+
+            const sectionRes = await axios.get(`${API_ENDPOINTS.getSection}/${sectionId}`);
+            const sectionData = sectionRes.data.data;
+            setDisplayFee(sectionData.display || 0);
+
+        } catch (error) {
+            console.error("Failed to fetch banners:", error);
+        }
+        };
+
+        fetchFees();
+    },[sectionId]);
+
+    const handleDeleteSection = async () => {
+        if (!window.confirm("Are you sure you want to delete this section?")) return;
+
+        try {
+            await axios.put(`${API_ENDPOINTS.deleteSection}/${sectionId}`);
+            window.location.reload();
+        } catch (error) {
+            console.error('Failed to delete section:', error);
+        }
+    };
 
     return (
         <div className="grid grid-cols-1 gap-4 ">
@@ -37,6 +122,7 @@ const FeePiece = () => {
                         </div>
                         <div className="flex gap-1">
                             <svg
+                                onClick={() => handleDeleteSection()}
                                 xmlns="http://www.w3.org/2000/svg"
                                 fill="none"
                                 viewBox="0 0 24 24"
@@ -65,7 +151,6 @@ const FeePiece = () => {
                                 </svg>
                             </div>
                         </div>
-
                     </div>
                 </summary>
                 {/* Row 1 */}
@@ -76,6 +161,8 @@ const FeePiece = () => {
                         </label>
                         <div className="mt-2">
                             <input
+                                value={title}
+                                onChange={(e) => setTitle(e.target.value)}
                                 type="text"
                                 className="block w-full !border-gray-200 border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
                             />
@@ -88,6 +175,8 @@ const FeePiece = () => {
                         </label>
                         <div className="mt-2">
                             <input
+                                value={price}
+                                onChange={(e) => setPrice(e.target.value)}
                                 type="text"
                                 className="block w-full !border-gray-200 border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
                             />
@@ -100,7 +189,10 @@ const FeePiece = () => {
                         </label>
                         <div className="mt-2">
                             <label class="toggle-switch mt-2">
-                                <input type="checkbox" />
+                                <input
+                                    checked={displayFee === 1}
+                                    onChange={handleToggleDisplay}
+                                    type="checkbox" />
                                 <span class="slider"></span>
                             </label>
                         </div>
@@ -117,7 +209,10 @@ const FeePiece = () => {
                                 SubTitle
                             </label>
                             <div className="mt-2">
-                                <textarea className="!border-gray-300 h-60 block w-full rounded-md border-0 py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-2xl sm:leading-6"></textarea>
+                                <textarea
+                                value={detail}
+                                onChange={(e) => setDetail(e.target.value)}
+                                className="!border-gray-300 h-60 block w-full rounded-md border-0 py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-2xl sm:leading-6"></textarea>
                             </div>
                         </div>
                         <div className="">
@@ -207,6 +302,6 @@ const FeePiece = () => {
             </details >
         </div >
     )
-}
+});
 
 export default FeePiece

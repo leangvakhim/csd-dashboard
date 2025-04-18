@@ -302,6 +302,42 @@ const PageField = () => {
             }
         }
     }
+    const saveFee = async (savedSectionId, savedPageId) => {
+        const fees = await pageRef.current?.getFees?.() || [];
+        const response = await axios.get(`${API_ENDPOINTS.getFee}?fe_sec=${savedSectionId}`);
+        const existingServices = response.data?.data || [];
+        const existingServiceIds = existingServices.map(service => service.fe_id);
+
+        if (fees.length > 0 && savedSectionId) {
+            for (const fee of fees) {
+                const fe_sec = fee.fe_sec || savedSectionId;
+                const page_id = fee.page_id || savedPageId;
+                const feePayload = {
+                    fe_sec: fe_sec,
+                    fe_title: fee.fe_title || '',
+                    fe_desc: fee.fe_desc || '',
+                    fe_img: fee.fe_img || null,
+                    fe_price: fee.fe_price || '',
+                    page_id: page_id,
+                };
+
+                console.log("Payload is: ", feePayload);
+
+                if(
+                    fee.fe_id &&
+                    existingServiceIds.includes(parseInt(fee.fe_id)) &&
+                    parseInt(fe_sec) === parseInt(savedSectionId) &&
+                    parseInt(page_id) === parseInt(savedPageId)
+                ){
+                    await axios.post(`${API_ENDPOINTS.updateFee}/${fee.fe_id}`, { fee: feePayload });
+                } else {
+                    if (!fee.fe_id || !existingServiceIds.includes(parseInt(fee.fe_id))) {
+                        await axios.post(API_ENDPOINTS.createFee, { fee: [feePayload] });
+                    }
+                }
+            }
+        }
+    }
 
     // hybrid
     const saveFacilties = async (savedSectionId, savedPageId) => {
@@ -1047,6 +1083,7 @@ const PageField = () => {
                 // saveDepartment(savedSectionId, savedPageId);
                 // saveCriteria(savedSectionId, savedPageId);
                 // saveUnlock(savedSectionId, savedPageId);
+                saveFee(savedSectionId, savedPageId);
 
                 // hybrid
                 // saveFacilties(savedSectionId, savedPageId);
@@ -1054,7 +1091,7 @@ const PageField = () => {
                 // saveSpecializations(savedSectionId, savedPageId);
                 // saveCSD(savedSectionId, savedPageId);
                 // saveStudy(savedSectionId, savedPageId);
-                saveAvailable(savedSectionId, savedPageId);
+                // saveAvailable(savedSectionId, savedPageId);
 
             } catch (error) {
                 console.error("Failed to sync section:", error.response?.data || error.message);
