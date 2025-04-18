@@ -284,7 +284,7 @@ const SpecializationPieceSlider = forwardRef(({specializationId}, ref) => {
                             </label>
                             <div className="mt-2">
                               <textarea
-                                value={sliders.subtitle}
+                                  value={sliders.subtitle}
                                   onChange={(e) => {
                                     const updatedSlider = [...slider];
                                     updatedSlider[index].subtitle = e.target.value;

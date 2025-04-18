@@ -1,23 +1,29 @@
-import React, { useState } from "react";
-import InnovationPieceOne from "./InnovationPieceOne";
+import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } from "react";
+import InnovationPieceSlider from "./InnovationPieceSlider";
 import 'jodit/es5/jodit.css';
 import JoditEditor from 'jodit-react';
 import MediaLibraryModal from "../../MediaLibraryModal";
+import axios from "axios";
+import { API_ENDPOINTS, API } from "../../../service/APIConfig";
 
-const InnovationPiece = () => {
+const config = {
+    readonly: false,
+    height: 400,
+    placeholder: 'Start typing...',
+    uploader: {
+        insertImageAsBase64URI: true,  // Enable base64 image upload
+    },
+};
+
+const InnovationPiece = forwardRef(({sectionId, pageId}, ref) => {
     const [isRotatedButton1, setIsRotatedButton1] = useState(false);
     const [isMediaLibraryOpen, setMediaLibraryOpen] = useState(false);
     const [selectedImage, setSelectedImage] = useState("");
-    const [subtitleContent, setSubtitleContent] = useState('');
-
-    const config = {
-        readonly: false,
-        height: 400,
-        placeholder: 'Start typing...',
-        uploader: {
-            insertImageAsBase64URI: true,  // Enable base64 image upload
-        },
-    };
+    const [innovationId, setInnovationId] = useState(0);
+    const [title, setTitle] = useState('');
+    const [detail, setDetail] = useState('');
+    const [displayInnovation, setDisplayInnovation] = useState(0);
+    const subserviceRef = useRef();
 
     const openMediaLibrary = () => {
         setMediaLibraryOpen(true);
@@ -29,6 +35,125 @@ const InnovationPiece = () => {
         }
         setMediaLibraryOpen(false);
     };
+
+    const getImageIdByUrl = async (url) => {
+        try {
+        const response = await axios.get(API_ENDPOINTS.getImages);
+        const images = Array.isArray(response.data) ? response.data : response.data.data;
+
+        const matchedImage = images.find((img) => img.image_url === url);
+        return matchedImage?.image_id || null;
+        } catch (error) {
+        console.error('❌ Failed to fetch image ID:', error);
+        return null;
+        }
+    };
+
+    useImperativeHandle(ref, () => ({
+        getInnovations: async () => {
+        let textId;
+
+        try {
+            const response = await axios.get(`${API_ENDPOINTS.getSpecialization}?ras_sec=${sectionId}`);
+            const innovation = response.data.data || [];
+            const currentInnovation = innovation.find(f => f.section.sec_page === pageId && f.ras_sec === sectionId && f.text?.text_type === 9);
+            if (currentInnovation?.text?.text_id) {
+            textId = currentInnovation.text.text_id;
+            }
+        } catch (error) {
+            console.error("Failed to check existing facility:", error);
+        }
+
+        if (textId) {
+            const updatePayload = {
+            text_id: textId,
+            title: title,
+            desc: detail,
+            text_type: 9,
+            text_sec: sectionId,
+            };
+            const textRes = await axios.post(`${API_ENDPOINTS.updateText}/${textId}`, { texts: updatePayload });
+            textId = textRes.data.data?.text_id;
+        } else {
+            const textPayload = {
+            title: title,
+            desc: detail,
+            text_type: 9,
+            text_sec: sectionId,
+            };
+            const textRes = await axios.post(`${API_ENDPOINTS.createText}`, { texts: [textPayload] });
+            textId = textRes.data.data?.text_id;
+        }
+
+        const imageId = await getImageIdByUrl(selectedImage);
+
+        const data = {
+            ras_id: innovationId,
+            ras_sec: sectionId,
+            ras_text: textId,
+            ras_img1: imageId,
+            ras_img2: null,
+            subservices: await subserviceRef.current?.getSubserviceSlidersInnovation(),
+        };
+
+        return [data];
+        }
+    }));
+
+    const handleToggleDisplay = async () => {
+        try {
+            const newDisplay = displayInnovation === 1 ? 0 : 1;
+            await axios.post(`${API_ENDPOINTS.updateSection}/${sectionId}`, {
+                sec_id: sectionId,
+                display: newDisplay,
+            });
+            setDisplayInnovation(newDisplay);
+        } catch (error) {
+            console.error("Failed to update display:", error);
+        }
+    };
+
+    const handleDeleteSection = async () => {
+        if (!window.confirm("Are you sure you want to delete this section?")) return;
+
+        try {
+            await axios.put(`${API_ENDPOINTS.deleteSection}/${sectionId}`);
+            window.location.reload();
+        } catch (error) {
+            console.error('Failed to delete section:', error);
+        }
+    };
+
+    useEffect(() => {
+        const fetchInnovations = async () => {
+        try {
+            const response = await axios.get(`${API_ENDPOINTS.getSpecialization}?ras_sec=${sectionId}`);
+            const innovations = response.data.data || [];
+            if (innovations.length > 0) {
+            const innovation = innovations.find(item =>
+                item.section.sec_page === pageId &&
+                item.ras_sec === sectionId &&
+                item.text?.text_type === 9
+            );
+
+            if (innovation) {
+                setInnovationId(innovation.ras_id || null);
+                setTitle(innovation.text?.title || '');
+                setDetail(innovation.text?.desc || '');
+                setSelectedImage(innovation.ras_img1 ? `${API}/storage/uploads/${innovation.image1.img}` : '');
+            }
+            }
+
+            const sectionRes = await axios.get(`${API_ENDPOINTS.getSection}/${sectionId}`);
+            const sectionData = sectionRes.data.data;
+            setDisplayInnovation(sectionData.display || 0);
+        } catch (error) {
+            console.error("Failed to fetch facilities:", error);
+        }
+        };
+
+        fetchInnovations();
+    }, [sectionId]);
 
     return (
         <div className="grid grid-cols-1 gap-4 ">
@@ -50,6 +175,7 @@ const InnovationPiece = () => {
                         </div>
                         <div className="flex gap-1">
                             <svg
+                                onClick={() => handleDeleteSection()}
                                 xmlns="http://www.w3.org/2000/svg"
                                 fill="none"
                                 viewBox="0 0 24 24"
@@ -93,6 +219,8 @@ const InnovationPiece = () => {
                         </label>
                         <div className="mt-2">
                             <input
+                                value={title}
+                                onChange={(e) => setTitle(e.target.value)}
                                 type="text"
                                 className="block w-full !border-gray-200 border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
                             />
@@ -104,7 +232,10 @@ const InnovationPiece = () => {
                         </label>
                         <div className="mt-2">
                             <label class="toggle-switch mt-2">
-                                <input type="checkbox" />
+                                <input
+                                    checked={displayInnovation === 1}
+                                    onChange={handleToggleDisplay}
+                                    type="checkbox" />
                                 <span class="slider"></span>
                             </label>
                         </div>
@@ -201,19 +332,19 @@ const InnovationPiece = () => {
                         </label>
                         <div className="mt-2 cursor-text">
                             <JoditEditor
-                                value={subtitleContent}
+                                value={detail}
                                 config={config}
-                                onChange={(newContent) => setSubtitleContent(newContent)}
+                                onChange={(newContent) => setDetail(newContent)}
                             />
                         </div>
                     </div>
                 </div>
                 <div className="mb-4">
-                    <InnovationPieceOne />
+                    <InnovationPieceSlider ref={subserviceRef} innovationId={innovationId} />
                 </div>
             </details>
         </div>
     );
-};
+});
 
 export default InnovationPiece;

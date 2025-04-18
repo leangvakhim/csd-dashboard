@@ -1097,6 +1097,84 @@ const PageField = () => {
 
         if (sliders.length > 0) { await reorderPotentialSliders(potentialId); }
     };
+    const saveInnovations = async (savedSectionId, savedPageId) => {
+        const innovations = await pageRef.current?.getInnovations?.() || [];
+        const response = await axios.get(`${API_ENDPOINTS.getSpecialization}?ras_sec=${savedSectionId}`);
+        const existingServices = response.data?.data || [];
+        const existingServiceIds = existingServices.map(service => service.ras_id);
+
+        if (innovations.length > 0 && savedSectionId) {
+            for (const innovation of innovations) {
+                const ras_sec = innovation.ras_sec || savedSectionId;
+                const page_id = innovation.page_id || savedPageId;
+
+                const innovationPayload = {
+                    ras_sec: ras_sec,
+                    ras_img1: innovation.ras_img1,
+                    ras_img2: innovation.ras_img2,
+                    ras_text: innovation.ras_text,
+                    page_id: page_id,
+                };
+
+                if (
+                    innovation.ras_id &&
+                    existingServiceIds.includes(parseInt(innovation.ras_id)) &&
+                    parseInt(ras_sec) === parseInt(savedSectionId) &&
+                    parseInt(page_id) === parseInt(savedPageId)
+                ) {
+                    await axios.post(`${API_ENDPOINTS.updateSpecialization}/${innovation.ras_id}`, { specialization: innovationPayload });
+                    await saveInnovationSliders(innovation.ras_id, innovation.subservices || []);
+                } else {
+                    if (!innovation.ras_id || !existingServiceIds.includes(parseInt(innovation.ras_id))) {
+                        const res = await axios.post(API_ENDPOINTS.createSpecialization, { specialization: [innovationPayload] });
+                        const createdId = res.data?.data?.[0]?.ras_id;
+                        if (createdId) {
+                            await saveInnovationSliders(innovation.ras_id, innovation.subservices || []);
+                        }
+                    }
+                }
+            }
+        }
+    };
+    const saveInnovationSliders = async (innovationId, sliders) => {
+        if (!innovationId || !Array.isArray(sliders)) return;
+
+        const res = await axios.get(`${API_ENDPOINTS.getSubserviceAF}?ss_ras=${innovationId}`);
+        const raw = res.data?.data;
+        const existingSubservices = Array.isArray(raw) ? raw : raw ? [raw] : [];
+        const existingSubIds = existingSubservices
+            .filter(item => item.ss_af === null)
+            .map(item => item.ss_id);
+
+        for (const ss of sliders) {
+            const ssPayload = {
+                ss_af: null,
+                ss_ras: innovationId,
+                ss_title: ss.title,
+                ss_subtitle: ss.subtitle,
+                ss_img: ss.image,
+                display: ss.display,
+            };
+            const ssId = ss.id || ss.ss_id;
+
+            try {
+                if (
+                    ssId &&
+                    existingSubIds.includes(parseInt(ssId))
+                ) {
+                    await axios.post(`${API_ENDPOINTS.updateSubserviceRAS}/${ssId}`, { subservice: ssPayload });
+                } else {
+                    if (!ssId || !existingSubIds.includes(parseInt(ssId))) {
+                        await axios.post(API_ENDPOINTS.createSubserviceRAS, { subservice: [ssPayload] });
+                    }
+                }
+            } catch (error) {
+                console.error("❌ Failed to save subservice:", error.response?.data || error.message);
+            }
+        }
+
+        if (sliders.length > 0) { await reorderInnovationSliders(innovationId); }
+    };
 
     // sliders
     const saveSlideshow = async (savedSectionId, savedPageId) => {
@@ -1333,6 +1411,23 @@ const PageField = () => {
             console.error("❌ Failed to reorder academic facility sliders:", error.response?.data || error.message);
         }
     };
+    const reorderInnovationSliders = async (innovationId) => {
+        const Innovations = await pageRef.current?.getInnovations?.() || [];
+        const targetInnovation = Innovations.find(f => parseInt(f.ras_id) === parseInt(innovationId));
+
+        if (!targetInnovation || !Array.isArray(targetInnovation.subservices)) return;
+
+        const reorderedPayload = targetInnovation.subservices.map((item, index) => ({
+            ss_id: parseInt(item.ss_id || item.id),
+            ss_order: index + 1,
+        }));
+
+        try {
+            const response = await axios.post(API_ENDPOINTS.updateSubserviceRASOrder, reorderedPayload);
+        } catch (error) {
+            console.error("❌ Failed to reorder academic facility sliders:", error.response?.data || error.message);
+        }
+    };
 
     const syncSection = async (savedPageId) => {
         const sections = pageRef.current?.getSections?.() || [];
@@ -1391,6 +1486,7 @@ const PageField = () => {
                 // saveRequirement(savedSectionId, savedPageId);
                 // saveFuture(savedSectionId, savedPageId);
                 // savePotentials(savedSectionId, savedPageId);
+                saveInnovations(savedSectionId, savedPageId);
 
             } catch (error) {
                 console.error("Failed to sync section:", error.response?.data || error.message);
