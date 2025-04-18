@@ -333,6 +333,7 @@ const PageSection = forwardRef(({ formData = {}, setFormData = {}, page_id }, re
   const potentialPieceRef = useRef();
   const introductionPieceRef = useRef();
   const innovationPieceRef = useRef();
+  const faqPieceRef = useRef();
   const [showSection, setShowSection] = useState(false);
   const [selectedSections, setSelectedSections] = useState([]);
 
@@ -423,6 +424,7 @@ const PageSection = forwardRef(({ formData = {}, setFormData = {}, page_id }, re
     getPotentials: () => potentialPieceRef.current?.getPotentials?.() || [],
     getIntroductions: () => introductionPieceRef.current?.getIntroductions?.() || [],
     getInnovations: () => innovationPieceRef.current?.getInnovations?.() || [],
+    getFAQs: () => faqPieceRef.current?.getFAQs?.() || [],
   }));
 
   const handleAddPage = () => {
@@ -527,6 +529,7 @@ const PageSection = forwardRef(({ formData = {}, setFormData = {}, page_id }, re
                       : section.type === "Potential" ? potentialPieceRef
                       : section.type === "Introduction" ? introductionPieceRef
                       : section.type === "Innovation" ? innovationPieceRef
+                      : section.type === "FAQ" ? faqPieceRef
                       : null
                     }
                   data={section.data}

@@ -61,6 +61,11 @@ const API_ENDPOINTS = {
     createDepartment: `${API_BASEURL}/department/create`,
     updateDepartment: `${API_BASEURL}/department/update`,
 
+    // faq
+    getFAQ: `${API_BASEURL}/faq`,
+    createFAQ: `${API_BASEURL}/faq/create`,
+    updateFAQ: `${API_BASEURL}/faq/update`,
+
     // apd (available)
     getAvailable: `${API_BASEURL}/apd`,
     createAvailable: `${API_BASEURL}/apd/create`,
@@ -137,6 +142,13 @@ const API_ENDPOINTS = {
     updateSubType: `${API_BASEURL}/subtse/update`,
     deleteSubType: `${API_BASEURL}/subtse/visibility`,
     updateSubTypeOrder: `${API_BASEURL}/subtse/reorder`,
+
+    // faqaddon(subFAQ)
+    getSubFAQ: `${API_BASEURL}/faqaddon`,
+    createSubFAQ: `${API_BASEURL}/faqaddon/create`,
+    updateSubFAQ: `${API_BASEURL}/faqaddon/update`,
+    deleteSubFAQ: `${API_BASEURL}/faqaddon/visibility`,
+    updateSubFAQOrder: `${API_BASEURL}/faqaddon/reorder`,
 
     // ufaddon(subfuture)
     getSubFuture: `${API_BASEURL}/ufaddon`,

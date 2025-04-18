@@ -1175,6 +1175,80 @@ const PageField = () => {
 
         if (sliders.length > 0) { await reorderInnovationSliders(innovationId); }
     };
+    const saveFaqs = async (savedSectionId, savedPageId) => {
+        const faqs = await pageRef.current?.getFAQs?.() || [];
+        const response = await axios.get(`${API_ENDPOINTS.getFAQ}?faq_sec=${savedSectionId}`);
+        const existingServices = response.data?.data || [];
+        const existingServiceIds = existingServices.map(service => service.faq_id);
+
+        if (faqs.length > 0 && savedSectionId) {
+            for (const faq of faqs) {
+                const faq_sec = faq.faq_sec || savedSectionId;
+                const page_id = faq.page_id || savedPageId;
+
+                const faqPayload = {
+                    faq_sec: faq_sec,
+                    faq_title: faq.faq_title,
+                    faq_subtitle: faq.faq_subtitle,
+                    page_id: page_id,
+                };
+
+                if (
+                    faq.faq_id &&
+                    existingServiceIds.includes(parseInt(faq.faq_id)) &&
+                    parseInt(faq_sec) === parseInt(savedSectionId) &&
+                    parseInt(page_id) === parseInt(savedPageId)
+                ) {
+                    await axios.post(`${API_ENDPOINTS.updateFAQ}/${faq.faq_id}`, { faq: faqPayload });
+                    await saveFAQSliders(faq.faq_id, faq.subfaqs || []);
+                } else {
+                    if (!faq.faq_id || !existingServiceIds.includes(parseInt(faq.faq_id))) {
+                        const res = await axios.post(API_ENDPOINTS.createFAQ, { faq: [faqPayload] });
+                        const createdId = res.data?.data?.[0]?.faq_id;
+                        if (createdId) {
+                            await saveFAQSliders(faq.faq_id, faq.subfaqs || []);
+                        }
+                    }
+                }
+            }
+        }
+    };
+    const saveFAQSliders = async (faqId, sliders) => {
+        if (!faqId || !Array.isArray(sliders)) return;
+
+        const res = await axios.get(`${API_ENDPOINTS.getSubFAQ}?fa_faq=${faqId}`);
+        const raw = res.data?.data;
+        const existingSubservices = Array.isArray(raw) ? raw : raw ? [raw] : [];
+        const existingSubIds = existingSubservices
+            .map(item => item.fa_id);
+
+        for (const fa of sliders) {
+            const faPayload = {
+                fa_faq: faqId,
+                fa_question: fa.fa_question,
+                fa_answer: fa.fa_answer,
+                display: fa.display,
+            };
+            const faId = fa.id || fa.fa_id;
+
+            try {
+                if (
+                    faId &&
+                    existingSubIds.includes(parseInt(faId))
+                ) {
+                    await axios.post(`${API_ENDPOINTS.updateSubFAQ}/${faId}`, { faqaddon: faPayload });
+                } else {
+                    if (!faId || !existingSubIds.includes(parseInt(faId))) {
+                        await axios.post(API_ENDPOINTS.createSubFAQ, { faqaddon: [faPayload] });
+                    }
+                }
+            } catch (error) {
+                console.error("❌ Failed to save subservice:", error.response?.data || error.message);
+            }
+        }
+
+        if (sliders.length > 0) { await reorderFAQSliders(faqId); }
+    };
 
     // sliders
     const saveSlideshow = async (savedSectionId, savedPageId) => {
@@ -1428,6 +1502,23 @@ const PageField = () => {
             console.error("❌ Failed to reorder academic facility sliders:", error.response?.data || error.message);
         }
     };
+    const reorderFAQSliders = async (faqId) => {
+        const faqs = await pageRef.current?.getFAQs?.() || [];
+        const targetFAQ = faqs.find(f => parseInt(f.faq_id) === parseInt(faqId));
+
+        if (!targetFAQ || !Array.isArray(targetFAQ.subfaqs)) return;
+
+        const reorderedPayload = targetFAQ.subfaqs.map((item, index) => ({
+            fa_id: parseInt(item.fa_id || item.id),
+            fa_order: index + 1,
+        }));
+
+        try {
+            const response = await axios.post(API_ENDPOINTS.updateSubFAQOrder, reorderedPayload);
+        } catch (error) {
+            console.error("❌ Failed to reorder faq sliders:", error.response?.data || error.message);
+        }
+    };
 
     const syncSection = async (savedPageId) => {
         const sections = pageRef.current?.getSections?.() || [];
@@ -1486,7 +1577,8 @@ const PageField = () => {
                 // saveRequirement(savedSectionId, savedPageId);
                 // saveFuture(savedSectionId, savedPageId);
                 // savePotentials(savedSectionId, savedPageId);
-                saveInnovations(savedSectionId, savedPageId);
+                // saveInnovations(savedSectionId, savedPageId);
+                // saveFaqs(savedSectionId, savedPageId);
 
             } catch (error) {
                 console.error("Failed to sync section:", error.response?.data || error.message);
