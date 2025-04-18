@@ -58,7 +58,7 @@ const PageField = () => {
                 }
             }
         }
-    }
+    };
     const saveBanner = async (savedSectionId, savedPageId) => {
         const banners = await pageRef.current?.getBanners?.() || [];
         const response = await axios.get(`${API_ENDPOINTS.getBanner}?ban_sec=${savedSectionId}`);
@@ -91,7 +91,7 @@ const PageField = () => {
                 }
             }
         }
-    }
+    };
     const saveInformation = async (savedSectionId, savedPageId) => {
         const informations = await pageRef.current?.getInformations?.() || [];
         const response = await axios.get(`${API_ENDPOINTS.getText}?ban_sec=${savedSectionId}`);
@@ -124,7 +124,7 @@ const PageField = () => {
                 }
             }
         }
-    }
+    };
     const saveTestimonial = async (savedSectionId, savedPageId) => {
         const testimonials = await pageRef.current?.getTestimonials?.() || [];
         const response = await axios.get(`${API_ENDPOINTS.getTestimonial}?t_sec=${savedSectionId}`);
@@ -155,7 +155,7 @@ const PageField = () => {
                 }
             }
         }
-    }
+    };
     const saveAcademic = async (savedSectionId, savedPageId) => {
         const academics = await pageRef.current?.getAcademics?.() || [];
         const response = await axios.get(`${API_ENDPOINTS.getAcademic}?ban_sec=${savedSectionId}`);
@@ -192,7 +192,7 @@ const PageField = () => {
                 }
             }
         }
-    }
+    };
     const saveGallery = async (savedSectionId, savedPageId) => {
         const galleries = await pageRef.current?.getGallery?.() || [];
         const response = await axios.get(`${API_ENDPOINTS.getGallery}?gal_sec=${savedSectionId}`);
@@ -230,7 +230,7 @@ const PageField = () => {
                 }
             }
         }
-    }
+    };
     const saveCriteria = async (savedSectionId, savedPageId) => {
         const criterias = await pageRef.current?.getCriterias?.() || [];
         const response = await axios.get(`${API_ENDPOINTS.getCriteria}?gc_sec=${savedSectionId}`);
@@ -266,7 +266,7 @@ const PageField = () => {
                 }
             }
         }
-    }
+    };
     const saveUnlock = async (savedSectionId, savedPageId) => {
         const unlocks = await pageRef.current?.getUnlocks?.() || [];
         const response = await axios.get(`${API_ENDPOINTS.getUnlock}?umd_sec=${savedSectionId}`);
@@ -301,7 +301,7 @@ const PageField = () => {
                 }
             }
         }
-    }
+    };
     const saveFee = async (savedSectionId, savedPageId) => {
         const fees = await pageRef.current?.getFees?.() || [];
         const response = await axios.get(`${API_ENDPOINTS.getFee}?fe_sec=${savedSectionId}`);
@@ -335,7 +335,42 @@ const PageField = () => {
                 }
             }
         }
-    }
+    };
+    const saveIntroduction = async (savedSectionId, savedPageId) => {
+        const introductions = await pageRef.current?.getIntroductions?.() || [];
+        const response = await axios.get(`${API_ENDPOINTS.getIntroduction}?in_sec=${savedSectionId}`);
+        const existingServices = response.data?.data || [];
+        const existingServiceIds = existingServices.map(service => service.in_id);
+
+        if (introductions.length > 0 && savedSectionId) {
+            for (const introduction of introductions) {
+                const in_sec = introduction.in_sec || savedSectionId;
+                const page_id = introduction.page_id || savedPageId;
+                const introductionPayload = {
+                    in_sec: in_sec,
+                    in_title: introduction.in_title || '',
+                    in_detail: introduction.in_detail || '',
+                    inadd_title: introduction.inadd_title || '',
+                    in_addsubtitle: introduction.in_addsubtitle || '',
+                    in_img: introduction.in_img || null,
+                    page_id: page_id,
+                };
+
+                if(
+                    introduction.in_id &&
+                    existingServiceIds.includes(parseInt(introduction.in_id)) &&
+                    parseInt(in_sec) === parseInt(savedSectionId) &&
+                    parseInt(page_id) === parseInt(savedPageId)
+                ){
+                    await axios.post(`${API_ENDPOINTS.updateIntroduction}/${introduction.in_id}`, { introduction: introductionPayload });
+                } else {
+                    if (!introduction.in_id || !existingServiceIds.includes(parseInt(introduction.in_id))) {
+                        await axios.post(API_ENDPOINTS.createIntroduction, { introduction: [introductionPayload] });
+                    }
+                }
+            }
+        }
+    };
 
     // hybrid
     const saveFacilties = async (savedSectionId, savedPageId) => {
@@ -1344,6 +1379,7 @@ const PageField = () => {
                 // saveCriteria(savedSectionId, savedPageId);
                 // saveUnlock(savedSectionId, savedPageId);
                 // saveFee(savedSectionId, savedPageId);
+                // saveIntroduction(savedSectionId, savedPageId);
 
                 // hybrid
                 // saveFacilties(savedSectionId, savedPageId);
@@ -1354,7 +1390,7 @@ const PageField = () => {
                 // saveAvailable(savedSectionId, savedPageId);
                 // saveRequirement(savedSectionId, savedPageId);
                 // saveFuture(savedSectionId, savedPageId);
-                savePotentials(savedSectionId, savedPageId);
+                // savePotentials(savedSectionId, savedPageId);
 
             } catch (error) {
                 console.error("Failed to sync section:", error.response?.data || error.message);
