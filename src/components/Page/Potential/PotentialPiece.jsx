@@ -1,22 +1,149 @@
-import React, { useState } from "react";
-import PotentaiPieceOne from "./PotentaiPieceOne";
+import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } from "react";
+import PotentialPieceSlider from "./PotentialPieceSlider";
 import MediaLibraryModal from "../../MediaLibraryModal";
+import axios from "axios";
+import { API_ENDPOINTS, API } from "../../../service/APIConfig";
 
-const PotentaiPiece = () => {
+const PotentialPiece = forwardRef(({sectionId, pageId}, ref) => {
   const [isRotatedButton1, setIsRotatedButton1] = useState(false);
   const [isMediaLibraryOpen, setMediaLibraryOpen] = useState(false);
-    const [selectedImage, setSelectedImage] = useState("");
+  const [selectedImage, setSelectedImage] = useState("");
+  const [potentialId, setPotentialId] = useState(0);
+  const [potentialTitle, setPotentialTitle] = useState('');
+  const [potentialSubTitle, setPotentialSubTitle] = useState('');
+  const [displayPotential, setDisplayPotential] = useState(0);
+  const subserviceRef = useRef();
 
-    const openMediaLibrary = () => {
-      setMediaLibraryOpen(true);
-    };
+  const openMediaLibrary = () => {
+    setMediaLibraryOpen(true);
+  };
 
-    const handleImageSelect = (imageUrl, field) => {
-      if (field === "image") {
-        setSelectedImage(imageUrl ? `${imageUrl}` : "");
+  const handleImageSelect = (imageUrl, field) => {
+    if (field === "image") {
+      setSelectedImage(imageUrl ? `${imageUrl}` : "");
+    }
+    setMediaLibraryOpen(false);
+  };
+
+  const getImageIdByUrl = async (url) => {
+    try {
+      const response = await axios.get(API_ENDPOINTS.getImages);
+      const images = Array.isArray(response.data) ? response.data : response.data.data;
+
+      const matchedImage = images.find((img) => img.image_url === url);
+      return matchedImage?.image_id || null;
+      } catch (error) {
+      console.error('❌ Failed to fetch image ID:', error);
+      return null;
+    }
+  };
+
+  useImperativeHandle(ref, () => ({
+    getPotentials: async () => {
+      let textId;
+
+      try {
+        const response = await axios.get(`${API_ENDPOINTS.getSpecialization}?ras_sec=${sectionId}`);
+        const potential = response.data.data || [];
+        const currentPotential = potential.find(f => f.section.sec_page === pageId && f.ras_sec === sectionId && f.text?.text_type === 8);
+        if (currentPotential?.text?.text_id) {
+          textId = currentPotential.text.text_id;
+        }
+      } catch (error) {
+        console.error("Failed to check existing facility:", error);
       }
-      setMediaLibraryOpen(false);
+
+      if (textId) {
+        const updatePayload = {
+          text_id: textId,
+          title: potentialTitle,
+          desc: potentialSubTitle,
+          text_type: 8,
+          text_sec: sectionId,
+        };
+        const textRes = await axios.post(`${API_ENDPOINTS.updateText}/${textId}`, { texts: updatePayload });
+        textId = textRes.data.data?.text_id;
+      } else {
+        const textPayload = {
+          title: potentialTitle,
+          desc: potentialSubTitle,
+          text_type: 8,
+          text_sec: sectionId,
+        };
+        const textRes = await axios.post(`${API_ENDPOINTS.createText}`, { texts: [textPayload] });
+        textId = textRes.data.data?.text_id;
+      }
+
+      const imageId = await getImageIdByUrl(selectedImage);
+
+      const data = {
+        ras_id: potentialId,
+        ras_sec: sectionId,
+        ras_text: textId,
+        ras_img1: imageId,
+        ras_img2: null,
+        subservices: await subserviceRef.current?.getSubserviceSlidersPotential(),
+      };
+
+      return [data];
+    }
+  }));
+
+  const handleToggleDisplay = async () => {
+    try {
+        const newDisplay = displayPotential === 1 ? 0 : 1;
+        await axios.post(`${API_ENDPOINTS.updateSection}/${sectionId}`, {
+            sec_id: sectionId,
+            display: newDisplay,
+        });
+        setDisplayPotential(newDisplay);
+    } catch (error) {
+        console.error("Failed to update display:", error);
+    }
+  };
+
+  const handleDeleteSection = async () => {
+    if (!window.confirm("Are you sure you want to delete this section?")) return;
+
+    try {
+        await axios.put(`${API_ENDPOINTS.deleteSection}/${sectionId}`);
+        window.location.reload();
+    } catch (error) {
+        console.error('Failed to delete section:', error);
+    }
+  };
+
+  useEffect(() => {
+    const fetchPotentials = async () => {
+      try {
+        const response = await axios.get(`${API_ENDPOINTS.getSpecialization}?ras_sec=${sectionId}`);
+        const potentials = response.data.data || [];
+        if (potentials.length > 0) {
+          const potential = potentials.find(item =>
+            item.section.sec_page === pageId &&
+            item.ras_sec === sectionId &&
+            item.text?.text_type === 8
+          );
+
+          if (potential) {
+            setPotentialId(potential.ras_id || null);
+            setPotentialTitle(potential.text?.title || '');
+            setPotentialSubTitle(potential.text?.desc || '');
+            setSelectedImage(potential.ras_img1 ? `${API}/storage/uploads/${potential.image1.img}` : '');
+          }
+        }
+
+        const sectionRes = await axios.get(`${API_ENDPOINTS.getSection}/${sectionId}`);
+        const sectionData = sectionRes.data.data;
+        setDisplayPotential(sectionData.display || 0);
+      } catch (error) {
+        console.error("Failed to fetch facilities:", error);
+      }
     };
+
+
+    fetchPotentials();
+  }, [sectionId]);
 
   return (
     <div className="grid grid-cols-1 gap-4 ">
@@ -34,10 +161,11 @@ const PotentaiPiece = () => {
               >
                 <path d="M40 352l48 0c22.1 0 40 17.9 40 40l0 48c0 22.1-17.9 40-40 40l-48 0c-22.1 0-40-17.9-40-40l0-48c0-22.1 17.9-40 40-40zm192 0l48 0c22.1 0 40 17.9 40 40l0 48c0 22.1-17.9 40-40 40l-48 0c-22.1 0-40-17.9-40-40l0-48c0-22.1 17.9-40 40-40zM40 320c-22.1 0-40-17.9-40-40l0-48c0-22.1 17.9-40 40-40l48 0c22.1 0 40 17.9 40 40l0 48c0 22.1-17.9 40-40 40l-48 0zM232 192l48 0c22.1 0 40 17.9 40 40l0 48c0 22.1-17.9 40-40 40l-48 0c-22.1 0-40-17.9-40-40l0-48c0-22.1 17.9-40 40-40zM40 160c-22.1 0-40-17.9-40-40L0 72C0 49.9 17.9 32 40 32l48 0c22.1 0 40 17.9 40 40l0 48c0 22.1-17.9 40-40 40l-48 0zM232 32l48 0c22.1 0 40 17.9 40 40l0 48c0 22.1-17.9 40-40 40l-48 0c-22.1 0-40-17.9-40-40l0-48c0-22.1 17.9-40 40-40z"></path>
               </svg>
-              <span className=" text-xl font-medium">Potentail</span>
+              <span className=" text-xl font-medium">Potential</span>
             </div>
             <div className="flex gap-1">
               <svg
+                onClick={() => handleDeleteSection()}
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
@@ -82,6 +210,8 @@ const PotentaiPiece = () => {
             </label>
             <div className="mt-2">
               <input
+                value={potentialTitle}
+                onChange={(e) => setPotentialTitle(e.target.value)}
                 type="text"
                 className="block w-full !border-gray-200 border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
               />
@@ -93,7 +223,10 @@ const PotentaiPiece = () => {
             </label>
             <div className="mt-2">
               <label class="toggle-switch mt-2">
-                <input type="checkbox" />
+                <input
+                  checked={displayPotential === 1}
+                  onChange={handleToggleDisplay}
+                  type="checkbox" />
                 <span class="slider"></span>
               </label>
             </div>
@@ -106,7 +239,10 @@ const PotentaiPiece = () => {
               Subtitle
             </label>
             <div className="mt-2">
-              <textarea className="!border-gray-300 h-60 block w-full rounded-md border-0 py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-2xl sm:leading-6"></textarea>
+              <textarea
+                value={potentialSubTitle}
+                onChange={(e) => setPotentialSubTitle(e.target.value)}
+                className="!border-gray-300 h-60 block w-full rounded-md border-0 py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-2xl sm:leading-6"></textarea>
             </div>
           </div>
           <div className="flex-1">
@@ -193,11 +329,11 @@ const PotentaiPiece = () => {
           )}
         </div>
         <div className="mb-4">
-          <PotentaiPieceOne />
+          <PotentialPieceSlider ref={subserviceRef} potentialId={potentialId}/>
         </div>
       </details>
     </div>
   );
-};
+});
 
-export default PotentaiPiece;
+export default PotentialPiece;

@@ -65,7 +65,7 @@ import IntroductionPiece from "./Introduction/IntroductionPiece";
 import CsdPiece from "./CSD/CsdPiece";
 import StudyPiece from "./Study/StudyPiece";
 import FuturePiece from "./Future/FuturePiece";
-import PotentaiPiece from "./Potential/PotentailPiece";
+import PotentaiPiece from "./Potential/PotentialPiece";
 import InnovationPiece from "./Innovation/InnovationPiece";
 import FaqPiece from "./Faq/FaqPiece";
 import ApplyPiece from "./Apply/ApplyPiece";
@@ -330,6 +330,7 @@ const PageSection = forwardRef(({ formData = {}, setFormData = {}, page_id }, re
   const feePieceRef = useRef();
   const requirementPieceRef = useRef();
   const futurePieceRef = useRef();
+  const potentialPieceRef = useRef();
   const [showSection, setShowSection] = useState(false);
   const [selectedSections, setSelectedSections] = useState([]);
 
@@ -417,6 +418,7 @@ const PageSection = forwardRef(({ formData = {}, setFormData = {}, page_id }, re
     getFees: () => feePieceRef.current?.getFees?.() || [],
     getRequirements: () => requirementPieceRef.current?.getRequirements?.() || [],
     getFutures: () => futurePieceRef.current?.getFutures?.() || [],
+    getPotentials: () => potentialPieceRef.current?.getPotentials?.() || [],
   }));
 
   const handleAddPage = () => {
@@ -518,6 +520,7 @@ const PageSection = forwardRef(({ formData = {}, setFormData = {}, page_id }, re
                       : section.type === "Fee" ? feePieceRef
                       : section.type === "Requirement" ? requirementPieceRef
                       : section.type === "Future" ? futurePieceRef
+                      : section.type === "Potential" ? potentialPieceRef
                       : null
                     }
                   data={section.data}
