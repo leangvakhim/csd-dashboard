@@ -321,8 +321,6 @@ const PageField = () => {
                     page_id: page_id,
                 };
 
-                console.log("Payload is: ", feePayload);
-
                 if(
                     fee.fe_id &&
                     existingServiceIds.includes(parseInt(fee.fe_id)) &&
@@ -836,6 +834,81 @@ const PageField = () => {
 
         if (sliders.length > 0) { await reorderSubAvailableSliders(availableId); }
     };
+    const saveRequirement = async (savedSectionId, savedPageId) => {
+        const requirements = await pageRef.current?.getRequirements?.() || [];
+        const response = await axios.get(`${API_ENDPOINTS.getCriteria}?gc_sec=${savedSectionId}`);
+        const existingServices = response.data?.data || [];
+        const existingServiceIds = existingServices.map(service => service.gc_id);
+
+        if (requirements.length > 0 && savedSectionId) {
+            for (const requirement of requirements) {
+                const gc_sec = requirement.gc_sec || savedSectionId;
+                const page_id = requirement.page_id || savedPageId;
+                const requirementPayload = {
+                    gc_sec: gc_sec,
+                    gc_title: requirement.gc_title || '',
+                    gc_tag: requirement.gc_tag || '',
+                    gc_type: requirement.gc_type || null,
+                    gc_detail: requirement.gc_detail || '',
+                    gc_img1: requirement.gc_img1 || null,
+                    gc_img2: requirement.gc_img2 || null,
+                    page_id: page_id,
+                };
+
+                if(
+                    requirement.gc_id &&
+                    existingServiceIds.includes(parseInt(requirement.gc_id)) &&
+                    parseInt(gc_sec) === parseInt(savedSectionId) &&
+                    parseInt(page_id) === parseInt(savedPageId)
+                ){
+                    await axios.post(`${API_ENDPOINTS.updateCriteria}/${requirement.gc_id}`, { criteria: requirementPayload });
+                    await saveSubRequirement(requirement.gc_id, requirement.subrequirements || []);
+                } else {
+                    if (!requirement.gc_id || !existingServiceIds.includes(parseInt(requirement.gc_id))) {
+                        await axios.post(API_ENDPOINTS.createCriteria, { criteria: [requirementPayload] });
+                        const createdId = res.data?.data?.[0]?.gc_id;
+                        if (createdId) {
+                            await saveSubRequirement(requirement.gc_id, requirement.subrequirements || []);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    const saveSubRequirement = async (requirementId, sliders) => {
+        if (!requirementId || !Array.isArray(sliders)) return;
+
+        const res = await axios.get(`${API_ENDPOINTS.getSubRequirement}?gca_gc=${requirementId}`);
+        const raw = res.data?.data;
+        const existingSubservices = Array.isArray(raw) ? raw : raw ? [raw] : [];
+        const existingSubIds = existingSubservices
+            .map(item => item.gca_id);
+
+        for (const subavailable of sliders) {
+            const subAvailablePayload = {
+                gca_gc: requirementId,
+                gca_tag: subavailable.gca_tag,
+                gca_btntitle: subavailable.gca_btntitle,
+                gca_btnlink: subavailable.gca_btnlink,
+            };
+            const gcaddonId = subavailable.id || subavailable.gca_id;
+
+            try {
+                if (
+                    gcaddonId &&
+                    existingSubIds.includes(parseInt(gcaddonId))
+                ) {
+                    await axios.post(`${API_ENDPOINTS.updateSubRequirement}/${gcaddonId}`, { gcaddon: subAvailablePayload });
+                } else {
+                    if (!gcaddonId || !existingSubIds.includes(parseInt(gcaddonId))) {
+                        await axios.post(API_ENDPOINTS.createSubRequirement, { gcaddon: [subAvailablePayload] });
+                    }
+                }
+            } catch (error) {
+                console.error("❌ Failed to save subapd:", error.response?.data || error.message);
+            }
+        }
+    };
 
     // sliders
     const saveSlideshow = async (savedSectionId, savedPageId) => {
@@ -1083,7 +1156,7 @@ const PageField = () => {
                 // saveDepartment(savedSectionId, savedPageId);
                 // saveCriteria(savedSectionId, savedPageId);
                 // saveUnlock(savedSectionId, savedPageId);
-                saveFee(savedSectionId, savedPageId);
+                // saveFee(savedSectionId, savedPageId);
 
                 // hybrid
                 // saveFacilties(savedSectionId, savedPageId);
@@ -1092,6 +1165,7 @@ const PageField = () => {
                 // saveCSD(savedSectionId, savedPageId);
                 // saveStudy(savedSectionId, savedPageId);
                 // saveAvailable(savedSectionId, savedPageId);
+                // saveRequirement(savedSectionId, savedPageId);
 
             } catch (error) {
                 console.error("Failed to sync section:", error.response?.data || error.message);

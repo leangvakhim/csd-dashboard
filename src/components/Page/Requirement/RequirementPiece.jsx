@@ -1,12 +1,34 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } from "react";
 import MediaLibraryModal from "../../MediaLibraryModal";
+import JoditEditor from 'jodit-react';
+import 'jodit/es5/jodit.css';
+import axios from "axios";
+import { API_ENDPOINTS, API } from "../../../service/APIConfig";
 
-const RequirementPiece = () => {
+const config = {
+  readonly: false,  // Set to true for read-only mode
+  height: 400,
+  uploader: {
+    insertImageAsBase64URI: true,  // Enable base64 image upload
+  },
+};
+
+const RequirementPiece = forwardRef(({sectionId, pageId}, ref) => {
   const [isRotatedButton1, setIsRotatedButton1] = useState(false);
   const [isMediaLibraryOpen, setMediaLibraryOpen] = useState(false);
   const [selectedImage1, setSelectedImage1] = useState("");
   const [selectedImage2, setSelectedImage2] = useState("");
   const [currentField, setCurrentField] = useState("");
+  const [detail, setDetail] = useState("");
+  const [displayRequirement, setDisplayRequirement] = useState(0);
+  const [requirementTitle, setRequirementTitle] = useState("");
+  const [requirementTag, setRequirementTag] = useState("");
+  const [btnTitle, setBtnTitle] = useState("");
+  const [btnTag, setBtnTag] = useState("");
+  const [btnLink, setBtnLink] = useState("");
+  const [btnId, setBtnId] = useState(null);
+  const [requirementType, setRequirementType] = useState(null);
+  const [requirementId, setRequirementId] = useState(null);
 
   const openMediaLibrary = (field) => {
     setCurrentField(field);
@@ -20,6 +42,116 @@ const RequirementPiece = () => {
       setSelectedImage2(imageUrl);
     }
     setMediaLibraryOpen(false);
+  };
+
+  const getImageIdByUrl = async (url) => {
+    try {
+      const response = await axios.get(API_ENDPOINTS.getImages);
+      const images = Array.isArray(response.data) ? response.data : response.data.data;
+
+      const matchedImage = images.find((img) => img.image_url === url);
+      return matchedImage?.image_id || null;
+    } catch (error) {
+      console.error('❌ Failed to fetch image ID:', error);
+      return null;
+    }
+  };
+
+  useImperativeHandle(ref, () => ({
+    getRequirements: async () => {
+      const img1Id = await getImageIdByUrl(selectedImage1);
+      const img2Id = await getImageIdByUrl(selectedImage2);
+
+      return [
+        {
+          gc_id: requirementId,
+          gc_title: requirementTitle,
+          gc_tag: requirementTag,
+          gc_type: requirementType,
+          gc_img1: img1Id,
+          gc_img2: img2Id,
+          gc_detail: detail,
+          subrequirements : [{
+            gca_id: btnId,
+            gca_tag: btnTag,
+            gca_btnlink: btnLink,
+            gca_btntitle: btnTitle,
+          }]
+        }
+      ];
+    }
+  }));
+
+  const handleToggleDisplay = async () => {
+    try {
+        const newDisplay = displayRequirement === 1 ? 0 : 1;
+        await axios.post(`${API_ENDPOINTS.updateSection}/${sectionId}`, {
+            sec_id: sectionId,
+            display: newDisplay,
+        });
+        setDisplayRequirement(newDisplay);
+    } catch (error) {
+        console.error("Failed to update display:", error);
+    }
+  };
+
+  useEffect(() => {
+    const fetchRequirements = async () => {
+      try {
+        const response = await axios.get(`${API_ENDPOINTS.getCriteria}?gc_sec=${sectionId}`);
+        const requirements = response.data.data || [];
+        if (requirements.length > 0) {
+          const requirement = requirements.find(item => item?.section?.sec_page === pageId);
+          if (requirement) {
+            setRequirementId(requirement.gc_id || null);
+            setRequirementTitle(requirement.gc_title || '');
+            setRequirementTag(requirement.gc_tag || '');
+            setRequirementType(requirement.gc_type || '');
+            setDetail(requirement.gc_detail || '');
+            setSelectedImage1(requirement.gc_img1 ? `${API}/storage/uploads/${requirement.image1.img}` : '');
+            setSelectedImage2(requirement.gc_img2 ? `${API}/storage/uploads/${requirement.image2.img}` : '');
+          }
+        }
+
+        const sectionRes = await axios.get(`${API_ENDPOINTS.getSection}/${sectionId}`);
+        const sectionData = sectionRes.data.data;
+        setDisplayRequirement(sectionData.display || 0);
+
+      } catch (error) {
+          console.error("Failed to fetch criterias:", error);
+      }
+    };
+
+    const fetchSubRequirements = async () => {
+      try {
+        const response = await axios.get(`${API_ENDPOINTS.getSubRequirement}?gca_gc=${requirementId}`);
+        const subrequirements = response.data.data || [];
+        if (subrequirements.length > 0) {
+          const firstSub = subrequirements[0];
+          setBtnId(firstSub.gca_id || null);
+          setBtnTag(firstSub.gca_tag || '');
+          setBtnTitle(firstSub.gca_btntitle || '');
+          setBtnLink(firstSub.gca_btnlink || '');
+        }
+
+      } catch (error) {
+          console.error("Failed to fetch criterias:", error);
+      }
+    };
+
+    fetchSubRequirements();
+    fetchRequirements();
+  },[sectionId]);
+
+  const handleDeleteSection = async () => {
+    if (!window.confirm("Are you sure you want to delete this section?")) return;
+
+    try {
+        await axios.put(`${API_ENDPOINTS.deleteSection}/${sectionId}`);
+        window.location.reload();
+    } catch (error) {
+        console.error('Failed to delete section:', error);
+    }
   };
 
   return (
@@ -42,6 +174,7 @@ const RequirementPiece = () => {
             </div>
             <div className="flex gap-1">
               <svg
+                onClick={() => handleDeleteSection()}
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
@@ -86,6 +219,8 @@ const RequirementPiece = () => {
             </label>
             <div className="mt-2">
               <input
+                value={requirementTitle}
+                onChange={(e) => setRequirementTitle(e.target.value)}
                 type="text"
                 className="block w-full !border-gray-200 border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
               />
@@ -97,6 +232,8 @@ const RequirementPiece = () => {
             </label>
             <div className="mt-2">
               <input
+                value={requirementTag}
+                onChange={(e) => setRequirementTag(e.target.value)}
                 type="text"
                 className="block w-full !border-gray-200 border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
               />
@@ -109,7 +246,10 @@ const RequirementPiece = () => {
             </label>
             <div className="mt-2">
               <label class="toggle-switch mt-2">
-                <input type="checkbox" />
+                <input
+                  checked={displayRequirement === 1}
+                  onChange={handleToggleDisplay}
+                  type="checkbox" />
                 <span class="slider"></span>
               </label>
             </div>
@@ -123,6 +263,8 @@ const RequirementPiece = () => {
             </label>
             <div className="mt-2">
               <input
+                value={btnTitle}
+                onChange={(e) => setBtnTitle(e.target.value)}
                 type="text"
                 className="block w-full !border-gray-200 border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
               />
@@ -134,6 +276,8 @@ const RequirementPiece = () => {
             </label>
             <div className="mt-2">
               <input
+                value={btnTag}
+                onChange={(e) => setBtnTag(e.target.value)}
                 type="text"
                 className="block w-full !border-gray-200 border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
               />
@@ -146,6 +290,8 @@ const RequirementPiece = () => {
             </label>
             <div className="mt-2">
               <input
+                value={btnLink}
+                onChange={(e) => setBtnLink(e.target.value)}
                 type="text"
                 className="block w-full !border-gray-200 border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
               />
@@ -153,17 +299,6 @@ const RequirementPiece = () => {
           </div>
         </div>
         {/* Row 3 */}
-        <div className="grid grid-cols-1  gap-4 px-4 py-2 mb-1">
-          <div className="flex-1">
-            <label className="block text-xl font-medium leading-6 text-white-900">
-              detail
-            </label>
-            <div className="mt-2">
-              <textarea className="!border-gray-300 h-60 block w-full rounded-md border-0 py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-2xl sm:leading-6"></textarea>
-            </div>
-          </div>
-        </div>
-        {/* Row 4 */}
         <div className="grid grid-cols-1 md:!grid-cols-2 gap-4 px-4 py-2 mb-1">
           <div className="flex-1">
             <label className="block text-xl font-medium leading-6 text-white-900">
@@ -331,9 +466,25 @@ const RequirementPiece = () => {
             />
           )}
         </div>
+        {/* Row 4 */}
+        <div className="grid grid-cols-1  gap-4 px-4 py-2 mb-1">
+          <div className="flex-1">
+            <label className="block text-xl font-medium leading-6 text-white-900">
+              detail
+            </label>
+            <div className="mt-2">
+              <JoditEditor
+                value={detail}
+                config={config}
+                onChange={(newContent) => setDetail(newContent)}
+              />
+              {/* <textarea className="!border-gray-300 h-60 block w-full rounded-md border-0 py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-2xl sm:leading-6"></textarea> */}
+            </div>
+          </div>
+        </div>
       </details>
     </div>
   );
-};
+});
 
 export default RequirementPiece;

@@ -101,6 +101,11 @@ const API_ENDPOINTS = {
     createGallery: `${API_BASEURL}/gallery/create`,
     updateGallery: `${API_BASEURL}/gallery/update`,
 
+    // gcaddon (subrequirement)
+    getSubRequirement: `${API_BASEURL}/gcaddon`,
+    createSubRequirement: `${API_BASEURL}/gcaddon/create`,
+    updateSubRequirement: `${API_BASEURL}/gcaddon/update`,
+
     // acad-facilities(facilities)
     getAcadFacilities: `${API_BASEURL}/acad-facilities`,
     createAcadFacilities: `${API_BASEURL}/acad-facilities/create`,
