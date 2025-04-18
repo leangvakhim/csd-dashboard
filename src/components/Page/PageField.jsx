@@ -909,6 +909,81 @@ const PageField = () => {
             }
         }
     };
+    const saveFuture = async (savedSectionId, savedPageId) => {
+        const futures = await pageRef.current?.getFutures?.() || [];
+        const response = await axios.get(`${API_ENDPOINTS.getFuture}?uf_sec=${savedSectionId}`);
+        const existingServices = response.data?.data || [];
+        const existingServiceIds = existingServices.map(service => service.uf_id);
+
+        if (futures.length > 0 && savedSectionId) {
+            for (const future of futures) {
+                const uf_sec = future.uf_sec || savedSectionId;
+                const page_id = future.page_id || savedPageId;
+
+                const FuturePayload = {
+                    uf_sec: uf_sec,
+                    uf_title: future.uf_title,
+                    uf_subtitle: future.uf_subtitle,
+                    uf_img: future.uf_img,
+                    page_id: page_id,
+                };
+
+                if (
+                    future.uf_id &&
+                    existingServiceIds.includes(parseInt(future.uf_id)) &&
+                    parseInt(uf_sec) === parseInt(savedSectionId) &&
+                    parseInt(page_id) === parseInt(savedPageId)
+                ) {
+                    await axios.post(`${API_ENDPOINTS.updateFuture}/${future.uf_id}`, { future: FuturePayload });
+                    await saveSubFutureSliders(future.uf_id, future.subfutures || []);
+                } else {
+                    if (!future.uf_id|| !existingServiceIds.includes(parseInt(future.uf_id))) {
+                        const res = await axios.post(API_ENDPOINTS.createFuture, { future: [FuturePayload] });
+                        const createdId = res.data?.data?.[0]?.uf_id;
+                        if (createdId) {
+                            await saveSubFutureSliders(future.uf_id, future.subfutures || []);
+                        }
+                    }
+                }
+            }
+        }
+    };
+    const saveSubFutureSliders = async (futureId, sliders) => {
+        if (!futureId || !Array.isArray(sliders)) return;
+
+        const res = await axios.get(`${API_ENDPOINTS.getSubFuture}?ufa_uf=${futureId}`);
+        const raw = res.data?.data;
+        const existingSubservices = Array.isArray(raw) ? raw : raw ? [raw] : [];
+        const existingSubIds = existingSubservices
+            .map(item => item.ufa_id);
+
+        for (const subfuture of sliders) {
+            const subFuturePayload = {
+                ufa_uf: futureId,
+                ufa_title: subfuture.ufa_title,
+                ufa_subtitle: subfuture.ufa_subtitle,
+                display: subfuture.display,
+            };
+            const subfutureId = subfuture.id || subfuture.ufa_id;
+
+            try {
+                if (
+                    subfutureId &&
+                    existingSubIds.includes(parseInt(subfutureId))
+                ) {
+                    await axios.post(`${API_ENDPOINTS.updateSubFuture}/${subfutureId}`, { ufaddon: subFuturePayload });
+                } else {
+                    if (!subfutureId || !existingSubIds.includes(parseInt(subfutureId))) {
+                        await axios.post(API_ENDPOINTS.createSubFuture, { ufaddon: [subFuturePayload] });
+                    }
+                }
+            } catch (error) {
+                console.error("❌ Failed to save ufaddon:", error.response?.data || error.message);
+            }
+        }
+
+        if (sliders.length > 0) { await reorderFutureSliders(futureId); }
+    };
 
     // sliders
     const saveSlideshow = async (savedSectionId, savedPageId) => {
@@ -1111,6 +1186,23 @@ const PageField = () => {
             console.error("❌ Failed to reorder subtse sliders:", error.response?.data || error.message);
         }
     };
+    const reorderFutureSliders = async (futureId) => {
+        const futures = await pageRef.current?.getFutures?.() || [];
+        const targetFuture = futures.find(f => parseInt(f.uf_id) === parseInt(futureId));
+
+        if (!targetFuture || !Array.isArray(targetFuture.subfutures)) return;
+
+        const reorderedPayload = targetFuture.subfutures.map((item, index) => ({
+            ufa_id: parseInt(item.ufa_id || item.id),
+            ufa_order: index + 1,
+        }));
+
+        try {
+            const response = await axios.post(API_ENDPOINTS.updateSubFutureOrder, reorderedPayload);
+        } catch (error) {
+            console.error("❌ Failed to reorder subtse sliders:", error.response?.data || error.message);
+        }
+    };
 
     const syncSection = async (savedPageId) => {
         const sections = pageRef.current?.getSections?.() || [];
@@ -1166,6 +1258,8 @@ const PageField = () => {
                 // saveStudy(savedSectionId, savedPageId);
                 // saveAvailable(savedSectionId, savedPageId);
                 // saveRequirement(savedSectionId, savedPageId);
+                // saveFuture(savedSectionId, savedPageId);
+                // savePotential(savedSectionId, savedPageId);
 
             } catch (error) {
                 console.error("Failed to sync section:", error.response?.data || error.message);

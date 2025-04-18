@@ -329,6 +329,7 @@ const PageSection = forwardRef(({ formData = {}, setFormData = {}, page_id }, re
   const availablePieceRef = useRef();
   const feePieceRef = useRef();
   const requirementPieceRef = useRef();
+  const futurePieceRef = useRef();
   const [showSection, setShowSection] = useState(false);
   const [selectedSections, setSelectedSections] = useState([]);
 
@@ -415,6 +416,7 @@ const PageSection = forwardRef(({ formData = {}, setFormData = {}, page_id }, re
     getAvailables: () => availablePieceRef.current?.getAvailables?.() || [],
     getFees: () => feePieceRef.current?.getFees?.() || [],
     getRequirements: () => requirementPieceRef.current?.getRequirements?.() || [],
+    getFutures: () => futurePieceRef.current?.getFutures?.() || [],
   }));
 
   const handleAddPage = () => {
@@ -515,6 +517,7 @@ const PageSection = forwardRef(({ formData = {}, setFormData = {}, page_id }, re
                       : section.type === "Avaialable" ? availablePieceRef
                       : section.type === "Fee" ? feePieceRef
                       : section.type === "Requirement" ? requirementPieceRef
+                      : section.type === "Future" ? futurePieceRef
                       : null
                     }
                   data={section.data}

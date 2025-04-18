@@ -61,6 +61,11 @@ const API_ENDPOINTS = {
     createAvailable: `${API_BASEURL}/apd/create`,
     updateAvailable: `${API_BASEURL}/apd/update`,
 
+    // ufcsd (future)
+    getFuture: `${API_BASEURL}/ufcsd`,
+    createFuture: `${API_BASEURL}/ufcsd/create`,
+    updateFuture: `${API_BASEURL}/ufcsd/update`,
+
     // umd (unlock)
     getUnlock: `${API_BASEURL}/umd`,
     createUnlock: `${API_BASEURL}/umd/create`,
@@ -127,6 +132,13 @@ const API_ENDPOINTS = {
     updateSubType: `${API_BASEURL}/subtse/update`,
     deleteSubType: `${API_BASEURL}/subtse/visibility`,
     updateSubTypeOrder: `${API_BASEURL}/subtse/reorder`,
+
+    // ufaddon(subfuture)
+    getSubFuture: `${API_BASEURL}/ufaddon`,
+    createSubFuture: `${API_BASEURL}/ufaddon/create`,
+    updateSubFuture: `${API_BASEURL}/ufaddon/update`,
+    deleteSubFuture: `${API_BASEURL}/ufaddon/visibility`,
+    updateSubFutureOrder: `${API_BASEURL}/ufaddon/reorder`,
 
     // subapd(subavailable)
     getSubAvailable: `${API_BASEURL}/subapd`,
