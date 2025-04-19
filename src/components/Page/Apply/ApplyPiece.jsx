@@ -1,12 +1,20 @@
-import React, { useState } from "react";
-import ApplyPieceOne from "./ApplyPieceOne";
+import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } from "react";
+import ApplyPieceSlider from "./ApplyPieceSlider";
 import MediaLibraryModal from "../../MediaLibraryModal";
+import axios from "axios";
+import { API_ENDPOINTS, API } from "../../../service/APIConfig";
 
-
-const ApplyPiece = () => {
+const ApplyPiece = forwardRef(({sectionId, pageId}, ref) => {
     const [isRotatedButton1, setIsRotatedButton1] = useState(false);
     const [isMediaLibraryOpen, setMediaLibraryOpen] = useState(false);
     const [selectedImage, setSelectedImage] = useState("");
+    const [applyId, setApplyId] = useState(0);
+    const [applyTitle, setApplyTitle] = useState('');
+    const [applyTagTitle, setApplyTagTitle] = useState('');
+    const [applyTagSubTitle, setApplyTagSubTitle] = useState('');
+    const [applyTagDate, setApplyTagDate] = useState(null);
+    const [displayApply, setDisplayApply] = useState(0);
+    const subserviceRef = useRef();
 
     const openMediaLibrary = () => {
         setMediaLibraryOpen(true);
@@ -19,6 +27,94 @@ const ApplyPiece = () => {
         setMediaLibraryOpen(false);
     };
 
+    const getImageIdByUrl = async (url) => {
+        try {
+        const response = await axios.get(API_ENDPOINTS.getImages);
+        const images = Array.isArray(response.data) ? response.data : response.data.data;
+
+        const matchedImage = images.find((img) => img.image_url === url);
+        return matchedImage?.image_id || null;
+        } catch (error) {
+        console.error('❌ Failed to fetch image ID:', error);
+        return null;
+        }
+    };
+
+    useImperativeHandle(ref, () => ({
+        getApplys: async () => {
+            const imageId = await getImageIdByUrl(selectedImage);
+
+            const data = {
+                ha_id: applyId,
+                ha_sec: sectionId,
+                ha_title: applyTitle,
+                ha_tagtitle: applyTagTitle,
+                ha_subtitletag: applyTagSubTitle,
+                ha_date: applyTagDate,
+                ha_img: imageId,
+                subservices: await subserviceRef.current?.getSubApplySliders(),
+            };
+
+        return [data];
+        }
+    }));
+
+    const handleToggleDisplay = async () => {
+        try {
+            const newDisplay = displayApply === 1 ? 0 : 1;
+            await axios.post(`${API_ENDPOINTS.updateSection}/${sectionId}`, {
+                sec_id: sectionId,
+                display: newDisplay,
+            });
+            setDisplayApply(newDisplay);
+        } catch (error) {
+            console.error("Failed to update display:", error);
+        }
+    };
+
+    const handleDeleteSection = async () => {
+        if (!window.confirm("Are you sure you want to delete this section?")) return;
+
+        try {
+            await axios.put(`${API_ENDPOINTS.deleteSection}/${sectionId}`);
+            window.location.reload();
+        } catch (error) {
+            console.error('Failed to delete section:', error);
+        }
+    };
+
+    useEffect(() => {
+        const fetchApplys = async () => {
+            try {
+                const response = await axios.get(`${API_ENDPOINTS.getApply}?ha_sec=${sectionId}`);
+                const applys = response.data.data || [];
+                if (applys.length > 0) {
+                const apply = applys.find(item =>
+                    item.section.sec_page === pageId &&
+                    item.ha_sec === sectionId
+                );
+
+                if (apply) {
+                    setApplyId(apply.ha_id || null);
+                    setApplyTitle(apply.ha_title || null);
+                    setApplyTagTitle(apply.ha_tagtitle || null);
+                    setApplyTagSubTitle(apply.ha_subtitletag || null);
+                    setApplyTagDate(apply.ha_date ? apply.ha_date.slice(0, 10) : null);
+                    setSelectedImage(apply.ha_img ? `${API}/storage/uploads/${apply.image.img}` : '');
+                }
+                }
+
+                const sectionRes = await axios.get(`${API_ENDPOINTS.getSection}/${sectionId}`);
+                const sectionData = sectionRes.data.data;
+                setDisplayApply(sectionData.display || 0);
+            } catch (error) {
+                console.error("Failed to fetch facilities:", error);
+            }
+        };
+
+
+        fetchApplys();
+    }, [sectionId]);
 
     return (
         <div className="grid grid-cols-1 gap-4 ">
@@ -40,6 +136,7 @@ const ApplyPiece = () => {
                         </div>
                         <div className="flex gap-1">
                             <svg
+                                onClick={() => handleDeleteSection()}
                                 xmlns="http://www.w3.org/2000/svg"
                                 fill="none"
                                 viewBox="0 0 24 24"
@@ -83,6 +180,8 @@ const ApplyPiece = () => {
                         </label>
                         <div className="mt-2">
                             <input
+                                value={applyTitle}
+                                onChange={(e) => setApplyTitle(e.target.value)}
                                 type="text"
                                 className="block w-full !border-gray-200 border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
                             />
@@ -94,7 +193,10 @@ const ApplyPiece = () => {
                         </label>
                         <div className="mt-2">
                             <label class="toggle-switch mt-2">
-                                <input type="checkbox" />
+                                <input
+                                    checked={displayApply === 1}
+                                    onChange={handleToggleDisplay}
+                                    type="checkbox" />
                                 <span class="slider"></span>
                             </label>
                         </div>
@@ -191,6 +293,8 @@ const ApplyPiece = () => {
                             </label>
                             <div className="mt-2">
                                 <input
+                                    value={applyTagTitle}
+                                    onChange={(e) => setApplyTagTitle(e.target.value)}
                                     type="text"
                                     className="block w-full !border-gray-200 border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
                                 />
@@ -202,6 +306,8 @@ const ApplyPiece = () => {
                             </label>
                             <div className="mt-2">
                                 <input
+                                    value={applyTagSubTitle}
+                                    onChange={(e) => setApplyTagSubTitle(e.target.value)}
                                     type="text"
                                     className="block w-full !border-gray-200 border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
                                 />
@@ -213,22 +319,21 @@ const ApplyPiece = () => {
                             </label>
                             <div className="mt-2">
                                 <input
-                                    type="text"
+                                    value={applyTagDate}
+                                    onChange={(e) => setApplyTagDate(e.target.value)}
+                                    type="date"
                                     className="block w-full !border-gray-200 border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
                                 />
                             </div>
                         </div>
-
                     </div>
-
                 </div>
-
                 <div className="mb-4">
-                    <ApplyPieceOne />
+                    <ApplyPieceSlider ref={subserviceRef} applyId={applyId}/>
                 </div>
             </details>
         </div>
     );
-};
+});
 
 export default ApplyPiece;

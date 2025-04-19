@@ -71,6 +71,11 @@ const API_ENDPOINTS = {
     createAvailable: `${API_BASEURL}/apd/create`,
     updateAvailable: `${API_BASEURL}/apd/update`,
 
+    // ha (apply)
+    getApply: `${API_BASEURL}/ha`,
+    createApply: `${API_BASEURL}/ha/create`,
+    updateApply: `${API_BASEURL}/ha/update`,
+
     // ufcsd (future)
     getFuture: `${API_BASEURL}/ufcsd`,
     createFuture: `${API_BASEURL}/ufcsd/create`,
@@ -142,6 +147,13 @@ const API_ENDPOINTS = {
     updateSubType: `${API_BASEURL}/subtse/update`,
     deleteSubType: `${API_BASEURL}/subtse/visibility`,
     updateSubTypeOrder: `${API_BASEURL}/subtse/reorder`,
+
+    // subha(subapply)
+    getSubApply: `${API_BASEURL}/subha`,
+    createSubApply: `${API_BASEURL}/subha/create`,
+    updateSubApply: `${API_BASEURL}/subha/update`,
+    deleteSubApply: `${API_BASEURL}/subha/visibility`,
+    updateSubApplyOrder: `${API_BASEURL}/subha/reorder`,
 
     // faqaddon(subFAQ)
     getSubFAQ: `${API_BASEURL}/faqaddon`,

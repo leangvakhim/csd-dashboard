@@ -19,6 +19,7 @@ const FaqPieceOne = forwardRef(({faqId}, ref) => {
             id: (slider.length + 1).toString(),
             title: `faq ${slider.length + 1}`,
             subtitle: "",
+            display: 0,
         };
 
         setSlider([...slider, newSlider]);

@@ -1,35 +1,23 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } from "react";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
-import ApplyPiece from "./ApplyPiece";
+import axios from "axios";
+import { API_ENDPOINTS } from "../../../service/APIConfig";
 
-const ApplyPieceOne = () => {
+const ApplyPieceOne = forwardRef(({applyId}, ref) => {
     const [rotatedStates, setRotatedStates] = useState({});
     const [slider, setSlider] = useState([
         {
             id: "1",
             title: "apply 1",
-            subtitle: "",
-            logo: "",
-            image: "",
-            firstbtntitle: "",
-            firstbtnselect: "",
-            secondbtntitle: "",
-            secondbtnselect: "",
+            display: 0,
         },
     ]);
 
-
     const handleAddSlider = () => {
         const newSlider = {
-            id: `${Date.now()}`,
+            id: (slider.length + 1).toString(),
             title: `apply ${slider.length + 1}`,
-            subtitle: "",
-            logo: "",
-            image: "",
-            firstbtntitle: "",
-            firstbtnselect: "",
-            secondbtntitle: "",
-            secondbtnselect: "",
+            display: 0,
         };
 
         setSlider([...slider, newSlider]);
@@ -50,6 +38,69 @@ const ApplyPieceOne = () => {
         newSlider.splice(result.destination.index, 0, reorderedSlider);
 
         setSlider(newSlider);
+    };
+
+    useImperativeHandle(ref, () => ({
+        getSubApplySliders: async () => {
+            const updatedSliders = await Promise.all(
+                slider.map(async (slide) => {
+                return {
+                    sha_title: slide.title,
+                    display: slide.display ? 1 : 0,
+                    sha_id: slide.id,
+                };
+                })
+            );
+
+          return updatedSliders;
+        },
+    }));
+
+    useEffect(() => {
+        const fetchSliders = async () => {
+        try {
+            const response = await axios.get(API_ENDPOINTS.getSubApply);
+            const data = response.data?.data;
+
+            const subservices = Array.isArray(data) ? data : [data];
+
+            if (subservices.length > 0 && applyId) {
+            const validSubservices = subservices.filter(item => item.sha_ha === applyId);
+
+
+            const formattedData = validSubservices.map(item => ({
+                id: item.sha_id.toString(),
+                title: item.sha_title || '',
+                display: item.display === 1
+            }));
+
+            if (formattedData.length > 0) {
+                setSlider(formattedData);
+            } else {
+                setSlider([{
+                id: "1",
+                title: "apply 1",
+                display: 0
+                }]);
+            }
+            }
+        } catch (error) {
+            console.error('Error fetching sliders:', error);
+        }
+        };
+
+        fetchSliders();
+    }, [applyId]);
+
+    const handleDeleteSlider = async (sliderId) => {
+        if (!window.confirm("Are you sure you want to delete this slider?")) return;
+
+        try {
+            await axios.put(`${API_ENDPOINTS.deleteSubserviceRAS}/${sliderId}`);
+            setSlider((prevSlider) => prevSlider.filter((item) => item.id !== sliderId));
+        } catch (error) {
+            console.error('Failed to delete slider:', error);
+        }
     };
 
     return (
@@ -101,6 +152,7 @@ const ApplyPieceOne = () => {
                                                     <span className=" shrink-0 transition-transform duration-500 group-open:-rotate-0 flex gap-2">
                                                         <div className="block">
                                                             <svg
+                                                                onClick={() => handleDeleteSlider(sliders.id)}
                                                                 xmlns="http://www.w3.org/2000/svg"
                                                                 fill="none"
                                                                 viewBox="0 0 24 24"
@@ -145,6 +197,12 @@ const ApplyPieceOne = () => {
                                                         </label>
                                                         <div className="mt-2">
                                                             <input
+                                                                value={sliders.title}
+                                                                onChange={(e) => {
+                                                                    const updatedSlider = [...slider];
+                                                                    updatedSlider[index].title = e.target.value;
+                                                                    setSlider(updatedSlider);
+                                                                }}
                                                                 type="text"
                                                                 className="!border-gray-300 block w-full border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
                                                             />
@@ -156,7 +214,14 @@ const ApplyPieceOne = () => {
                                                         </label>
                                                         <div className="mt-2">
                                                             <label class="toggle-switch mt-2">
-                                                                <input type="checkbox" />
+                                                                <input
+                                                                    checked={sliders.display === 1 || sliders.display === true}
+                                                                    onChange={(e) => {
+                                                                        const updatedSlider = [...slider];
+                                                                        updatedSlider[index].display = e.target.checked ? 1 : 0;
+                                                                        setSlider(updatedSlider);
+                                                                    }}
+                                                                    type="checkbox" />
                                                                 <span class="slider"></span>
                                                             </label>
                                                         </div>
@@ -194,6 +259,6 @@ const ApplyPieceOne = () => {
             </Droppable>
         </DragDropContext>
     );
-};
+});
 
 export default ApplyPieceOne;
