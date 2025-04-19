@@ -1,33 +1,29 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } from "react";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import axios from "axios";
+import { API_ENDPOINTS } from "../../../service/APIConfig";
 
-const ImportantPieceSlider = () => {
+const ImportantPieceSlider = forwardRef(({importantId}, ref) => {
   const [rotatedStates, setRotatedStates] = useState({});
   const [slider, setSlider] = useState([
     {
       id: "1",
-      title: "Important 1",
+      title: "important 1",
       subtitle: "",
-      logo: "",
-      image: "",
-      firstbtntitle: "",
-      firstbtnselect: "",
-      secondbtntitle: "",
-      secondbtnselect: "",
+      tag: "",
+      date: null,
+      display: 0,
     },
   ]);
 
   const handleAddSlider = () => {
     const newSlider = {
-      id: `${Date.now()}`,
+      id: (slider.length + 1).toString(),
       title: `Important ${slider.length + 1}`,
       subtitle: "",
-      logo: "",
-      image: "",
-      firstbtntitle: "",
-      firstbtnselect: "",
-      secondbtntitle: "",
-      secondbtnselect: "",
+      tag: "",
+      date: null,
+      display: 0,
     };
 
     setSlider([...slider, newSlider]);
@@ -48,6 +44,78 @@ const ImportantPieceSlider = () => {
     newSlider.splice(result.destination.index, 0, reorderedSlider);
 
     setSlider(newSlider);
+  };
+
+  useImperativeHandle(ref, () => ({
+    getSubImportantSliders: async () => {
+      const updatedSliders = await Promise.all(
+          slider.map(async (slide) => {
+          return {
+              sidd_title: slide.title,
+              sidd_subtitle: slide.subtitle,
+              sidd_tag: slide.tag,
+              sidd_date: slide.date,
+              display: slide.display ? 1 : 0,
+              sidd_id: slide.id,
+          };
+          })
+        );
+
+        return updatedSliders;
+      },
+  }));
+
+  useEffect(() => {
+      const fetchSliders = async () => {
+      try {
+          const response = await axios.get(API_ENDPOINTS.getSubImportant);
+          const data = response.data?.data;
+
+          const subservices = Array.isArray(data) ? data : [data];
+
+          if (subservices.length > 0 && importantId) {
+          const validSubservices = subservices.filter(item => item.sidd_idd === importantId);
+
+
+          const formattedData = validSubservices.map(item => ({
+              id: item.sidd_id.toString(),
+              title: item.sidd_title || '',
+              subtitle: item.sidd_subtitle || '',
+              tag: item.sidd_tag || '',
+              date: item.sidd_date.slice(0, 10) || null,
+              display: item.display === 1
+          }));
+
+          if (formattedData.length > 0) {
+              setSlider(formattedData);
+          } else {
+              setSlider([{
+              id: "1",
+              title: "information 1",
+              subtitle: "",
+              tag: "",
+              date: null,
+              display: 0
+              }]);
+          }
+          }
+      } catch (error) {
+          console.error('Error fetching sliders:', error);
+      }
+      };
+
+      fetchSliders();
+  }, [importantId]);
+
+  const handleDeleteSlider = async (sliderId) => {
+      if (!window.confirm("Are you sure you want to delete this slider?")) return;
+
+      try {
+          await axios.put(`${API_ENDPOINTS.deleteSubserviceRAS}/${sliderId}`);
+          setSlider((prevSlider) => prevSlider.filter((item) => item.id !== sliderId));
+      } catch (error) {
+          console.error('Failed to delete slider:', error);
+      }
   };
 
   return (
@@ -100,6 +168,7 @@ const ImportantPieceSlider = () => {
                           <span className=" shrink-0 transition-transform duration-500 group-open:-rotate-0 flex gap-2">
                             <div className="block">
                               <svg
+                                onClick={() => handleDeleteSlider(sliders.id)}
                                 xmlns="http://www.w3.org/2000/svg"
                                 fill="none"
                                 viewBox="0 0 24 24"
@@ -138,7 +207,6 @@ const ImportantPieceSlider = () => {
                         </summary>
 
                         {/* title */}
-
                         <div className="flex flex-row gap-4 px-4 py-2">
                           <div className="flex-1">
                             <label className="block text-xl font-medium leading-6 text-white-900">
@@ -146,30 +214,31 @@ const ImportantPieceSlider = () => {
                             </label>
                             <div className="mt-2">
                               <input
+                                value={sliders.title}
+                                onChange={(e) => {
+                                    const updatedSlider = [...slider];
+                                    updatedSlider[index].title = e.target.value;
+                                    setSlider(updatedSlider);
+                                }}
                                 type="text"
                                 className="block w-full !border-gray-200 border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
                               />
                             </div>
                           </div>
-                          <div className="flex-1">
-                            <label className="block text-xl font-medium leading-6 text-white-900">
-                              Route page
-                            </label>
-                            <div className="mt-2">
-                              <input
-                                type="text"
-                                className="block w-full !border-gray-200 border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
-                              />
-                            </div>
-                          </div>
-
                           <div className="flex-non">
                             <label className="block text-xl font-medium leading-6 text-white-900">
                               Display
                             </label>
                             <div className="mt-2">
                               <label class="toggle-switch mt-2">
-                                <input type="checkbox" />
+                                <input
+                                  checked={sliders.display === 1 || sliders.display === true}
+                                  onChange={(e) => {
+                                      const updatedSlider = [...slider];
+                                      updatedSlider[index].display = e.target.checked ? 1 : 0;
+                                      setSlider(updatedSlider);
+                                  }}
+                                  type="checkbox" />
                                 <span class="slider"></span>
                               </label>
                             </div>
@@ -182,25 +251,44 @@ const ImportantPieceSlider = () => {
                               subtitle
                             </label>
                             <div className="mt-2">
-                              <textarea className="!border-gray-300 h-60 block w-full rounded-md border-0 py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-2xl sm:leading-6"></textarea>
+                              <textarea
+                                value={sliders.subtitle}
+                                onChange={(e) => {
+                                    const updatedSlider = [...slider];
+                                    updatedSlider[index].subtitle = e.target.value;
+                                    setSlider(updatedSlider);
+                                }}
+                                className="!border-gray-300 h-60 block w-full rounded-md border-0 py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-2xl sm:leading-6"></textarea>
                             </div>
                           </div>
                           <div className="flex-1">
-                            <label className="block text-xl font-medium leading-6 text-white-900">
-                              tag_date
-                            </label>
-                            <div className="mt-2">
-                              <input
-                                type="text"
-                                className="block w-full !border-gray-200 border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
-                              />
-                            </div>
                             <label className="block text-xl font-medium leading-6 text-white-900">
                               tag_title
                             </label>
                             <div className="mt-2">
                               <input
+                                value={sliders.tag}
+                                onChange={(e) => {
+                                    const updatedSlider = [...slider];
+                                    updatedSlider[index].tag = e.target.value;
+                                    setSlider(updatedSlider);
+                                }}
                                 type="text"
+                                className="block w-full !border-gray-200 border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
+                              />
+                            </div>
+                            <label className="block text-xl font-medium leading-6 text-white-900 mt-4">
+                              tag_date
+                            </label>
+                            <div className="mt-2">
+                              <input
+                                value={sliders.date}
+                                onChange={(e) => {
+                                    const updatedSlider = [...slider];
+                                    updatedSlider[index].date = e.target.value;
+                                    setSlider(updatedSlider);
+                                }}
+                                type="date"
                                 className="block w-full !border-gray-200 border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
                               />
                             </div>
@@ -237,6 +325,6 @@ const ImportantPieceSlider = () => {
       </Droppable>
     </DragDropContext>
   );
-};
+});
 
 export default ImportantPieceSlider;

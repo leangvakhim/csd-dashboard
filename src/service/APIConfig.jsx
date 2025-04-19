@@ -56,6 +56,11 @@ const API_ENDPOINTS = {
     createIntroduction: `${API_BASEURL}/intro/create`,
     updateIntroduction: `${API_BASEURL}/intro/update`,
 
+    // idd (important)
+    getImportant: `${API_BASEURL}/idd`,
+    createImportant: `${API_BASEURL}/idd/create`,
+    updateImportant: `${API_BASEURL}/idd/update`,
+
     // department
     getDepartment: `${API_BASEURL}/department`,
     createDepartment: `${API_BASEURL}/department/create`,
@@ -147,6 +152,13 @@ const API_ENDPOINTS = {
     updateSubType: `${API_BASEURL}/subtse/update`,
     deleteSubType: `${API_BASEURL}/subtse/visibility`,
     updateSubTypeOrder: `${API_BASEURL}/subtse/reorder`,
+
+    // subidd(subimportant)
+    getSubImportant: `${API_BASEURL}/subidd`,
+    createSubImportant: `${API_BASEURL}/subidd/create`,
+    updateSubImportant: `${API_BASEURL}/subidd/update`,
+    deleteSubImportant: `${API_BASEURL}/subidd/visibility`,
+    updateSubImportantOrder: `${API_BASEURL}/subidd/reorder`,
 
     // subha(subapply)
     getSubApply: `${API_BASEURL}/subha`,
