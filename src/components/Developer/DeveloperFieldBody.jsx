@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react'
 import MediaLibraryModal from '../MediaLibraryModal';
+import DeveloperFieldSocial from './DeveloperFieldSocial';
 
 const DeveloperFieldBody = () => {
     const [activeTab, setActiveTab] = useState(1);
@@ -186,9 +187,9 @@ const DeveloperFieldBody = () => {
                     </div>
                     {/* Third row */}
                     <div>
-                        <div className="grid grid-cols-1 md:!grid-cols-3 gap-4 py-2">
+                        <div className="py-2">
                             {/* Social */}
-                            {/* <FacultyFieldSocial ref={socialRef} f_id={formData.f_id} /> */}
+                            <DeveloperFieldSocial />
                         </div>
                     </div>
                 </div>

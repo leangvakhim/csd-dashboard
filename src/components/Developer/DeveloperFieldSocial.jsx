@@ -1,153 +1,65 @@
 import { forwardRef, useImperativeHandle, useState, useEffect } from "react";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
-import MediaLibraryModal from "../../MediaLibraryModal";
-import { API_ENDPOINTS, API } from "../../../service/APIConfig";
-import axios from "axios";
+import MediaLibraryModal from "../MediaLibraryModal";
 
-const ServicePieceSlider = forwardRef(({sectionId, pageId}, ref) => {
-  const [currentSliderId, setCurrentSliderId] = useState(null);
-  const [currentField, setCurrentField] = useState("");
-  const [isMediaLibraryOpen, setMediaLibraryOpen] = useState(false);
-  const [rotatedStates, setRotatedStates] = useState({});
-  const [slider, setSlider] = useState([
-    {
-      id: "1",
-      title: "Service 1",
-      subtitle: "",
-      image: "",
-    },
-  ]);
+const DeveloperFieldSocial = () => {
+    const [currentSliderId, setCurrentSliderId] = useState(null);
+    const [currentField, setCurrentField] = useState("");
+    const [isMediaLibraryOpen, setMediaLibraryOpen] = useState(false);
+    const [rotatedStates, setRotatedStates] = useState({});
+    const [slider, setSlider] = useState([
+        {
+        id: "1",
+        title: "Social 1",
+        subtitle: "",
+        image: "",
+        },
+    ]);
 
-  const handleAddSlider = () => {
-    const newSlider = {
-      id: (slider.length + 1).toString(),
-      title: `Service ${slider.length + 1}`,
-      subtitle: "",
-      image: "",
+    const handleAddSlider = () => {
+        const newSlider = {
+        id: (slider.length + 1).toString(),
+        title: `Social ${slider.length + 1}`,
+        subtitle: "",
+        image: "",
+        };
+
+        setSlider([...slider, newSlider]);
     };
 
-    setSlider([...slider, newSlider]);
-  };
-
-  const toggleRotation = (id) => {
-    setRotatedStates((prev) => ({
-      ...prev,
-      [id]: !prev[id],
-    }));
-  };
-
-  const onDragEnd = (result) => {
-    if (!result.destination) return;
-
-    const newSlider = Array.from(slider);
-    const [reorderedSlider] = newSlider.splice(result.source.index, 1);
-    newSlider.splice(result.destination.index, 0, reorderedSlider);
-
-    setSlider(newSlider);
-  };
-
-  const openMediaLibrary = (sliderId, field) => {
-    setCurrentSliderId(sliderId);
-    setCurrentField(field);
-    setMediaLibraryOpen(true);
-  };
-
-  const handleImageSelect = (imageUrl) => {
-    setSlider((prevSlider) =>
-      prevSlider.map((item) =>
-        item.id === currentSliderId
-          ? { ...item, [currentField]: imageUrl ? `${imageUrl}` : "" }
-          : item
-      )
-    );
-    setMediaLibraryOpen(false);
-  };
-
-  const getImageIdByUrl = async (url) => {
-    try {
-      const response = await axios.get(API_ENDPOINTS.getImages);
-      const images = Array.isArray(response.data) ? response.data : response.data.data;
-
-      const matchedImage = images.find((img) => img.image_url === url);
-      return matchedImage?.image_id || null;
-      } catch (error) {
-      console.error('❌ Failed to fetch image ID:', error);
-      return null;
-    }
-  };
-
-  useImperativeHandle(ref, () => ({
-    getSliders: async () => {
-      return await Promise.all(slider.map(async item => {
-        return {
-          s_id: item.id,
-          s_title: item.title || '',
-          s_subtitle: item.subtitle || '',
-          s_img: item.image ? await getImageIdByUrl(item.image) : 0,
-          display: item.display ? 1 : 0,
-          active: 1,
-        }
-      }))
-    }
-  }))
-
-  const handleInputChange = (id, field, value) => {
-      setSlider((prevSlider) =>
-          prevSlider.map((item) =>
-              item.id === id ? { ...item, [field]: value } : item
-          )
-      );
-  };
-
-  const handleDeleteSlider = async (sliderId) => {
-    if (!window.confirm("Are you sure you want to delete this slider?")) return;
-
-    try {
-        await axios.put(`${API_ENDPOINTS.deleteService}/${sliderId}`);
-        setSlider((prevSlider) => prevSlider.filter((item) => item.id !== sliderId));
-    } catch (error) {
-        console.error('Failed to delete slider:', error);
-    }
-  };
-
-  useEffect(() => {
-    const fetchSliders = async () => {
-        try {
-            const response = await axios.get(`${API_ENDPOINTS.getService}?ban_sec=${sectionId}`);
-            const services = response.data?.data || [];
-
-            if (services.length > 0) {
-            const validServices = services.filter(item => item?.section?.sec_page === pageId);
-
-            const formattedData = validServices.map(item => ({
-              id: item.s_id.toString(),
-              title: item.s_title || '',
-              subtitle: item.s_subtitle || '',
-              image: item.image?.img ? `${API}/storage/uploads/${item.image.img}` : '',
-              display: item.display || null,
-            }));
-
-            if (formattedData.length > 0) {
-                setSlider(formattedData);
-            } else {
-              setSlider([{
-                  id: "1",
-                  title: "Slider 1",
-                  subtitle: "",
-                  image: "",
-                  display: 0,
-              }]);
-            }
-        }
-        } catch (error) {
-            console.error('Error fetching sliders:', error);
-        }
+    const toggleRotation = (id) => {
+        setRotatedStates((prev) => ({
+        ...prev,
+        [id]: !prev[id],
+        }));
     };
 
-    if (sectionId && pageId) {
-      fetchSliders();
-    }
-  }, []);
+    const onDragEnd = (result) => {
+        if (!result.destination) return;
+
+        const newSlider = Array.from(slider);
+        const [reorderedSlider] = newSlider.splice(result.source.index, 1);
+        newSlider.splice(result.destination.index, 0, reorderedSlider);
+
+        setSlider(newSlider);
+    };
+
+    const openMediaLibrary = (sliderId, field) => {
+        setCurrentSliderId(sliderId);
+        setCurrentField(field);
+        setMediaLibraryOpen(true);
+    };
+
+    const handleImageSelect = (imageUrl) => {
+        setSlider((prevSlider) =>
+        prevSlider.map((item) =>
+            item.id === currentSliderId
+            ? { ...item, [currentField]: imageUrl ? `${imageUrl}` : "" }
+            : item
+        )
+        );
+        setMediaLibraryOpen(false);
+    };
 
   return (
     <DragDropContext onDragEnd={onDragEnd}>
@@ -156,7 +68,7 @@ const ServicePieceSlider = forwardRef(({sectionId, pageId}, ref) => {
           <div
             {...provided.droppableProps}
             ref={provided.innerRef}
-            className="mx-4 my-1"
+            className="my-1"
           >
             <ul class="h-auto overflow-y-auto border rounded-t-lg mt-1">
               {slider.map((sliders, index) => (
@@ -174,9 +86,9 @@ const ServicePieceSlider = forwardRef(({sectionId, pageId}, ref) => {
                       {...provided.draggableProps}
                     >
                       {/* Slider  */}
-                      <details className="group [&_summary::-webkit-details-marker]:hidden !border-b-1 ">
+                      <details className="group [&_summary::-webkit-details-marker]:hidden !border-b-1 py-2">
                         <summary
-                          className="cursor-pointer flex justify-between rounded-lg px-2 py-2 pl-5 w-full "
+                          className="cursor-pointer flex justify-between rounded-lg px-2 pb-1 pl-5 w-full "
                           onClick={() => toggleRotation(sliders.id)}
                         >
                           <div className="flex ">
@@ -402,7 +314,7 @@ const ServicePieceSlider = forwardRef(({sectionId, pageId}, ref) => {
         )}
       </Droppable>
     </DragDropContext>
-  );
-});
+  )
+}
 
-export default ServicePieceSlider;
+export default DeveloperFieldSocial

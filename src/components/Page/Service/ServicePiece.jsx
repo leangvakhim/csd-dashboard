@@ -26,8 +26,9 @@ const ServicePiece = forwardRef(({sectionId, pageId}, ref) => {
       }
     };
 
-
-    fetchServiceDisplay();
+    if (sectionId && pageId) {
+      fetchServiceDisplay();
+    }
   }, [sectionId]);
 
   const handleToggleDisplay = async () => {
