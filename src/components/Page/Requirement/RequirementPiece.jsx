@@ -110,6 +110,8 @@ const RequirementPiece = forwardRef(({sectionId, pageId}, ref) => {
             setDetail(requirement.gc_detail || '');
             setSelectedImage1(requirement.gc_img1 ? `${API}/storage/uploads/${requirement.image1.img}` : '');
             setSelectedImage2(requirement.gc_img2 ? `${API}/storage/uploads/${requirement.image2.img}` : '');
+
+            fetchSubRequirements(requirement.gc_id);
           }
         }
 
@@ -122,24 +124,33 @@ const RequirementPiece = forwardRef(({sectionId, pageId}, ref) => {
       }
     };
 
-    const fetchSubRequirements = async () => {
+    const fetchSubRequirements = async (reqId) => {
       try {
-        const response = await axios.get(`${API_ENDPOINTS.getSubRequirement}?gca_gc=${requirementId}`);
+        const response = await axios.get(`${API_ENDPOINTS.getSubRequirement}?gca_gc=${reqId}`);
         const subrequirements = response.data.data || [];
-        if (subrequirements.length > 0) {
-          const firstSub = subrequirements[0];
-          setBtnId(firstSub.gca_id || null);
-          setBtnTag(firstSub.gca_tag || '');
-          setBtnTitle(firstSub.gca_btntitle || '');
-          setBtnLink(firstSub.gca_btnlink || '');
-        }
 
+        if (subrequirements.length > 0) {
+          const sectionResponse = await axios.get(`${API_ENDPOINTS.getSection}/${sectionId}`);
+          const sectionPageId = sectionResponse?.data?.data?.sec_page;
+
+          const subrequirement = subrequirements.find(item =>
+            item?.gc?.gc_id === reqId &&
+            item?.gc?.gc_sec === sectionId &&
+            sectionPageId === pageId
+          );
+
+          if (subrequirement) {
+            setBtnId(subrequirement.gca_id || null);
+            setBtnTag(subrequirement.gca_tag || '');
+            setBtnTitle(subrequirement.gca_btntitle || '');
+            setBtnLink(subrequirement.gca_btnlink || '');
+          }
+        }
       } catch (error) {
-          console.error("Failed to fetch criterias:", error);
+        console.error("Failed to fetch subrequirements:", error);
       }
     };
 
-    fetchSubRequirements();
     fetchRequirements();
   },[sectionId]);
 

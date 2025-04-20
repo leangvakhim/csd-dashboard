@@ -20,7 +20,6 @@ import { MdOutlineEventAvailable } from "react-icons/md";
 import { TbTax } from "react-icons/tb";
 import { HiOutlineLightBulb } from "react-icons/hi";
 import { TbContract } from "react-icons/tb";
-import { MdOutlineSwipeDownAlt } from "react-icons/md";
 import { TbDirections } from "react-icons/tb";
 import { TbCell } from "react-icons/tb";
 import { TbTargetArrow } from "react-icons/tb";
@@ -336,6 +335,18 @@ const PageSection = forwardRef(({ formData = {}, setFormData = {}, page_id }, re
   const faqPieceRef = useRef();
   const applyPieceRef = useRef();
   const importantPieceRef = useRef();
+  const contactPieceRef = useRef();
+  const questionPieceRef = useRef();
+  const newPieceRef = useRef();
+  const eventPieceRef = useRef();
+  const announcementPieceRef = useRef();
+  const researchPieceRef = useRef();
+  const facultyPieceRef = useRef();
+  const labPieceRef = useRef();
+  const scholarshipPieceRef = useRef();
+  const careerPieceRef = useRef();
+  const partnerPieceRef = useRef();
+  const feedbackPieceRef = useRef();
   const [showSection, setShowSection] = useState(false);
   const [selectedSections, setSelectedSections] = useState([]);
 
@@ -429,6 +440,18 @@ const PageSection = forwardRef(({ formData = {}, setFormData = {}, page_id }, re
     getFAQs: () => faqPieceRef.current?.getFAQs?.() || [],
     getApplys: () => applyPieceRef.current?.getApplys?.() || [],
     getImportants: () => importantPieceRef.current?.getImportants?.() || [],
+    getContacts: () => contactPieceRef.current?.getContacts?.() || [],
+    getQuestions: () => questionPieceRef.current?.getQuestions?.() || [],
+    getNews: () => newPieceRef.current?.getNews?.() || [],
+    getEvents: () => eventPieceRef.current?.getEvents?.() || [],
+    getAnnouncements: () => announcementPieceRef.current?.getAnnouncements?.() || [],
+    getResearchs: () => researchPieceRef.current?.getResearchs?.() || [],
+    getFacultys: () => facultyPieceRef.current?.getFacultys?.() || [],
+    getLabs: () => labPieceRef.current?.getLabs?.() || [],
+    getScholarships: () => scholarshipPieceRef.current?.getScholarships?.() || [],
+    getCareers: () => careerPieceRef.current?.getCareers?.() || [],
+    getPartners: () => partnerPieceRef.current?.getPartners?.() || [],
+    getFeedbacks: () => feedbackPieceRef.current?.getFeedbacks?.() || [],
   }));
 
   const handleAddPage = () => {
@@ -536,6 +559,17 @@ const PageSection = forwardRef(({ formData = {}, setFormData = {}, page_id }, re
                       : section.type === "FAQ" ? faqPieceRef
                       : section.type === "Apply" ? applyPieceRef
                       : section.type === "Important" ? importantPieceRef
+                      : section.type === "Contact" ? contactPieceRef
+                      : section.type === "Question" ? questionPieceRef
+                      : section.type === "New" ? newPieceRef
+                      : section.type === "Event" ? eventPieceRef
+                      : section.type === "Announcement" ? announcementPieceRef
+                      : section.type === "Research" ? researchPieceRef
+                      : section.type === "Faculty" ? facultyPieceRef
+                      : section.type === "Lab" ? labPieceRef
+                      : section.type === "Scholarship" ? scholarshipPieceRef
+                      : section.type === "Career" ? careerPieceRef
+                      : section.type === "Partner" ? partnerPieceRef
                       : null
                     }
                   data={section.data}

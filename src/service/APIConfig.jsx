@@ -51,6 +51,11 @@ const API_ENDPOINTS = {
     createAcademic: `${API_BASEURL}/academic/create`,
     updateAcademic: `${API_BASEURL}/academic/update`,
 
+    // headersection
+    getHeaderSection: `${API_BASEURL}/headersection`,
+    createHeaderSection: `${API_BASEURL}/headersection/create`,
+    updateHeaderSection: `${API_BASEURL}/headersection/update`,
+
     // intro (introduction)
     getIntroduction: `${API_BASEURL}/intro`,
     createIntroduction: `${API_BASEURL}/intro/create`,

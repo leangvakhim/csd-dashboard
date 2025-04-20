@@ -1,7 +1,48 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } from "react";
+import axios from "axios";
+import { API_ENDPOINTS } from "../../../service/APIConfig";
 
-const AboutPiece = () => {
+const AboutPiece = forwardRef(({sectionId}) => {
     const [isRotatedButton1, setIsRotatedButton1] = useState(false);
+    const [displayAbout, setDisplayAbout] = useState(0);
+
+    const handleToggleDisplay = async () => {
+        try {
+            const newDisplay = displayAbout === 1 ? 0 : 1;
+            await axios.post(`${API_ENDPOINTS.updateSection}/${sectionId}`, {
+                sec_id: sectionId,
+                display: newDisplay,
+            });
+            setDisplayAbout(newDisplay);
+        } catch (error) {
+            console.error("Failed to update display:", error);
+        }
+    };
+
+    const handleDeleteSection = async () => {
+        if (!window.confirm("Are you sure you want to delete this section?")) return;
+
+        try {
+            await axios.put(`${API_ENDPOINTS.deleteSection}/${sectionId}`);
+            window.location.reload();
+        } catch (error) {
+            console.error('Failed to delete section:', error);
+        }
+    };
+
+    useEffect(() => {
+        const fetchAbouts = async () => {
+            try {
+                const sectionRes = await axios.get(`${API_ENDPOINTS.getSection}/${sectionId}`);
+                const sectionData = sectionRes.data.data;
+                setDisplayAbout(sectionData.display || 0);
+            } catch (error) {
+                console.error("Failed to fetch facilities:", error);
+            }
+        };
+
+        fetchAbouts();
+    }, [sectionId]);
 
     return (
         <div className="grid grid-cols-1 gap-4 ">
@@ -23,6 +64,7 @@ const AboutPiece = () => {
                     </div>
                     <div className="flex gap-1">
                     <svg
+                        onClick={() => handleDeleteSection()}
                         xmlns="http://www.w3.org/2000/svg"
                         fill="none"
                         viewBox="0 0 24 24"
@@ -68,7 +110,10 @@ const AboutPiece = () => {
                     </label>
                         <div className="my-auto">
                             <label class="toggle-switch">
-                                <input type="checkbox" className="my-auto"/>
+                                <input
+                                    checked={displayAbout === 1}
+                                    onChange={handleToggleDisplay}
+                                    type="checkbox"/>
                                 <span class="slider"></span>
                             </label>
                         </div>
@@ -77,6 +122,6 @@ const AboutPiece = () => {
             </details>
         </div>
     )
-}
+});
 
 export default AboutPiece

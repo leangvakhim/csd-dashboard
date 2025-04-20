@@ -371,6 +371,62 @@ const PageField = () => {
             }
         }
     };
+    const saveHeaderSection = async (type, savedSectionId, savedPageId) => {
+        const dataMap = {
+            new: 'getNews',
+            event: 'getEvents',
+            announcement: 'getAnnouncements',
+            research: 'getResearchs',
+            faculty: 'getFacultys',
+            lab: 'getLabs',
+            scholarship: 'getScholarships',
+            career: 'getCareers',
+            partner: 'getPartners',
+            feedback: 'getFeedbacks'
+        };
+
+        const dataKey = dataMap[type];
+        if (!dataKey) return;
+
+        const itemsKey = 'headersection';
+        const updateEndpoint = API_ENDPOINTS.updateHeaderSection;
+        const createEndpoint = API_ENDPOINTS.createHeaderSection;
+
+        const items = await pageRef.current?.[dataKey]?.() || [];
+        const response = await axios.get(`${API_ENDPOINTS.getHeaderSection}?hsec_sec=${savedSectionId}`);
+        const existingItems = response.data?.data || [];
+        const existingIds = existingItems.map(item => item.hsec_id);
+
+        if (items.length > 0 && savedSectionId) {
+            for (const item of items) {
+                const hsec_sec = item.hsec_sec || savedSectionId;
+                const resolvedPageId = item.page_id || savedPageId;
+                const payload = {
+                    hsec_sec: hsec_sec,
+                    hsec_title: item.hsec_title || '',
+                    hsec_subtitle: item.hsec_subtitle || '',
+                    hsec_btntitle: item.hsec_btntitle || '',
+                    hsec_amount: parseInt(item.hsec_amount) || '',
+                    hsec_routepage: item.hsec_routepage || '',
+                    page_id: resolvedPageId,
+                };
+
+                const itemId = item.hsec_id;
+                if (
+                    itemId &&
+                    existingIds.includes(parseInt(itemId)) &&
+                    parseInt(hsec_sec) === parseInt(savedSectionId) &&
+                    parseInt(resolvedPageId) === parseInt(savedPageId)
+                ) {
+                    await axios.post(`${updateEndpoint}/${itemId}`, { [itemsKey]: payload });
+                } else {
+                    if (!itemId || !existingIds.includes(parseInt(itemId))) {
+                        await axios.post(createEndpoint, { [itemsKey]: [payload] });
+                    }
+                }
+            }
+        }
+    };
 
     // hybrid
     const saveFacilties = async (savedSectionId, savedPageId) => {
@@ -1750,6 +1806,16 @@ const PageField = () => {
                 // saveUnlock(savedSectionId, savedPageId);
                 // saveFee(savedSectionId, savedPageId);
                 // saveIntroduction(savedSectionId, savedPageId);
+                await saveHeaderSection('new', savedSectionId, savedPageId);
+                await saveHeaderSection('event', savedSectionId, savedPageId);
+                await saveHeaderSection('announcement', savedSectionId, savedPageId);
+                await saveHeaderSection('research', savedSectionId, savedPageId);
+                await saveHeaderSection('faculty', savedSectionId, savedPageId);
+                await saveHeaderSection('lab', savedSectionId, savedPageId);
+                await saveHeaderSection('scholarship', savedSectionId, savedPageId);
+                await saveHeaderSection('career', savedSectionId, savedPageId);
+                await saveHeaderSection('partner', savedSectionId, savedPageId);
+                await saveHeaderSection('feedback', savedSectionId, savedPageId);
 
                 // hybrid
                 // saveFacilties(savedSectionId, savedPageId);
@@ -1764,7 +1830,7 @@ const PageField = () => {
                 // saveInnovations(savedSectionId, savedPageId);
                 // saveFaqs(savedSectionId, savedPageId);
                 // saveApplys(savedSectionId, savedPageId);
-                saveImportants(savedSectionId, savedPageId);
+                // saveImportants(savedSectionId, savedPageId);
 
             } catch (error) {
                 console.error("Failed to sync section:", error.response?.data || error.message);
