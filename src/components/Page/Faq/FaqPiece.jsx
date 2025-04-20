@@ -61,7 +61,9 @@ const FaqPiece = forwardRef(({sectionId, pageId}, ref) => {
       }
     };
 
-    fetchFAQs();
+    if(sectionId && pageId){
+        fetchFAQs();
+    }
   },[sectionId]);
 
   const handleDeleteSection = async () => {

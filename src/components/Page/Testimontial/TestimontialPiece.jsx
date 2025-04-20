@@ -31,7 +31,9 @@ const TestimonialPiece = forwardRef(({sectionId, pageId}, ref) => {
       }
     };
 
-    fetchTestimonials();
+    if(sectionId && pageId){
+      fetchTestimonials();
+    }
   }, [sectionId]);
 
   useImperativeHandle(ref, () => ({

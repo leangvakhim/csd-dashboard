@@ -52,7 +52,7 @@ const FeedbackPiece = forwardRef(({sectionId, pageId}, ref) => {
     };
 
     useEffect(() => {
-        const fetchLabs = async () => {
+        const fetchFeedbacks = async () => {
             try {
                 const response = await axios.get(`${API_ENDPOINTS.getHeaderSection}?hsec_sec=${sectionId}`);
                 const hsecs = response.data.data || [];
@@ -75,7 +75,9 @@ const FeedbackPiece = forwardRef(({sectionId, pageId}, ref) => {
             }
         };
 
-        fetchLabs();
+        if(sectionId && pageId){
+            fetchFeedbacks();
+        }
     }, [sectionId]);
 
     return (

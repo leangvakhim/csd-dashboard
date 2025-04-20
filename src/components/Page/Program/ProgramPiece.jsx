@@ -107,7 +107,9 @@ const ProgramPiece = forwardRef(({sectionId, pageId}, ref) => {
       }
     };
 
-    fetchDepartments();
+    if(sectionId && pageId){
+      fetchDepartments();
+    }
   },[sectionId]);
 
   const handleDeleteSection = async () => {

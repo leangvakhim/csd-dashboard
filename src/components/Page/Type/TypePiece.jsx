@@ -113,8 +113,9 @@ const TypePiece = forwardRef(({sectionId, pageId}, ref) => {
       }
     };
 
-
-    fetchTypes();
+    if(sectionId && pageId){
+      fetchTypes();
+    }
   }, [sectionId]);
 
   return (

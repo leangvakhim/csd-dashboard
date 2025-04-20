@@ -94,7 +94,9 @@ const IntroductionPiece = forwardRef(({sectionId, pageId}, ref) => {
         }
         };
 
-        fetchIntroductions();
+        if(sectionId && pageId){
+            fetchIntroductions();
+        }
     },[sectionId]);
 
     const handleDeleteSection = async () => {

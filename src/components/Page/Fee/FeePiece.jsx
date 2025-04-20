@@ -90,8 +90,9 @@ const FeePiece = forwardRef(({sectionId, pageId}, ref) => {
             console.error("Failed to fetch banners:", error);
         }
         };
-
-        fetchFees();
+        if(sectionId && pageId){
+            fetchFees();
+        }
     },[sectionId]);
 
     const handleDeleteSection = async () => {

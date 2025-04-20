@@ -83,8 +83,10 @@ const CarouselPieceSlider = forwardRef(({displaySlideshow, sectionId, pageId}, r
             }
         }
 
-        fetchPages();
-        fetchSliders();
+        if(sectionId && pageId){
+            fetchPages();
+            fetchSliders();
+        }
     }, []);
 
     useImperativeHandle(ref, () => ({

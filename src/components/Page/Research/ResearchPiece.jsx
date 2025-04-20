@@ -91,8 +91,10 @@ const ResearchPiece = forwardRef(({sectionId, pageId}, ref) => {
             }
         }
 
-        fetchResearchs();
-        fetchPages();
+        if(sectionId && pageId){
+            fetchPages();
+            fetchResearchs();
+        }
     }, [sectionId]);
 
     return (

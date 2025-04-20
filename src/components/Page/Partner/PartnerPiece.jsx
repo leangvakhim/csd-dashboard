@@ -77,7 +77,9 @@ const PartnerPiece = forwardRef(({sectionId, pageId}, ref) => {
             }
         };
 
-        fetchPartners();
+        if(sectionId && pageId){
+            fetchPartners();
+        }
     }, [sectionId]);
 
     return (

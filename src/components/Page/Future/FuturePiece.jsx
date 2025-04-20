@@ -106,8 +106,9 @@ const FuturePiece = forwardRef(({sectionId, pageId}, ref) => {
       }
     };
 
-
-    fetchFutures();
+    if(sectionId && pageId){
+      fetchFutures();
+    }
   }, [sectionId]);
 
   return (

@@ -64,8 +64,9 @@ const BannerPiece = forwardRef(({sectionId, pageId}, ref) => {
             }
         };
 
-
-        fetchBanners();
+        if(sectionId && pageId){
+            fetchBanners();
+        }
     }, [sectionId]);
 
     useImperativeHandle(ref, () => ({

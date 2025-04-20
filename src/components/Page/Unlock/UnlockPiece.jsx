@@ -105,8 +105,10 @@ const UnlockPiece = forwardRef(({sectionId, pageId}, ref) => {
             }
         }
 
-        fetchPages();
-        fetchUnlocks();
+        if(sectionId && pageId){
+            fetchPages();
+            fetchUnlocks();
+        }
     },[sectionId]);
 
     const handleDeleteSection = async () => {

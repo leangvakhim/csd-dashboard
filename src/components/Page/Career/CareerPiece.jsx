@@ -89,8 +89,10 @@ const CareerPiece = forwardRef(({sectionId, pageId}, ref) => {
             }
         }
 
-        fetchCareers();
-        fetchPages();
+        if(sectionId && pageId){
+            fetchPages();
+            fetchCareers();
+        }
     }, [sectionId]);
 
     return (

@@ -79,8 +79,9 @@ const StudyPiece = forwardRef(({sectionId, pageId}, ref) => {
       }
     };
 
-
-    fetchFacitlies();
+    if(sectionId && pageId){
+      fetchFacitlies();
+    }
   }, [sectionId]);
 
   return (

@@ -75,7 +75,9 @@ const ImportantPiece = forwardRef(({sectionId, pageId}, ref) => {
         }
     };
 
-    fetchImportants();
+    if(sectionId && pageId){
+      fetchImportants();
+    }
   }, [sectionId]);
 
   return (

@@ -36,7 +36,9 @@ const ProgramPiece = forwardRef(({sectionId, pageId}, ref) => {
       }
     };
 
-    fetchInformations();
+    if(sectionId && pageId){
+      fetchInformations();
+    }
   }, [sectionId]);
 
   useImperativeHandle(ref, () => ({

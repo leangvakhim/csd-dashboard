@@ -91,8 +91,10 @@ const NewPiece = forwardRef(({sectionId, pageId}, ref) => {
             }
         }
 
-        fetchPages();
-        fetchNews();
+        if(sectionId && pageId){
+            fetchPages();
+            fetchNews();
+        }
     }, [sectionId]);
 
     return (

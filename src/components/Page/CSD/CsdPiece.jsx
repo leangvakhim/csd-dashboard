@@ -151,8 +151,9 @@ const CsdPiece = forwardRef(({sectionId, pageId}, ref) => {
       }
     };
 
-
-    fetchCSDs();
+    if(sectionId && pageId){
+      fetchCSDs();
+    }
   }, [sectionId]);
 
   return (

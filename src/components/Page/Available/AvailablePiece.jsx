@@ -73,8 +73,9 @@ const AvailablePiece = forwardRef(({sectionId, pageId}, ref) => {
       }
     };
 
-
-    fetchAvailables();
+    if(sectionId && pageId){
+      fetchAvailables();
+    }
   }, [sectionId]);
 
   return (

@@ -91,8 +91,10 @@ const AnnouncementPiece = forwardRef(({sectionId, pageId}, ref) => {
             }
         }
 
-        fetchAnnouncements();
-        fetchPages();
+        if(sectionId && pageId){
+            fetchPages();
+            fetchAnnouncements();
+        }
     }, [sectionId]);
 
     return (

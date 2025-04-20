@@ -112,8 +112,9 @@ const ApplyPiece = forwardRef(({sectionId, pageId}, ref) => {
             }
         };
 
-
-        fetchApplys();
+        if(sectionId && pageId){
+            fetchApplys();
+        }
     }, [sectionId]);
 
     return (

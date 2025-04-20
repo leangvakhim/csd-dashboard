@@ -141,8 +141,9 @@ const PotentialPiece = forwardRef(({sectionId, pageId}, ref) => {
       }
     };
 
-
-    fetchPotentials();
+    if(sectionId && pageId){
+      fetchPotentials();
+    }
   }, [sectionId]);
 
   return (

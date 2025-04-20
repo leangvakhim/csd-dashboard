@@ -101,8 +101,6 @@ const GalleyPiece = forwardRef(({sectionId, pageId}, ref) => {
         gal_img5: imageId5,
       };
 
-      console.log("Data is: ", data);
-
       return [data];
     }
   }));
@@ -165,8 +163,9 @@ const GalleyPiece = forwardRef(({sectionId, pageId}, ref) => {
       }
     };
 
-
-    fetchFacitlies();
+    if(sectionId && pageId){
+      fetchFacitlies();
+    }
   }, [sectionId]);
 
   return (

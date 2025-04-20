@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } f
 import axios from "axios";
 import { API_ENDPOINTS } from "../../../service/APIConfig";
 
-const AboutPiece = forwardRef(({sectionId}) => {
+const AboutPiece = forwardRef(({sectionId, pageId}) => {
     const [isRotatedButton1, setIsRotatedButton1] = useState(false);
     const [displayAbout, setDisplayAbout] = useState(0);
 
@@ -41,7 +41,9 @@ const AboutPiece = forwardRef(({sectionId}) => {
             }
         };
 
-        fetchAbouts();
+        if(sectionId && pageId){
+            fetchAbouts();
+        }
     }, [sectionId]);
 
     return (

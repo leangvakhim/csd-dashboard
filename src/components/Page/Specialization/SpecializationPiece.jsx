@@ -148,8 +148,9 @@ const SpecializationPiece = forwardRef(({sectionId, pageId}, ref) => {
       }
     };
 
-
-    fetchSpecializations();
+    if(sectionId && pageId){
+      fetchSpecializations();
+    }
   }, [sectionId]);
 
   return (

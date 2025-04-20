@@ -91,8 +91,10 @@ const ScholarshipPiece = forwardRef(({sectionId, pageId}, ref) => {
             }
         }
 
-        fetchScholarships();
-        fetchPages();
+        if(sectionId && pageId){
+            fetchPages();
+            fetchScholarships();
+        }
     }, [sectionId]);
 
     return (

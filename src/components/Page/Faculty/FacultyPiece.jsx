@@ -88,9 +88,10 @@ const FacultyPiece = forwardRef(({sectionId, pageId}, ref) => {
                 console.error('Error fetching sliders:', error);
             }
         }
-
-        fetchFacultys();
-        fetchPages();
+        if(sectionId && pageId){
+            fetchPages();
+            fetchFacultys();
+        }
     }, [sectionId]);
 
     return (

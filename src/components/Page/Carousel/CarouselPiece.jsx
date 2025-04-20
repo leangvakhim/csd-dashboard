@@ -50,8 +50,9 @@ const CarouselPiece = forwardRef(({sectionId, pageId}, ref) => {
             }
         };
 
-
-        fetchSlideShowDisplay();
+        if(sectionId && pageId){
+            fetchSlideShowDisplay();
+        }
     }, [sectionId]);
 
     return (

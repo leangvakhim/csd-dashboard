@@ -151,7 +151,9 @@ const RequirementPiece = forwardRef(({sectionId, pageId}, ref) => {
       }
     };
 
-    fetchRequirements();
+    if(sectionId && pageId){
+      fetchRequirements();
+    }
   },[sectionId]);
 
   const handleDeleteSection = async () => {

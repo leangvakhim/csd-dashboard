@@ -152,7 +152,9 @@ const InnovationPiece = forwardRef(({sectionId, pageId}, ref) => {
         }
         };
 
-        fetchInnovations();
+        if(sectionId && pageId){
+            fetchInnovations();
+        }
     }, [sectionId]);
 
     return (

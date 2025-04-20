@@ -91,8 +91,10 @@ const EventsPiece = forwardRef(({sectionId, pageId}, ref) => {
             }
         }
 
-        fetchPages();
-        fetchEvents();
+        if(sectionId && pageId){
+            fetchPages();
+            fetchEvents();
+        }
     }, [sectionId]);
 
     return (

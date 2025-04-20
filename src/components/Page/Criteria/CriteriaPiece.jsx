@@ -112,7 +112,9 @@ const CriteriaPiece = forwardRef(({sectionId, pageId}, ref) => {
       }
     };
 
-    fetchCriterias();
+    if(sectionId && pageId){
+      fetchCriterias();
+    }
   },[sectionId]);
 
   const handleDeleteSection = async () => {
