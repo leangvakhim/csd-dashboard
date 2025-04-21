@@ -41,6 +41,15 @@ const API_ENDPOINTS = {
     duplicateNews: `${API_BASEURL}/news/duplicate`,
     updateNewsOrder: `${API_BASEURL}/news/reorder`,
 
+    // Announcement
+    getAnnouncement: `${API_BASEURL}/announcements`,
+    createAnnouncement: `${API_BASEURL}/announcements/create`,
+    updateAnnouncement: `${API_BASEURL}/announcements/update`,
+    deleteAnnouncement: `${API_BASEURL}/announcements/visibility`,
+    duplicateAnnouncement: `${API_BASEURL}/announcements/duplicate`,
+    updateAnnouncementOrder: `${API_BASEURL}/announcements/reorder`,
+
+
     // banner
     getBanner: `${API_BASEURL}/banner`,
     createBanner: `${API_BASEURL}/banner/create`,
@@ -295,8 +304,8 @@ const API_ENDPOINTS = {
     deleteScholarship: `${API_BASEURL}/scholarship/visibility`,
     duplicateScholarship: `${API_BASEURL}/scholarship/duplicate`,
     updateScholarshipOrder: `${API_BASEURL}/scholarship/reorder`,
-
-
+    
+    // research
     getResearch: `${API_BASEURL}/rsd`,
     createResearch: `${API_BASEURL}/rsd/create`,
     updateResearch: `${API_BASEURL}/rsd/update`,
