@@ -137,7 +137,7 @@ const AnnouncementFieldBody = ({}) => {
               <div className="min-h-full">
                 <div className="w-full  bg-white space-y-5">
                   {/* Favorite Dropdown */}
-                  <div className="mt-4">
+                  <div className="">
                     <label className="block text-xl font-medium text-gray-700">
                       Favorite
                     </label>
