@@ -1887,7 +1887,7 @@ const PageField = () => {
         try{
             await savePage();
             alert("Page save successfully");
-            // window.location.reload();
+            window.location.reload();
         } catch (err) {
             console.error(" Error saving:", err);
         }
