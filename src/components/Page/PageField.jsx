@@ -1792,20 +1792,20 @@ const PageField = () => {
                 // console.log("📥 savedSectionId:", savedSectionId);
 
                 // sliders
-                // saveSlideshow(savedSectionId, savedPageId);
-                // saveService(savedSectionId, savedPageId);
+                saveSlideshow(savedSectionId, savedPageId);
+                saveService(savedSectionId, savedPageId);
 
                 // single
-                // saveBanner(savedSectionId, savedPageId);
-                // saveInformation(savedSectionId, savedPageId);
-                // saveTestimonial(savedSectionId, savedPageId);
-                // saveAcademic(savedSectionId, savedPageId);
-                // saveGallery(savedSectionId, savedPageId);
-                // saveDepartment(savedSectionId, savedPageId);
-                // saveCriteria(savedSectionId, savedPageId);
-                // saveUnlock(savedSectionId, savedPageId);
-                // saveFee(savedSectionId, savedPageId);
-                // saveIntroduction(savedSectionId, savedPageId);
+                saveBanner(savedSectionId, savedPageId);
+                saveInformation(savedSectionId, savedPageId);
+                saveTestimonial(savedSectionId, savedPageId);
+                saveAcademic(savedSectionId, savedPageId);
+                saveGallery(savedSectionId, savedPageId);
+                saveDepartment(savedSectionId, savedPageId);
+                saveCriteria(savedSectionId, savedPageId);
+                saveUnlock(savedSectionId, savedPageId);
+                saveFee(savedSectionId, savedPageId);
+                saveIntroduction(savedSectionId, savedPageId);
                 await saveHeaderSection('new', savedSectionId, savedPageId);
                 await saveHeaderSection('event', savedSectionId, savedPageId);
                 await saveHeaderSection('announcement', savedSectionId, savedPageId);
@@ -1818,19 +1818,19 @@ const PageField = () => {
                 await saveHeaderSection('feedback', savedSectionId, savedPageId);
 
                 // hybrid
-                // saveFacilties(savedSectionId, savedPageId);
-                // saveType(savedSectionId, savedPageId);
-                // saveSpecializations(savedSectionId, savedPageId);
-                // saveCSD(savedSectionId, savedPageId);
-                // saveStudy(savedSectionId, savedPageId);
-                // saveAvailable(savedSectionId, savedPageId);
-                // saveRequirement(savedSectionId, savedPageId);
-                // saveFuture(savedSectionId, savedPageId);
-                // savePotentials(savedSectionId, savedPageId);
-                // saveInnovations(savedSectionId, savedPageId);
-                // saveFaqs(savedSectionId, savedPageId);
-                // saveApplys(savedSectionId, savedPageId);
-                // saveImportants(savedSectionId, savedPageId);
+                saveFacilties(savedSectionId, savedPageId);
+                saveType(savedSectionId, savedPageId);
+                saveSpecializations(savedSectionId, savedPageId);
+                saveCSD(savedSectionId, savedPageId);
+                saveStudy(savedSectionId, savedPageId);
+                saveAvailable(savedSectionId, savedPageId);
+                saveRequirement(savedSectionId, savedPageId);
+                saveFuture(savedSectionId, savedPageId);
+                savePotentials(savedSectionId, savedPageId);
+                saveInnovations(savedSectionId, savedPageId);
+                saveFaqs(savedSectionId, savedPageId);
+                saveApplys(savedSectionId, savedPageId);
+                saveImportants(savedSectionId, savedPageId);
 
             } catch (error) {
                 console.error("Failed to sync section:", error.response?.data || error.message);
