@@ -4,7 +4,6 @@ import JoditEditor from 'jodit-react';
 import 'jodit/es5/jodit.css';
 import { API, API_ENDPOINTS } from "../../../service/APIConfig";
 import axios from "axios";
-import { placeholder } from "jodit/esm/plugins/placeholder/placeholder";
 
 const config = {
   readonly: false,  // Set to true for read-only mode

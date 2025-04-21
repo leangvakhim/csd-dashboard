@@ -44,6 +44,8 @@ const PageField = () => {
                     page_id: page_id,
                 };
 
+                console.log("Payload is: ",programPayload);
+
                 if(
                     program.dep_id &&
                     existingServiceIds.includes(parseInt(program.dep_id)) &&
@@ -1887,7 +1889,7 @@ const PageField = () => {
         try{
             await savePage();
             alert("Page save successfully");
-            window.location.reload();
+            // window.location.reload();
         } catch (err) {
             console.error(" Error saving:", err);
         }
