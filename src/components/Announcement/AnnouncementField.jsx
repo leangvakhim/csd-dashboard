@@ -23,66 +23,10 @@ const AnnouncementField = () => {
     am_orders: 0,
   });
 
-  const handleSave = async () => {
-   
-    const payload = {
-      lang: formData.lang,
-      am_title: formData.am_title,
-      am_shortdesc: formData.am_shortdesc || null,
-      am_postdate: formData.am_postdate,
-      am_fav: formData.am_fav ? 1 : 0,
-      am_img: formData.am_img || null,
-      display: formData.display ? 1 : 0,
-      am_detail: subtitleContent,
-      active: formData.active ? 1 : 0,
-      am_orders: formData.am_orders || 0,
-    };
-
-    console.log('Submitting payload:', payload);
-
-    try {
-      let res;
-      if (formData.am_id) {
-        res = await axios.post(
-          `${API_ENDPOINTS.updateAnnouncement}/${formData.am_id}`,
-          payload,
-          {
-            headers: { 'Content-Type': 'application/json' },
-          }
-        );
-      } else {
-        res = await axios.post(API_ENDPOINTS.createAnnouncement, payload, {
-          headers: { 'Content-Type': 'application/json' },
-        });
-      }
-      alert('Announcement saved successfully!');
-      console.log('Response:', res.data);
-    } catch (err) {
-      console.error('Error saving announcement:', err);
-      if (err.response) {
-        console.error('Server response:', err.response.data);
-        alert(`Failed to save announcement: ${err.response.data.message || 'Unknown error'}`);
-      } else {
-        alert('Failed to connect to the server.');
-      }
-    }
-  };
-
   useEffect(() => {
-    if (announcementData) {
-      setFormData({
-        am_id: announcementData.am_id || null,
-        lang: announcementData.lang || 1,
-        am_title: announcementData.am_title || '',
-        am_shortdesc: announcementData.am_shortdesc || '',
-        display: !!announcementData.display,
-        am_postdate: announcementData.am_postdate || '',
-        am_fav: !!announcementData.am_fav,
-        active: announcementData.active || 1,
-        am_img: announcementData.am_img || null,
-        am_orders: announcementData.am_orders || 0,
-      });
-      setSubtitleContent(announcementData.am_detail || '');
+    if (announcementData && announcementData.data) {
+      setFormData(announcementData.data);
+      setSubtitleContent(announcementData.data.am_detail || '');
     }
   }, [announcementData]);
 
@@ -91,6 +35,53 @@ const AnnouncementField = () => {
       ...prev,
       am_img: imageId,
     }));
+  };
+
+  const handleSave = async () => {
+    // Validate required fields
+   
+
+    const payload = {
+      lang: formData.lang || 1,
+      am_title: formData.am_title || '',
+      am_shortdesc: formData.am_shortdesc || null,
+      am_postdate: formData.am_postdate || null,
+      am_fav: formData.am_fav ? 1 : 0,
+      am_img: formData.am_img || null,
+      display: formData.display ? 1 : 0,
+      am_detail: subtitleContent || '',
+      active: formData.active ? 1 : 0,
+      am_orders: formData.am_orders || 0,
+    };
+
+    console.log('Submitting payload:', JSON.stringify(payload, null, 2));
+
+    try {
+      let res;
+      if (formData.am_id) {
+        // Perform update
+        res = await axios.post(`${API_ENDPOINTS.updateAnnouncement}/${formData.am_id}`, payload, {
+          headers: { 'Content-Type': 'application/json' },
+        });
+      } else {
+        // Perform create
+        const { am_orders, ...createPayload } = payload;
+        res = await axios.post(API_ENDPOINTS.createAnnouncement, createPayload, {
+          headers: { 'Content-Type': 'application/json' },
+        });
+      }
+      alert('Announcement saved successfully!');
+      console.log('Response:', res.data);
+    } catch (err) {
+      console.error('Error saving announcement:', err);
+      if (err.response?.data?.errors) {
+        console.error('Validation failed:', err.response.data.errors);
+        alert(`Validation failed: ${JSON.stringify(err.response.data.errors)}`);
+      } else {
+        console.error('Server response:', err.response?.data);
+        alert(`Failed to save announcement: ${err.response?.data?.message || 'Unknown error'}`);
+      }
+    }
   };
 
   return (

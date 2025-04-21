@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { API_ENDPOINTS } from '../../service/APIConfig'; // Adjust path as needed
+import { API_ENDPOINTS } from '../../service/APIConfig';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
@@ -11,7 +11,7 @@ const AnnouncementDashboard = () => {
     useEffect(() => {
         const fetchAnnouncements = async () => {
             try {
-                const response = await axios.get(API_ENDPOINTS.getAnnouncements); // Adjust endpoint
+                const response = await axios.get(API_ENDPOINTS.getAnnouncement);
                 setAnnouncementItems(Array.isArray(response.data.data) ? response.data.data : []);
             } catch (error) {
                 console.error('Failed to fetch announcements:', error);
@@ -22,13 +22,13 @@ const AnnouncementDashboard = () => {
     }, []);
 
     const handleDelete = async (id) => {
-        if (!window.confirm('Are you sure you want to delete this announcement?')) return;
+        if (!window.confirm('Are you sure you want to toggle this announcement’s visibility?')) return;
 
         try {
-            await axios.put(`${API_ENDPOINTS.deleteAnnouncement}/${id}`); // Adjust endpoint
+            await axios.put(`${API_ENDPOINTS.deleteAnnouncement}/${id}`);
             setAnnouncementItems((prevItems) =>
                 prevItems.map((item) =>
-                    item.a_id === id ? { ...item, display: item.display ? 0 : 1 } : item
+                    item.am_id === id ? { ...item, display: item.display ? 0 : 1 } : item
                 )
             );
             window.location.reload();
@@ -39,9 +39,9 @@ const AnnouncementDashboard = () => {
 
     const handleEdit = async (id) => {
         try {
-            const response = await axios.get(`${API_ENDPOINTS.getAnnouncement}/${id}`); // Adjust endpoint
+            const response = await axios.get(`${API_ENDPOINTS.getAnnouncement}/${id}`);
             const announcementData = response.data;
-            navigate('/announcement-details', { state: { announcementData } }); // Adjust route
+            navigate('/announcement/announcement-details', { state: { announcementData } });
         } catch (error) {
             console.error('Error fetching announcement for edit:', error);
         }
@@ -53,13 +53,11 @@ const AnnouncementDashboard = () => {
 
         if (targetIndex < 0 || targetIndex >= newItems.length) return;
 
-        // Swap items locally
         [newItems[index], newItems[targetIndex]] = [newItems[targetIndex], newItems[index]];
 
-        // Update a_order values in ascending order
         const updatedItems = newItems.map((item, i) => ({
             ...item,
-            a_order: i + 1, // Assuming a_order field for ordering
+            am_orders: i + 1,
         }));
 
         setAnnouncementItems(updatedItems);
@@ -73,16 +71,16 @@ const AnnouncementDashboard = () => {
 
     const updateOrderOnServer = async (items) => {
         const payload = items.map((item) => ({
-            a_id: item.a_id,
-            a_order: item.a_order,
+            am_id: item.am_id,
+            am_orders: item.am_orders,
         }));
 
-        await axios.put(API_ENDPOINTS.updateAnnouncementOrder, payload); // Adjust endpoint
+        await axios.put(API_ENDPOINTS.updateAnnouncementOrder, payload);
     };
 
     const duplicateItem = async (id) => {
         try {
-            const response = await axios.post(`${API_ENDPOINTS.duplicateAnnouncement}/${id}`); // Adjust endpoint
+            const response = await axios.post(`${API_ENDPOINTS.duplicateAnnouncement}/${id}`);
             if (response.status === 200) {
                 alert('Announcement duplicated successfully');
                 window.location.reload();
@@ -97,21 +95,11 @@ const AnnouncementDashboard = () => {
             <table className="w-full text-sm text-left border border-gray-200 text-gray-500">
                 <thead className="text-xs text-gray-700 uppercase bg-gray-50">
                     <tr>
-                        <th scope="col" className="px-6 py-3">
-                            Title
-                        </th>
-                        <th scope="col" className="px-6 py-3">
-                            Post On
-                        </th>
-                        <th scope="col" className="px-6 py-3">
-                            Language
-                        </th>
-                        <th scope="col" className="px-6 py-3">
-                            Status
-                        </th>
-                        <th scope="col" className="px-6 py-3">
-                            {/* Action */}
-                        </th>
+                        <th scope="col" className="px-6 py-3">Title</th>
+                        <th scope="col" className="px-6 py-3">Post On</th>
+                        <th scope="col" className="px-6 py-3">Language</th>
+                        <th scope="col" className="px-6 py-3">Status</th>
+                        <th scope="col" className="px-6 py-3"></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -131,8 +119,8 @@ const AnnouncementDashboard = () => {
                                     {item.am_title || 'No Title'}
                                 </th>
                                 <td className="px-6 py-4">
-                                    {item.am_date
-                                        ? new Date(item.am_date).toLocaleDateString('en-US', {
+                                    {item.am_postdate
+                                        ? new Date(item.am_postdate).toLocaleDateString('en-US', {
                                               year: 'numeric',
                                               month: 'long',
                                               day: 'numeric',
@@ -140,10 +128,7 @@ const AnnouncementDashboard = () => {
                                         : 'N/A'}
                                 </td>
                                 <td className="px-6 py-4">
-                                    {{
-                                        1: 'English',
-                                        2: 'Khmer',
-                                    }[item.lang] || 'Unknown'}
+                                    {{ 1: 'English', 2: 'Khmer' }[item.lang] || 'Unknown'}
                                 </td>
                                 <td className="px-6 py-4">
                                     <span
