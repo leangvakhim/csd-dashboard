@@ -9,6 +9,7 @@ const MenuDashboard = () => {
     const [selectedItem, setSelectedItem] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [pageOptions, setPageOptions] = useState([]);
+    const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
 
     const handleEdit = (item) => {
         setSelectedItem(item);
@@ -106,7 +107,7 @@ const MenuDashboard = () => {
     };
 
     return (
-        <div className="relative overflow-x-auto shadow-md px-8">
+        <div className="relative shadow-md px-8">
             <table className="w-full text-sm text-left border border-gray-200 text-gray-500 ">
                 <thead className="text-xs text-gray-700  uppercase bg-gray-50 ">
                     <tr>
@@ -149,7 +150,7 @@ const MenuDashboard = () => {
                                     {item.display ? 'Enable' : 'Disable'}
                                 </span>
                             </td>
-                            <td className="px-6 py-4 flex gap-2 items-center relative">
+                            <td className="px-6 py-4 flex gap-2 items-center relative overflow-visible">
                                 <a onClick={() => moveItem(index, 'up')} className="cursor-pointer font-medium text-gray-900 hover:text-blue-500 hover:underline">
                                     <i className="ti ti-chevron-up text-xl"></i>
                                 </a> |
@@ -158,13 +159,20 @@ const MenuDashboard = () => {
                                 </a> |
                                 <div className="relative">
                                     <button
-                                        onClick={() => setActiveDropdown(activeDropdown === item.menu_id ? null : item.menu_id)}
+                                        onClick={(e) => {
+                                            const rect = e.currentTarget.getBoundingClientRect();
+                                            setDropdownPosition({ top: rect.bottom + window.scrollY, left: rect.left + window.scrollX });
+                                            setActiveDropdown(activeDropdown === item.menu_id ? null : item.menu_id);
+                                        }}
                                         className="font-medium text-gray-900 hover:text-blue-500"
                                     >
                                         <i className="ti ti-dots-vertical text-xl"></i>
                                     </button>
                                     {activeDropdown === item.menu_id && (
-                                        <div className="fixed right-0 mt-2 w-36 mr-8 bg-white border border-gray-300 rounded-md shadow-md z-50">
+                                        <div
+                                            className="fixed w-36 bg-white border border-gray-300 rounded-md shadow-md z-50"
+                                            style={{ top: `${dropdownPosition.top}px`, left: `${dropdownPosition.left}px` }}
+                                        >
                                             <div className="py-1">
                                                 <a onClick={() => handleEdit(item)} className="cursor-pointer flex gap-2 items-center px-4 py-2 hover:bg-blue-100">
                                                     <i className="ti ti-edit text-gray-500 text-xl"></i>

@@ -82,8 +82,11 @@ const CarouselPieceSlider = forwardRef(({displaySlideshow, sectionId, pageId}, r
                 console.error('Error fetching sliders:', error);
             }
         }
+        // console.log("sectionId is: ", sectionId);
+        // console.log("pageId is: ", pageId);
 
-        if(sectionId && pageId){
+        // if (sectionId != null && pageId != null) {
+        if (sectionId && pageId) {
             fetchPages();
             fetchSliders();
         }
