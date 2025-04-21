@@ -202,6 +202,7 @@ const AnnouncementFieldBody = ({
               </label>
               <div className="mt-1 ">
                 <label class="toggle-switch mt-2">
+<<<<<<< Updated upstream
                   <input
                     type="checkbox"
                     checked={formData.display}
@@ -209,6 +210,9 @@ const AnnouncementFieldBody = ({
                       setFormData({ ...formData, display: e.target.checked })
                     }
                   />
+=======
+                  <input type="checkbox" />
+>>>>>>> Stashed changes
                   <span class="slider"></span>
                 </label>
               </div>
@@ -233,6 +237,7 @@ const AnnouncementFieldBody = ({
                 </div>
               </div>
 
+<<<<<<< Updated upstream
               <div className="min-h-full">
                 <div className="w-full  bg-white space-y-5">
                   {/* Favorite Dropdown */}
@@ -252,6 +257,18 @@ const AnnouncementFieldBody = ({
                     </select>
                   </div>
                 </div>
+=======
+              <div className="flex-1 w-full">
+                {/* Favorite Dropdown */}
+
+                <label className="block text-xl font-medium leading-6 text-white-900">
+                  Favorite
+                </label>
+                <select className="mt-2 block w-full border !border-gray-300 rounded-md py-2 pl-2 text-gray-900 shadow-sm focus:ring-2 focus:ring-indigo-500">
+                  <option value={true}>Yes</option>
+                  <option value={false}>No</option>
+                </select>
+>>>>>>> Stashed changes
               </div>
             </div>
           </div>
