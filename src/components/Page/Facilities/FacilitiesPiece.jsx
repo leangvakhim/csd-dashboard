@@ -1,11 +1,18 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } from "react";
 import MediaLibraryModal from "../../MediaLibraryModal";
 import FacilitiesPieceSlider from "../Facilities/FacilitiesPieceSlider";
+import axios from "axios";
+import { API_ENDPOINTS, API } from "../../../service/APIConfig";
 
-const FacilitiesPiece = () => {
+const FacilitiesPiece = forwardRef(({sectionId, pageId}, ref) => {
   const [isRotatedButton1, setIsRotatedButton1] = useState(false);
   const [isMediaLibraryOpen, setMediaLibraryOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState("");
+  const [afId, setAfId] = useState(0);
+  const [afTitle, setAfTitle] = useState('');
+  const [afSubTitle, setAfSubTitle] = useState('');
+  const [displayFacilities, setDisplayFacilities] = useState(0);
+  const subserviceRef = useRef();
 
   const openMediaLibrary = () => {
     setMediaLibraryOpen(true);
@@ -17,6 +24,126 @@ const FacilitiesPiece = () => {
     }
     setMediaLibraryOpen(false);
   };
+
+  const getImageIdByUrl = async (url) => {
+    try {
+      const response = await axios.get(API_ENDPOINTS.getImages);
+      const images = Array.isArray(response.data) ? response.data : response.data.data;
+
+      const matchedImage = images.find((img) => img.image_url === url);
+      return matchedImage?.image_id || null;
+      } catch (error) {
+      console.error('❌ Failed to fetch image ID:', error);
+      return null;
+    }
+  };
+
+  useImperativeHandle(ref, () => ({
+    getFacilities: async () => {
+      let textId;
+
+      try {
+        const response = await axios.get(`${API_ENDPOINTS.getAcadFacilities}?af_sec=${sectionId}`);
+        const facilities = response.data.data || [];
+        const currentFacility = facilities.find(f => f.section.sec_page === pageId && f.af_sec === sectionId && f.text?.text_type === 3);
+        if (currentFacility?.text?.text_id) {
+          textId = currentFacility.text.text_id;
+        }
+      } catch (error) {
+        console.error("Failed to check existing facility:", error);
+      }
+
+      if (textId) {
+        const updatePayload = {
+          text_id: textId,
+          title: afTitle,
+          desc: afSubTitle,
+          text_type: 3,
+          text_sec: sectionId,
+        };
+        const textRes = await axios.post(`${API_ENDPOINTS.updateText}/${textId}`, { texts: updatePayload });
+        textId = textRes.data.data?.text_id;
+      } else {
+        const textPayload = {
+          title: afTitle,
+          desc: afSubTitle,
+          text_type: 3,
+          text_sec: sectionId,
+        };
+        const textRes = await axios.post(`${API_ENDPOINTS.createText}`, { texts: [textPayload] });
+        textId = textRes.data.data?.text_id;
+      }
+
+      const imageId = await getImageIdByUrl(selectedImage);
+
+      const data = {
+        af_id: afId,
+        af_sec: sectionId,
+        af_text: textId,
+        af_img: imageId,
+        subservices: await subserviceRef.current?.getSubserviceSliders(),
+      };
+
+      return [data];
+    }
+  }));
+
+  const handleToggleDisplay = async () => {
+    try {
+        const newDisplay = displayFacilities === 1 ? 0 : 1;
+        await axios.post(`${API_ENDPOINTS.updateSection}/${sectionId}`, {
+            sec_id: sectionId,
+            display: newDisplay,
+        });
+        setDisplayFacilities(newDisplay);
+    } catch (error) {
+        console.error("Failed to update display:", error);
+    }
+  };
+
+  const handleDeleteSection = async () => {
+    if (!window.confirm("Are you sure you want to delete this section?")) return;
+
+    try {
+        await axios.put(`${API_ENDPOINTS.deleteSection}/${sectionId}`);
+        window.location.reload();
+    } catch (error) {
+        console.error('Failed to delete section:', error);
+    }
+  };
+
+  useEffect(() => {
+    const fetchFacitlies = async () => {
+      try {
+        const response = await axios.get(`${API_ENDPOINTS.getAcadFacilities}?af_sec=${sectionId}`);
+        const acadfacilities = response.data.data || [];
+        if (acadfacilities.length > 0) {
+          const acadfacility = acadfacilities.find(item =>
+            item.section.sec_page === pageId &&
+            item.af_sec === sectionId &&
+            item.text?.text_type === 3
+          );
+
+          if (acadfacility) {
+            setAfId(acadfacility.af_id || null);
+            setAfTitle(acadfacility.text?.title || '');
+            setAfSubTitle(acadfacility.text?.desc || '');
+            setSelectedImage(acadfacility.af_img ? `${API}/storage/uploads/${acadfacility.image.img}` : '');
+          }
+        }
+
+        const sectionRes = await axios.get(`${API_ENDPOINTS.getSection}/${sectionId}`);
+        const sectionData = sectionRes.data.data;
+        setDisplayFacilities(sectionData.display || 0);
+      } catch (error) {
+        console.error("Failed to fetch facilities:", error);
+      }
+    };
+
+    if(sectionId && pageId){
+      fetchFacitlies();
+    }
+  }, [sectionId]);
 
   return (
     <div className="grid grid-cols-1 gap-4 ">
@@ -38,6 +165,7 @@ const FacilitiesPiece = () => {
             </div>
             <div className="flex gap-1">
               <svg
+                onClick={() => handleDeleteSection()}
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
@@ -82,6 +210,8 @@ const FacilitiesPiece = () => {
             </label>
             <div className="mt-2">
               <input
+                value={afTitle}
+                onChange={(e) => setAfTitle(e.target.value)}
                 type="text"
                 className="block w-full !border-gray-200 border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
               />
@@ -94,7 +224,11 @@ const FacilitiesPiece = () => {
             </label>
             <div className="mt-2">
               <label class="toggle-switch mt-2">
-                <input type="checkbox" />
+                <input
+                  type="checkbox"
+                  checked={displayFacilities === 1}
+                  onChange={handleToggleDisplay}
+                />
                 <span class="slider"></span>
               </label>
             </div>
@@ -107,7 +241,10 @@ const FacilitiesPiece = () => {
               Subtitle
             </label>
             <div className="mt-2">
-              <textarea className="!border-gray-300 h-60 block w-full rounded-md border-0 py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-2xl sm:leading-6"></textarea>
+              <textarea
+                value={afSubTitle}
+                onChange={(e) => setAfSubTitle(e.target.value)}
+                className="!border-gray-300 h-60 block w-full rounded-md border-0 py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-2xl sm:leading-6"></textarea>
             </div>
           </div>
           <div className="flex-1">
@@ -193,10 +330,12 @@ const FacilitiesPiece = () => {
             />
           )}
         </div>
-        <FacilitiesPieceSlider></FacilitiesPieceSlider>
+        <div className="mb-3">
+          <FacilitiesPieceSlider ref={subserviceRef} facilityId={afId}/>
+        </div>
       </details>
     </div>
   );
-};
+});
 
 export default FacilitiesPiece;

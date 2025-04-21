@@ -1,8 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, forwardRef, useImperativeHandle, useEffect } from "react";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import MediaLibraryModal from "../../MediaLibraryModal";
+import axios from "axios";
+import { API_ENDPOINTS, API } from "../../../service/APIConfig";
 
-const FacilitiesPieceSlider = () => {
+const FacilitiesPieceSlider = forwardRef(({facilityId}, ref) => {
   const [currentSliderId, setCurrentSliderId] = useState(null);
   const [currentField, setCurrentField] = useState("");
   const [isMediaLibraryOpen, setMediaLibraryOpen] = useState(false);
@@ -12,26 +14,50 @@ const FacilitiesPieceSlider = () => {
       id: "1",
       title: "Facilities 1",
       subtitle: "",
-      logo: "",
       image: "",
-      firstbtntitle: "",
-      firstbtnselect: "",
-      secondbtntitle: "",
-      secondbtnselect: "",
+      display: 0
     },
   ]);
 
+  const getImageIdByUrl = async (url) => {
+    try {
+      const response = await axios.get(API_ENDPOINTS.getImages);
+      const images = Array.isArray(response.data) ? response.data : response.data.data;
+
+      const matchedImage = images.find((img) => img.image_url === url);
+      return matchedImage?.image_id || null;
+      } catch (error) {
+      console.error('❌ Failed to fetch image ID:', error);
+      return null;
+    }
+  };
+
+  useImperativeHandle(ref, () => ({
+    getSubserviceSliders: async () => {
+      const updatedSliders = await Promise.all(
+        slider.map(async (slide) => {
+          const imageId = await getImageIdByUrl(slide.image);
+          return {
+            title: slide.title,
+            subtitle: slide.subtitle,
+            image: imageId,
+            display: slide.display,
+            id: slide.id,
+          };
+        })
+      );
+
+      return updatedSliders;
+    },
+  }));
+
   const handleAddSlider = () => {
     const newSlider = {
-      id: `${Date.now()}`,
+      id: (slider.length + 1).toString(),
       title: `Facilities ${slider.length + 1}`,
       subtitle: "",
-      logo: "",
       image: "",
-      firstbtntitle: "",
-      firstbtnselect: "",
-      secondbtntitle: "",
-      secondbtnselect: "",
+      display: 0
     };
 
     setSlider([...slider, newSlider]);
@@ -69,6 +95,57 @@ const FacilitiesPieceSlider = () => {
       )
     );
     setMediaLibraryOpen(false);
+  };
+
+  useEffect(() => {
+    const fetchSliders = async () => {
+      try {
+        const response = await axios.get(API_ENDPOINTS.getSubserviceAF);
+        const data = response.data?.data;
+
+        const subservices = Array.isArray(data) ? data : [data];
+
+        if (subservices.length > 0 && facilityId) {
+          const validSubservices = subservices.filter(item => item.ss_af === facilityId);
+
+
+          const formattedData = validSubservices.map(item => ({
+            id: item.ss_id.toString(),
+            title: item.ss_title || '',
+            subtitle: item.ss_subtitle || '',
+            image: item.image?.img ? `${API}/storage/uploads/${item.image.img}` : '',
+            display: item.display === 1
+          }));
+
+          if (formattedData.length > 0) {
+            setSlider(formattedData);
+          } else {
+            setSlider([{
+              id: "1",
+              title: "Facilities 1",
+              subtitle: "",
+              image: "",
+              display: 0
+            }]);
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching sliders:', error);
+      }
+    };
+
+    fetchSliders();
+  }, [facilityId]);
+
+  const handleDeleteSlider = async (sliderId) => {
+    if (!window.confirm("Are you sure you want to delete this slider?")) return;
+
+    try {
+        await axios.put(`${API_ENDPOINTS.deleteSubserviceAF}/${sliderId}`);
+        setSlider((prevSlider) => prevSlider.filter((item) => item.id !== sliderId));
+    } catch (error) {
+        console.error('Failed to delete slider:', error);
+    }
   };
 
   return (
@@ -121,6 +198,7 @@ const FacilitiesPieceSlider = () => {
                           <span className=" shrink-0 transition-transform duration-500 group-open:-rotate-0 flex gap-2">
                             <div className="block">
                               <svg
+                                onClick={() => handleDeleteSlider(sliders.id)}
                                 xmlns="http://www.w3.org/2000/svg"
                                 fill="none"
                                 viewBox="0 0 24 24"
@@ -159,16 +237,42 @@ const FacilitiesPieceSlider = () => {
                         </summary>
 
                         {/* title */}
-                        <div className="grid grid-cols-1 gap-4 px-4 py-2">
+                        <div className="flex flex-row gap-4 px-4 py-2">
                           <div className="flex-1">
-                            <label className=" block text-xl font-medium leading-6 text-white-900">
+                            <label className="block text-xl font-medium leading-6 text-white-900">
                               Title
                             </label>
                             <div className="mt-2">
                               <input
                                 type="text"
-                                className="!border-gray-300 block w-full border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
+                                className="block w-full !border-gray-200 border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
+                                value={sliders.title}
+                                onChange={(e) => {
+                                  const updatedSlider = [...slider];
+                                  updatedSlider[index].title = e.target.value;
+                                  setSlider(updatedSlider);
+                                }}
                               />
+                            </div>
+                          </div>
+
+                          <div className="flex-non">
+                            <label className="block text-xl font-medium leading-6 text-white-900">
+                              Display
+                            </label>
+                            <div className="mt-2">
+                              <label class="toggle-switch mt-2">
+                                <input
+                                  type="checkbox"
+                                  checked={sliders.display === 1}
+                                  onChange={(e) => {
+                                    const updatedSlider = [...slider];
+                                    updatedSlider[index].display = e.target.checked ? 1 : 0;
+                                    setSlider(updatedSlider);
+                                  }}
+                                />
+                                <span class="slider"></span>
+                              </label>
                             </div>
                           </div>
                         </div>
@@ -179,7 +283,15 @@ const FacilitiesPieceSlider = () => {
                               Subtitle
                             </label>
                             <div className="mt-2">
-                              <textarea className="!border-gray-300 h-60 block w-full rounded-md border-0 py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-2xl sm:leading-6"></textarea>
+                              <textarea
+                                className="!border-gray-300 h-60 block w-full rounded-md border-0 py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-2xl sm:leading-6"
+                                value={sliders.subtitle}
+                                onChange={(e) => {
+                                  const updatedSlider = [...slider];
+                                  updatedSlider[index].subtitle = e.target.value;
+                                  setSlider(updatedSlider);
+                                }}
+                              ></textarea>
                             </div>
                           </div>
 
@@ -303,6 +415,6 @@ const FacilitiesPieceSlider = () => {
       </Droppable>
     </DragDropContext>
   );
-};
+});
 
 export default FacilitiesPieceSlider;

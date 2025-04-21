@@ -1,13 +1,67 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } from "react";
 import MediaLibraryModal from "../../MediaLibraryModal";
+import { API_ENDPOINTS, API } from "../../../service/APIConfig";
+import axios from "axios";
 
-const AcademicPiece = () => {
+const AcademicPiece = forwardRef(({sectionId, pageId}, ref) => {
   const [isRotatedButton1, setIsRotatedButton1] = useState(false);
   const [isMediaLibraryOpen, setMediaLibraryOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState("");
+  const [acadId, setAcadId] = useState(0);
+  const [title, setTitle] = useState("");
+  const [detail, setDetail] = useState("");
+  const [btntext1, setBtnText1] = useState("");
+  const [btntext2, setBtnText2] = useState("");
+  const [routepage, setRoutePage] = useState("");
+  const [routetext, setRouteText] = useState("");
+  const [displayAcademic, setDisplayAcademic] = useState(0);
+  const [pages, setPages] = useState("");
 
   const openMediaLibrary = () => {
     setMediaLibraryOpen(true);
+  };
+
+  useImperativeHandle(ref, () => ({
+     getAcademics: async () => {
+      const imgId = await getImageIdByUrl(selectedImage);
+
+      return [
+        {
+          acad_id: acadId,
+          acad_title: title,
+          acad_img: imgId,
+          acad_detail: detail,
+          acad_btntext1: btntext1,
+          acad_btntext2: btntext2,
+          acad_routepage: routepage,
+          acad_routetext: routetext,
+        }
+      ];
+    }
+  }));
+
+  const handleDeleteSection = async () => {
+    if (!window.confirm("Are you sure you want to delete this section?")) return;
+
+    try {
+        await axios.put(`${API_ENDPOINTS.deleteSection}/${sectionId}`);
+        window.location.reload();
+    } catch (error) {
+        console.error('Failed to delete section:', error);
+    }
+  };
+
+  const getImageIdByUrl = async (url) => {
+    try {
+      const response = await axios.get(API_ENDPOINTS.getImages);
+      const images = Array.isArray(response.data) ? response.data : response.data.data;
+
+      const matchedImage = images.find((img) => img.image_url === url);
+      return matchedImage?.image_id || null;
+    } catch (error) {
+      console.error('❌ Failed to fetch image ID:', error);
+      return null;
+    }
   };
 
   const handleImageSelect = (imageUrl, field) => {
@@ -16,6 +70,66 @@ const AcademicPiece = () => {
     }
     setMediaLibraryOpen(false);
   };
+
+  const handleToggleDisplay = async () => {
+    try {
+        const newDisplay = displayAcademic === 1 ? 0 : 1;
+        await axios.post(`${API_ENDPOINTS.updateSection}/${sectionId}`, {
+            sec_id: sectionId,
+            display: newDisplay,
+        });
+        setDisplayAcademic(newDisplay);
+    } catch (error) {
+        console.error("Failed to update display:", error);
+    }
+  };
+
+  useEffect(() => {
+    const fetchAcademics = async () => {
+      try {
+        const response = await axios.get(`${API_ENDPOINTS.getAcademic}?ban_sec=${sectionId}`);
+        const academics = response.data.data || [];
+        console.log("academics: ", academics);
+        console.log("pageId: ", pageId);
+        console.log("sectionId: ", sectionId);
+        if (academics.length > 0) {
+          const academic = academics.find(item => item?.section?.sec_page === pageId);
+          if (academic) {
+            setAcadId(academic.acad_id || null);
+            setTitle(academic.acad_title || '');
+            setDetail(academic.acad_detail || '');
+            setBtnText1(academic.acad_btntext1 || '');
+            setBtnText2(academic.acad_btntext2 || '');
+            setRoutePage(academic.acad_routepage || '');
+            setRouteText(academic.acad_routetext || '');
+            setSelectedImage(academic.acad_img ? `${API}/storage/uploads/${academic.image.img}` : '');
+          }
+        }
+
+        const sectionRes = await axios.get(`${API_ENDPOINTS.getSection}/${sectionId}`);
+        const sectionData = sectionRes.data.data;
+        setDisplayAcademic(sectionData.display || 0);
+
+      } catch (error) {
+          console.error("Failed to fetch academics:", error);
+      }
+    };
+
+    const fetchPages = async () => {
+      try{
+        const response = await axios.get(API_ENDPOINTS.getPage);
+        const page = response.data?.data || [];
+        setPages(page);
+      } catch (error) {
+        console.error('Error fetching sliders:', error);
+      }
+    }
+
+    if (sectionId && pageId) {
+      fetchAcademics();
+      fetchPages();
+    }
+  },[sectionId]);
 
   return (
     <div className="grid grid-cols-1 gap-4 ">
@@ -37,6 +151,7 @@ const AcademicPiece = () => {
             </div>
             <div className="flex gap-1">
               <svg
+                onClick={() => handleDeleteSection()}
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
@@ -83,6 +198,8 @@ const AcademicPiece = () => {
               <input
                 type="text"
                 className="block w-full !border-gray-200 border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
               />
             </div>
           </div>
@@ -93,7 +210,11 @@ const AcademicPiece = () => {
             </label>
             <div className="mt-2">
               <label class="toggle-switch mt-2">
-                <input type="checkbox" />
+                <input
+                  type="checkbox"
+                  checked={displayAcademic === 1}
+                  onChange={handleToggleDisplay}
+                />
                 <span class="slider"></span>
               </label>
             </div>
@@ -109,6 +230,8 @@ const AcademicPiece = () => {
               <input
                 type="text"
                 className="block w-full !border-gray-200 border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
+                value={btntext1}
+                onChange={(e) => setBtnText1(e.target.value)}
               />
             </div>
           </div>
@@ -121,11 +244,12 @@ const AcademicPiece = () => {
               <input
                 type="text"
                 className="block w-full !border-gray-200 border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
+                value={btntext2}
+                onChange={(e) => setBtnText2(e.target.value)}
               />
             </div>
           </div>
         </div>
-
         {/* Row 3 */}
         <div className="grid grid-cols-1 md:!grid-cols-2 gap-4 px-4 py-2 mb-1">
           <div className="flex-1">
@@ -216,6 +340,8 @@ const AcademicPiece = () => {
             </label>
             <div className="mt-2">
               <input
+                value={routetext}
+                onChange={(e) => setRouteText(e.target.value)}
                 type="text"
                 className="block w-full !border-gray-200 border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
               />
@@ -227,28 +353,37 @@ const AcademicPiece = () => {
               >
                 Route page
               </label>
-              <select class="mt-2 !border-gray-300 block w-full border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6">
-                <option selected>Choose a page</option>
-                <option value="Home">Home page</option>
-                <option value="About">About page</option>
+              <select
+                value={routepage}
+                onChange={(e) => setRoutePage(e.target.value)}
+                class="mt-2 !border-gray-300 block w-full border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6">
+                <option value="">Choose a page</option>
+                  {Array.isArray(pages) && pages.map((page) => (
+                      <option key={page.p_id} value={page.p_title}>
+                          {page.p_title}
+                      </option>
+                  ))}
               </select>
             </div>
           </div>
         </div>
-        {/* Row 3 */}
+        {/* Row 4 */}
         <div className="grid grid-cols-1  gap-4 px-4 py-2 mb-1">
           <div className="flex-1">
             <label className="block text-xl font-medium leading-6 text-white-900">
               Detail
             </label>
             <div className="mt-2">
-              <textarea className="!border-gray-300 h-60 block w-full rounded-md border-0 py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-2xl sm:leading-6"></textarea>
+              <textarea
+                value={detail}
+                onChange={(e) => setDetail(e.target.value)}
+                className="!border-gray-300 h-60 block w-full rounded-md border-0 py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-2xl sm:leading-6"></textarea>
             </div>
           </div>
         </div>
       </details>
     </div>
   );
-};
+});
 
 export default AcademicPiece;

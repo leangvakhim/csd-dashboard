@@ -1,8 +1,122 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } from "react";
 import TypePieceSlider from "../Type/TypePieceSlider";
+import axios from "axios";
+import { API_ENDPOINTS, API } from "../../../service/APIConfig";
 
-const TypePiece = () => {
+const TypePiece = forwardRef(({sectionId, pageId}, ref) => {
   const [isRotatedButton1, setIsRotatedButton1] = useState(false);
+  const [typeId, setTypeId] = useState(0);
+  const [typeTitle, setTypeTitle] = useState('');
+  const [typeType, setTypeType] = useState('');
+  const [typeSubTitle, setTypeSubTitle] = useState('');
+  const [displayTypes, setDisplayTypes] = useState(0);
+  const subtypeRef = useRef();
+
+  useImperativeHandle(ref, () => ({
+    getTypes: async () => {
+      let textId;
+
+      try {
+        const response = await axios.get(`${API_ENDPOINTS.getType}?tse_sec=${sectionId}`);
+        const types = response.data.data || [];
+        const currentType = types.find(f => f.section.sec_page === pageId && f.tse_sec === sectionId && f.text?.text_type === 6);
+        if (currentType?.text?.text_id) {
+          textId = currentType.text.text_id;
+        }
+      } catch (error) {
+        console.error("Failed to check existing type:", error);
+      }
+
+      if (textId) {
+        const updatePayload = {
+          text_id: textId,
+          title: typeTitle,
+          desc: typeSubTitle,
+          text_type: 6,
+          text_sec: sectionId,
+        };
+        const textRes = await axios.post(`${API_ENDPOINTS.updateText}/${textId}`, { texts: updatePayload });
+        textId = textRes.data.data?.text_id;
+      } else {
+        const textPayload = {
+          title: typeTitle,
+          desc: typeSubTitle,
+          text_type: 6,
+          text_sec: sectionId,
+        };
+        const textRes = await axios.post(`${API_ENDPOINTS.createText}`, { texts: [textPayload] });
+        textId = textRes.data.data?.text_id;
+      }
+
+
+      const data = {
+        tse_id: typeId,
+        tse_sec: sectionId,
+        tse_type: parseInt(typeType),
+        tse_text: textId,
+        subtypes: await subtypeRef.current?.getSubTypeSliders(),
+      };
+
+      return [data];
+    }
+  }));
+
+  const handleToggleDisplay = async () => {
+    try {
+        const newDisplay = displayTypes === 1 ? 0 : 1;
+        await axios.post(`${API_ENDPOINTS.updateSection}/${sectionId}`, {
+            sec_id: sectionId,
+            display: newDisplay,
+        });
+        setDisplayTypes(newDisplay);
+    } catch (error) {
+        console.error("Failed to update display:", error);
+    }
+  };
+
+  const handleDeleteSection = async () => {
+    if (!window.confirm("Are you sure you want to delete this section?")) return;
+
+    try {
+        await axios.put(`${API_ENDPOINTS.deleteSection}/${sectionId}`);
+        window.location.reload();
+    } catch (error) {
+        console.error('Failed to delete section:', error);
+    }
+  };
+
+  useEffect(() => {
+    const fetchTypes = async () => {
+      try {
+        const response = await axios.get(`${API_ENDPOINTS.getType}?tse_sec=${sectionId}`);
+        const types = response.data.data || [];
+        if (types.length > 0) {
+          const type = types.find(item =>
+            item.section.sec_page === pageId &&
+            item.tse_sec === sectionId &&
+            item.text?.text_type === 6
+          );
+
+          if (type) {
+            setTypeId(type.tse_id || null);
+            setTypeType(type.tse_type || null);
+            setTypeTitle(type.text?.title || '');
+            setTypeSubTitle(type.text?.desc || '');
+          }
+        }
+
+        const sectionRes = await axios.get(`${API_ENDPOINTS.getSection}/${sectionId}`);
+        const sectionData = sectionRes.data.data;
+        setDisplayTypes(sectionData.display || 0);
+      } catch (error) {
+        console.error("Failed to fetch facilities:", error);
+      }
+    };
+
+    if(sectionId && pageId){
+      fetchTypes();
+    }
+  }, [sectionId]);
 
   return (
     <div className="grid grid-cols-1 gap-4 ">
@@ -24,6 +138,7 @@ const TypePiece = () => {
             </div>
             <div className="flex gap-1">
               <svg
+                onClick={() => handleDeleteSection()}
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
@@ -69,9 +184,26 @@ const TypePiece = () => {
             <div className="mt-2">
               <input
                 type="text"
+                value={typeTitle}
+                onChange={(e) => setTypeTitle(e.target.value)}
                 className="block w-full !border-gray-200 border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
               />
             </div>
+          </div>
+          <div className="flex-1">
+            <label
+              for="countries"
+              class="block text-xl font-medium leading-6 text-white-900"
+            >
+              Type
+            </label>
+            <select
+              value={typeType}
+              onChange={(e) => setTypeType(e.target.value)}
+              class="mt-2 !border-gray-300 block w-full border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6">
+              <option value="1">With Check</option>
+              <option value="2">No Check</option>
+            </select>
           </div>
           <div className="flex-non">
             <label className="block text-xl font-medium leading-6 text-white-900">
@@ -79,7 +211,11 @@ const TypePiece = () => {
             </label>
             <div className="mt-2">
               <label class="toggle-switch mt-2">
-                <input type="checkbox" />
+                <input
+                  type="checkbox"
+                  checked={displayTypes === 1}
+                  onChange={handleToggleDisplay}
+                  />
                 <span class="slider"></span>
               </label>
             </div>
@@ -92,16 +228,19 @@ const TypePiece = () => {
               Subtitle
             </label>
             <div className="mt-2">
-              <textarea className="!border-gray-300 h-60 block w-full rounded-md border-0 py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-2xl sm:leading-6"></textarea>
+              <textarea
+                value={typeSubTitle}
+                onChange={(e) => setTypeSubTitle(e.target.value)}
+                className="!border-gray-300 h-60 block w-full rounded-md border-0 py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-2xl sm:leading-6"></textarea>
             </div>
           </div>
         </div>
         <div className="mb-4">
-          <TypePieceSlider/>
+          <TypePieceSlider ref={subtypeRef} typeId={typeId}/>
         </div>
       </details>
     </div>
   );
-};
+});
 
 export default TypePiece;

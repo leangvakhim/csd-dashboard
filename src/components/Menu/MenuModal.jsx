@@ -147,7 +147,7 @@ const MenuModal = ({ isOpen, onClose, data}) => {
                 <div className="!bg-white !rounded-lg !shadow-sm relative">
                     <div className="flex items-center justify-between p-4 md:p-5 border rounded-t border-gray-400">
                         <h3 className="text-lg font-semibold text-gray-900 ">
-                            Create New Menu
+                            Menu
                         </h3>
                         <button type="button" onClick={onClose} className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center ">
                             <svg className="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
@@ -230,7 +230,7 @@ const MenuModal = ({ isOpen, onClose, data}) => {
                         </div>
                         <div className="flex items-center gap-4">
                             <button type="submit" className="!bg-blue-600 !text-white font-medium px-4 py-2 rounded-lg hover:!bg-blue-700">
-                              Add new menu
+                              Save
                             </button>
                         </div>
                     </form>

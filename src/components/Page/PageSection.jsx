@@ -20,7 +20,6 @@ import { MdOutlineEventAvailable } from "react-icons/md";
 import { TbTax } from "react-icons/tb";
 import { HiOutlineLightBulb } from "react-icons/hi";
 import { TbContract } from "react-icons/tb";
-import { MdOutlineSwipeDownAlt } from "react-icons/md";
 import { TbDirections } from "react-icons/tb";
 import { TbCell } from "react-icons/tb";
 import { TbTargetArrow } from "react-icons/tb";
@@ -37,6 +36,9 @@ import { RiQuestionnaireLine } from "react-icons/ri";
 import { TbSchool } from "react-icons/tb";
 import { LuHeartHandshake } from "react-icons/lu";
 import { TbCalendarEvent } from "react-icons/tb";
+import { AiOutlinePhone } from "react-icons/ai";
+import { TbWorldQuestion } from "react-icons/tb";
+import { TbFocusAuto } from "react-icons/tb";
 import EventsPiece from "./Events/EventsPiece";
 import CarouselPiece from "./Carousel/CarouselPiece";
 import BannerPiece from "./Banner/BannerPiece";
@@ -62,7 +64,7 @@ import IntroductionPiece from "./Introduction/IntroductionPiece";
 import CsdPiece from "./CSD/CsdPiece";
 import StudyPiece from "./Study/StudyPiece";
 import FuturePiece from "./Future/FuturePiece";
-import PotentaiPiece from "./Potential/PotentailPiece";
+import PotentaiPiece from "./Potential/PotentialPiece";
 import InnovationPiece from "./Innovation/InnovationPiece";
 import FaqPiece from "./Faq/FaqPiece";
 import ApplyPiece from "./Apply/ApplyPiece";
@@ -73,6 +75,9 @@ import PartnerPiece from "./Partner/PartnerPiece";
 import FeedbackPiece from "./Feedback/FeedbackPiece";
 import { API_ENDPOINTS } from "../../service/APIConfig";
 import AnnouncementPiece from "./Announcement/AnnouncementPiece";
+import ContactPiece from "./Contact/ContactPiece";
+import QuestionPiece from "./Question/QuestionPiece";
+import AboutPiece from "./About/AboutPiece";
 const sectionOptions = [
   {
     type: "Slideshow",
@@ -225,6 +230,24 @@ const sectionOptions = [
     label: "Important",
   },
   {
+    type: "Contact",
+    component: ContactPiece,
+    icon: AiOutlinePhone,
+    label: "Contact",
+  },
+  {
+    type: "Question",
+    component: QuestionPiece,
+    icon: TbWorldQuestion,
+    label: "Question",
+  },
+  {
+    type: "About",
+    component: AboutPiece,
+    icon: TbFocusAuto,
+    label: "About",
+  },
+  {
     type: "New",
     component: NewPiece,
     icon: TbNews,
@@ -290,6 +313,40 @@ const PageSection = forwardRef(({ formData = {}, setFormData = {}, page_id }, re
   const programPieceRef = useRef();
   const bannerPieceRef = useRef();
   const slideshowPieceRef = useRef();
+  const servicePieceRef = useRef();
+  const academicPieceRef = useRef();
+  const informationPieceRef = useRef();
+  const facilitiesPieceRef = useRef();
+  const galleryPieceRef = useRef();
+  const specializationPieceRef = useRef();
+  const testimonialPieceRef = useRef();
+  const criteriaPieceRef = useRef();
+  const typePieceRef = useRef();
+  const csdPieceRef = useRef();
+  const unlockPieceRef = useRef();
+  const studyPieceRef = useRef();
+  const availablePieceRef = useRef();
+  const feePieceRef = useRef();
+  const requirementPieceRef = useRef();
+  const futurePieceRef = useRef();
+  const potentialPieceRef = useRef();
+  const introductionPieceRef = useRef();
+  const innovationPieceRef = useRef();
+  const faqPieceRef = useRef();
+  const applyPieceRef = useRef();
+  const importantPieceRef = useRef();
+  const contactPieceRef = useRef();
+  const questionPieceRef = useRef();
+  const newPieceRef = useRef();
+  const eventPieceRef = useRef();
+  const announcementPieceRef = useRef();
+  const researchPieceRef = useRef();
+  const facultyPieceRef = useRef();
+  const labPieceRef = useRef();
+  const scholarshipPieceRef = useRef();
+  const careerPieceRef = useRef();
+  const partnerPieceRef = useRef();
+  const feedbackPieceRef = useRef();
   const [showSection, setShowSection] = useState(false);
   const [selectedSections, setSelectedSections] = useState([]);
 
@@ -361,6 +418,40 @@ const PageSection = forwardRef(({ formData = {}, setFormData = {}, page_id }, re
     getPrograms: () => programPieceRef.current?.getPrograms?.() || [],
     getBanners: () => bannerPieceRef.current?.getBanners?.() || [],
     getSlideshows: () => slideshowPieceRef.current?.getSlideshows?.() || [],
+    getServices: () => servicePieceRef.current?.getServices?.() || [],
+    getAcademics: () => academicPieceRef.current?.getAcademics?.() || [],
+    getInformations: () => informationPieceRef.current?.getInformations?.() || [],
+    getFacilities: () => facilitiesPieceRef.current?.getFacilities?.() || [],
+    getGallery: () => galleryPieceRef.current?.getGallery?.() || [],
+    getSpecializations: () => specializationPieceRef.current?.getSpecializations?.() || [],
+    getTestimonials: () => testimonialPieceRef.current?.getTestimonials?.() || [],
+    getTypes: () => typePieceRef.current?.getTypes?.() || [],
+    getCriterias: () => criteriaPieceRef.current?.getCriterias?.() || [],
+    getCSDs: () => csdPieceRef.current?.getCSDs?.() || [],
+    getUnlocks: () => unlockPieceRef.current?.getUnlocks?.() || [],
+    getStudys: () => studyPieceRef.current?.getStudys?.() || [],
+    getAvailables: () => availablePieceRef.current?.getAvailables?.() || [],
+    getFees: () => feePieceRef.current?.getFees?.() || [],
+    getRequirements: () => requirementPieceRef.current?.getRequirements?.() || [],
+    getFutures: () => futurePieceRef.current?.getFutures?.() || [],
+    getPotentials: () => potentialPieceRef.current?.getPotentials?.() || [],
+    getIntroductions: () => introductionPieceRef.current?.getIntroductions?.() || [],
+    getInnovations: () => innovationPieceRef.current?.getInnovations?.() || [],
+    getFAQs: () => faqPieceRef.current?.getFAQs?.() || [],
+    getApplys: () => applyPieceRef.current?.getApplys?.() || [],
+    getImportants: () => importantPieceRef.current?.getImportants?.() || [],
+    getContacts: () => contactPieceRef.current?.getContacts?.() || [],
+    getQuestions: () => questionPieceRef.current?.getQuestions?.() || [],
+    getNews: () => newPieceRef.current?.getNews?.() || [],
+    getEvents: () => eventPieceRef.current?.getEvents?.() || [],
+    getAnnouncements: () => announcementPieceRef.current?.getAnnouncements?.() || [],
+    getResearchs: () => researchPieceRef.current?.getResearchs?.() || [],
+    getFacultys: () => facultyPieceRef.current?.getFacultys?.() || [],
+    getLabs: () => labPieceRef.current?.getLabs?.() || [],
+    getScholarships: () => scholarshipPieceRef.current?.getScholarships?.() || [],
+    getCareers: () => careerPieceRef.current?.getCareers?.() || [],
+    getPartners: () => partnerPieceRef.current?.getPartners?.() || [],
+    getFeedbacks: () => feedbackPieceRef.current?.getFeedbacks?.() || [],
   }));
 
   const handleAddPage = () => {
@@ -446,10 +537,44 @@ const PageSection = forwardRef(({ formData = {}, setFormData = {}, page_id }, re
                         section.type === "Programs" ? programPieceRef
                       : section.type === "Banner" ? bannerPieceRef
                       : section.type === "Slideshow" ? slideshowPieceRef
+                      : section.type === "Service" ? servicePieceRef
+                      : section.type === "Academic" ? academicPieceRef
+                      : section.type === "Information" ? informationPieceRef
+                      : section.type === "Facilities" ? facilitiesPieceRef
+                      : section.type === "Gallery" ? galleryPieceRef
+                      : section.type === "Specialization" ? specializationPieceRef
+                      : section.type === "Testimonial" ? testimonialPieceRef
+                      : section.type === "Type" ? typePieceRef
+                      : section.type === "Criteria" ? criteriaPieceRef
+                      : section.type === "CSD" ? csdPieceRef
+                      : section.type === "Unlock" ? unlockPieceRef
+                      : section.type === "Study" ? studyPieceRef
+                      : section.type === "Avaialable" ? availablePieceRef
+                      : section.type === "Fee" ? feePieceRef
+                      : section.type === "Requirement" ? requirementPieceRef
+                      : section.type === "Future" ? futurePieceRef
+                      : section.type === "Potential" ? potentialPieceRef
+                      : section.type === "Introduction" ? introductionPieceRef
+                      : section.type === "Innovation" ? innovationPieceRef
+                      : section.type === "FAQ" ? faqPieceRef
+                      : section.type === "Apply" ? applyPieceRef
+                      : section.type === "Important" ? importantPieceRef
+                      : section.type === "Contact" ? contactPieceRef
+                      : section.type === "Question" ? questionPieceRef
+                      : section.type === "New" ? newPieceRef
+                      : section.type === "Event" ? eventPieceRef
+                      : section.type === "Announcement" ? announcementPieceRef
+                      : section.type === "Research" ? researchPieceRef
+                      : section.type === "Faculty" ? facultyPieceRef
+                      : section.type === "Lab" ? labPieceRef
+                      : section.type === "Scholarship" ? scholarshipPieceRef
+                      : section.type === "Career" ? careerPieceRef
+                      : section.type === "Partner" ? partnerPieceRef
                       : null
                     }
                   data={section.data}
                   sectionId={section.data?.sec_id || section.id}
+                  pageId={page_id}
                   onDataChange={(newData) => handleDataChange(newData, index)}
                 />
               </div>

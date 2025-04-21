@@ -1,16 +1,21 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } from "react";
 import MediaLibraryModal from "../../MediaLibraryModal";
+import axios from "axios";
+import { API_ENDPOINTS, API } from "../../../service/APIConfig";
 
-
-const UnlockPiece = () => {
+const UnlockPiece = forwardRef(({sectionId, pageId}, ref) => {
     const [isRotatedButton1, setIsRotatedButton1] = useState(false);
-    const [redirectpage, setRedirectpage] = useState("")
     const [isMediaLibraryOpen, setMediaLibraryOpen] = useState(false);
     const [selectedImage, setSelectedImage] = useState("");
-
+    const [detail, setDetail] = useState("");
+    const [title, setTitle] = useState("");
+    const [btnText, setBtnText] = useState("");
+    const [routePage, setRoutePage] = useState("");
+    const [pages, setPages] = useState({});
+    const [umdId, setUmdId] = useState(null);
+    const [displayUnlock, setDisplayUnlock] = useState(0);
 
     const openMediaLibrary = () => {
-        // setCurrentField(field);
         setMediaLibraryOpen(true);
     };
 
@@ -19,6 +24,102 @@ const UnlockPiece = () => {
             setSelectedImage(imageUrl ? `${imageUrl}` : "");
         }
         setMediaLibraryOpen(false);
+    };
+
+    const getImageIdByUrl = async (url) => {
+        try {
+        const response = await axios.get(API_ENDPOINTS.getImages);
+        const images = Array.isArray(response.data) ? response.data : response.data.data;
+
+        const matchedImage = images.find((img) => img.image_url === url);
+        return matchedImage?.image_id || null;
+        } catch (error) {
+        console.error('❌ Failed to fetch image ID:', error);
+        return null;
+        }
+    };
+
+    useImperativeHandle(ref, () => ({
+        getUnlocks: async () => {
+        const imgId = await getImageIdByUrl(selectedImage);
+
+        return [
+            {
+            umd_id: umdId,
+            umd_title: title,
+            umd_img: imgId,
+            umd_detail: detail,
+            umd_btntext: btnText,
+            umd_routepage: routePage,
+            }
+        ];
+        }
+    }));
+
+    const handleToggleDisplay = async () => {
+        try {
+            const newDisplay = displayUnlock === 1 ? 0 : 1;
+            await axios.post(`${API_ENDPOINTS.updateSection}/${sectionId}`, {
+                sec_id: sectionId,
+                display: newDisplay,
+            });
+            setDisplayUnlock(newDisplay);
+        } catch (error) {
+            console.error("Failed to update display:", error);
+        }
+    };
+
+    useEffect(() => {
+        const fetchUnlocks = async () => {
+        try {
+            const response = await axios.get(`${API_ENDPOINTS.getUnlock}?umd_sec=${sectionId}`);
+            const unlocks = response.data.data || [];
+            if (unlocks.length > 0) {
+            const unlock = unlocks.find(item => item?.section?.sec_page === pageId);
+            if (unlock) {
+                setUmdId(unlock.umd_id || null);
+                setTitle(unlock.umd_title || '');
+                setBtnText(unlock.umd_btntext || '');
+                setRoutePage(unlock.umd_routepage || '');
+                setDetail(unlock.umd_detail || '');
+                setSelectedImage(unlock.umd_img ? `${API}/storage/uploads/${unlock.image.img}` : '');
+            }
+            }
+
+            const sectionRes = await axios.get(`${API_ENDPOINTS.getSection}/${sectionId}`);
+            const sectionData = sectionRes.data.data;
+            setDisplayUnlock(sectionData.display || 0);
+
+        } catch (error) {
+            console.error("Failed to fetch banners:", error);
+        }
+        };
+
+        const fetchPages = async () => {
+            try{
+                const response = await axios.get(API_ENDPOINTS.getPage);
+                const page = response.data?.data || [];
+                setPages(page);
+            } catch (error) {
+                console.error('Error fetching sliders:', error);
+            }
+        }
+
+        if(sectionId && pageId){
+            fetchPages();
+            fetchUnlocks();
+        }
+    },[sectionId]);
+
+    const handleDeleteSection = async () => {
+        if (!window.confirm("Are you sure you want to delete this section?")) return;
+
+        try {
+            await axios.put(`${API_ENDPOINTS.deleteSection}/${sectionId}`);
+            window.location.reload();
+        } catch (error) {
+            console.error('Failed to delete section:', error);
+        }
     };
 
 
@@ -39,6 +140,7 @@ const UnlockPiece = () => {
                         </div>
                         <div className="flex gap-1">
                             <svg
+                                onClick={() => handleDeleteSection()}
                                 xmlns="http://www.w3.org/2000/svg"
                                 fill="none"
                                 viewBox="0 0 24 24"
@@ -78,6 +180,8 @@ const UnlockPiece = () => {
                         </label>
                         <div className="mt-2">
                             <input
+                                value={title}
+                                onChange={(e) => setTitle(e.target.value)}
                                 type="text"
                                 className="block w-full !border-gray-200 border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
                             />
@@ -90,7 +194,10 @@ const UnlockPiece = () => {
                         </label>
                         <div className="mt-2">
                             <label class="toggle-switch mt-2">
-                                <input type="checkbox" />
+                                <input
+                                    checked={displayUnlock === 1}
+                                    onChange={handleToggleDisplay}
+                                    type="checkbox" />
                                 <span class="slider"></span>
                             </label>
                         </div>
@@ -102,7 +209,10 @@ const UnlockPiece = () => {
                         Details
                     </label>
                     <div className="mt-2">
-                        <textarea className="!border-gray-300 h-60 block w-full rounded-md border-0 py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-2xl sm:leading-6"></textarea>
+                        <textarea
+                            value={detail}
+                            onChange={(e) => setDetail(e.target.value)}
+                            className="!border-gray-300 h-60 block w-full rounded-md border-0 py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-2xl sm:leading-6"></textarea>
                     </div>
                 </div>
                 {/* Row 3 */}
@@ -199,6 +309,8 @@ const UnlockPiece = () => {
                                 </label>
                                 <div className="mt-2">
                                     <input
+                                        value={btnText}
+                                        onChange={(e) => setBtnText(e.target.value)}
                                         type="text"
                                         className="block w-full !border-gray-200 border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
                                     />
@@ -207,13 +319,16 @@ const UnlockPiece = () => {
                             <div className="mt-4 w-full">
                                 <label className="block text-xl font-medium text-gray-700">Redirect page</label>
                                 <select
-                                    value={redirectpage}
-                                    onChange={(e) => setRedirectpage(e.target.value)}
+                                    value={routePage}
+                                    onChange={(e) => setRoutePage(e.target.value)}
                                     className="mt-2 block w-full border !border-gray-300 rounded-md py-2 pl-2 text-gray-900 shadow-sm focus:ring-2 focus:ring-indigo-500"
                                 >
-                                    <option value="">Choose Option</option>
-                                    <option value="yes">Home Page</option>
-                                    <option value="no">About Page</option>
+                                    <option value="">Choose redirect page</option>
+                                    {Array.isArray(pages) && pages.map((page) => (
+                                        <option key={page.p_id} value={page.p_title}>
+                                            {page.p_title}
+                                        </option>
+                                    ))}
                                 </select>
                             </div>
 
@@ -223,6 +338,6 @@ const UnlockPiece = () => {
             </details >
         </div >
     )
-}
+});
 
 export default UnlockPiece

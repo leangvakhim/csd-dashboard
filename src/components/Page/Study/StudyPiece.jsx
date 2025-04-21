@@ -1,9 +1,88 @@
-import React, { useState } from "react";
-import StudyPieceOne from "./StudyPieceOne";
+import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } from "react";
+import StudyPieceSlider from "./StudyPieceSlider";
+import axios from "axios";
+import { API_ENDPOINTS } from "../../../service/APIConfig";
 
-const StudyPiece = () => {
+const StudyPiece = forwardRef(({sectionId, pageId}, ref) => {
   const [isRotatedButton1, setIsRotatedButton1] = useState(false);
-  const [type, setType] = useState("")
+  const [studytype, setStudyType] = useState(0);
+  const [studyId, setStudyId] = useState(0);
+  const [studyTitle, setStudyTitle] = useState('');
+  const [studySubTitle, setStudySubTitle] = useState('');
+  const [displayStudy, setDisplayStudy] = useState(0);
+  const substudyRef = useRef();
+
+  useImperativeHandle(ref, () => ({
+    getStudys: async () => {
+
+      const data = {
+        std_id: studyId,
+        std_sec: sectionId,
+        std_title: studyTitle,
+        std_subtitle: studySubTitle,
+        std_type: studytype,
+        substudys: await substudyRef.current?.getSubStudySliders(),
+      };
+
+      return [data];
+    }
+  }));
+
+  const handleToggleDisplay = async () => {
+    try {
+        const newDisplay = displayStudy === 1 ? 0 : 1;
+        await axios.post(`${API_ENDPOINTS.updateSection}/${sectionId}`, {
+            sec_id: sectionId,
+            display: newDisplay,
+        });
+        setDisplayStudy(newDisplay);
+    } catch (error) {
+        console.error("Failed to update display:", error);
+    }
+  };
+
+  const handleDeleteSection = async () => {
+    if (!window.confirm("Are you sure you want to delete this section?")) return;
+
+    try {
+        await axios.put(`${API_ENDPOINTS.deleteSection}/${sectionId}`);
+        window.location.reload();
+    } catch (error) {
+        console.error('Failed to delete section:', error);
+    }
+  };
+
+  useEffect(() => {
+    const fetchFacitlies = async () => {
+      try {
+        const response = await axios.get(`${API_ENDPOINTS.getStudy}?std_sec=${sectionId}`);
+        const studys = response.data.data || [];
+        if (studys.length > 0) {
+          const study = studys.find(item =>
+            item.section.sec_page === pageId &&
+            item.std_sec === sectionId
+          );
+
+          if (study) {
+            setStudyId(study.std_id || null);
+            setStudyTitle(study.std_title || '');
+            setStudySubTitle(study.std_subtitle || '');
+            setStudyType(study.std_type || null);
+          }
+        }
+
+        const sectionRes = await axios.get(`${API_ENDPOINTS.getSection}/${sectionId}`);
+        const sectionData = sectionRes.data.data;
+        setDisplayStudy(sectionData.display || 0);
+      } catch (error) {
+        console.error("Failed to fetch facilities:", error);
+      }
+    };
+
+    if(sectionId && pageId){
+      fetchFacitlies();
+    }
+  }, [sectionId]);
 
   return (
     <div className="grid grid-cols-1 gap-4 ">
@@ -25,6 +104,7 @@ const StudyPiece = () => {
             </div>
             <div className="flex gap-1">
               <svg
+                onClick={() => handleDeleteSection()}
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
@@ -69,6 +149,8 @@ const StudyPiece = () => {
             <div className="mt-2">
               <input
                 type="text"
+                value={studyTitle}
+                onChange={(e) => setStudyTitle(e.target.value)}
                 className="block w-full !border-gray-200 border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
               />
             </div>
@@ -77,13 +159,13 @@ const StudyPiece = () => {
           <div className="">
             <label className="block text-xl font-medium text-gray-700">Type</label>
             <select
-              value={type}
-              onChange={(e) => setType(e.target.value)}
+              value={studytype}
+              onChange={(e) => setStudyType(e.target.value)}
               className="mt-2 block w-full border !border-gray-300 rounded-md py-2 pl-2 text-gray-900 shadow-sm focus:ring-2 focus:ring-indigo-500"
             >
               <option value="">Choose Option</option>
-              <option value="yes">Option 1</option>
-              <option value="no">Option 2</option>
+              <option value="1">4 columns</option>
+              <option value="2">2 columns</option>
             </select>
           </div>
           </div>
@@ -93,7 +175,10 @@ const StudyPiece = () => {
             </label>
             <div className="mt-2">
               <label class="toggle-switch mt-2">
-                <input type="checkbox" />
+                <input
+                  checked={displayStudy === 1}
+                  onChange={handleToggleDisplay}
+                  type="checkbox" />
                 <span class="slider"></span>
               </label>
             </div>
@@ -106,17 +191,20 @@ const StudyPiece = () => {
               Subtitle
             </label>
             <div className="mt-2">
-              <textarea className="!border-gray-300 h-60 block w-full rounded-md border-0 py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-2xl sm:leading-6"></textarea>
+              <textarea
+                value={studySubTitle}
+                onChange={(e) => setStudySubTitle(e.target.value)}
+                className="!border-gray-300 h-60 block w-full rounded-md border-0 py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-2xl sm:leading-6"></textarea>
             </div>
           </div>
 
         </div>
         <div className="mb-4">
-          <StudyPieceOne />
+          <StudyPieceSlider ref={substudyRef} studyId={studyId}/>
         </div>
       </details>
     </div>
   );
-};
+});
 
 export default StudyPiece;

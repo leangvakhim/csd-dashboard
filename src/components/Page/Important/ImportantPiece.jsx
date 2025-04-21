@@ -1,8 +1,84 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } from "react";
 import ImportantPieceSlider from "../Important/ImportantPieceSlider";
+import axios from "axios";
+import { API_ENDPOINTS } from "../../../service/APIConfig";
 
-const ImportantPiece = () => {
+const ImportantPiece = forwardRef(({sectionId, pageId}, ref) => {
   const [isRotatedButton1, setIsRotatedButton1] = useState(false);
+  const [importantId, setimportantId] = useState(0);
+  const [importantTitle, setImportantTitle] = useState('');
+  const [importantSubtitle, setImportantSubtitle] = useState('');
+  const [displayImportant, setDisplayImportant] = useState(0);
+  const subserviceRef = useRef();
+
+  useImperativeHandle(ref, () => ({
+    getImportants: async () => {
+      const data = {
+          idd_id: importantId,
+          idd_sec: sectionId,
+          idd_title: importantTitle,
+          idd_subtitle: importantSubtitle,
+          subservices: await subserviceRef.current?.getSubImportantSliders(),
+      };
+
+      return [data];
+      }
+  }));
+
+  const handleToggleDisplay = async () => {
+    try {
+        const newDisplay = displayImportant === 1 ? 0 : 1;
+        await axios.post(`${API_ENDPOINTS.updateSection}/${sectionId}`, {
+            sec_id: sectionId,
+            display: newDisplay,
+        });
+        setDisplayImportant(newDisplay);
+    } catch (error) {
+        console.error("Failed to update display:", error);
+    }
+  };
+
+  const handleDeleteSection = async () => {
+    if (!window.confirm("Are you sure you want to delete this section?")) return;
+
+    try {
+        await axios.put(`${API_ENDPOINTS.deleteSection}/${sectionId}`);
+        window.location.reload();
+    } catch (error) {
+        console.error('Failed to delete section:', error);
+    }
+  };
+
+  useEffect(() => {
+    const fetchImportants = async () => {
+        try {
+            const response = await axios.get(`${API_ENDPOINTS.getImportant}?idd_sec=${sectionId}`);
+            const importants = response.data.data || [];
+            if (importants.length > 0) {
+            const important = importants.find(item =>
+                item.section.sec_page === pageId &&
+                item.idd_sec === sectionId
+            );
+
+            if (important) {
+                setimportantId(important.idd_id || null);
+                setImportantTitle(important.idd_title || null);
+                setImportantSubtitle(important.idd_subtitle || null);
+              }
+            }
+
+            const sectionRes = await axios.get(`${API_ENDPOINTS.getSection}/${sectionId}`);
+            const sectionData = sectionRes.data.data;
+            setDisplayImportant(sectionData.display || 0);
+        } catch (error) {
+            console.error("Failed to fetch facilities:", error);
+        }
+    };
+
+    if(sectionId && pageId){
+      fetchImportants();
+    }
+  }, [sectionId]);
 
   return (
     <div className="grid grid-cols-1 gap-4 ">
@@ -24,6 +100,7 @@ const ImportantPiece = () => {
             </div>
             <div className="flex gap-1">
               <svg
+                onClick={() => handleDeleteSection()}
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
@@ -68,6 +145,8 @@ const ImportantPiece = () => {
             </label>
             <div className="mt-2">
               <input
+                value={importantTitle}
+                onChange={(e) => setImportantTitle(e.target.value)}
                 type="text"
                 className="block w-full !border-gray-200 border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
               />
@@ -80,7 +159,10 @@ const ImportantPiece = () => {
             </label>
             <div className="mt-2">
               <label class="toggle-switch mt-2">
-                <input type="checkbox" />
+                <input
+                  checked={displayImportant === 1}
+                  onChange={handleToggleDisplay}
+                  type="checkbox" />
                 <span class="slider"></span>
               </label>
             </div>
@@ -93,15 +175,20 @@ const ImportantPiece = () => {
               subtitle
             </label>
             <div className="mt-2">
-              <textarea className="!border-gray-300 h-60 block w-full rounded-md border-0 py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-2xl sm:leading-6"></textarea>
+              <textarea
+                value={importantSubtitle}
+                onChange={(e) => setImportantSubtitle(e.target.value)}
+                className="!border-gray-300 h-60 block w-full rounded-md border-0 py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-2xl sm:leading-6"></textarea>
             </div>
           </div>
         </div>
 
-        <ImportantPieceSlider></ImportantPieceSlider>
+        <div className="mb-3">
+          <ImportantPieceSlider ref={subserviceRef} importantId={importantId}/>
+        </div>
       </details>
     </div>
   );
-};
+});
 
 export default ImportantPiece;

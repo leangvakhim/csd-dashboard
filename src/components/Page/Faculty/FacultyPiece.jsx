@@ -1,9 +1,98 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } from "react";
+import axios from "axios";
+import { API_ENDPOINTS } from "../../../service/APIConfig";
 
-const FacultyPiece = () => {
+const FacultyPiece = forwardRef(({sectionId, pageId}, ref) => {
     const [isRotatedButton1, setIsRotatedButton1] = useState(false);
-    const [redirectpage, setRedirectpage] = useState("")
+    const [newId, setNewId] = useState(0);
+    const [title, setTitle] = useState('');
+    const [subtitle, setSubtitle] = useState('');
+    const [btnTitle, setBtnTitle] = useState('');
+    const [redirectPage, setRedirectPage] = useState('');
+    const [displayNews, setDisplayNews] = useState(0);
+    const [pages, setPages] = useState("");
 
+    useImperativeHandle(ref, () => ({
+        getFacultys: async () => {
+            const data = {
+                hsec_id: newId,
+                hsec_sec: sectionId,
+                hsec_title: title,
+                hsec_subtitle: subtitle,
+                hsec_btntitle: btnTitle,
+                hsec_amount: parseInt(0),
+                hsec_routepage: redirectPage,
+            };
+        return [data];
+        }
+    }));
+
+    const handleToggleDisplay = async () => {
+        try {
+            const newDisplay = displayNews === 1 ? 0 : 1;
+            await axios.post(`${API_ENDPOINTS.updateSection}/${sectionId}`, {
+                sec_id: sectionId,
+                display: newDisplay,
+            });
+            setDisplayNews(newDisplay);
+        } catch (error) {
+            console.error("Failed to update display:", error);
+        }
+    };
+
+    const handleDeleteSection = async () => {
+        if (!window.confirm("Are you sure you want to delete this section?")) return;
+
+        try {
+            await axios.put(`${API_ENDPOINTS.deleteSection}/${sectionId}`);
+            window.location.reload();
+        } catch (error) {
+            console.error('Failed to delete section:', error);
+        }
+    };
+
+    useEffect(() => {
+        const fetchFacultys = async () => {
+            try {
+                const response = await axios.get(`${API_ENDPOINTS.getHeaderSection}?hsec_sec=${sectionId}`);
+                const hsecs = response.data.data || [];
+                if (hsecs.length > 0) {
+                const hsec = hsecs.find(item =>
+                    item?.section?.sec_page === pageId &&
+                    item?.hsec_sec === sectionId
+                );
+
+                if (hsec) {
+                    setNewId(hsec.hsec_id || null);
+                    setTitle(hsec.hsec_title || null);
+                    setSubtitle(hsec.hsec_subtitle || null);
+                    setBtnTitle(hsec.hsec_btntitle || null);
+                    setRedirectPage(hsec.hsec_routepage || null);
+                    }
+                }
+
+                const sectionRes = await axios.get(`${API_ENDPOINTS.getSection}/${sectionId}`);
+                const sectionData = sectionRes.data.data;
+                setDisplayNews(sectionData.display || 0);
+            } catch (error) {
+                console.error("Failed to fetch facilities:", error);
+            }
+        };
+
+        const fetchPages = async () => {
+            try{
+                const response = await axios.get(API_ENDPOINTS.getPage);
+                const page = response.data?.data || [];
+                setPages(page);
+            } catch (error) {
+                console.error('Error fetching sliders:', error);
+            }
+        }
+        if(sectionId && pageId){
+            fetchPages();
+            fetchFacultys();
+        }
+    }, [sectionId]);
 
     return (
         <div className="grid grid-cols-1 gap-4 ">
@@ -22,6 +111,7 @@ const FacultyPiece = () => {
                         </div>
                         <div className="flex gap-1">
                             <svg
+                                onClick={() => handleDeleteSection()}
                                 xmlns="http://www.w3.org/2000/svg"
                                 fill="none"
                                 viewBox="0 0 24 24"
@@ -59,6 +149,8 @@ const FacultyPiece = () => {
                         </label>
                         <div className="mt-2">
                             <input
+                                value={title}
+                                onChange={(e) => setTitle(e.target.value)}
                                 type="text"
                                 className="block w-full !border-gray-200 border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
                             />
@@ -71,7 +163,10 @@ const FacultyPiece = () => {
                         </label>
                         <div className="mt-2">
                             <label class="toggle-switch mt-2">
-                                <input type="checkbox" />
+                                <input
+                                    checked={displayNews === 1}
+                                    onChange={handleToggleDisplay}
+                                    type="checkbox" />
                                 <span class="slider"></span>
                             </label>
                         </div>
@@ -84,7 +179,10 @@ const FacultyPiece = () => {
                             Subtitle
                         </label>
                         <div className="mt-2">
-                            <textarea className="!border-gray-300 h-60 block w-full rounded-md border-0 py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-2xl sm:leading-6"></textarea>
+                            <textarea
+                                value={subtitle}
+                                onChange={(e) => setSubtitle(e.target.value)}
+                                className="!border-gray-300 h-58 block w-full rounded-md border-0 py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-2xl sm:leading-6"></textarea>
                         </div>
                     </div>
 
@@ -96,37 +194,40 @@ const FacultyPiece = () => {
                             </label>
                             <div className="mt-2">
                                 <input
+                                    value={btnTitle}
+                                    onChange={(e) => setBtnTitle(e.target.value)}
                                     type="text"
                                     className="block w-full !border-gray-200 border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
                                 />
                             </div>
                         </div>
+
                         <div className="mt-4 w-full">
                             <label className="block text-xl font-medium text-gray-700">Redirect page</label>
                             <select
-                                value={redirectpage}
-                                onChange={(e) => setRedirectpage(e.target.value)}
-                                className="mt-2 block w-full border !border-gray-300 rounded-md py-2 pl-2 text-gray-900 shadow-sm focus:ring-2 focus:ring-indigo-500"
-                            >
-                                <option value="">Choose Option</option>
-                                <option value="yes">Home Page</option>
-                                <option value="no">About Page</option>
+                                value={redirectPage}
+                                onChange={(e) => setRedirectPage(e.target.value)}
+                                class="mt-2 !border-gray-300 block w-full border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6">
+                                <option value="">Choose a page</option>
+                                {Array.isArray(pages) && pages.map((page) => (
+                                    <option key={page.p_id} value={page.p_title}>
+                                        {page.p_title}
+                                    </option>
+                                ))}
                             </select>
                         </div>
-
                     </div>
                 </div>
 
-
                 {/* Row 3 */}
-                <div className="w-full flex justify-center items-center bg-gray-50 border p-6">
-                    <div className="px-4 py-2 mb-1">
+                <div className="w-full flex justify-center items-center bg-gray-50 !border-t-1 p-6">
+                    <div className="px-4 mb-1">
                         <span>Faculty's Element</span>
                     </div>
                 </div>
             </details>
         </div>
     )
-}
+});
 
 export default FacultyPiece

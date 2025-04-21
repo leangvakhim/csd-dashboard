@@ -1,8 +1,10 @@
-import React, { useState } from "react";
+import { forwardRef, useImperativeHandle, useState, useEffect } from "react";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import MediaLibraryModal from "../../MediaLibraryModal";
+import { API_ENDPOINTS, API } from "../../../service/APIConfig";
+import axios from "axios";
 
-const ServicePieceSlider = () => {
+const ServicePieceSlider = forwardRef(({sectionId, pageId}, ref) => {
   const [currentSliderId, setCurrentSliderId] = useState(null);
   const [currentField, setCurrentField] = useState("");
   const [isMediaLibraryOpen, setMediaLibraryOpen] = useState(false);
@@ -12,26 +14,16 @@ const ServicePieceSlider = () => {
       id: "1",
       title: "Service 1",
       subtitle: "",
-      logo: "",
       image: "",
-      firstbtntitle: "",
-      firstbtnselect: "",
-      secondbtntitle: "",
-      secondbtnselect: "",
     },
   ]);
 
   const handleAddSlider = () => {
     const newSlider = {
-      id: `${Date.now()}`,
+      id: (slider.length + 1).toString(),
       title: `Service ${slider.length + 1}`,
       subtitle: "",
-      logo: "",
       image: "",
-      firstbtntitle: "",
-      firstbtnselect: "",
-      secondbtntitle: "",
-      secondbtnselect: "",
     };
 
     setSlider([...slider, newSlider]);
@@ -70,6 +62,92 @@ const ServicePieceSlider = () => {
     );
     setMediaLibraryOpen(false);
   };
+
+  const getImageIdByUrl = async (url) => {
+    try {
+      const response = await axios.get(API_ENDPOINTS.getImages);
+      const images = Array.isArray(response.data) ? response.data : response.data.data;
+
+      const matchedImage = images.find((img) => img.image_url === url);
+      return matchedImage?.image_id || null;
+      } catch (error) {
+      console.error('❌ Failed to fetch image ID:', error);
+      return null;
+    }
+  };
+
+  useImperativeHandle(ref, () => ({
+    getSliders: async () => {
+      return await Promise.all(slider.map(async item => {
+        return {
+          s_id: item.id,
+          s_title: item.title || '',
+          s_subtitle: item.subtitle || '',
+          s_img: item.image ? await getImageIdByUrl(item.image) : 0,
+          display: item.display ? 1 : 0,
+          active: 1,
+        }
+      }))
+    }
+  }))
+
+  const handleInputChange = (id, field, value) => {
+      setSlider((prevSlider) =>
+          prevSlider.map((item) =>
+              item.id === id ? { ...item, [field]: value } : item
+          )
+      );
+  };
+
+  const handleDeleteSlider = async (sliderId) => {
+    if (!window.confirm("Are you sure you want to delete this slider?")) return;
+
+    try {
+        await axios.put(`${API_ENDPOINTS.deleteService}/${sliderId}`);
+        setSlider((prevSlider) => prevSlider.filter((item) => item.id !== sliderId));
+    } catch (error) {
+        console.error('Failed to delete slider:', error);
+    }
+  };
+
+  useEffect(() => {
+    const fetchSliders = async () => {
+        try {
+            const response = await axios.get(`${API_ENDPOINTS.getService}?ban_sec=${sectionId}`);
+            const services = response.data?.data || [];
+
+            if (services.length > 0) {
+            const validServices = services.filter(item => item?.section?.sec_page === pageId);
+
+            const formattedData = validServices.map(item => ({
+              id: item.s_id.toString(),
+              title: item.s_title || '',
+              subtitle: item.s_subtitle || '',
+              image: item.image?.img ? `${API}/storage/uploads/${item.image.img}` : '',
+              display: item.display || null,
+            }));
+
+            if (formattedData.length > 0) {
+                setSlider(formattedData);
+            } else {
+              setSlider([{
+                  id: "1",
+                  title: "Slider 1",
+                  subtitle: "",
+                  image: "",
+                  display: 0,
+              }]);
+            }
+        }
+        } catch (error) {
+            console.error('Error fetching sliders:', error);
+        }
+    };
+
+    if (sectionId && pageId) {
+      fetchSliders();
+    }
+  }, []);
 
   return (
     <DragDropContext onDragEnd={onDragEnd}>
@@ -121,6 +199,7 @@ const ServicePieceSlider = () => {
                           <span className=" shrink-0 transition-transform duration-500 group-open:-rotate-0 flex gap-2">
                             <div className="block">
                               <svg
+                                onClick={() => handleDeleteSlider(sliders.id)}
                                 xmlns="http://www.w3.org/2000/svg"
                                 fill="none"
                                 viewBox="0 0 24 24"
@@ -159,28 +238,35 @@ const ServicePieceSlider = () => {
                         </summary>
 
                         {/* title */}
-                        <div className="grid grid-cols-1 gap-4 px-4 py-2">
+                        <div className="flex flex-row gap-4 px-4 py-2">
                           <div className="flex-1">
-                            <label className=" block text-xl font-medium leading-6 text-white-900">
+                              <label className="block text-xl font-medium leading-6 text-white-900">
                               Title
-                            </label>
-                            <div className="mt-2">
+                              </label>
+                              <div className="mt-2">
                               <input
-                                type="text"
-                                className="!border-gray-300 block w-full border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
+                                  type="text"
+                                  value={sliders.title}
+                                  onChange={(e) => handleInputChange(sliders.id, 'title', e.target.value)}
+                                  className="block w-full !border-gray-200 border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
                               />
-                            </div>
+                              </div>
                           </div>
-                        </div>
-                        {/* Subtitle */}
-                        <div className="grid grid-cols-1 gap-4 px-4 py-2">
-                          <div className="flex-1">
-                            <label className="block text-xl font-medium leading-6 text-white-900">
-                              Subtitle
-                            </label>
-                            <div className="mt-2">
-                              <textarea className="!border-gray-300 h-32 block w-full rounded-md border-0 py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-2xl sm:leading-6"></textarea>
-                            </div>
+
+                            <div className="flex-non">
+                              <label className="block text-xl font-medium leading-6 text-white-900">
+                              Display
+                              </label>
+                              <div className="mt-2">
+                                  <label className="toggle-switch mt-2">
+                                      <input
+                                          type="checkbox"
+                                          checked={sliders.display || false}
+                                          onChange={(e) => handleInputChange(sliders.id, 'display', e.target.checked)}
+                                      />
+                                      <span className="slider"></span>
+                                  </label>
+                              </div>
                           </div>
                         </div>
                         {/* Image */}
@@ -191,17 +277,17 @@ const ServicePieceSlider = () => {
                             </label>
                             <div className="flex items-center justify-center w-full mt-2 border-1">
                               <label className="flex flex-col items-center justify-center w-full h-60 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
-                                {sliders.logo ? (
+                                {sliders.image ? (
                                   <div>
                                     <img
-                                      src={sliders.logo}
+                                      src={sliders.image}
                                       alt="Selected"
                                       className="h-40 w-40 object-contain"
                                     />
                                     <div className="flex gap-3 mt-2 justify-center">
                                       <svg
                                         onClick={() =>
-                                          openMediaLibrary(sliders.id, "logo")
+                                          openMediaLibrary(sliders.id, "image")
                                         }
                                         xmlns="http://www.w3.org/2000/svg"
                                         fill="none"
@@ -218,7 +304,7 @@ const ServicePieceSlider = () => {
                                       </svg>
                                       <svg
                                         onClick={() =>
-                                          handleImageSelect("", "logo")
+                                          handleImageSelect("", "image")
                                         }
                                         xmlns="http://www.w3.org/2000/svg"
                                         fill="none"
@@ -238,7 +324,7 @@ const ServicePieceSlider = () => {
                                 ) : (
                                   <div
                                     onClick={() =>
-                                      openMediaLibrary(sliders.id, "logo")
+                                      openMediaLibrary(sliders.id, "image")
                                     }
                                     className="flex flex-col items-center justify-center pt-5 pb-6 "
                                   >
@@ -279,15 +365,12 @@ const ServicePieceSlider = () => {
                               Subtitle
                             </label>
                             <div className="mt-2">
-                              <textarea className="!border-gray-300 h-60 block w-full rounded-md border-0 py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-2xl sm:leading-6"></textarea>
+                              <textarea
+                                value={sliders.subtitle}
+                                onChange={(e) => handleInputChange(sliders.id, 'subtitle', e.target.value)}
+                                className="!border-gray-300 h-60 block w-full rounded-md border-0 py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-2xl sm:leading-6"></textarea>
                             </div>
                           </div>
-                          {isMediaLibraryOpen && (
-                            <MediaLibraryModal
-                              onSelect={handleImageSelect}
-                              onClose={() => setMediaLibraryOpen(false)}
-                            />
-                          )}
                         </div>
                       </details>
                     </li>
@@ -320,6 +403,6 @@ const ServicePieceSlider = () => {
       </Droppable>
     </DragDropContext>
   );
-};
+});
 
 export default ServicePieceSlider;

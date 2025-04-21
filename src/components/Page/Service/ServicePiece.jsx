@@ -1,8 +1,59 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } from "react";
 import ServicePieceSlider from "./ServicePieceSlider";
+import axios from "axios";
+import { API_ENDPOINTS, API } from "../../../service/APIConfig";
 
-const ServicePiece = () => {
+const ServicePiece = forwardRef(({sectionId, pageId}, ref) => {
   const [isRotatedButton, setIsRotatedButton] = useState(false);
+  const [displayService, setDisplayService] = useState(0);
+  const serviceSliderRef = useRef();
+
+  useImperativeHandle(ref, () => ({
+    getServices: async () => {
+      const slidersData = await serviceSliderRef.current?.getSliders?.() || [];
+      return slidersData;
+    }
+  }));
+
+  useEffect(() => {
+    const fetchServiceDisplay = async () => {
+      try {
+          const sectionRes = await axios.get(`${API_ENDPOINTS.getSection}/${sectionId}`);
+          const sectionData = sectionRes.data.data;
+          setDisplayService(sectionData.display || 0);
+      } catch (error) {
+          console.error("Failed to fetch banners:", error);
+      }
+    };
+
+    if (sectionId && pageId) {
+      fetchServiceDisplay();
+    }
+  }, [sectionId]);
+
+  const handleToggleDisplay = async () => {
+    try {
+        const newDisplay = displayService === 1 ? 0 : 1;
+        await axios.post(`${API_ENDPOINTS.updateSection}/${sectionId}`, {
+            sec_id: sectionId,
+            display: newDisplay,
+        });
+        setDisplayService(newDisplay);
+    } catch (error) {
+        console.error("Failed to update display:", error);
+    }
+  };
+
+  const handleDeleteSection = async () => {
+    if (!window.confirm("Are you sure you want to delete this section?")) return;
+
+    try {
+        await axios.put(`${API_ENDPOINTS.deleteSection}/${sectionId}`);
+        window.location.reload();
+    } catch (error) {
+        console.error('Failed to delete section:', error);
+    }
+  };
 
   return (
     <div className="grid grid-cols-1 gap-4 ">
@@ -24,6 +75,7 @@ const ServicePiece = () => {
             </div>
             <div className="flex gap-1">
               <svg
+                onClick={() => handleDeleteSection()}
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
@@ -39,7 +91,7 @@ const ServicePiece = () => {
               </svg>
               <div
                 className={`cursor-pointer shrink-0 transition-transform duration-300
-                                    ${isRotatedButton ? "rotate-180" : ""}`}
+                ${isRotatedButton ? "rotate-180" : ""}`}
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -60,7 +112,12 @@ const ServicePiece = () => {
           </div>
         </summary>
 
-        <ServicePieceSlider />
+        <ServicePieceSlider
+          ref={serviceSliderRef}
+          // displayService={displayService}
+          sectionId={sectionId}
+          pageId={pageId}
+        />
 
         <div className="flex flex-row items-center w-full gap-4 mx-6 my-1">
           <label className="block text-xl font-medium leading-6 text-white-900">
@@ -68,7 +125,11 @@ const ServicePiece = () => {
           </label>
           <div className="mt-2">
             <label className="toggle-switch mb-1">
-              <input type="checkbox" />
+              <input
+                type="checkbox"
+                checked={displayService === 1}
+                onChange={handleToggleDisplay}
+              />
               <span className="slider"></span>
             </label>
           </div>
@@ -76,6 +137,6 @@ const ServicePiece = () => {
       </details>
     </div>
   );
-};
+});
 
 export default ServicePiece;

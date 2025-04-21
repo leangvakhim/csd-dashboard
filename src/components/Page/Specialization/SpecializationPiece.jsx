@@ -1,13 +1,20 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } from "react";
 import SpecializationPieceSLider from "../Specialization/SpecializationPieceSlider";
 import MediaLibraryModal from "../../MediaLibraryModal";
+import axios from "axios";
+import { API_ENDPOINTS, API } from "../../../service/APIConfig";
 
-const SpecializationPiece = () => {
+const SpecializationPiece = forwardRef(({sectionId, pageId}, ref) => {
   const [isRotatedButton, setIsRotatedButton] = useState(false);
   const [isMediaLibraryOpen, setMediaLibraryOpen] = useState(false);
   const [selectedImage1, setSelectedImage1] = useState("");
   const [selectedImage2, setSelectedImage2] = useState("");
   const [currentField, setCurrentField] = useState("");
+  const [rasId, setRasId] = useState(0);
+  const [rasTitle, setRasTitle] = useState('');
+  const [rasSubTitle, setRasSubTitle] = useState('');
+  const [displaySpecialization, setDisplaySpecialization] = useState(0);
+  const subserviceRef = useRef();
 
   const openMediaLibrary = (field) => {
     setCurrentField(field);
@@ -22,6 +29,129 @@ const SpecializationPiece = () => {
     }
     setMediaLibraryOpen(false);
   };
+
+  const getImageIdByUrl = async (url) => {
+    try {
+      const response = await axios.get(API_ENDPOINTS.getImages);
+      const images = Array.isArray(response.data) ? response.data : response.data.data;
+
+      const matchedImage = images.find((img) => img.image_url === url);
+      return matchedImage?.image_id || null;
+      } catch (error) {
+      console.error('❌ Failed to fetch image ID:', error);
+      return null;
+    }
+  };
+
+  useImperativeHandle(ref, () => ({
+    getSpecializations: async () => {
+      let textId;
+
+      try {
+        const response = await axios.get(`${API_ENDPOINTS.getSpecialization}?ras_sec=${sectionId}`);
+        const specialization = response.data.data || [];
+        const currentSpecialization = specialization.find(f => f.section.sec_page === pageId && f.ras_sec === sectionId && f.text?.text_type === 5);
+        if (currentSpecialization?.text?.text_id) {
+          textId = currentSpecialization.text.text_id;
+        }
+      } catch (error) {
+        console.error("Failed to check existing facility:", error);
+      }
+
+      if (textId) {
+        const updatePayload = {
+          text_id: textId,
+          title: rasTitle,
+          desc: rasSubTitle,
+          text_type: 5,
+          text_sec: sectionId,
+        };
+        const textRes = await axios.post(`${API_ENDPOINTS.updateText}/${textId}`, { texts: updatePayload });
+        textId = textRes.data.data?.text_id;
+      } else {
+        const textPayload = {
+          title: rasTitle,
+          desc: rasSubTitle,
+          text_type: 5,
+          text_sec: sectionId,
+        };
+        const textRes = await axios.post(`${API_ENDPOINTS.createText}`, { texts: [textPayload] });
+        textId = textRes.data.data?.text_id;
+      }
+
+      const imageId1 = await getImageIdByUrl(selectedImage1);
+      const imageId2 = await getImageIdByUrl(selectedImage2);
+
+      const data = {
+        ras_id: rasId,
+        ras_sec: sectionId,
+        ras_text: textId,
+        ras_img1: imageId1,
+        ras_img2: imageId2,
+        subservices: await subserviceRef.current?.getSubserviceSlidersRAS(),
+      };
+
+      return [data];
+    }
+  }));
+
+  const handleToggleDisplay = async () => {
+    try {
+        const newDisplay = displaySpecialization === 1 ? 0 : 1;
+        await axios.post(`${API_ENDPOINTS.updateSection}/${sectionId}`, {
+            sec_id: sectionId,
+            display: newDisplay,
+        });
+        setDisplaySpecialization(newDisplay);
+    } catch (error) {
+        console.error("Failed to update display:", error);
+    }
+  };
+
+  const handleDeleteSection = async () => {
+    if (!window.confirm("Are you sure you want to delete this section?")) return;
+
+    try {
+        await axios.put(`${API_ENDPOINTS.deleteSection}/${sectionId}`);
+        window.location.reload();
+    } catch (error) {
+        console.error('Failed to delete section:', error);
+    }
+  };
+
+  useEffect(() => {
+    const fetchSpecializations = async () => {
+      try {
+        const response = await axios.get(`${API_ENDPOINTS.getSpecialization}?ras_sec=${sectionId}`);
+        const specializations = response.data.data || [];
+        if (specializations.length > 0) {
+          const specialization = specializations.find(item =>
+            item.section.sec_page === pageId &&
+            item.ras_sec === sectionId &&
+            item.text?.text_type === 5
+          );
+
+          if (specialization) {
+            setRasId(specialization.ras_id || null);
+            setRasTitle(specialization.text?.title || '');
+            setRasSubTitle(specialization.text?.desc || '');
+            setSelectedImage1(specialization.ras_img1 ? `${API}/storage/uploads/${specialization.image1.img}` : '');
+            setSelectedImage2(specialization.ras_img2 ? `${API}/storage/uploads/${specialization.image2.img}` : '');
+          }
+        }
+
+        const sectionRes = await axios.get(`${API_ENDPOINTS.getSection}/${sectionId}`);
+        const sectionData = sectionRes.data.data;
+        setDisplaySpecialization(sectionData.display || 0);
+      } catch (error) {
+        console.error("Failed to fetch facilities:", error);
+      }
+    };
+
+    if(sectionId && pageId){
+      fetchSpecializations();
+    }
+  }, [sectionId]);
 
   return (
     <div className="grid grid-cols-1 gap-4 ">
@@ -43,6 +173,7 @@ const SpecializationPiece = () => {
             </div>
             <div className="flex gap-1">
               <svg
+                onClick={() => handleDeleteSection()}
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
@@ -58,7 +189,7 @@ const SpecializationPiece = () => {
               </svg>
               <div
                 className={`cursor-pointer shrink-0 transition-transform duration-300
-                                    ${isRotatedButton ? "rotate-180" : ""}`}
+                  ${isRotatedButton ? "rotate-180" : ""}`}
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -86,6 +217,8 @@ const SpecializationPiece = () => {
             </label>
             <div className="mt-2">
               <input
+                value={rasTitle}
+                onChange={(e) => setRasTitle(e.target.value)}
                 type="text"
                 className="block w-full !border-gray-200 border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
               />
@@ -98,7 +231,11 @@ const SpecializationPiece = () => {
             </label>
             <div className="mt-2">
               <label class="toggle-switch mt-2">
-                <input type="checkbox" />
+                <input
+                  type="checkbox"
+                  checked={displaySpecialization === 1}
+                  onChange={handleToggleDisplay}
+                  />
                 <span class="slider"></span>
               </label>
             </div>
@@ -111,7 +248,10 @@ const SpecializationPiece = () => {
               Subtitle
             </label>
             <div className="mt-2">
-              <textarea className="!border-gray-300 h-60 block w-full rounded-md border-0 py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-2xl sm:leading-6"></textarea>
+              <textarea
+              value={rasSubTitle}
+              onChange={(e) => setRasSubTitle(e.target.value)}
+              className="!border-gray-300 h-60 block w-full rounded-md border-0 py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-2xl sm:leading-6"></textarea>
             </div>
           </div>
         </div>
@@ -282,11 +422,11 @@ const SpecializationPiece = () => {
           )}
         </div>
         <div className="mb-4">
-          <SpecializationPieceSLider/>
+          <SpecializationPieceSLider ref={subserviceRef} specializationId={rasId}/>
         </div>
       </details>
     </div>
   );
-};
+});
 
 export default SpecializationPiece;

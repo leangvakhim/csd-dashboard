@@ -1,12 +1,18 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } from "react";
 import MediaLibraryModal from "../../MediaLibraryModal";
+import axios from "axios";
+import { API_ENDPOINTS, API } from "../../../service/APIConfig";
 
-
-const IntroductionPiece = () => {
+const IntroductionPiece = forwardRef(({sectionId, pageId}, ref) => {
     const [isRotatedButton1, setIsRotatedButton1] = useState(false);
     const [isMediaLibraryOpen, setMediaLibraryOpen] = useState(false);
     const [selectedImage, setSelectedImage] = useState("");
-
+    const [displayIntroduction, setDisplayIntroduction] = useState(0);
+    const [detail, setDetail] = useState("");
+    const [title, setTitle] = useState("");
+    const [addOnTitle, setAddOnTitle] = useState("");
+    const [addOnSubtitle, setAddOnSubtitle] = useState("");
+    const [introId, setIntroId] = useState(null);
 
     const openMediaLibrary = () => {
         // setCurrentField(field);
@@ -20,6 +26,89 @@ const IntroductionPiece = () => {
         setMediaLibraryOpen(false);
     };
 
+    const getImageIdByUrl = async (url) => {
+        try {
+        const response = await axios.get(API_ENDPOINTS.getImages);
+        const images = Array.isArray(response.data) ? response.data : response.data.data;
+
+        const matchedImage = images.find((img) => img.image_url === url);
+        return matchedImage?.image_id || null;
+        } catch (error) {
+        console.error('❌ Failed to fetch image ID:', error);
+        return null;
+        }
+    };
+
+    useImperativeHandle(ref, () => ({
+        getIntroductions: async () => {
+        const imgId = await getImageIdByUrl(selectedImage);
+        return [
+            {
+                in_id: introId,
+                in_title: title,
+                in_img: imgId,
+                in_detail: detail,
+                inadd_title: addOnTitle,
+                in_addsubtitle: addOnSubtitle,
+            }
+        ];
+        }
+    }));
+
+    const handleToggleDisplay = async () => {
+        try {
+            const newDisplay = displayIntroduction === 1 ? 0 : 1;
+            await axios.post(`${API_ENDPOINTS.updateSection}/${sectionId}`, {
+                sec_id: sectionId,
+                display: newDisplay,
+            });
+            setDisplayIntroduction(newDisplay);
+        } catch (error) {
+            console.error("Failed to update display:", error);
+        }
+    };
+
+    useEffect(() => {
+        const fetchIntroductions = async () => {
+        try {
+            const response = await axios.get(`${API_ENDPOINTS.getIntroduction}?in_sec=${sectionId}`);
+            const introductions = response.data.data || [];
+            if (introductions.length > 0) {
+            const introduction = introductions.find(item => item?.section?.sec_page === pageId);
+            if (introduction) {
+                setIntroId(introduction.in_id || null);
+                setTitle(introduction.in_title || '');
+                setAddOnTitle(introduction.inadd_title || '');
+                setAddOnSubtitle(introduction.in_addsubtitle || '');
+                setDetail(introduction.in_detail || '');
+                setSelectedImage(introduction.in_img ? `${API}/storage/uploads/${introduction.image.img}` : '');
+            }
+            }
+
+            const sectionRes = await axios.get(`${API_ENDPOINTS.getSection}/${sectionId}`);
+            const sectionData = sectionRes.data.data;
+            setDisplayIntroduction(sectionData.display || 0);
+
+        } catch (error) {
+            console.error("Failed to fetch banners:", error);
+        }
+        };
+
+        if(sectionId && pageId){
+            fetchIntroductions();
+        }
+    },[sectionId]);
+
+    const handleDeleteSection = async () => {
+        if (!window.confirm("Are you sure you want to delete this section?")) return;
+
+        try {
+            await axios.put(`${API_ENDPOINTS.deleteSection}/${sectionId}`);
+            window.location.reload();
+        } catch (error) {
+            console.error('Failed to delete section:', error);
+        }
+    };
 
     return (
         <div className="grid grid-cols-1 gap-4 ">
@@ -38,6 +127,7 @@ const IntroductionPiece = () => {
                         </div>
                         <div className="flex gap-1">
                             <svg
+                                onClick={() => handleDeleteSection()}
                                 xmlns="http://www.w3.org/2000/svg"
                                 fill="none"
                                 viewBox="0 0 24 24"
@@ -77,18 +167,8 @@ const IntroductionPiece = () => {
                         </label>
                         <div className="mt-2">
                             <input
-                                type="text"
-                                className="block w-full !border-gray-200 border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
-                            />
-                        </div>
-                    </div>
-
-                    <div className="flex-1">
-                        <label className="block text-xl font-medium leading-6 text-white-900">
-                            Price
-                        </label>
-                        <div className="mt-2">
-                            <input
+                                value={title}
+                                onChange={(e) => setTitle(e.target.value)}
                                 type="text"
                                 className="block w-full !border-gray-200 border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
                             />
@@ -101,7 +181,10 @@ const IntroductionPiece = () => {
                         </label>
                         <div className="mt-2">
                             <label class="toggle-switch mt-2">
-                                <input type="checkbox" />
+                                <input
+                                    checked={displayIntroduction === 1}
+                                    onChange={handleToggleDisplay}
+                                    type="checkbox" />
                                 <span class="slider"></span>
                             </label>
                         </div>
@@ -115,6 +198,8 @@ const IntroductionPiece = () => {
                         </label>
                         <div className="mt-2">
                             <input
+                                value={addOnTitle}
+                                onChange={(e) => setAddOnTitle(e.target.value)}
                                 type="text"
                                 className="block w-full !border-gray-200 border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
                             />
@@ -126,6 +211,8 @@ const IntroductionPiece = () => {
                         </label>
                         <div className="mt-2">
                             <input
+                                value={addOnSubtitle}
+                                onChange={(e) => setAddOnSubtitle(e.target.value)}
                                 type="text"
                                 className="block w-full !border-gray-200 border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
                             />
@@ -141,7 +228,10 @@ const IntroductionPiece = () => {
                                 Details
                             </label>
                             <div className="mt-2">
-                                <textarea className="!border-gray-300 h-60 block w-full rounded-md border-0 py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-2xl sm:leading-6"></textarea>
+                                <textarea
+                                    value={detail}
+                                    onChange={(e) => setDetail(e.target.value)}
+                                    className="!border-gray-300 h-60 block w-full rounded-md border-0 py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-2xl sm:leading-6"></textarea>
                             </div>
                         </div>
                         <div className="">
@@ -231,6 +321,6 @@ const IntroductionPiece = () => {
             </details >
         </div >
     )
-}
+});
 
 export default IntroductionPiece

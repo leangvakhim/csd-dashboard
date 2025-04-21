@@ -1,14 +1,22 @@
-import React, { useState } from "react";
-import CsdPieceOne from "./CsdPieceOne";
+import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } from "react";
+import CsdPieceSlider from "./CsdPieceSlider";
 import AddOn from "./AddOn";
 import MediaLibraryModal from "../../MediaLibraryModal";
+import axios from "axios";
+import { API_ENDPOINTS, API } from "../../../service/APIConfig";
 
-const CsdPiece = () => {
+const CsdPiece = forwardRef(({sectionId, pageId}, ref) => {
   const [isRotatedButton1, setIsRotatedButton1] = useState(false);
   const [isMediaLibraryOpen, setMediaLibraryOpen] = useState(false);
   const [selectedImage1, setSelectedImage1] = useState("");
   const [selectedImage2, setSelectedImage2] = useState("");
   const [currentField, setCurrentField] = useState("");
+  const [csdId, setCsdId] = useState(0);
+  const [csdTitle, setCsdTitle] = useState('');
+  const [csdSubTitle, setCsdSubTitle] = useState('');
+  const [displayCSD, setDisplayCSD] = useState(0);
+  const subserviceRef = useRef();
+  const addOnRef = useRef();
 
   const openMediaLibrary = (field) => {
     setCurrentField(field);
@@ -23,6 +31,130 @@ const CsdPiece = () => {
     }
     setMediaLibraryOpen(false);
   };
+
+  const getImageIdByUrl = async (url) => {
+    try {
+      const response = await axios.get(API_ENDPOINTS.getImages);
+      const images = Array.isArray(response.data) ? response.data : response.data.data;
+
+      const matchedImage = images.find((img) => img.image_url === url);
+      return matchedImage?.image_id || null;
+      } catch (error) {
+      console.error('❌ Failed to fetch image ID:', error);
+      return null;
+    }
+  };
+
+  useImperativeHandle(ref, () => ({
+    getCSDs: async () => {
+      let textId;
+
+      try {
+        const response = await axios.get(`${API_ENDPOINTS.getSpecialization}?ras_sec=${sectionId}`);
+        const csd = response.data.data || [];
+        const currentCSD = csd.find(f => f.section.sec_page === pageId && f.ras_sec === sectionId && f.text?.text_type === 7);
+        if (currentCSD?.text?.text_id) {
+          textId = currentCSD.text.text_id;
+        }
+      } catch (error) {
+        console.error("Failed to check existing facility:", error);
+      }
+
+      if (textId) {
+        const updatePayload = {
+          text_id: textId,
+          title: csdTitle,
+          desc: csdSubTitle,
+          text_type: 7,
+          text_sec: sectionId,
+        };
+        const textRes = await axios.post(`${API_ENDPOINTS.updateText}/${textId}`, { texts: updatePayload });
+        textId = textRes.data.data?.text_id;
+      } else {
+        const textPayload = {
+          title: csdTitle,
+          desc: csdSubTitle,
+          text_type: 7,
+          text_sec: sectionId,
+        };
+        const textRes = await axios.post(`${API_ENDPOINTS.createText}`, { texts: [textPayload] });
+        textId = textRes.data.data?.text_id;
+      }
+
+      const imageId1 = await getImageIdByUrl(selectedImage1);
+      const imageId2 = await getImageIdByUrl(selectedImage2);
+
+      const data = {
+        ras_id: csdId,
+        ras_sec: sectionId,
+        ras_text: textId,
+        ras_img1: imageId1,
+        ras_img2: imageId2,
+        subservices: await subserviceRef.current?.getSubserviceSlidersCSD(),
+        rasons: await addOnRef.current?.getAddOnCSD(),
+      };
+
+      return [data];
+    }
+  }));
+
+  const handleToggleDisplay = async () => {
+    try {
+        const newDisplay = displayCSD === 1 ? 0 : 1;
+        await axios.post(`${API_ENDPOINTS.updateSection}/${sectionId}`, {
+            sec_id: sectionId,
+            display: newDisplay,
+        });
+        setDisplayCSD(newDisplay);
+    } catch (error) {
+        console.error("Failed to update display:", error);
+    }
+  };
+
+  const handleDeleteSection = async () => {
+    if (!window.confirm("Are you sure you want to delete this section?")) return;
+
+    try {
+        await axios.put(`${API_ENDPOINTS.deleteSection}/${sectionId}`);
+        window.location.reload();
+    } catch (error) {
+        console.error('Failed to delete section:', error);
+    }
+  };
+
+  useEffect(() => {
+    const fetchCSDs = async () => {
+      try {
+        const response = await axios.get(`${API_ENDPOINTS.getSpecialization}?ras_sec=${sectionId}`);
+        const csds = response.data.data || [];
+        if (csds.length > 0) {
+          const csd = csds.find(item =>
+            item.section.sec_page === pageId &&
+            item.ras_sec === sectionId &&
+            item.text?.text_type === 7
+          );
+
+          if (csd) {
+            setCsdId(csd.ras_id || null);
+            setCsdTitle(csd.text?.title || '');
+            setCsdSubTitle(csd.text?.desc || '');
+            setSelectedImage1(csd.ras_img1 ? `${API}/storage/uploads/${csd.image1.img}` : '');
+            setSelectedImage2(csd.ras_img2 ? `${API}/storage/uploads/${csd.image2.img}` : '');
+          }
+        }
+
+        const sectionRes = await axios.get(`${API_ENDPOINTS.getSection}/${sectionId}`);
+        const sectionData = sectionRes.data.data;
+        setDisplayCSD(sectionData.display || 0);
+      } catch (error) {
+        console.error("Failed to fetch facilities:", error);
+      }
+    };
+
+    if(sectionId && pageId){
+      fetchCSDs();
+    }
+  }, [sectionId]);
 
   return (
     <div className="grid grid-cols-1 gap-4 ">
@@ -44,6 +176,7 @@ const CsdPiece = () => {
             </div>
             <div className="flex gap-1">
               <svg
+                onClick={() => handleDeleteSection()}
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
@@ -88,6 +221,8 @@ const CsdPiece = () => {
             </label>
             <div className="mt-2">
               <input
+                value={csdTitle}
+                onChange={(e) => setCsdTitle(e.target.value)}
                 type="text"
                 className="block w-full !border-gray-200 border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
               />
@@ -99,7 +234,10 @@ const CsdPiece = () => {
             </label>
             <div className="mt-2">
               <label class="toggle-switch mt-2">
-                <input type="checkbox" />
+                <input
+                  checked={displayCSD === 1}
+                  onChange={handleToggleDisplay}
+                  type="checkbox" />
                 <span class="slider"></span>
               </label>
             </div>
@@ -112,11 +250,14 @@ const CsdPiece = () => {
               Subtitle
             </label>
             <div className="mt-2">
-              <textarea className="!border-gray-300 h-60 block w-full rounded-md border-0 py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-2xl sm:leading-6"></textarea>
+              <textarea
+                value={csdSubTitle}
+                onChange={(e) => setCsdSubTitle(e.target.value)}
+                className="!border-gray-300 h-60 block w-full rounded-md border-0 py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-2xl sm:leading-6"></textarea>
             </div>
           </div>
           <div className="flex-1 mt-8">
-            <AddOn />
+            <AddOn ref={addOnRef} csdId={csdId}/>
           </div>
         </div>
 
@@ -288,11 +429,11 @@ const CsdPiece = () => {
           )}
         </div>
         <div className="mb-4">
-          <CsdPieceOne />
+          <CsdPieceSlider ref={subserviceRef} csdId={csdId}/>
         </div>
       </details>
     </div>
   );
-};
+});
 
 export default CsdPiece;

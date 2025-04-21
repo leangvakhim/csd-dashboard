@@ -1,33 +1,25 @@
-import React, { useState } from "react";
+import React, { useState, forwardRef, useImperativeHandle, useEffect } from "react";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import axios from "axios";
+import { API_ENDPOINTS } from "../../../service/APIConfig";
 
-const FuturePieceOne = () => {
+const FaqPieceOne = forwardRef(({faqId}, ref) => {
     const [rotatedStates, setRotatedStates] = useState({});
     const [slider, setSlider] = useState([
         {
             id: "1",
-            title: "future 1",
+            title: "faq 1",
             subtitle: "",
-            logo: "",
-            image: "",
-            firstbtntitle: "",
-            firstbtnselect: "",
-            secondbtntitle: "",
-            secondbtnselect: "",
+            display: 0
         },
     ]);
 
     const handleAddSlider = () => {
         const newSlider = {
-            id: `${Date.now()}`,
-            title: `future ${slider.length + 1}`,
+            id: (slider.length + 1).toString(),
+            title: `faq ${slider.length + 1}`,
             subtitle: "",
-            logo: "",
-            image: "",
-            firstbtntitle: "",
-            firstbtnselect: "",
-            secondbtntitle: "",
-            secondbtnselect: "",
+            display: 0,
         };
 
         setSlider([...slider, newSlider]);
@@ -48,6 +40,72 @@ const FuturePieceOne = () => {
         newSlider.splice(result.destination.index, 0, reorderedSlider);
 
         setSlider(newSlider);
+    };
+
+    useImperativeHandle(ref, () => ({
+        getSubserviceSlidersFAQ: async () => {
+        const updatedSliders = await Promise.all(
+            slider.map(async (slide) => {
+            return {
+                fa_question: slide.title,
+                fa_answer: slide.subtitle,
+                display: slide.display ? 1 : 0,
+                id: slide.id,
+            };
+            })
+        );
+
+        return updatedSliders;
+        },
+    }));
+
+    useEffect(() => {
+        const fetchSliders = async () => {
+        try {
+            const response = await axios.get(API_ENDPOINTS.getSubFAQ);
+            const data = response.data?.data;
+
+            const subservices = Array.isArray(data) ? data : [data];
+
+            if (subservices.length > 0 && faqId) {
+            const validSubservices = subservices.filter(item => item.fa_faq === faqId);
+
+
+            const formattedData = validSubservices.map(item => ({
+                id: item.fa_id.toString(),
+                title: item.fa_question || '',
+                subtitle: item.fa_answer || '',
+                display: item.display === 1
+            }));
+
+            if (formattedData.length > 0) {
+                setSlider(formattedData);
+            } else {
+                setSlider([{
+                    id: "1",
+                    title: "faq 1",
+                    subtitle: "",
+                    display: 0
+                }]);
+            }
+            }
+        } catch (error) {
+            console.error('Error fetching sliders:', error);
+        }
+        };
+
+        fetchSliders();
+    }, [faqId]);
+
+    const handleDeleteSlider = async (sliderId) => {
+        if (!window.confirm("Are you sure you want to delete this slider?")) return;
+
+        try {
+            await axios.put(`${API_ENDPOINTS.deleteSubFAQ}/${sliderId}`);
+            setSlider((prevSlider) => prevSlider.filter((item) => item.id !== sliderId));
+        } catch (error) {
+            console.error('Failed to delete slider:', error);
+        }
     };
 
     return (
@@ -99,6 +157,7 @@ const FuturePieceOne = () => {
                                                     <span className=" shrink-0 transition-transform duration-500 group-open:-rotate-0 flex gap-2">
                                                         <div className="block">
                                                             <svg
+                                                                onClick={() => handleDeleteSlider(sliders.id)}
                                                                 xmlns="http://www.w3.org/2000/svg"
                                                                 fill="none"
                                                                 viewBox="0 0 24 24"
@@ -139,10 +198,16 @@ const FuturePieceOne = () => {
                                                 <div className="flex flex-row gap-4 px-4 py-2">
                                                     <div className="flex-1">
                                                         <label className=" block text-xl font-medium leading-6 text-white-900">
-                                                            Title
+                                                            Question
                                                         </label>
                                                         <div className="mt-2">
                                                             <input
+                                                                value={sliders.title}
+                                                                onChange={(e) => {
+                                                                    const updatedSlider = [...slider];
+                                                                    updatedSlider[index].title = e.target.value;
+                                                                    setSlider(updatedSlider);
+                                                                }}
                                                                 type="text"
                                                                 className="!border-gray-300 block w-full border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
                                                             />
@@ -154,7 +219,14 @@ const FuturePieceOne = () => {
                                                         </label>
                                                         <div className="mt-2">
                                                             <label class="toggle-switch mt-2">
-                                                                <input type="checkbox" />
+                                                                <input
+                                                                    checked={sliders.display === 1 || sliders.display === true}
+                                                                    onChange={(e) => {
+                                                                        const updatedSlider = [...slider];
+                                                                        updatedSlider[index].display = e.target.checked ? 1 : 0;
+                                                                        setSlider(updatedSlider);
+                                                                    }}
+                                                                    type="checkbox" />
                                                                 <span class="slider"></span>
                                                             </label>
                                                         </div>
@@ -164,10 +236,17 @@ const FuturePieceOne = () => {
                                                 <div className="grid grid-cols-1 gap-4 px-4 py-2">
                                                     <div className="flex-1">
                                                         <label className="block text-xl font-medium leading-6 text-white-900">
-                                                            subtitle
+                                                            Subtitle
                                                         </label>
                                                         <div className="mt-2">
-                                                            <textarea className="!border-gray-300 h-60 block w-full rounded-md border-0 py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-2xl sm:leading-6"></textarea>
+                                                            <textarea
+                                                                value={sliders.subtitle}
+                                                                onChange={(e) => {
+                                                                    const updatedSlider = [...slider];
+                                                                    updatedSlider[index].subtitle = e.target.value;
+                                                                    setSlider(updatedSlider);
+                                                                }}
+                                                                className="!border-gray-300 h-60 block w-full rounded-md border-0 py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-2xl sm:leading-6"></textarea>
                                                         </div>
                                                     </div>
 
@@ -196,13 +275,13 @@ const FuturePieceOne = () => {
                                     d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
                                 />
                             </svg>
-                            Add new future
+                            Add new faq
                         </a>
                     </div>
                 )}
             </Droppable>
         </DragDropContext>
     );
-};
+});
 
-export default FuturePieceOne;
+export default FaqPieceOne;

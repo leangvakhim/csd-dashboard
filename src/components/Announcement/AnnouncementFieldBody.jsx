@@ -137,7 +137,6 @@ const AnnouncementFieldBody = ({
                 />
               </div>
             </div>
-
             <div className="flex-1">
               <label className="block text-xl font-medium leading-6 text-gray-900">
                 Post Date
@@ -313,7 +312,6 @@ const AnnouncementFieldBody = ({
               </div>
             </div>
           </div>
-
           {isMediaLibraryOpen && (
             <MediaLibraryModal
               onSelect={(imageUrl) => handleImageSelect(imageUrl, 'image')}
