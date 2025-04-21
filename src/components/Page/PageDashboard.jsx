@@ -12,14 +12,13 @@ const PageDashboard = () => {
     useEffect(() => {
         const fetchPages = async () => {
             try {
-            const response = await axios.get(API_ENDPOINTS.getPage);
-            const pages = Array.isArray(response.data)
-                ? response.data
-                : response.data?.data || [];
-            setPageItems(pages);
+                const response = await axios.get(API_ENDPOINTS.getPage);
+                const result = (response.data.data || []);
+                const normalized = Array.isArray(result) ? result : result ? [result] : [];
+                setPageItems(normalized);
             } catch (error) {
-            console.error('Failed to fetch page:', error);
-            setPageItems([]);
+                console.error('Failed to fetch page:', error);
+                setPageItems([]);
             }
         };
         const fetchMenu = async () => {

@@ -20,8 +20,9 @@ const MenuDashboard = () => {
         const fetchMenuItems = async () => {
             try {
                 const response = await axios.get(API_ENDPOINTS.getMenu);
-                const sortedMenu = (response.data.data || []).sort((a, b) => b.menu_order - a.menu_order);
-                setMenuItems(sortedMenu);
+                const result = (response.data.data || []);
+                const normalized = Array.isArray(result) ? result : result ? [result] : [];
+                setMenuItems(normalized);
             } catch (error) {
                 console.error("❌ Failed to fetch menu items:", error);
             }
