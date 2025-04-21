@@ -225,7 +225,7 @@ const ProgramPiece = forwardRef(({sectionId, pageId}, ref) => {
                     <img
                       src={selectedImage1}
                       alt="Selected"
-                      className="h-40 w-40 object-contain"
+                      className="h-24 w-24 object-contain"
                     />
                     <div className="flex gap-3 mt-2 justify-center">
                       <svg
@@ -308,7 +308,7 @@ const ProgramPiece = forwardRef(({sectionId, pageId}, ref) => {
                     <img
                       src={selectedImage2}
                       alt="Selected"
-                      className="h-40 w-40 object-contain"
+                      className="h-32 w-32 object-contain"
                     />
                     <div className="flex gap-3 mt-2 justify-center">
                       <svg
