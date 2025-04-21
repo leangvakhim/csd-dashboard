@@ -131,7 +131,7 @@ const API_ENDPOINTS = {
     duplicateScholarship: `${API_BASEURL}/scholarship/duplicate`,
     updateScholarshipOrder: `${API_BASEURL}/scholarship/reorder`,
     
-
+    // research
     getResearch: `${API_BASEURL}/rsd`,
     createResearch: `${API_BASEURL}/rsd/create`,
     updateResearch: `${API_BASEURL}/rsd/update`,
