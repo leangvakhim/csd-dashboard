@@ -97,7 +97,8 @@ const MediaLibraryModal = ({ onSelect, onClose }) => {
                 ) : (
                     <div className="grid grid-cols-4 gap-4">
                         {filteredImages.map((image) => (
-                            <div key={image.image_id} className="relative border rounded-lg overflow-hidden cursor-pointer"
+                            <div key={image.image_id}
+                                className="flex items-center justify-center border rounded-lg"
                                 onMouseEnter={() => setSelectedImageName(image.img)}
                                 onMouseLeave={() => setSelectedImageName("")}
                                 onClick={() => {
@@ -107,7 +108,7 @@ const MediaLibraryModal = ({ onSelect, onClose }) => {
                                 >
                                 <img src={`${image.image_url}`}
                                      alt={`Media ${image.img}`}
-                                     className="w-full h-auto object-cover"
+                                    className="mx-auto my-auto object-contain max-h-40 cursor-pointer"
                                      />
 
                                      {selectedImageName === image.img && (
