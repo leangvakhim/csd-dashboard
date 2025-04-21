@@ -1,77 +1,13 @@
 import React, { useState } from "react";
 import MediaLibraryModal from "../MediaLibraryModal";
-import JoditEditor from "jodit-react";
-import "jodit/es5/jodit.css";
 import { API_ENDPOINTS } from "../../service/APIConfig";
-import { useEffect } from "react";
+import { Link } from "react-router-dom";
+import AnnouncementFieldImportFile from "./AnnouncementFieldImportFile";
 
-// const config = {
-//   readonly: false, // Set to true for read-only mode
-//   height: 400,
-//   placeholder: "Start typing...",
-//   uploader: {
-//     insertImageAsBase64URI: true, // Enable base64 image upload
-//   },
-// };
-
-const AnnouncementFieldBody = ({
-  formData,
-  setFormData,
-  //   subtitleContent,
-  //   setSubtitleContent,
-  onImageSelect,
-}) => {
+const AnnouncementFieldBody = ({}) => {
   const [activeTab, setActiveTab] = useState(1);
   const [isMediaLibraryOpen, setMediaLibraryOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState("");
-
-  useEffect(() => {
-    if (formData.lang) {
-      setActiveTab(formData.lang);
-    }
-  }, [formData.lang]);
-
-  useEffect(() => {
-    if (formData.c_img) {
-      fetch(`${API_ENDPOINTS.getImages}`)
-        .then((res) => res.json())
-        .then((result) => {
-          const matched = result.data.find(
-            (img) => img.image_id === formData.c_img
-          );
-          if (matched) {
-            setSelectedImage(matched.image_url);
-          }
-        })
-        .catch((err) => console.error("Error fetching image:", err));
-    }
-  }, [formData.c_img]);
-
-  useEffect(() => {
-    // console.log("Loaded formData:", formData);
-
-    if (typeof formData.display !== "boolean") {
-      setFormData((prev) => ({
-        ...prev,
-        display: !!parseInt(prev.display),
-      }));
-    }
-
-    if (typeof formData.c_fav !== "boolean") {
-      setFormData((prev) => ({
-        ...prev,
-        c_fav: !!parseInt(prev.c_fav),
-      }));
-    }
-
-    if (formData.c_date && formData.c_date.includes(" ")) {
-      const dateOnly = formData.c_date.split(" ")[0];
-      setFormData((prev) => ({
-        ...prev,
-        c_date: dateOnly,
-      }));
-    }
-  }, [formData]);
 
   const openMediaLibrary = () => {
     setMediaLibraryOpen(true);
@@ -137,7 +73,7 @@ const AnnouncementFieldBody = ({
             ))}
           </ul>
         </div>
-        <div className="mt-4">
+        <div className="mt-2">
           {/* First row */}
           <div className="flex sm:!flex-row flex-col gap-4 items-center py-2 ">
             <div className="flex-1 w-full">
@@ -147,13 +83,6 @@ const AnnouncementFieldBody = ({
               <div className="mt-2">
                 <input
                   type="text"
-                  value={formData.c_title}
-                  onChange={(e) =>
-                    setFormData((prev) => ({
-                      ...prev,
-                      c_title: e.target.value,
-                    }))
-                  }
                   className="block w-full !border-gray-200 border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
                 />
               </div>
@@ -171,30 +100,10 @@ const AnnouncementFieldBody = ({
                 <input
                   type="date"
                   id="event-date"
-                  value={formData.c_date}
-                  onChange={(e) =>
-                    setFormData({ ...formData, c_date: e.target.value })
-                  }
                   className="mt-2 w-full py-2 border !border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 />
               </div>
             </div>
-
-            {/* <div className="flex-1 w-full">
-              <label className="block text-xl font-medium leading-6 text-white-900">
-                Short Title
-              </label>
-              <div className="mt-2">
-                <input
-                  type="text"
-                  value={formData.c_shorttitle}
-                  onChange={(e) =>
-                    setFormData({ ...formData, c_shorttitle: e.target.value })
-                  }
-                  className="block w-full !border-gray-200 border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
-                />
-              </div>
-            </div> */}
 
             <div className="flex-non mb-2">
               <label className="block text-xl font-medium leading-6 text-white-900">
@@ -204,10 +113,6 @@ const AnnouncementFieldBody = ({
                 <label class="toggle-switch mt-2">
                   <input
                     type="checkbox"
-                    checked={formData.display}
-                    onChange={(e) =>
-                      setFormData({ ...formData, display: e.target.checked })
-                    }
                   />
                   <span class="slider"></span>
                 </label>
@@ -215,7 +120,7 @@ const AnnouncementFieldBody = ({
             </div>
           </div>
           {/* Second row */}
-          <div className="w-full my-0 sm:my-6">
+          <div className="w-full">
             <div className="grid  grid-cols-1 md:!grid-cols-2 items-center gap-4">
               <div className="flex-1 w-full">
                 <label className="block text-xl font-medium leading-6 text-white-900">
@@ -224,10 +129,6 @@ const AnnouncementFieldBody = ({
                 <div className="mt-2">
                   <input
                     type="text"
-                    value={formData.c_shorttitle}
-                    onChange={(e) =>
-                      setFormData({ ...formData, c_shorttitle: e.target.value })
-                    }
                     className="block w-full !border-gray-200 border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
                   />
                 </div>
@@ -241,10 +142,6 @@ const AnnouncementFieldBody = ({
                       Favorite
                     </label>
                     <select
-                      value={formData.c_fav}
-                      onChange={(e) =>
-                        setFormData({ ...formData, c_fav: e.target.value })
-                      }
                       className="mt-2 block w-full border !border-gray-300 rounded-md py-2 pl-2 text-gray-900 shadow-sm focus:ring-2 focus:ring-indigo-500"
                     >
                       <option value={true}>Yes</option>
@@ -350,6 +247,10 @@ const AnnouncementFieldBody = ({
                 </div>
               </div>
             </div>
+          </div>
+          {/* Fourth row */}
+          <div>
+            <AnnouncementFieldImportFile />
           </div>
         </div>
       </div>
