@@ -158,8 +158,8 @@ const DeveloperFieldSocial = () => {
                               <div className="mt-2">
                               <input
                                   type="text"
-                                  value={sliders.title}
-                                  onChange={(e) => handleInputChange(sliders.id, 'title', e.target.value)}
+                                  // value={sliders.title}
+                                  // onChange={(e) => handleInputChange(sliders.id, 'title', e.target.value)}
                                   className="block w-full !border-gray-200 border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
                               />
                               </div>
@@ -173,8 +173,8 @@ const DeveloperFieldSocial = () => {
                                   <label className="toggle-switch mt-2">
                                       <input
                                           type="checkbox"
-                                          checked={sliders.display || false}
-                                          onChange={(e) => handleInputChange(sliders.id, 'display', e.target.checked)}
+                                          // checked={sliders.display || false}
+                                          // onChange={(e) => handleInputChange(sliders.id, 'display', e.target.checked)}
                                       />
                                       <span className="slider"></span>
                                   </label>
@@ -278,8 +278,8 @@ const DeveloperFieldSocial = () => {
                             </label>
                             <div className="mt-2">
                               <textarea
-                                value={sliders.subtitle}
-                                onChange={(e) => handleInputChange(sliders.id, 'subtitle', e.target.value)}
+                                // value={sliders.subtitle}
+                                // onChange={(e) => handleInputChange(sliders.id, 'subtitle', e.target.value)}
                                 className="!border-gray-300 h-60 block w-full rounded-md border-0 py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-2xl sm:leading-6"></textarea>
                             </div>
                           </div>
