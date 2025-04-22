@@ -12,14 +12,13 @@ const PageDashboard = () => {
     useEffect(() => {
         const fetchPages = async () => {
             try {
-            const response = await axios.get(API_ENDPOINTS.getPage);
-            const pages = Array.isArray(response.data)
-                ? response.data
-                : response.data?.data || [];
-            setPageItems(pages);
+                const response = await axios.get(API_ENDPOINTS.getPage);
+                const result = (response.data.data || []);
+                const normalized = Array.isArray(result) ? result : result ? [result] : [];
+                setPageItems(normalized);
             } catch (error) {
-            console.error('Failed to fetch page:', error);
-            setPageItems([]);
+                console.error('Failed to fetch page:', error);
+                setPageItems([]);
             }
         };
         const fetchMenu = async () => {
@@ -123,10 +122,10 @@ const PageDashboard = () => {
                                                     <i className="ti ti-trash text-gray-500 text-xl"></i>
                                                     <span className="text-sm text-gray-700">Delete</span>
                                                 </a>
-                                                <a onClick={() => duplicateItem(item.p_id)} className="cursor-pointer flex gap-2 items-center px-4 py-2 hover:bg-blue-100">
+                                                {/* <a onClick={() => duplicateItem(item.p_id)} className="cursor-pointer flex gap-2 items-center px-4 py-2 hover:bg-blue-100">
                                                     <i className="ti ti-copy text-gray-500 text-xl"></i>
                                                     <span className="text-sm text-gray-700">Duplicate</span>
-                                                </a>
+                                                </a> */}
                                             </div>
                                         </div>
                                     )}

@@ -13,16 +13,9 @@ const NewDashboard = () => {
         const fetchNews = async () => {
             try {
                 const response = await axios.get(API_ENDPOINTS.getNews);
-                let newsArray = response.data.data;
-
-                if (newsArray && !Array.isArray(newsArray)) {
-                    newsArray = [newsArray];
-                } else if (!newsArray) {
-                    newsArray = [];
-                }
-
-                const sortedNews = newsArray.sort((a, b) => b.n_order - a.n_order);
-                setEventItems(sortedNews);
+                const result = (response.data.data || []);
+                const normalized = Array.isArray(result) ? result : result ? [result] : [];
+                setEventItems(normalized);
             } catch (error) {
                 console.error('Failed to fetch news:', error);
             }

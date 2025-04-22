@@ -115,24 +115,6 @@ const SettingField = () => {
                 />
               </div>
             </div>
-
-            {/* <div className="flex-non mb-2">
-              <label className="block text-xl font-medium leading-6 text-white-900">
-                Display
-              </label>
-              <div className="mt-1 ">
-                <label className="toggle-switch mt-2">
-                  <input
-                    type="checkbox"
-                    checked={formData.display}
-                    onChange={(e) =>
-                      setFormData({ ...formData, display: e.target.checked })
-                    }
-                  />
-                  <span className="slider"></span>
-                </label>
-              </div>
-            </div> */}
           </div>
 
           {/* Second row */}
@@ -281,7 +263,7 @@ const SettingField = () => {
           </div>
           {/* Third row */}
           <div>
-            <div className="grid grid-cols-1 gap-4 py-2">
+            <div className="grid grid-cols-1">
               <SettingFieldSection />
             </div>
           </div>

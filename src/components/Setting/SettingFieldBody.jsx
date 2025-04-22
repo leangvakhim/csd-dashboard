@@ -9,7 +9,7 @@ const SettingFieldBody = () => {
             <Aside/>
 
             <div className=" w-full page-wrapper overflow-hidden">
-                <SettingFieldHeader/>
+                <SettingFieldHeader />
                 <SettingFieldBodyInfo />
             </div>
         </div>

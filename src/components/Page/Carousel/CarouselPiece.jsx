@@ -43,10 +43,14 @@ const CarouselPiece = forwardRef(({sectionId, pageId}, ref) => {
         const fetchSlideShowDisplay = async () => {
             try {
                 const sectionRes = await axios.get(`${API_ENDPOINTS.getSection}/${sectionId}`);
-                const sectionData = sectionRes.data.data;
+                const sectionData = sectionRes?.data.data;
                 setDisplaySlideshow(sectionData.display || 0);
             } catch (error) {
-                console.error("Failed to fetch banners:", error);
+                if (error.response?.status === 404) {
+                    setDisplaySlideshow(0); // fallback display value
+                } else {
+                    console.error("Failed to fetch carousel:", error);
+                }
             }
         };
 

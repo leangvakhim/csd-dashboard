@@ -12,8 +12,9 @@ const EventDashboard = () => {
         const fetchEvents = async () => {
             try {
                 const response = await axios.get(API_ENDPOINTS.getEvent);
-                const sortedEvents = (response.data.data || []).sort((a, b) => b.e_order - a.e_order);
-                setEventItems(sortedEvents);
+                const result = (response.data.data || []);
+                const normalized = Array.isArray(result) ? result : result ? [result] : [];
+                setEventItems(normalized);
             } catch (error) {
                 console.error('Failed to fetch events:', error);
             }
