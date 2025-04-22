@@ -1,65 +1,99 @@
-import { forwardRef, useImperativeHandle, useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import MediaLibraryModal from "../MediaLibraryModal";
 
-const DeveloperFieldSocial = () => {
-    const [currentSliderId, setCurrentSliderId] = useState(null);
-    const [currentField, setCurrentField] = useState("");
-    const [isMediaLibraryOpen, setMediaLibraryOpen] = useState(false);
-    const [rotatedStates, setRotatedStates] = useState({});
-    const [slider, setSlider] = useState([
-        {
-        id: "1",
-        title: "Social 1",
-        subtitle: "",
-        image: "",
-        },
-    ]);
+const DeveloperFieldSocial = ({ formData, setFormData }) => {
+  const [currentSliderId, setCurrentSliderId] = useState(null);
+  const [currentField, setCurrentField] = useState("");
+  const [isMediaLibraryOpen, setMediaLibraryOpen] = useState(false);
+  const [rotatedStates, setRotatedStates] = useState({});
+  const [slider, setSlider] = useState([]);
 
-    const handleAddSlider = () => {
-        const newSlider = {
-        id: (slider.length + 1).toString(),
-        title: `Social ${slider.length + 1}`,
-        subtitle: "",
-        image: "",
-        };
-
-        setSlider([...slider, newSlider]);
+  const handleAddSlider = () => {
+    const newSlider = {
+      id: (slider.length + 1).toString(),
+      title: `Social ${slider.length + 1}`,
+      display: false,
+      subtitle: "",
+      image: "",
     };
 
-    const toggleRotation = (id) => {
-        setRotatedStates((prev) => ({
+    // setSlider([...slider, newSlider]);
+    setFormData(prev => ({
+      ...prev,
+      socialSlider: [...prev.socialSlider, newSlider],
+    }));
+  };
+
+  const toggleRotation = (id) => {
+    setRotatedStates((prev) => ({
+      ...prev,
+      [id]: !prev[id],
+    }));
+  };
+
+  const onDragEnd = (result) => {
+    if (!result.destination) return;
+
+    const newSlider = Array.from(slider);
+    const [reorderedSlider] = newSlider.splice(result.source.index, 1);
+    newSlider.splice(result.destination.index, 0, reorderedSlider);
+
+    // setSlider(newSlider);
+    setFormData(prev => ({
+      ...prev,
+      socialSlider: newSlider,
+    }));
+  };
+
+  const openMediaLibrary = (sliderId, field) => {
+    setCurrentSliderId(sliderId);
+    setCurrentField(field);
+    setMediaLibraryOpen(true);
+  };
+
+  // const handleImageSelect = (imageUrl) => {
+  //   setSlider((prev) =>
+  //     prev.map((item) =>
+  //       item.id === currentSliderId ? { ...item, [currentField]: imageUrl ? `${imageUrl}` : "" }: item
+  //     )
+  //   );
+  //   setMediaLibraryOpen(false);
+  // };
+
+  const handleImageSelect = (imageUrl) => {
+    setFormData(prev => ({
+      ...prev,
+      socialSlider: prev.socialSlider.map((item) =>
+        item.id === currentSliderId
+          ? { ...item, [currentField]: imageUrl ? `${imageUrl}` : "" }
+          : item
+      )
+    }));
+    setMediaLibraryOpen(false);
+  };
+
+  const handleInputChange = (e, sliderId, field, value) => {
+    setFormData((prev) => {
+      const updatedSliders = prev.socialSlider.map((slider) => {
+        if (slider.id === sliderId) {
+          return { ...slider, [field]: value };
+        }
+        return slider;
+      });
+
+      return {
         ...prev,
-        [id]: !prev[id],
-        }));
-    };
+        socialSlider: updatedSliders,
+      };
+    });
+  };
 
-    const onDragEnd = (result) => {
-        if (!result.destination) return;
-
-        const newSlider = Array.from(slider);
-        const [reorderedSlider] = newSlider.splice(result.source.index, 1);
-        newSlider.splice(result.destination.index, 0, reorderedSlider);
-
-        setSlider(newSlider);
-    };
-
-    const openMediaLibrary = (sliderId, field) => {
-        setCurrentSliderId(sliderId);
-        setCurrentField(field);
-        setMediaLibraryOpen(true);
-    };
-
-    const handleImageSelect = (imageUrl) => {
-        setSlider((prevSlider) =>
-        prevSlider.map((item) =>
-            item.id === currentSliderId
-            ? { ...item, [currentField]: imageUrl ? `${imageUrl}` : "" }
-            : item
-        )
-        );
-        setMediaLibraryOpen(false);
-    };
+  useEffect(() => {
+    if (formData?.socialSlider) {
+      setSlider(formData.socialSlider);
+    }
+  }, [formData.socialSlider]);
 
   return (
     <DragDropContext onDragEnd={onDragEnd}>
@@ -79,9 +113,8 @@ const DeveloperFieldSocial = () => {
                 >
                   {(provided) => (
                     <li
-                      className={`below-border ${
-                        index === sliders.length - 1 ? "border-none" : ""
-                      }`}
+                      className={`below-border ${index === sliders.length - 1 ? "border-none" : ""
+                        }`}
                       ref={provided.innerRef}
                       {...provided.draggableProps}
                     >
@@ -111,7 +144,7 @@ const DeveloperFieldSocial = () => {
                           <span className=" shrink-0 transition-transform duration-500 group-open:-rotate-0 flex gap-2">
                             <div className="block">
                               <svg
-                                onClick={() => handleDeleteSlider(sliders.id)}
+                                // onClick={() => handleDeleteSlider(sliders.id)}
                                 xmlns="http://www.w3.org/2000/svg"
                                 fill="none"
                                 viewBox="0 0 24 24"
@@ -127,9 +160,8 @@ const DeveloperFieldSocial = () => {
                               </svg>
                             </div>
                             <span
-                              className={`cursor-pointer shrink-0 transition-transform duration-300 ${
-                                rotatedStates[sliders.id] ? "rotate-180" : ""
-                              }`}
+                              className={`cursor-pointer shrink-0 transition-transform duration-300 ${rotatedStates[sliders.id] ? "rotate-180" : ""
+                                }`}
                             >
                               <svg
                                 xmlns="http://www.w3.org/2000/svg"
@@ -152,33 +184,35 @@ const DeveloperFieldSocial = () => {
                         {/* title */}
                         <div className="flex flex-row gap-4 px-4 py-2">
                           <div className="flex-1">
-                              <label className="block text-xl font-medium leading-6 text-white-900">
+                            <label className="block text-xl font-medium leading-6 text-white-900">
                               Title
-                              </label>
-                              <div className="mt-2">
+                            </label>
+                            <div className="mt-2">
                               <input
-                                  type="text"
-                                  // value={sliders.title}
-                                  // onChange={(e) => handleInputChange(sliders.id, 'title', e.target.value)}
-                                  className="block w-full !border-gray-200 border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
+                                type="text"
+                                // value={sliders.title}
+                                value={sliders.title}
+                                onChange={(e) => handleInputChange(e, sliders.id, 'title', e.target.value)}
+                                className="block w-full !border-gray-200 border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
                               />
-                              </div>
+                            </div>
                           </div>
 
-                            <div className="flex-non">
-                              <label className="block text-xl font-medium leading-6 text-white-900">
+                          <div className="flex-non">
+                            <label className="block text-xl font-medium leading-6 text-white-900">
                               Display
+                            </label>
+                            <div className="mt-2">
+                              <label className="toggle-switch mt-2">
+                                <input
+                                  type="checkbox"
+                                  // checked={sliders.display || false}
+                                  value={sliders.display}
+                                  onChange={(e) => handleInputChange(e, sliders.id, 'display', e.target.checked)}
+                                />
+                                <span className="slider"></span>
                               </label>
-                              <div className="mt-2">
-                                  <label className="toggle-switch mt-2">
-                                      <input
-                                          type="checkbox"
-                                          // checked={sliders.display || false}
-                                          // onChange={(e) => handleInputChange(sliders.id, 'display', e.target.checked)}
-                                      />
-                                      <span className="slider"></span>
-                                  </label>
-                              </div>
+                            </div>
                           </div>
                         </div>
                         {/* Image */}
@@ -192,6 +226,7 @@ const DeveloperFieldSocial = () => {
                                 {sliders.image ? (
                                   <div>
                                     <img
+                                      // src={sliders.image}
                                       src={sliders.image}
                                       alt="Selected"
                                       className="h-40 w-40 object-contain"
@@ -278,8 +313,8 @@ const DeveloperFieldSocial = () => {
                             </label>
                             <div className="mt-2">
                               <textarea
-                                // value={sliders.subtitle}
-                                // onChange={(e) => handleInputChange(sliders.id, 'subtitle', e.target.value)}
+                                value={sliders.subtitle}
+                                onChange={(e) => handleInputChange(e, sliders.id, 'subtitle', e.target.value)}
                                 className="!border-gray-300 h-60 block w-full rounded-md border-0 py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-2xl sm:leading-6"></textarea>
                             </div>
                           </div>
