@@ -1,4 +1,4 @@
-const API = "https://52.221.196.157";
+const API = "https://aimostore.shop";
 // const API = "http://127.0.0.1:8000";
 const API_BASEURL = `${API}/api`;
 
