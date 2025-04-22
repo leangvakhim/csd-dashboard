@@ -28,8 +28,20 @@ const DeveloperDashboard = () => {
         }
     ];
 
+    const fetchDeveloper = async () => {
+        try {
+            const response = await axios.get(API_ENDPOINTS.getDevelopers);
+            const data = response.data.data
+            const sortedDevelopers = data.sort((a, b) => b.e_order - a.e_order);
+            setFDeveloperItems(sortedDevelopers);
+            // console.log('developer', sortedDevelopers);
+        } catch (error) {
+            console.error('Failed to fetch delvelopers:', error);
+        }
+    }; 
+
     useEffect(() => {
-        setFDeveloperItems(fakeData);
+        fetchDeveloper();
     }, []);
 
     return (
@@ -78,8 +90,6 @@ const DeveloperDashboard = () => {
                                 <td className="px-6 py-4">{{
                                         1: 'English',
                                         2: 'Khmer',
-                                        // 3: 'Chinese',
-                                        // 4: 'French'
                                     }[item.lang] || 'Unknown'}</td>
                                 <td className="px-6 py-4">
                                     <span className={`${item.display ? 'bg-blue-100 text-blue-800' : 'bg-red-100 text-red-800'} text-xs font-medium me-2 px-2.5 py-0.5 rounded-xl`}>

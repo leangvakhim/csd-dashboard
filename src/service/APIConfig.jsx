@@ -1,5 +1,5 @@
-const API = "https://52.221.196.157";
-// const API = "http://127.0.0.1:8000";
+// const API = "https://52.221.196.157";
+const API = "http://127.0.0.1:8000";
 const API_BASEURL = `${API}/api`;
 
 const API_ENDPOINTS = {
@@ -336,6 +336,13 @@ const API_ENDPOINTS = {
     duplicatePartnership: `${API_BASEURL}/partnership/duplicate`,
     updatePartnershipOrder: `${API_BASEURL}/partnership/reorder`,
 
+    // developer
+    getDevelopers: `${API_BASEURL}/developer`,
+    createDeveloper: `${API_BASEURL}/developer/create`,
+    updateDeveloper: `${API_BASEURL}/developer/update`,
+    orderDeveloper: `${API_BASEURL}/developer/reorder`,
+    // viewDeveloper: `${API_BASEURL}/developer/visibility`,
+
     // button
     // buttons: `${API_BASEURL}/button`,
 
@@ -343,4 +350,4 @@ const API_ENDPOINTS = {
     // addons: `${API_BASEURL}/addon`
 };
 
-export {API_BASEURL, API_ENDPOINTS, API};
+export { API_BASEURL, API_ENDPOINTS, API };

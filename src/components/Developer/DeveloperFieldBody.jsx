@@ -1,11 +1,11 @@
-import React, { useState, useRef, useEffect } from 'react'
+import React, { useState } from 'react'
 import MediaLibraryModal from '../MediaLibraryModal';
 import DeveloperFieldSocial from './DeveloperFieldSocial';
 
-const DeveloperFieldBody = () => {
+const DeveloperFieldBody = ({formData, setFormData}) => {
     const [activeTab, setActiveTab] = useState(1);
     const [isMediaLibraryOpen, setMediaLibraryOpen] = useState(false);
-    const [selectedImage, setSelectedImage] = useState("");
+    // const [selectedImage, setSelectedImage] = useState("");
     const [currentField, setCurrentField] = useState("");
 
     const openMediaLibrary = (field) => {
@@ -15,11 +15,11 @@ const DeveloperFieldBody = () => {
 
     const handleImageSelect = (imageUrl, field) => {
         if (field === "image") {
-            setSelectedImage(imageUrl);
+            setFormData(prev => ({ ...prev, image: imageUrl }));
         }
         setMediaLibraryOpen(false);
     };
-  return (
+    return (
         <div className='px-8 py-2 mb-1'>
             <div className="tabs">
                 <div className="flex">
@@ -27,8 +27,6 @@ const DeveloperFieldBody = () => {
                         {[
                             { id: 1, label: "English" },
                             { id: 2, label: "Khmer" },
-                            // { id: 3, label: "Chinese" },
-                            // { id: 4, label: "French" }
                         ].map(langOption => (
                             <li key={langOption.id}>
                                 <a
@@ -56,6 +54,8 @@ const DeveloperFieldBody = () => {
                             </label>
                             <div className="mt-2">
                                 <input
+                                    value={formData.fullName}
+                                    onChange={(e) => setFormData(prev => ({ ...prev, fullName: e.target.value }))}
                                     type="text"
                                     className="block w-full !border-gray-200 border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
                                 />
@@ -68,6 +68,8 @@ const DeveloperFieldBody = () => {
                             </label>
                             <div className="mt-2">
                                 <input
+                                    value={formData.position}
+                                    onChange={(e) => setFormData(prev => ({ ...prev, position: e.target.value }))}
                                     type="text"
                                     className="block w-full !border-gray-200 border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
                                 />
@@ -81,6 +83,8 @@ const DeveloperFieldBody = () => {
                             <div className="mt-2">
                                 <label class="toggle-switch mt-2">
                                     <input
+                                        value={formData.display}
+                                        onChange={(e) => setFormData(prev => ({ ...prev, display: e.target.checked }))}
                                         type="checkbox"
                                     />
                                     <span class="slider"></span>
@@ -99,10 +103,11 @@ const DeveloperFieldBody = () => {
                                     <label
                                         className="flex flex-col items-center justify-center w-full h-60 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100"
                                     >
-                                        {selectedImage ? (
+                                        {formData.image ? (
                                             <div>
                                                 <img
-                                                    src={selectedImage}
+                                                    // src={selectedImage}
+                                                    src={formData.image}
                                                     alt="Selected"
                                                     className="h-40 w-40 object-contain"
                                                 />
@@ -180,6 +185,8 @@ const DeveloperFieldBody = () => {
                                 </label>
                                 <div className="mt-2">
                                     <textarea
+                                        value={formData.description}
+                                        onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
                                         className="!border-gray-300 h-60 block w-full rounded-md border-0 py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-2xl sm:leading-6"></textarea>
                                 </div>
                             </div>
@@ -189,13 +196,13 @@ const DeveloperFieldBody = () => {
                     <div>
                         <div className="py-2">
                             {/* Social */}
-                            <DeveloperFieldSocial />
+                            <DeveloperFieldSocial formData={formData} setFormData={setFormData}/>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-  )
+    )
 }
 
 export default DeveloperFieldBody
