@@ -8,37 +8,18 @@ import img2 from "../../img/2.jpg";
 const DeveloperDashboard = () => {
     const [activeDropdown, setActiveDropdown] = useState(null);
     const [developerItems, setFDeveloperItems] = useState([]);
-    const navigate = useNavigate();
-    const fakeData = [
-        {
-            f_id: 1,
-            f_name: 'John Doe',
-            f_position: 'Frontend Developer',
-            lang: 1,
-            display: true,
-            img: { img: img1 }
-        },
-        {
-            f_id: 2,
-            f_name: 'Jane Smith',
-            f_position: 'Backend Developer',
-            lang: 2,
-            display: false,
-            img: { img: img2 }
-        }
-    ];
 
     const fetchDeveloper = async () => {
         try {
             const response = await axios.get(API_ENDPOINTS.getDevelopers);
-            const data = response.data.data
-            const sortedDevelopers = data.sort((a, b) => b.e_order - a.e_order);
-            setFDeveloperItems(sortedDevelopers);
+            const result = (response.data.data || []);
+            const normalized = Array.isArray(result) ? result : result ? [result] : [];
+            setFDeveloperItems(normalized);
             // console.log('developer', sortedDevelopers);
         } catch (error) {
             console.error('Failed to fetch delvelopers:', error);
         }
-    }; 
+    };
 
     useEffect(() => {
         fetchDeveloper();
@@ -78,15 +59,15 @@ const DeveloperDashboard = () => {
                         </tr>
                         ) : (
                         developerItems.map((item, index) => (
-                            <tr key={item.f_id} className="odd:bg-white even:bg-gray-50 border">
+                            <tr key={item.d_id} className="odd:bg-white even:bg-gray-50 border">
                                 <td
                                     scope="row"
                                     className="px-6 py-4"
                                     >
-                                    <img src={item.img?.img} alt="" className='size-12 rounded-full' />
+                                    <img src={item.d_img?.img} alt="" className='size-12 rounded-full' />
                                 </td>
-                                <td className="px-6 py-4">{item.f_name}</td>
-                                <td className="px-6 py-4">{item.f_position}</td>
+                                <td className="px-6 py-4">{item.d_name}</td>
+                                <td className="px-6 py-4">{item.d_position}</td>
                                 <td className="px-6 py-4">{{
                                         1: 'English',
                                         2: 'Khmer',

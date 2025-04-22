@@ -17,12 +17,13 @@ const DeveloperField = () => {
     socialSlider: []
   });
 
-  const buildPayload = (order) => {
+  const buildPayload = async (order) => {
+
     return {
       d_name: formData.fullName,
       d_position: formData.position,
       d_write: formData.description,
-      d_img: formData.image,
+      d_img: await getImageIdByUrl(formData.image),
       display: formData.display,
       lang: formData.lang,
       d_order: order,
@@ -37,19 +38,31 @@ const DeveloperField = () => {
     };
   };
 
+  const getImageIdByUrl = async (url) => {
+    try {
+      const response = await axios.get(API_ENDPOINTS.getImages);
+      const images = Array.isArray(response.data) ? response.data : response.data.data;
+
+      const matchedImage = images.find((img) => img.image_url === url);
+      return matchedImage?.image_id || null;
+    } catch (error) {
+      console.error('❌ Failed to fetch image ID:', error);
+      return null;
+    }
+  };
+
   const handleSubmit = async () => {
     try {
       const { data: developers } = await axios.get(API_ENDPOINTS.getDevelopers);
       const newOrder = developers.data.length + 1;
 
-      const payload = buildPayload(newOrder);
+      const payload = await buildPayload(newOrder);
 
       const fetchDeveloper = async () => {
-        const response = await axios.post(API_ENDPOINTS.createDeveloper, payload);
-        console.log('Developer submit data:', response);
-        console.log('Developer submit data:', response.data);
-
+        await axios.post(API_ENDPOINTS.createDeveloper, {developer: [payload]});
       };
+      // console.log("🔧 Payload sent to backend:", payload);
+      alert("Save developer member success");
 
       fetchDeveloper();
 
