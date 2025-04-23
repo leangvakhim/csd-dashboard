@@ -116,12 +116,6 @@ const PageDashboard = () => {
                                     >
                                         <i className="ti ti-dots-vertical text-xl"></i>
                                     </button>
-                                    {/* <button
-                                        onClick={() => setActiveDropdown(activeDropdown === item.p_id ? null : item.p_id)}
-                                        className="font-medium text-gray-900 hover:text-blue-500"
-                                    >
-                                        <i className="ti ti-dots-vertical text-xl"></i>
-                                    </button> */}
                                     {activeDropdown === item.p_id && (
                                         <div
                                             style={{ top: `${dropdownPosition.top}px`, left: `${dropdownPosition.left}px` }}
