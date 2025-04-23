@@ -19,7 +19,7 @@ const ResearchField = () => {
         display: 1,
         active: 1,
     });
-    
+
     const location = useLocation();
     const researchData = location.state?.researchData;
 
@@ -28,7 +28,7 @@ const ResearchField = () => {
             setFormData(researchData.data);
         }
     }, [researchData]);
-    
+
     const handleImageSelect = (imageId) => {
         setFormData(prev => ({
             ...prev,
@@ -43,13 +43,11 @@ const ResearchField = () => {
             rsd_title: formData.rsd_title || '',
             rsd_subtitle: formData.rsd_subtitle || '',
             rsd_lead: formData.rsd_lead || '',
-            rsd_fav: formData.rsd_fav || null,
+            rsd_fav: parseInt(formData.rsd_fav),
             rsd_img: formData.rsd_img || undefined,
-            rsd_order: formData.rsd_order,
             display: formData.display ? 1 : 0,
-            active: formData.active ? 1 : 0,
         };
-    
+
         try {
             if (!isUpdate) {
                 const res = await axios.post(API_ENDPOINTS.createResearch, payload);
@@ -66,15 +64,12 @@ const ResearchField = () => {
         } catch (error) {
             console.error('Error saving research:', error);
             if (error.response) {
-                // Log the full error response for more details
                 console.error('Full error response:', error.response.data);
             }
             throw error; // Optionally, handle the error differently based on your needs
         }
-        
+
     };
-    
-    
 
     const handleSave = async () => {
         try {
@@ -83,10 +78,8 @@ const ResearchField = () => {
         } catch (err) {
             if (err.response?.data?.errors) {
                 console.log('Validation errors:', err.response.data.errors);
-                alert('There are validation errors. Please check the fields.');
             } else {
                 console.error('Full error:', err);
-                alert('An error occurred while saving the research. Please try again later.');
             }
         }
     };

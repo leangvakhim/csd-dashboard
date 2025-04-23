@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 const ResearchDashboard = () => {
     const [activeDropdown, setActiveDropdown] = useState(null);
     const [researchItems, setResearchItems] = useState([]);
+    const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
 
     const navigate = useNavigate();
 
@@ -13,7 +14,9 @@ const ResearchDashboard = () => {
         const fetchEvents = async () => {
             try {
                 const response = await axios.get(API_ENDPOINTS.getResearch);
-                setResearchItems(Array.isArray(response.data.data) ? response.data.data : []);
+                const result = response.data.data;
+                const normalized = Array.isArray(result) ? result : result ? [result] : [];
+                setResearchItems(normalized);
             } catch (error) {
                 console.error('Failed to fetch researchlab:', error);
             }
@@ -23,7 +26,7 @@ const ResearchDashboard = () => {
     }, []);
 
     const handleDelete = async (id) => {
-        if (!window.confirm("Are you sure you want to delete this research lab?")) return;
+        if (!window.confirm("Are you sure you want to delete this research?")) return;
 
         try {
             await axios.put(`${API_ENDPOINTS.deleteResearch}/${id}`);
@@ -83,7 +86,7 @@ const ResearchDashboard = () => {
         try {
             const response = await axios.post(`${API_ENDPOINTS.duplicateResearch}/${id}`);
             if (response.status === 200) {
-                alert("Research lab duplicated successfully");
+                alert("Research duplicated successfully");
                 window.location.reload();
             }
         } catch (error) {
@@ -113,9 +116,14 @@ const ResearchDashboard = () => {
                     ) : (
                         researchItems.map((item, index) => (
                             <tr key={item.rsd_id} className="odd:bg-white even:bg-gray-50 border">
-                                <td className="pl-6 py-4">{item.lead}</td>
-                                <td className="px-6 py-4">{item.title}</td>
-                                <td className="px-6 py-4">{item.language}</td>
+                                <td className="pl-6 py-4">{item.rsd_lead}</td>
+                                <td className="px-6 py-4">{item.rsd_title}</td>
+                                <td className="px-6 py-4">{{
+                                        1: 'English',
+                                        2: 'Khmer',
+                                        // 3: 'Chinese',
+                                        // 4: 'French'
+                                    }[item.lang] || 'Unknown'}</td>
                                 <td className="px-6 py-4">
                                     <span className={`${item.display ? 'bg-blue-100 text-blue-800' : 'bg-red-100 text-red-800'} text-xs font-medium me-2 px-2.5 py-0.5 rounded-xl`}>
                                         {item.display ? 'Enable' : 'Disable'}
@@ -130,13 +138,19 @@ const ResearchDashboard = () => {
                                     </a> |
                                     <div className="relative">
                                         <button
-                                            onClick={() => setActiveDropdown(activeDropdown === item.rsd_id ? null : item.rsd_id)}
+                                            onClick={(e) => {
+                                                const rect = e.currentTarget.getBoundingClientRect();
+                                                setDropdownPosition({ top: rect.bottom + window.scrollY, left: rect.left + window.scrollX });
+                                                setActiveDropdown(activeDropdown === item.rsd_id ? null : item.rsd_id);
+                                            }}
                                             className="font-medium text-gray-900 hover:text-blue-500"
                                         >
                                             <i className="ti ti-dots-vertical text-xl"></i>
                                         </button>
                                         {activeDropdown === item.rsd_id && (
-                                            <div className="fixed right-0 mt-2 w-36 mr-8 bg-white border border-gray-300 rounded-md shadow-md z-50">
+                                            <div
+                                                style={{ top: `${dropdownPosition.top}px`, left: `${dropdownPosition.left}px` }}
+                                                className="fixed right-0 mt-2 w-36 mr-8 bg-white border border-gray-300 rounded-md shadow-md z-50">
                                                 <div className="py-1">
                                                     <a onClick={() => handleEdit(item.rsd_id)} className="flex gap-2 items-center px-4 py-2 hover:bg-blue-100 cursor-pointer">
                                                         <i className="ti ti-edit text-gray-500 text-xl"></i>
@@ -162,7 +176,7 @@ const ResearchDashboard = () => {
             </table>
         </div>
     );
-    
+
 }
 
 export default ResearchDashboard;

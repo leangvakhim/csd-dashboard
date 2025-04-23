@@ -127,9 +127,11 @@ const ResearchFieldBody = ({
                             </label>
                             <div className="mt-2">
                                 <label class="toggle-switch mt-2">
-                                    <input type="checkbox"
-                                        value={formData.display}
-                                        onChange={(e) => setFormData({ ...formData, display: e.target.value })} />
+                                    <input
+                                        type="checkbox"
+                                        checked={formData.display}
+                                        onChange={(e) => setFormData({ ...formData, display: e.target.checked })}
+                                    />
                                     <span class="slider"></span>
                                 </label>
                             </div>
@@ -157,12 +159,16 @@ const ResearchFieldBody = ({
                             </label>
                             <div className='mt-2'>
                                 <select
-                                    value={formData.rsd_fav}
-                                    onChange={(e) => setFormData({ ...formData, rsd_fav: e.target.value })}
+                                    value={formData.rsd_fav ?? ""}
+                                    onChange={(e) => {
+                                        const val = e.target.value;
+                                        setFormData({ ...formData, rsd_fav: val === "1" ? 1 : 0 });
+                                    }}
                                     className="mt-2 block w-full border !border-gray-300 rounded-md py-2 pl-2 text-gray-900 shadow-sm focus:ring-2 focus:ring-indigo-500"
                                 >
-                                    <option value={true}>Yes</option>
-                                    <option value={false}>No</option>
+                                    <option value="">Select options</option>
+                                    <option value="1">Yes</option>
+                                    <option value="0">No</option>
                                 </select>
                             </div>
                         </div>
@@ -264,7 +270,7 @@ const ResearchFieldBody = ({
                                     Subtitle
                                 </label>
                                 <div className="mt-2">
-                                    <textarea 
+                                    <textarea
                                      value={formData.rsd_subtitle}
                                      onChange={(e) => setFormData({ ...formData, rsd_subtitle: e.target.value })}
                                      className="!border-gray-300 h-60 block w-full rounded-md border-0 py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-2xl sm:leading-6"></textarea>

@@ -129,8 +129,9 @@ const ImageBody = () => {
                 ) : (
                     <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
                         {filteredImages.map((image) => (
-                            <div key={image.image_id}
-                                className="flex items-center justify-center border rounded-lg"
+                            <div
+                                key={image.image_id}
+                                className="relative flex items-center justify-center border rounded-lg"
                             >
                                 <img
                                     src={image.image_url}
@@ -140,7 +141,8 @@ const ImageBody = () => {
                                 />
                                 <button
                                     className="h-8 w-8 absolute top-1 right-1 bg-red-500 text-white p-1 rounded-full opacity-100 hover:opacity-100 transition"
-                                    onClick={() => handleDeleteImage(image.image_id)}>
+                                    onClick={() => handleDeleteImage(image.image_id)}
+                                >
                                     <i className="ti ti-x text-xl text-white"></i>
                                 </button>
                             </div>
