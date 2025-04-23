@@ -6,7 +6,7 @@ const MediaLibraryModal = ({ onSelect, onClose }) => {
     const [images, setImages] = useState([]);
     const [loading, setLoading] = useState(true);
     const [filteredImages, setFilteredImages] = useState([]);
-    const [selectedImageName, setSelectedImageName] = useState("");
+    const [selectedImageName, setSelectedImageName] = useState(null);
 
     useEffect(() => {
         fetch(`${API_ENDPOINTS.getImages}`)
@@ -98,9 +98,9 @@ const MediaLibraryModal = ({ onSelect, onClose }) => {
                     <div className="grid grid-cols-4 gap-4">
                         {filteredImages.map((image) => (
                             <div key={image.image_id}
-                                className="flex items-center justify-center border rounded-lg"
-                                onMouseEnter={() => setSelectedImageName(image.img)}
-                                onMouseLeave={() => setSelectedImageName("")}
+                                className="relative flex items-center justify-center border rounded-lg"
+                                onMouseEnter={() => setSelectedImageName(image.image_id)}
+                                onMouseLeave={() => setSelectedImageName(null)}
                                 onClick={() => {
                                     if (onSelect) onSelect(image.image_url);
                                     if (onClose) onClose();
@@ -111,8 +111,8 @@ const MediaLibraryModal = ({ onSelect, onClose }) => {
                                     className="mx-auto my-auto object-contain max-h-40 cursor-pointer"
                                      />
 
-                                     {selectedImageName === image.img && (
-                                    <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-70 text-white text-center p-1 text-xs">
+                                     {selectedImageName === image.image_id && (
+                                    <div className="absolute bottom-0 left-0 right-0 bg-black !bg-opacity-50 text-white text-center p-1 text-xs !rounded-b-lg">
                                         {image.img}
                                     </div>
                                 )}
