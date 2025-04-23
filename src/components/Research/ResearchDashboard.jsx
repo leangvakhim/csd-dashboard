@@ -16,7 +16,8 @@ const ResearchDashboard = () => {
                 const response = await axios.get(API_ENDPOINTS.getResearch);
                 const result = response.data.data;
                 const normalized = Array.isArray(result) ? result : result ? [result] : [];
-                setResearchItems(normalized);
+                const sortedReserachs = normalized.sort((a, b) => a.rsd_order - b.rsd_order);
+                setResearchItems(sortedReserachs);
             } catch (error) {
                 console.error('Failed to fetch researchlab:', error);
             }
@@ -44,8 +45,8 @@ const ResearchDashboard = () => {
     const handleEdit = async (id) => {
         try {
             const response = await axios.get(`${API_ENDPOINTS.getResearch}/${id}`);
-            const researchlabData = response.data;
-            navigate(`/research/research-detail`, { state: { researchlabData } });
+            const researchData = response.data;
+            navigate(`/research/research-detail`, { state: { researchData } });
         } catch (error) {
             console.error("Error fetching research data:", error);
         }
@@ -79,7 +80,7 @@ const ResearchDashboard = () => {
             rsd_order: item.rsd_order
         }));
 
-        await axios.put(`${API_ENDPOINTS.updateResearch}`, payload);
+        await axios.put(`${API_ENDPOINTS.updateResearchOrder}`, payload);
     };
 
     const duplicateItem = async (id) => {

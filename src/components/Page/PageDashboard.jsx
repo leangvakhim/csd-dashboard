@@ -8,6 +8,7 @@ const PageDashboard = () => {
     const [pageItems, setPageItems] = useState([]);
     const [menuOptions, setMenuOptions] = useState([]);
     const navigate = useNavigate();
+    const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
 
     useEffect(() => {
         const fetchPages = async () => {
@@ -106,13 +107,25 @@ const PageDashboard = () => {
                             <td className="px-6 py-4 flex gap-2 items-center relative">
                                 <div className="relative">
                                     <button
-                                        onClick={() => setActiveDropdown(activeDropdown === item.p_id ? null : item.p_id)}
+                                        onClick={(e) => {
+                                            const rect = e.currentTarget.getBoundingClientRect();
+                                            setDropdownPosition({ top: rect.bottom + window.scrollY, left: rect.left + window.scrollX });
+                                            setActiveDropdown(activeDropdown === item.p_id ? null : item.p_id);
+                                        }}
                                         className="font-medium text-gray-900 hover:text-blue-500"
                                     >
                                         <i className="ti ti-dots-vertical text-xl"></i>
                                     </button>
+                                    {/* <button
+                                        onClick={() => setActiveDropdown(activeDropdown === item.p_id ? null : item.p_id)}
+                                        className="font-medium text-gray-900 hover:text-blue-500"
+                                    >
+                                        <i className="ti ti-dots-vertical text-xl"></i>
+                                    </button> */}
                                     {activeDropdown === item.p_id && (
-                                        <div className="fixed right-0 mt-2 w-36 mr-8 bg-white border border-gray-300 rounded-md shadow-md z-50">
+                                        <div
+                                            style={{ top: `${dropdownPosition.top}px`, left: `${dropdownPosition.left}px` }}
+                                            className="fixed right-0 mt-2 w-36 mr-8 bg-white border border-gray-300 rounded-md shadow-md z-50">
                                             <div className="py-1">
                                                 <a onClick={() => handleEdit(item.p_id)} className="cursor-pointer flex gap-2 items-center px-4 py-2 hover:bg-blue-100">
                                                     <i className="ti ti-edit text-gray-500 text-xl"></i>

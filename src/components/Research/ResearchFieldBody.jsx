@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react'
 import MediaLibraryModal from '../MediaLibraryModal';
 import ResearchFieldSection from './ResearchFieldSection';
 import { API_ENDPOINTS } from '../../service/APIConfig';
-
+import { useLocation } from 'react-router-dom';
 
 const ResearchFieldBody = ({
     formData,
@@ -12,6 +12,8 @@ const ResearchFieldBody = ({
     const [activeTab, setActiveTab] = useState(formData.lang || 1);
     const [isMediaLibraryOpen, setMediaLibraryOpen] = useState(false);
     const [selectedImage, setSelectedImage] = useState("");
+    const location = useLocation();
+    const state = location.state;
 
     useEffect(() => {
         if (formData.lang) {
@@ -24,7 +26,7 @@ const ResearchFieldBody = ({
             fetch(`${API_ENDPOINTS.getImages}`)
                 .then(res => res.json())
                 .then(result => {
-                    const matched = result.data.find(img => img.image_id === formData.f_img);
+                    const matched = result.data.find(img => img.image_id === formData.rsd_img);
                     if (matched) {
                         setSelectedImage(matched.image_url);
                     }
@@ -34,8 +36,6 @@ const ResearchFieldBody = ({
     }, [formData.rsd_img]);
 
     useEffect(() => {
-        // console.log("Loaded formData:", formData);
-
         if (typeof formData.display !== 'boolean') {
             setFormData(prev => ({
                 ...prev,
@@ -74,7 +74,6 @@ const ResearchFieldBody = ({
 
         setMediaLibraryOpen(false);
     };
-
 
     return (
         <div className='sm:px-8 px-2 py-2 mb-1'>
