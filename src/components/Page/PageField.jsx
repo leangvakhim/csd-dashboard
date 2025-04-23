@@ -60,6 +60,7 @@ const PageField = () => {
         }
     };
     const saveBanner = async (savedSectionId, savedPageId) => {
+        console.log("savedSectionId is: ",savedSectionId);
         const banners = await pageRef.current?.getBanners?.() || [];
         const response = await axios.get(`${API_ENDPOINTS.getBanner}?ban_sec=${savedSectionId}`);
         const existingServices = response.data?.data || [];
@@ -1813,26 +1814,14 @@ const PageField = () => {
                     sections: sectionPayload,
                 });
 
-
                 for (const section of sections) {
                     const handler = sectionSaveHandlers[section.sec_type];
                     if (['New', 'Event', 'Announcement', 'Research', 'Faculty', 'Lab', 'Scholarship', 'Career', 'Partner', 'Feedback'].includes(section.sec_type)) {
-                        await Promise.all([
-                            saveHeaderSection('new', section.sec_id, section.sec_page),
-                            saveHeaderSection('event', section.sec_id, section.sec_page),
-                            saveHeaderSection('announcement', section.sec_id, section.sec_page),
-                            saveHeaderSection('research', section.sec_id, section.sec_page),
-                            saveHeaderSection('faculty', section.sec_id, section.sec_page),
-                            saveHeaderSection('lab', section.sec_id, section.sec_page),
-                            saveHeaderSection('scholarship', section.sec_id, section.sec_page),
-                            saveHeaderSection('career', section.sec_id, section.sec_page),
-                            saveHeaderSection('partner', section.sec_id, section.sec_page),
-                            saveHeaderSection('feedback', section.sec_id, section.sec_page),
-                        ]);
+                        await saveHeaderSection(section.sec_type.toLowerCase(), section.sec_id, section.sec_page);
                     } else if (handler) {
                         await handler(section.sec_id, section.sec_page);
                     } else {
-                        console.warn(`No save handler defined for section type: ${section.sec_type}`);
+                        console.warn(`⚠️ No save handler defined for section type: ${section.sec_type} with order: ${section.sec_order}`);
                     }
                 }
 

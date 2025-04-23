@@ -46,7 +46,6 @@ const BannerPiece = forwardRef(({sectionId, pageId}, ref) => {
                 const banners = response.data.data || [];
                 if (banners.length > 0) {
                     const banner = banners.find(item => item.section.sec_page === pageId);
-
                     if (banner) {
                         setBanId(banner.ban_id || null);
                         setTitle(banner.ban_title || '');
