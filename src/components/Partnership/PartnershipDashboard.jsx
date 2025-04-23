@@ -139,7 +139,7 @@ const PartnershipDashboard = () => {
                                 <img src={`${API}/storage/uploads/${item.image?.img}`} alt="" className='size-12 p-1' />
                             </td>
                             <td className="px-6 py-4">
-                                {item.ps_type === 1 ? "Scholarship" : item.ps_type === 2 ? "University" : "Unknown"}
+                                {item.ps_type === 1 ? "Partnership" : item.ps_type === 2 ? "University" : "Unknown"}
                             </td>
 
                             <td className="px-6 py-4">{item.ps_title}</td>
