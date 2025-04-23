@@ -1350,7 +1350,6 @@ const PageField = () => {
     };
     const saveApplySliders = async (applyId, sliders) => {
         if (!applyId || !Array.isArray(sliders)) return;
-        console.log("applyId is: ",applyId);
         const res = await axios.get(`${API_ENDPOINTS.getSubApply}?sha_ha=${applyId}`);
         const raw = res.data?.data;
         const existingSubservices = Array.isArray(raw) ? raw : raw ? [raw] : [];
@@ -1762,7 +1761,6 @@ const PageField = () => {
             console.error("❌ Failed to reorder faq sliders:", error.response?.data || error.message);
         }
     };
-
     const sectionSaveHandlers = {
         Slideshow: saveSlideshow,
         Service: saveService,
@@ -1790,7 +1788,6 @@ const PageField = () => {
         Apply: saveApplys,
         Important: saveImportants,
     };
-
     const syncSection = async (savedPageId) => {
         const sections = pageRef.current?.getSections?.() || [];
         const page_id = savedPageId;
@@ -1819,7 +1816,20 @@ const PageField = () => {
 
                 for (const section of sections) {
                     const handler = sectionSaveHandlers[section.sec_type];
-                    if (handler) {
+                    if (['New', 'Event', 'Announcement', 'Research', 'Faculty', 'Lab', 'Scholarship', 'Career', 'Partner', 'Feedback'].includes(section.sec_type)) {
+                        await Promise.all([
+                            saveHeaderSection('new', section.sec_id, section.sec_page),
+                            saveHeaderSection('event', section.sec_id, section.sec_page),
+                            saveHeaderSection('announcement', section.sec_id, section.sec_page),
+                            saveHeaderSection('research', section.sec_id, section.sec_page),
+                            saveHeaderSection('faculty', section.sec_id, section.sec_page),
+                            saveHeaderSection('lab', section.sec_id, section.sec_page),
+                            saveHeaderSection('scholarship', section.sec_id, section.sec_page),
+                            saveHeaderSection('career', section.sec_id, section.sec_page),
+                            saveHeaderSection('partner', section.sec_id, section.sec_page),
+                            saveHeaderSection('feedback', section.sec_id, section.sec_page),
+                        ]);
+                    } else if (handler) {
                         await handler(section.sec_id, section.sec_page);
                     } else {
                         console.warn(`No save handler defined for section type: ${section.sec_type}`);
