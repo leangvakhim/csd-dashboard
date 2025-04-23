@@ -1764,7 +1764,7 @@ const PageField = () => {
     const sectionSaveHandlers = {
         Slideshow: saveSlideshow,
         Service: saveService,
-        Department: saveDepartment,
+        Programs: saveDepartment,
         Banner: saveBanner,
         Information: saveInformation,
         Testimonial: saveTestimonial,
