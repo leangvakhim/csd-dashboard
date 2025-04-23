@@ -44,8 +44,6 @@ const PageField = () => {
                     page_id: page_id,
                 };
 
-                console.log("Payload is: ",programPayload);
-
                 if(
                     program.dep_id &&
                     existingServiceIds.includes(parseInt(program.dep_id)) &&

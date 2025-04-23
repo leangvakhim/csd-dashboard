@@ -89,9 +89,6 @@ const AcademicPiece = forwardRef(({sectionId, pageId}, ref) => {
       try {
         const response = await axios.get(`${API_ENDPOINTS.getAcademic}?ban_sec=${sectionId}`);
         const academics = response.data.data || [];
-        console.log("academics: ", academics);
-        console.log("pageId: ", pageId);
-        console.log("sectionId: ", sectionId);
         if (academics.length > 0) {
           const academic = academics.find(item => item?.section?.sec_page === pageId);
           if (academic) {

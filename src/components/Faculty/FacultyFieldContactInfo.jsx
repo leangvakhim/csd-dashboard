@@ -37,7 +37,6 @@ const FacultyFieldContactInfo = forwardRef(({ f_id }, ref) => {
                 return baseItem;
             });
 
-            console.log("📦 Valid contactData:", contactInfoData);
             return contactInfoData;
         }
     }));
