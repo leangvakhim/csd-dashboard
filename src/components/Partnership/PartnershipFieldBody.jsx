@@ -94,7 +94,7 @@ const PartnershipFieldBody = ({ formData, setFormData, onImageSelect }) => {
                                     className="!border-gray-300 block w-full border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
                                 >
                                     <option value="" disabled>Choose options</option>
-                                    <option value={1}>Scholarship</option>
+                                    <option value={1}>Partnership</option>
                                     <option value={2}>University</option>
                                 </select>
 
