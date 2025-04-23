@@ -105,21 +105,16 @@ const FacultyFieldBackground = forwardRef(({ formData = {}, setFormData = {}, f_
   const handleImageSelect = async (imageUrl, field) => {
     if (field === "bg") {
       try {
-        console.log("📤 Fetching image list from API...");
         const response = await axios.get(API_ENDPOINTS.getImages);
 
         const result = response.data;
-        console.log("✅ API response received:", result);
 
         if (result.status_code === "success" && Array.isArray(result.data)) {
           const matchedImage = result.data.find(
             (image) => image.image_url === imageUrl
           );
-          console.log("🔍 Searching for image URL:", imageUrl);
 
           if (matchedImage) {
-            console.log("🎯 Matched image found:", matchedImage);
-
             setBackground((prevItems) => {
               const updatedItems = prevItems.map((item) =>
                 item.id === currentBackgroundId
@@ -130,7 +125,6 @@ const FacultyFieldBackground = forwardRef(({ formData = {}, setFormData = {}, f_
                   }
                   : item
               );
-              console.log("🧩 Updated bgItems:", updatedItems);
               return updatedItems;
             });
           } else {
@@ -164,21 +158,21 @@ const FacultyFieldBackground = forwardRef(({ formData = {}, setFormData = {}, f_
               const matchedImage = Array.isArray(imgData?.data)
                 ? imgData.data.find(img => String(img.image_id) === String(item.fbg_img || item.fbg_img_id))
                 : null;
-            
+
               return {
                 fbg_id: item.fbg_id || null,
                 f_id: f_id,
-                id: String(item.fbg_id || ''), 
+                id: String(item.fbg_id || ''),
                 title: `University ${index + 1}`,  // Auto-incremented title
                 fbg_order: index + 1,              // Set proper fbg_order based on index
                 fbg_name: item.fbg_name || "",
                 fbg_img: matchedImage ? `${API}/storage/uploads/${matchedImage.img}` : null,
-                fbg_img_id: item.fbg_img || item.fbg_img_id || null, 
+                fbg_img_id: item.fbg_img || item.fbg_img_id || null,
                 display: Boolean(item.display ?? 0),
                 active: Boolean(item.active ?? 1),
               };
             });
-            
+
             setBackground(formatted);
           }
         })
@@ -239,7 +233,7 @@ const FacultyFieldBackground = forwardRef(({ formData = {}, setFormData = {}, f_
                                   </svg>
                                 </div>
                                 <span className="ml-2 text-lg">
-                                  {backgrounds.title}
+                                  {backgrounds.fbg_name}
                                 </span>
                               </div>
                               <span className=" shrink-0 transition-transform duration-500 group-open:-rotate-0 flex gap-2">

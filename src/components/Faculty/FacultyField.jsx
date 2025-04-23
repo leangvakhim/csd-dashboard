@@ -3,7 +3,7 @@ import Aside from '../Aside'
 import FacultyFieldHeader from './FacultyFieldHeader'
 import FacultyFieldBody from './FacultyFieldBody'
 import { useLocation } from 'react-router-dom'
-import { API_ENDPOINTS } from '../../service/APIConfig'
+import { API_ENDPOINTS, API } from '../../service/APIConfig'
 import axios from 'axios'
 
 const FacultyField = () => {
@@ -23,6 +23,19 @@ const FacultyField = () => {
         f_img: null,
         active: 1,
     });
+
+    const getImageIdByUrl = async (url) => {
+        try {
+        const response = await axios.get(API_ENDPOINTS.getImages);
+        const images = Array.isArray(response.data) ? response.data : response.data.data;
+
+        const matchedImage = images.find((img) => img.image_url === url);
+        return matchedImage?.image_id || null;
+        } catch (error) {
+        console.error('❌ Failed to fetch image ID:', error);
+        return null;
+        }
+    };
 
     useEffect(() => {
         if (facultyData && facultyData.data) {
@@ -234,82 +247,6 @@ const FacultyField = () => {
         }
     };
 
-    const saveFacultyBG = async () => {
-        const f_id = formData.f_id;
-        if (!f_id) {
-            console.warn("Cannot save background: missing faculty ID.");
-            return;
-        }
-
-        const bgData = backgroundRef.current?.getData?.() || [];
-
-        const seen = new Set();
-        const filteredBG = Array.isArray(bgData)
-            ? bgData.filter(item => {
-                const key = `${item.fbg_name}-${item.fbg_id}`;
-                if (seen.has(key)) return false;
-                seen.add(key);
-                return item.fbg_name
-            })
-            : [];
-
-        const newBGs = filteredBG.filter(item => typeof item.fbg_id !== 'number').map(item => ({
-            fbg_order: item.fbg_order,
-            fbg_name: item.fbg_name,
-            fbg_img: item.fbg_img,
-            display: item.display ?? 1,
-            active: item.active ?? 1
-        }));
-
-        const updateBGs = filteredBG.filter(item => typeof item.fbg_id === 'number');
-
-        for (const item of updateBGs) {
-            const payload = {
-                fbg_order: item.fbg_order,
-                fbg_name: item.fbg_name,
-                fbg_img: item.fbg_img,
-                display: item.display ?? 1,
-                active: item.active ?? 1,
-                fbg_f: f_id
-            };
-            await axios.post(`${API_ENDPOINTS.updateFacultyBG}/${item.fbg_id}`, payload);
-        }
-
-        // Perform create
-        if (newBGs.length > 0) {
-            const createPayload = {
-                f_id, // Faculty ID
-                fbg_f: newBGs, // Potential issue: Key name
-            };
-            try {
-                await axios.post(API_ENDPOINTS.createFacultyBG, createPayload);
-                console.log("🆕 Create Payload:", createPayload);
-            } catch (error) {
-                console.error("Error creating contacts:", error);
-            }
-        }
-        // Perform reorder
-        const reorderPayload = filteredBG
-            .filter(item => typeof item.fbg_id === "number")
-            .map(item => ({
-                fbg_id: item.fbg_id,
-                fbg_order: item.fbg_order,
-            }));
-
-        if (reorderPayload.length > 0) {
-            try {
-                await axios.post(API_ENDPOINTS.updateFacultyBGOrder, reorderPayload, {
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json',
-                    },
-                });
-            } catch (error) {
-                console.error("Error reordering contacts:", error);
-            }
-        }
-    };
-
     const saveFacultyInfo = async () => {
         const f_id = formData.f_id;
         if (!f_id) {
@@ -389,6 +326,74 @@ const FacultyField = () => {
             }
         }
 
+    };
+
+    // Save Faculty Background (short version)
+    const saveFacultyBG = async () => {
+        const f_id = formData.f_id;
+        if (!f_id) {
+            console.warn("Faculty ID missing, cannot save background.");
+            return;
+        }
+
+        const bgData = backgroundRef.current?.getData?.() || [];
+
+        const seen = new Set();
+        const uniqueBG = Array.isArray(bgData)
+            ? bgData.filter(item => {
+                const key = `${item.fbg_name}-${item.fbg_id}`;
+                if (seen.has(key)) return false;
+                seen.add(key);
+                return item.fbg_name;
+            })
+            : [];
+
+        const newItems = uniqueBG.filter(item => typeof item.fbg_id !== 'number');
+        const existingItems = uniqueBG.filter(item => typeof item.fbg_id === 'number');
+
+        const createPayload = await Promise.all(newItems.map(async item => ({
+            fbg_f: f_id,
+            fbg_order: item.fbg_order,
+            fbg_name: item.fbg_name,
+            fbg_img: await getImageIdByUrl(item.fbg_img),
+            display: item.display ?? 1,
+            active: item.active ?? 1,
+        })));
+
+        const updatePayloads = await Promise.all(existingItems.map(async item => ({
+            fbg_order: item.fbg_order,
+            fbg_name: item.fbg_name,
+            fbg_img: await getImageIdByUrl(item.fbg_img),
+            display: item.display ?? 1,
+            active: item.active ?? 1,
+            fbg_f: f_id
+        })));
+
+        try {
+            await Promise.all(updatePayloads.map((payload, i) =>
+                axios.post(`${API_ENDPOINTS.updateFacultyBG}/${existingItems[i].fbg_id}`, payload)
+            ));
+
+            if (createPayload.length > 0) {
+                await axios.post(API_ENDPOINTS.createFacultyBG, { facultyBG: createPayload });
+            }
+
+            const reorder = existingItems.map(item => ({
+                fbg_id: item.fbg_id,
+                fbg_order: item.fbg_order
+            }));
+
+            if (reorder.length > 0) {
+                await axios.post(API_ENDPOINTS.updateFacultyBGOrder, reorder, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                    },
+                });
+            }
+        } catch (err) {
+            console.error("Error saving faculty background:", err);
+        }
     };
 
     const handleSave = async () => {
