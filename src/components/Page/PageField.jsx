@@ -1334,12 +1334,14 @@ const PageField = () => {
                 ) {
                     await axios.post(`${API_ENDPOINTS.updateApply}/${apply.ha_id}`, { apply: applyPayload });
                     await saveApplySliders(apply.ha_id, apply.subservices || []);
+
                 } else {
                     if (!apply.ha_id || !existingServiceIds.includes(parseInt(apply.ha_id))) {
                         const res = await axios.post(API_ENDPOINTS.createApply, { apply: [applyPayload] });
                         const createdId = res.data?.data?.[0]?.ha_id;
                         if (createdId) {
                             await saveApplySliders(apply.ha_id, apply.subservices || []);
+
                         }
                     }
                 }
@@ -1348,6 +1350,7 @@ const PageField = () => {
     };
     const saveApplySliders = async (applyId, sliders) => {
         if (!applyId || !Array.isArray(sliders)) return;
+        console.log("applyId is: ",applyId);
         const res = await axios.get(`${API_ENDPOINTS.getSubApply}?sha_ha=${applyId}`);
         const raw = res.data?.data;
         const existingSubservices = Array.isArray(raw) ? raw : raw ? [raw] : [];
@@ -1760,6 +1763,34 @@ const PageField = () => {
         }
     };
 
+    const sectionSaveHandlers = {
+        Slideshow: saveSlideshow,
+        Service: saveService,
+        Department: saveDepartment,
+        Banner: saveBanner,
+        Information: saveInformation,
+        Testimonial: saveTestimonial,
+        Academic: saveAcademic,
+        Gallery: saveGallery,
+        Criteria: saveCriteria,
+        Unlock: saveUnlock,
+        Fee: saveFee,
+        Introduction: saveIntroduction,
+        Facilities: saveFacilties,
+        Specialization: saveSpecializations,
+        Type: saveType,
+        CSD: saveCSD,
+        Study: saveStudy,
+        Available: saveAvailable,
+        Requirement: saveRequirement,
+        Future: saveFuture,
+        Potential: savePotentials,
+        Innovation: saveInnovations,
+        FAQ: saveFaqs,
+        Apply: saveApplys,
+        Important: saveImportants,
+    };
+
     const syncSection = async (savedPageId) => {
         const sections = pageRef.current?.getSections?.() || [];
         const page_id = savedPageId;
@@ -1780,57 +1811,20 @@ const PageField = () => {
             }));
 
             try {
-                const response = await axios.put(API_ENDPOINTS.syncSection, {
+                await axios.put(API_ENDPOINTS.syncSection, {
                     sec_page: page_id,
                     sections: sectionPayload,
                 });
 
-                const savedSectionId = Array.isArray(response.data?.data)
-                ? response.data.data[0]?.sec_id
-                : response.data?.data?.sec_id;
 
-                // console.log("📥 savedSectionId:", savedSectionId);
-
-                // sliders
-                saveSlideshow(savedSectionId, savedPageId);
-                saveService(savedSectionId, savedPageId);
-
-                // single
-                saveBanner(savedSectionId, savedPageId);
-                saveInformation(savedSectionId, savedPageId);
-                saveTestimonial(savedSectionId, savedPageId);
-                saveAcademic(savedSectionId, savedPageId);
-                saveGallery(savedSectionId, savedPageId);
-                saveDepartment(savedSectionId, savedPageId);
-                saveCriteria(savedSectionId, savedPageId);
-                saveUnlock(savedSectionId, savedPageId);
-                saveFee(savedSectionId, savedPageId);
-                saveIntroduction(savedSectionId, savedPageId);
-                await saveHeaderSection('new', savedSectionId, savedPageId);
-                await saveHeaderSection('event', savedSectionId, savedPageId);
-                await saveHeaderSection('announcement', savedSectionId, savedPageId);
-                await saveHeaderSection('research', savedSectionId, savedPageId);
-                await saveHeaderSection('faculty', savedSectionId, savedPageId);
-                await saveHeaderSection('lab', savedSectionId, savedPageId);
-                await saveHeaderSection('scholarship', savedSectionId, savedPageId);
-                await saveHeaderSection('career', savedSectionId, savedPageId);
-                await saveHeaderSection('partner', savedSectionId, savedPageId);
-                await saveHeaderSection('feedback', savedSectionId, savedPageId);
-
-                // hybrid
-                saveFacilties(savedSectionId, savedPageId);
-                saveType(savedSectionId, savedPageId);
-                saveSpecializations(savedSectionId, savedPageId);
-                saveCSD(savedSectionId, savedPageId);
-                saveStudy(savedSectionId, savedPageId);
-                saveAvailable(savedSectionId, savedPageId);
-                saveRequirement(savedSectionId, savedPageId);
-                saveFuture(savedSectionId, savedPageId);
-                savePotentials(savedSectionId, savedPageId);
-                saveInnovations(savedSectionId, savedPageId);
-                saveFaqs(savedSectionId, savedPageId);
-                saveApplys(savedSectionId, savedPageId);
-                saveImportants(savedSectionId, savedPageId);
+                for (const section of sections) {
+                    const handler = sectionSaveHandlers[section.sec_type];
+                    if (handler) {
+                        await handler(section.sec_id, section.sec_page);
+                    } else {
+                        console.warn(`No save handler defined for section type: ${section.sec_type}`);
+                    }
+                }
 
             } catch (error) {
                 console.error("Failed to sync section:", error.response?.data || error.message);

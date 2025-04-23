@@ -108,7 +108,7 @@ const ApplyPiece = forwardRef(({sectionId, pageId}, ref) => {
                 const sectionData = sectionRes.data.data;
                 setDisplayApply(sectionData.display || 0);
             } catch (error) {
-                console.error("Failed to fetch facilities:", error);
+                console.error("Failed to fetch apply:", error);
             }
         };
 
