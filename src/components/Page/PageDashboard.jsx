@@ -73,7 +73,7 @@ const PageDashboard = () => {
 
     return (
         <div className="relative overflow-x-auto shadow-md px-8">
-            <table className="w-full text-sm text-left border border-gray-200 text-gray-500 ">
+            <table className="w-full text-sm text-left border border-gray-200 text-gray-500 mb-20">
                 <thead className="text-xs text-gray-700  uppercase bg-gray-50 ">
                     <tr>
                         <th scope="col" className="px-6 py-3">
@@ -90,7 +90,7 @@ const PageDashboard = () => {
                         </th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody className=''>
                     {Array.isArray(pageItems) && pageItems.map((item, index) => (
                         <tr key={item.id} className="odd:bg-white even:bg-gray-50 border">
                             <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
@@ -108,8 +108,11 @@ const PageDashboard = () => {
                                 <div className="relative">
                                     <button
                                         onClick={(e) => {
-                                            const rect = e.currentTarget.getBoundingClientRect();
-                                            setDropdownPosition({ top: rect.bottom + window.scrollY, left: rect.left + window.scrollX });
+                                            const button = e.currentTarget;
+                                            const parent = button.offsetParent;
+                                            const rect = button.getBoundingClientRect();
+                                            const parentRect = parent.getBoundingClientRect();
+                                            setDropdownPosition({ top: rect.bottom - parentRect.top, left: rect.left - parentRect.left });
                                             setActiveDropdown(activeDropdown === item.p_id ? null : item.p_id);
                                         }}
                                         className="font-medium text-gray-900 hover:text-blue-500"
@@ -118,8 +121,9 @@ const PageDashboard = () => {
                                     </button>
                                     {activeDropdown === item.p_id && (
                                         <div
-                                            style={{ top: `${dropdownPosition.top}px`, left: `${dropdownPosition.left}px` }}
-                                            className="fixed right-0 mt-2 w-36 mr-8 bg-white border border-gray-300 rounded-md shadow-md z-50">
+                                            style={{ position: 'absolute', top: `${dropdownPosition.top}px`, left: `${dropdownPosition.left}px` }}
+                                            className="absolute w-36 bg-white border border-gray-300 rounded-md shadow-md max-h-48 z-50 overflow-y-auto"
+                                            >
                                             <div className="py-1">
                                                 <a onClick={() => handleEdit(item.p_id)} className="cursor-pointer flex gap-2 items-center px-4 py-2 hover:bg-blue-100">
                                                     <i className="ti ti-edit text-gray-500 text-xl"></i>
