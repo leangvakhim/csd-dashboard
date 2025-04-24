@@ -952,6 +952,7 @@ const PageField = () => {
                     parseInt(gc_sec) === parseInt(savedSectionId) &&
                     parseInt(page_id) === parseInt(savedPageId)
                 ){
+                    // console.log("🧪 Updating criteria ID:", requirement.gc_id, "Payload:", requirementPayload);
                     await axios.post(`${API_ENDPOINTS.updateCriteria}/${requirement.gc_id}`, { criteria: requirementPayload });
                     await saveSubRequirement(requirement.gc_id, requirement.subrequirements || []);
                 } else {
