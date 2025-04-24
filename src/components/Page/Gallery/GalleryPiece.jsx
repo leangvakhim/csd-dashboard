@@ -63,6 +63,21 @@ const GalleyPiece = forwardRef(({sectionId, pageId}, ref) => {
         console.error("Failed to check existing gallery:", error);
       }
 
+      // If both galTitle and galSubTitle are empty or only whitespace, skip create/update and return gal_text: 0
+      if (!galTitle?.trim() && !galSubTitle?.trim()) {
+        return [{
+          gal_id: galId,
+          gal_sec: sectionId,
+          gal_text: 0,
+          gal_img1: null,
+          gal_img2: null,
+          gal_img3: null,
+          gal_img4: null,
+          gal_img5: null,
+          page_id: pageId
+        }];
+      }
+
       if (textId) {
         const updatePayload = {
           text_id: textId,
@@ -99,6 +114,7 @@ const GalleyPiece = forwardRef(({sectionId, pageId}, ref) => {
         gal_img3: imageId3,
         gal_img4: imageId4,
         gal_img5: imageId5,
+        page_id: pageId
       };
 
       return [data];

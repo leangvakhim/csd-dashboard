@@ -50,6 +50,8 @@ const IntroductionPiece = forwardRef(({sectionId, pageId}, ref) => {
                 in_detail: detail,
                 inadd_title: addOnTitle,
                 in_addsubtitle: addOnSubtitle,
+                in_sec: sectionId,
+                page_id: pageId,
             }
         ];
         }

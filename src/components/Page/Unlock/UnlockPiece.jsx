@@ -51,6 +51,8 @@ const UnlockPiece = forwardRef(({sectionId, pageId}, ref) => {
             umd_detail: detail,
             umd_btntext: btnText,
             umd_routepage: routePage,
+            umd_sec: sectionId,
+            page_id: pageId,
             }
         ];
         }

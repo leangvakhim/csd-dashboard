@@ -62,7 +62,9 @@ const ProgramPiece = forwardRef(({sectionId, pageId}, ref) => {
           dep_title: title,
           dep_img1: img1Id,
           dep_img2: img2Id,
-          dep_detail: detail
+          dep_detail: detail,
+          dep_sec: sectionId,
+          page_id: pageId,
         }
       ];
     }

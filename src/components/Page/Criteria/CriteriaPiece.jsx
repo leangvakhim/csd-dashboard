@@ -66,7 +66,9 @@ const CriteriaPiece = forwardRef(({sectionId, pageId}, ref) => {
           gc_type: criteriaType,
           gc_img1: img1Id,
           gc_img2: img2Id,
-          gc_detail: detail
+          gc_detail: detail,
+          gc_sec: sectionId,
+          page_id: pageId,
         }
       ];
     }
@@ -242,6 +244,7 @@ const CriteriaPiece = forwardRef(({sectionId, pageId}, ref) => {
               value={criteriaType}
               onChange={(e) => setCriteriaType(e.target.value)}
               class="mt-2 !border-gray-300 block w-full border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6">
+              <option value="">Choose side display</option>
               <option value="1">left images</option>
               <option value="2">right images</option>
             </select>

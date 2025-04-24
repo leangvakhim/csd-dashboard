@@ -42,6 +42,8 @@ const TestimonialPiece = forwardRef(({sectionId, pageId}, ref) => {
         {
             t_id: tId,
             t_title: title,
+            t_sec: sectionId,
+            page_id: pageId,
         }
       ];
     }

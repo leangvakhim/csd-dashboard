@@ -76,7 +76,9 @@ const BannerPiece = forwardRef(({sectionId, pageId}, ref) => {
                     ban_id: banId,
                     ban_title: title,
                     ban_img: imgId,
-                    ban_subtitle: subtitle
+                    ban_subtitle: subtitle,
+                    ban_sec: sectionId,
+                    page_id: pageId,
                 }
             ];
         }

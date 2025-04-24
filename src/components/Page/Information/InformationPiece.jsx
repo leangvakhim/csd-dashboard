@@ -49,6 +49,8 @@ const ProgramPiece = forwardRef(({sectionId, pageId}, ref) => {
             title: title,
             desc: desc,
             text_type: parseInt(type),
+            text_sec: sectionId,
+            page_id: pageId,
         }
       ];
     }

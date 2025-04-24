@@ -241,7 +241,7 @@ const SettingField = () => {
                       />
                     </div>
 
-                    {/* Date Input */}
+                    {/* Enroll Input */}
                     <div className="mt-4">
                       <label className="block text-xl font-medium text-gray-700">
                         Enroll
@@ -252,6 +252,22 @@ const SettingField = () => {
                         onChange={(e) =>
                           setFormData({ ...formData, e_tags: e.target.value })
                         }
+                        className="mt-2 w-full py-2 border !border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        placeholder=""
+                      />
+                    </div>
+
+                    {/* Enroll Input */}
+                    <div className="mt-4">
+                      <label className="block text-xl font-medium text-gray-700">
+                        Base url
+                      </label>
+                      <input
+                        type="text"
+                        // value={formData.e_tags}
+                        // onChange={(e) =>
+                        //   setFormData({ ...formData, e_tags: e.target.value })
+                        // }
                         className="mt-2 w-full py-2 border !border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
                         placeholder=""
                       />

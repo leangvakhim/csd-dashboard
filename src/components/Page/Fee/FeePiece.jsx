@@ -48,6 +48,8 @@ const FeePiece = forwardRef(({sectionId, pageId}, ref) => {
             fe_img: imgId,
             fe_desc: detail,
             fe_price: price,
+            fe_sec: sectionId,
+            page_id: pageId
             }
         ];
         }

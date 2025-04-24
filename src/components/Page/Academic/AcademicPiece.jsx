@@ -35,6 +35,8 @@ const AcademicPiece = forwardRef(({sectionId, pageId}, ref) => {
           acad_btntext2: btntext2,
           acad_routepage: routepage,
           acad_routetext: routetext,
+          acad_sec: sectionId,
+          page_id: pageId,
         }
       ];
     }
