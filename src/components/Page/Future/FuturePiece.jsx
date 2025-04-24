@@ -48,6 +48,7 @@ const FuturePiece = forwardRef(({sectionId, pageId}, ref) => {
         uf_title: futureTitle,
         uf_subtitle: futureSubTitle,
         uf_img: imageId,
+        page_id: pageId,
         subfutures: await subFutureRef.current?.getSubFutureSliders(),
       };
 

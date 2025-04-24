@@ -36,12 +36,12 @@ const PageField = () => {
                 const dep_sec = program.dep_sec || savedSectionId;
                 const page_id = program.page_id || savedPageId;
                 const programPayload = {
-                    dep_sec: dep_sec,
+                    dep_sec: savedSectionId,
                     dep_title: program.dep_title || '',
                     dep_detail: program.dep_detail || '',
                     dep_img1: program.dep_img1 || null,
                     dep_img2: program.dep_img2 || null,
-                    page_id: page_id,
+                    page_id: savedPageId,
                 };
 
                 if(
@@ -60,7 +60,6 @@ const PageField = () => {
         }
     };
     const saveBanner = async (savedSectionId, savedPageId) => {
-        console.log("savedSectionId is: ",savedSectionId);
         const banners = await pageRef.current?.getBanners?.() || [];
         const response = await axios.get(`${API_ENDPOINTS.getBanner}?ban_sec=${savedSectionId}`);
         const existingServices = response.data?.data || [];
@@ -71,11 +70,11 @@ const PageField = () => {
                 const ban_sec = banner.dep_sec || savedSectionId;
                 const page_id = banner.page_id || savedPageId;
                 const bannerPayload = {
-                    ban_sec: ban_sec,
+                    ban_sec: savedSectionId,
                     ban_title: banner.ban_title || '',
                     ban_subtitle: banner.ban_subtitle || '',
                     ban_img: banner.ban_img || null,
-                    page_id: page_id,
+                    page_id: savedPageId,
                 };
 
                 if (
@@ -104,11 +103,11 @@ const PageField = () => {
                 const text_sec = information.text_sec || savedSectionId;
                 const page_id = information.page_id || savedPageId;
                 const informationPayload = {
-                    text_sec: text_sec,
+                    text_sec: savedSectionId,
                     title: information.title || '',
                     desc: information.desc || '',
                     text_type: information.text_type || null,
-                    page_id: page_id,
+                    page_id: savedPageId,
                 };
 
                 if (
@@ -137,9 +136,9 @@ const PageField = () => {
                 const t_sec = testimonial.t_sec || savedSectionId;
                 const page_id = testimonial.page_id || savedPageId;
                 const testimonialPayload = {
-                    t_sec: t_sec,
+                    t_sec: savedSectionId,
                     t_title: testimonial.t_title || '',
-                    page_id: page_id,
+                    page_id: savedPageId,
                 };
 
                 if (
@@ -168,7 +167,7 @@ const PageField = () => {
                 const acad_sec = academic.acad_sec || savedSectionId;
                 const page_id = academic.page_id || savedPageId;
                 const academicPayload = {
-                    acad_sec: acad_sec,
+                    acad_sec: savedSectionId,
                     acad_title: academic.acad_title || '',
                     acad_detail: academic.acad_detail || '',
                     acad_img: academic.acad_img || null,
@@ -176,7 +175,7 @@ const PageField = () => {
                     acad_btntext2: academic.acad_btntext2 || '',
                     acad_routepage: academic.acad_routepage || '',
                     acad_routetext: academic.acad_routetext || '',
-                    page_id: page_id,
+                    page_id: savedPageId,
                 };
 
                 if (
@@ -205,14 +204,14 @@ const PageField = () => {
                 const gal_sec = gallery.gal_sec || savedSectionId;
                 const page_id = gallery.page_id || savedPageId;
                 const galleryPayload = {
-                    gal_sec: gal_sec,
+                    gal_sec: savedSectionId,
                     gal_img1: gallery.gal_img1,
                     gal_img2: gallery.gal_img2,
                     gal_img3: gallery.gal_img3,
                     gal_img4: gallery.gal_img4,
                     gal_img5: gallery.gal_img5,
                     gal_text: gallery.gal_text,
-                    page_id: page_id,
+                    page_id: savedPageId,
                 };
 
                 console.log("Payload: ",galleryPayload);
@@ -243,14 +242,14 @@ const PageField = () => {
                 const gc_sec = criteria.gc_sec || savedSectionId;
                 const page_id = criteria.page_id || savedPageId;
                 const criteriaPayload = {
-                    gc_sec: gc_sec,
+                    gc_sec: savedSectionId,
                     gc_title: criteria.gc_title || '',
                     gc_tag: criteria.gc_tag || '',
                     gc_type: criteria.gc_type || '',
                     gc_detail: criteria.gc_detail || '',
                     gc_img1: criteria.gc_img1 || null,
                     gc_img2: criteria.gc_img2 || null,
-                    page_id: page_id,
+                    page_id: savedPageId,
                 };
 
                 if(
@@ -279,13 +278,13 @@ const PageField = () => {
                 const umd_sec = unlock.umd_sec || savedSectionId;
                 const page_id = unlock.page_id || savedPageId;
                 const unlockPayload = {
-                    umd_sec: umd_sec,
+                    umd_sec: savedSectionId,
                     umd_title: unlock.umd_title || '',
                     umd_detail: unlock.umd_detail || '',
                     umd_img: unlock.umd_img || null,
                     umd_routepage: unlock.umd_routepage || '',
                     umd_btntext: unlock.umd_btntext || '',
-                    page_id: page_id,
+                    page_id: savedPageId,
                 };
 
                 if(
@@ -314,12 +313,12 @@ const PageField = () => {
                 const fe_sec = fee.fe_sec || savedSectionId;
                 const page_id = fee.page_id || savedPageId;
                 const feePayload = {
-                    fe_sec: fe_sec,
+                    fe_sec: savedSectionId,
                     fe_title: fee.fe_title || '',
                     fe_desc: fee.fe_desc || '',
                     fe_img: fee.fe_img || null,
                     fe_price: fee.fe_price || '',
-                    page_id: page_id,
+                    page_id: savedPageId,
                 };
 
                 if(
@@ -348,13 +347,13 @@ const PageField = () => {
                 const in_sec = introduction.in_sec || savedSectionId;
                 const page_id = introduction.page_id || savedPageId;
                 const introductionPayload = {
-                    in_sec: in_sec,
+                    in_sec: savedSectionId,
                     in_title: introduction.in_title || '',
                     in_detail: introduction.in_detail || '',
                     inadd_title: introduction.inadd_title || '',
                     in_addsubtitle: introduction.in_addsubtitle || '',
                     in_img: introduction.in_img || null,
-                    page_id: page_id,
+                    page_id: savedPageId,
                 };
 
                 if(
@@ -403,7 +402,7 @@ const PageField = () => {
                 const hsec_sec = item.hsec_sec || savedSectionId;
                 const resolvedPageId = item.page_id || savedPageId;
                 const payload = {
-                    hsec_sec: hsec_sec,
+                    hsec_sec: savedSectionId,
                     hsec_title: item.hsec_title || '',
                     hsec_subtitle: item.hsec_subtitle || '',
                     hsec_btntitle: item.hsec_btntitle || '',
@@ -442,10 +441,10 @@ const PageField = () => {
                 const page_id = acadFacility.page_id || savedPageId;
 
                 const acadFacilitiesPayload = {
-                    af_sec: af_sec,
+                    af_sec: savedSectionId,
                     af_img: acadFacility.af_img,
                     af_text: acadFacility.af_text,
-                    page_id: page_id,
+                    page_id: savedPageId,
                 };
 
                 if (
@@ -520,11 +519,11 @@ const PageField = () => {
                 const page_id = specialization.page_id || savedPageId;
 
                 const specializationPayload = {
-                    ras_sec: ras_sec,
+                    ras_sec: savedSectionId,
                     ras_img1: specialization.ras_img1,
                     ras_img2: specialization.ras_img2,
                     ras_text: specialization.ras_text,
-                    page_id: page_id,
+                    page_id: savedPageId,
                 };
 
                 if (
@@ -598,10 +597,10 @@ const PageField = () => {
                 const page_id = type.page_id || savedPageId;
 
                 const TypePayload = {
-                    tse_sec: tse_sec,
+                    tse_sec: savedSectionId,
                     tse_text: type.tse_text,
                     tse_type: parseInt(type.tse_type),
-                    page_id: page_id,
+                    page_id: savedPageId,
                 };
 
                 if (
@@ -672,11 +671,11 @@ const PageField = () => {
                 const page_id = csd.page_id || savedPageId;
 
                 const csdPayload = {
-                    ras_sec: ras_sec,
+                    ras_sec: savedSectionId,
                     ras_img1: csd.ras_img1,
                     ras_img2: csd.ras_img2,
                     ras_text: csd.ras_text,
-                    page_id: page_id,
+                    page_id: savedPageId,
                 };
 
                 if (
@@ -788,11 +787,11 @@ const PageField = () => {
                 const page_id = study.page_id || savedPageId;
 
                 const StudyPayload = {
-                    std_sec: std_sec,
+                    std_sec: savedSectionId,
                     std_title: study.std_title,
                     std_subtitle: study.std_subtitle,
                     std_type: parseInt(study.std_type),
-                    page_id: page_id,
+                    page_id: savedPageId,
                 };
 
                 if (
@@ -864,9 +863,9 @@ const PageField = () => {
                 const page_id = available.page_id || savedPageId;
 
                 const AvailablePayload = {
-                    apd_sec: apd_sec,
+                    apd_sec: savedSectionId,
                     apd_title: available.apd_title,
-                    page_id: page_id,
+                    page_id: savedPageId,
                 };
 
                 if (
@@ -937,14 +936,14 @@ const PageField = () => {
                 const gc_sec = requirement.gc_sec || savedSectionId;
                 const page_id = requirement.page_id || savedPageId;
                 const requirementPayload = {
-                    gc_sec: gc_sec,
+                    gc_sec: savedSectionId,
                     gc_title: requirement.gc_title || '',
                     gc_tag: requirement.gc_tag || '',
                     gc_type: requirement.gc_type || null,
                     gc_detail: requirement.gc_detail || '',
                     gc_img1: requirement.gc_img1 || null,
                     gc_img2: requirement.gc_img2 || null,
-                    page_id: page_id,
+                    page_id: savedPageId,
                 };
 
                 if(
@@ -1009,15 +1008,15 @@ const PageField = () => {
 
         if (futures.length > 0 && savedSectionId) {
             for (const future of futures) {
-                const uf_sec = future.uf_sec || savedSectionId;
-                const page_id = future.page_id || savedPageId;
+                const uf_sec = future.uf_sec;
+                const page_id = future.page_id;
 
                 const FuturePayload = {
-                    uf_sec: uf_sec,
+                    uf_sec: savedSectionId,
                     uf_title: future.uf_title,
                     uf_subtitle: future.uf_subtitle,
                     uf_img: future.uf_img,
-                    page_id: page_id,
+                    page_id: savedPageId,
                 };
 
                 if (
@@ -1088,11 +1087,11 @@ const PageField = () => {
                 const page_id = potential.page_id || savedPageId;
 
                 const potentialPayload = {
-                    ras_sec: ras_sec,
+                    ras_sec: savedSectionId,
                     ras_img1: potential.ras_img1,
                     ras_img2: potential.ras_img2,
                     ras_text: potential.ras_text,
-                    page_id: page_id,
+                    page_id: savedPageId,
                 };
 
                 if (
@@ -1166,11 +1165,11 @@ const PageField = () => {
                 const page_id = innovation.page_id || savedPageId;
 
                 const innovationPayload = {
-                    ras_sec: ras_sec,
+                    ras_sec: savedSectionId,
                     ras_img1: innovation.ras_img1,
                     ras_img2: innovation.ras_img2,
                     ras_text: innovation.ras_text,
-                    page_id: page_id,
+                    page_id: savedPageId,
                 };
 
                 if (
@@ -1244,10 +1243,10 @@ const PageField = () => {
                 const page_id = faq.page_id || savedPageId;
 
                 const faqPayload = {
-                    faq_sec: faq_sec,
+                    faq_sec: savedSectionId,
                     faq_title: faq.faq_title,
                     faq_subtitle: faq.faq_subtitle,
-                    page_id: page_id,
+                    page_id: savedPageId,
                 };
 
                 if (
@@ -1318,13 +1317,13 @@ const PageField = () => {
                 const page_id = apply.page_id || savedPageId;
 
                 const applyPayload = {
-                    ha_sec: ha_sec,
+                    ha_sec: savedSectionId,
                     ha_title: apply.ha_title,
                     ha_img: apply.ha_img,
                     ha_tagtitle: apply.ha_tagtitle,
                     ha_subtitletag: apply.ha_subtitletag,
                     ha_date: apply.ha_date,
-                    page_id: page_id,
+                    page_id: savedPageId,
                 };
 
                 if (
@@ -1395,10 +1394,10 @@ const PageField = () => {
                 const page_id = important.page_id || savedPageId;
 
                 const importantPayload = {
-                    idd_sec: idd_sec,
+                    idd_sec: savedSectionId,
                     idd_title: important.idd_title,
                     idd_subtitle: important.idd_subtitle,
-                    page_id: page_id,
+                    page_id: savedPageId,
                 };
 
                 if (
@@ -1473,8 +1472,8 @@ const PageField = () => {
 
                 const payload = {
                     ...item,
-                    slider_sec: slider_sec,
-                    page_id: page_id,
+                    slider_sec: savedSectionId,
+                    page_id: savedPageId,
                 };
 
             if (
@@ -1507,8 +1506,8 @@ const PageField = () => {
 
                 const payload = {
                     ...item,
-                    s_sec: s_sec,
-                    page_id: page_id,
+                    s_sec: savedSectionId,
+                    page_id: savedPageId,
                 };
 
             if (
