@@ -957,7 +957,7 @@ const PageField = () => {
                     await saveSubRequirement(requirement.gc_id, requirement.subrequirements || []);
                 } else {
                     if (!requirement.gc_id || !existingServiceIds.includes(parseInt(requirement.gc_id))) {
-                        await axios.post(API_ENDPOINTS.createCriteria, { criteria: [requirementPayload] });
+                        const res = await axios.post(API_ENDPOINTS.createCriteria, { criteria: [requirementPayload] });
                         const createdId = res.data?.data?.[0]?.gc_id;
                         if (createdId) {
                             await saveSubRequirement(requirement.gc_id, requirement.subrequirements || []);
