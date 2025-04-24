@@ -3,7 +3,8 @@ import JoditEditor from 'jodit-react';
 import 'jodit/es5/jodit.css';
 import ResearchlabTagSection from './ResearchlabTagSection';
 import MediaLibraryModal from '../MediaLibraryModal';
-import { API_ENDPOINTS } from '../../service/APIConfig';
+import { API, API_ENDPOINTS } from '../../service/APIConfig';
+import axios from 'axios';
 
 const config = {
     readonly: false,  // Set to true for read-only mode
@@ -24,6 +25,7 @@ const ResearchlabFieldBody = ({
     const [isMediaLibraryOpen, setMediaLibraryOpen] = useState(false);
     const [selectedImage1, setSelectedImage1] = useState("");
     const [currentField, setCurrentField] = useState("");
+    const [allImages, setAllImages] = useState([]);
 
     useEffect(() => {
         if (formData.lang) {
@@ -38,8 +40,6 @@ const ResearchlabFieldBody = ({
             rsdl_detail: newContent
         }));
     }, [setFormData]);
-
-    console.log("prop error", formData.rsdl_id)
 
     const openMediaLibrary = (field) => {
         setCurrentField(field);
@@ -64,7 +64,31 @@ const ResearchlabFieldBody = ({
                 display: !!parseInt(prev.display)
             }));
         }
+
     }, [formData]);
+
+    useEffect(() => {
+        const fetchImages = async () => {
+            try {
+                const res = await axios.get(API_ENDPOINTS.getImages);
+                setAllImages(res.data?.data || []);
+            } catch (err) {
+                console.error("Failed to fetch images", err);
+            }
+        };
+
+        fetchImages();
+    }, []);
+
+    useEffect(() => {
+        if (formData.rsdl_img && allImages.length > 0) {
+            const foundImage = allImages.find(img => img.image_id === formData.rsdl_img);
+            if (foundImage) {
+                setSelectedImage1(`${API}/storage/uploads/${foundImage.img}`);
+            }
+        }
+    }, [formData.rsdl_img, allImages]);
+
 
     return (
         <div className='sm:px-8 px-2 py-2 mb-1'>

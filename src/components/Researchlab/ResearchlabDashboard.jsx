@@ -43,7 +43,7 @@ const ResearchlabDashboard = () => {
         const response = await axios.get(`${API_ENDPOINTS.getResearchlab}/${id}`);
         const researchlabData = response.data;
         navigate(`/lab/researchlab-details`, { state: { researchlabData } });
-        // console.log("Passing data: ",facultyData);
+        console.log("Passing data: ",researchlabData);
     };
 
     const moveItem = async (index, direction) => {
@@ -83,7 +83,7 @@ const ResearchlabDashboard = () => {
         try {
             const response = await axios.post(`${API_ENDPOINTS.duplicateResearchlab}/${id}`);
             if (response.status === 200) {
-                alert("researcglab duplicated successfully");
+                alert("researchlab duplicated successfully");
                 window.location.reload();
             }
         } catch (error) {

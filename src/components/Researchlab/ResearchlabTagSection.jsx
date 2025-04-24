@@ -25,16 +25,13 @@ const ResearchlabTagSection = forwardRef(({ rsdl_id }, ref) => {
       return sorted.map((item, index) => {
         const baseItem = {
           rsdl_id: rsdl_id,
-          rsdlt_id: item.rsdlt_id,
+          rsdlt: item.id,
           rsdlt_title: item.rsdlt_title,
           rsdlt_img: item.rsdlt_img,
           rsdlt_img_id: item.rsdlt_img_id,
           active: item.active,
           rsdlt_order: index + 1,
         };
-        if (typeof item.rsdlt_id === 'number') {
-          baseItem.rsdlt_id = item.rsdlt_id;
-        }
         return baseItem;
       });
     },
@@ -47,7 +44,7 @@ const ResearchlabTagSection = forwardRef(({ rsdl_id }, ref) => {
       await axios.put(`${API_ENDPOINTS.deleteResearchlabTag}/${id}`);
       setTags((prevItems) =>
         prevItems.map((item) =>
-          item.rsdlt_id === id ? { ...item, active: item.active ? 0 : 1 } : item
+          item.rsdlt === id ? { ...item, active: item.active ? 0 : 1 } : item
         )
       );
       window.location.reload();
@@ -58,13 +55,12 @@ const ResearchlabTagSection = forwardRef(({ rsdl_id }, ref) => {
 
   const handleAddTag = () => {
     const newTag = {
-      id: `${Date.now()}`,
+      id: (tags.length + 1).toString(),
       rsdl_id: rsdl_id,
       title: `Tag ${tags.length + 1}`,
       rsdlt_title: null,
       rsdlt_img: null,
       active: 1,
-      rsdlt_order: tags.length + 1,
     };
     setTags((prevItems) => [...prevItems, newTag]);
   };
@@ -127,7 +123,7 @@ const ResearchlabTagSection = forwardRef(({ rsdl_id }, ref) => {
 
   useEffect(() => {
     if (rsdl_id) {
-      fetch(`${API_ENDPOINTS.getResearchlab}/${rsdl_id}`)
+      fetch(`${API_ENDPOINTS.getResearchlabTag}`)
         .then((res) => res.json())
         .then(async (result) => {
           if (Array.isArray(result.data)) {
@@ -139,17 +135,18 @@ const ResearchlabTagSection = forwardRef(({ rsdl_id }, ref) => {
                 ? imgData.data.find((img) => String(img.image_id) === String(item.rsdlt_img))
                 : null;
 
-              return {
-                rsdlt_id: item.rsdlt_id || null,
-                rsdl_id: rsdl_id,
-                id: String(item.rsdlt_id || `${index}_${Date.now()}`),
-                title: `Tag ${index + 1}`,
-                rsdlt_title: item.rsdlt_title || "",
-                rsdlt_img: matchedImage ? `${API}/storage/uploads/${matchedImage.img}` : null,
-                rsdlt_img_id: item.rsdlt_img || null,
-                active: item.active ?? 1,
-                rsdlt_order: index + 1,
-              };
+                const data = {
+                  id: item.rsdlt || null,
+                  rsdl_id: rsdl_id,
+                  title: `Tag ${index + 1}`,
+                  rsdlt_title: item.rsdlt_title || "",
+                  rsdlt_img: matchedImage ? `${API}/storage/uploads/${matchedImage.img}` : null,
+                  rsdlt_img_id: item.rsdlt_img || null,
+                  active: item.active ?? 1,
+                  rsdlt_order: index + 1,
+                };
+                console.log("Data is: ", data);
+              return data;
             });
 
             setTags(formattedTags);
@@ -191,8 +188,8 @@ const ResearchlabTagSection = forwardRef(({ rsdl_id }, ref) => {
                             >
                               <div className="flex">
                                 <div
-                                  className="cursor-grab my-auto"
-                                  {...provided.dragHandleProps}
+                                  className=" my-auto"
+                                  // {...provided.dragHandleProps}
                                 >
                                   <svg
                                     className="cursor-grab size-5 my-auto"
@@ -202,7 +199,7 @@ const ResearchlabTagSection = forwardRef(({ rsdl_id }, ref) => {
                                     <path d="M40 352l48 0c22.1 0 40 17.9 40 40l0 48c0 22.1-17.9 40-40 40l-48 0c-22.1 0-40-17.9-40-40l0-48c0-22.1 17.9-40 40-40zm192 0l48 0c22.1 0 40 17.9 40 40l0 48c0 22.1-17.9 40-40 40l-48 0c-22.1 0-40-17.9-40-40l0-48c0-22.1 17.9-40 40-40zM40 320c-22.1 0-40-17.9-40-40l0-48c0-22.1 17.9-40 40-40l48 0c22.1 0 40 17.9 40 40l0 48c0 22.1-17.9 40-40 40l-48 0zM232 192l48 0c22.1 0 40 17.9 40 40l0 48c0 22.1-17.9 40-40 40l-48 0c-22.1 0-40-17.9-40-40l0-48c0-22.1 17.9-40 40-40zM40 160c-22.1 0-40-17.9-40-40L0 72C0 49.9 17.9 32 40 32l48 0c22.1 0 40 17.9 40 40l0 48c0 22.1-17.9 40-40 40l-48 0zM232 32l48 0c22.1 0 40 17.9 40 40l0 48c0 22.1-17.9 40-40 40l-48 0c-22.1 0-40-17.9-40-40l0-48c0-22.1 17.9-40 40-40z"></path>
                                   </svg>
                                 </div>
-                                <span className="ml-2 text-lg">{tag.title}</span>
+                                <span className="ml-2 text-lg">{tag.rsdlt_title}</span>
                               </div>
                               <span className="shrink-0 transition-transform duration-500 group-open:-rotate-0 flex gap-2">
                                 <div className="block">
@@ -213,7 +210,7 @@ const ResearchlabTagSection = forwardRef(({ rsdl_id }, ref) => {
                                     strokeWidth={1.5}
                                     stroke="currentColor"
                                     className="size-6 cursor-pointer"
-                                    onClick={() => handleDeleteTag(tag.rsdlt_id)}
+                                    onClick={() => handleDeleteTag(tag.id)}
                                   >
                                     <path
                                       strokeLinecap="round"

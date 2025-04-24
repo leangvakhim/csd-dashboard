@@ -52,6 +52,19 @@ const ResearchlabField = () => {
         }));
     };
 
+    const getImageIdByUrl = async (url) => {
+        try {
+            const response = await axios.get(API_ENDPOINTS.getImages);
+            const images = Array.isArray(response.data) ? response.data : response.data.data;
+
+            const matchedImage = images.find((img) => img.image_url === url);
+            return matchedImage?.image_id || null;
+        } catch (error) {
+            console.error('❌ Failed to fetch image ID:', error);
+            return null;
+        }
+    };
+
     const saveResearchlab = async () => {
         const isUpdate = !!formData.rsdl_id;
         const payload = {
@@ -59,7 +72,7 @@ const ResearchlabField = () => {
             rsdl_title: formData.rsdl_title || '',
             rsdl_fav: formData.rsdl_fav || '0',
             rsdl_detail: formData.rsdl_detail || '',
-            rsdl_img: formData.rsdl_img || null,
+            rsdl_img: await getImageIdByUrl(formData.rsdl_img) || null,
             rsdl_order: formData.rsdl_order || 0,
             display: formData.display ? 1 : 0,
             active: formData.active ? 1 : 0,
@@ -98,53 +111,20 @@ const ResearchlabField = () => {
               })
             : [];
 
-        const newTags = filteredTags
-            .filter(item => typeof item.rsdlt_id !== 'number')
-            .map(item => ({
-                rsdlt_title: item.rsdlt_title,
-                rsdlt_img: item.rsdlt_img_id || null,
-                rsdlt_order: item.rsdlt_order || 0,
-                display: item.display ?? 1,
-                active: item.active ?? 1,
-                rsdlt_rsdl: rsdl_id,
-            }));
-
-        const updateTags = filteredTags.filter(item => typeof item.rsdlt_id === 'number');
-
-        for (const item of updateTags) {
+        for (const item of filteredTags) {
             const payload = {
                 rsdlt_title: item.rsdlt_title,
                 rsdlt_img: item.rsdlt_img_id || null,
-                rsdlt_order: item.rsdlt_order || 0,
-                display: item.display ?? 1,
-                active: item.active ?? 1,
                 rsdlt_rsdl: rsdl_id,
             };
-            await axios.post(`${API_ENDPOINTS.updateResearchlabTag}/${item.rsdlt_id}`, payload);
-        }
-
-        if (newTags.length > 0) {
-            const payload = {
-                rsdl_id,
-                rsdlt_tags: newTags,
-            };
-            await axios.post(API_ENDPOINTS.createResearchlabTag, payload);
-        }
-
-        const reorderPayload = filteredTags
-            .filter(item => typeof item.rsdlt_id === 'number')
-            .map(item => ({
-                rsdlt_id: item.rsdlt_id,
-                rsdlt_order: item.rsdlt_order,
-            }));
-
-        if (reorderPayload.length > 0) {
-            await axios.post(API_ENDPOINTS.updateResearchlabTagOrder, reorderPayload, {
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json',
-                },
-            });
+            if (item.rsdlt) {
+                await axios.post(`${API_ENDPOINTS.updateResearchlabTag}/${item.rsdlt}`, {rsdlt_tags: [payload]});
+            } else {
+                await axios.post(API_ENDPOINTS.createResearchlabTag, {
+                    rsdl_id,
+                    rsdlt_tags: [payload],
+                });
+            }
         }
     };
 
@@ -155,7 +135,6 @@ const ResearchlabField = () => {
             alert("Research lab saved successfully!");
         } catch (err) {
             console.error('Error saving research lab:', err);
-            alert(`Error saving research lab: ${err.response?.data?.message || err.message}`);
         }
     };
 
