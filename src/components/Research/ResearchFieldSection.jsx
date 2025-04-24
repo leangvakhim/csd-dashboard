@@ -41,7 +41,7 @@ const ResearchFieldSection = () => {
                         <div
                             {...provided.droppableProps}
                             ref={provided.innerRef}
-                            className="space-y-4"
+                            className="space-y-2"
                         >
                             {selectedSections.map((section, index) => (
                                 <Draggable
@@ -79,7 +79,7 @@ const ResearchFieldSection = () => {
             <a
                 className={` cursor-pointer flex items-center p-3 text-sm font-medium text-blue-600 border-t border ${
                     showSection ? "rounded-t-lg" : "rounded-lg"
-                } bg-gray-50 hover:bg-gray-100 hover:underline mt-4`}
+                } bg-gray-50 hover:bg-gray-100 hover:underline mt-2`}
                 onClick={handleAddPage}
             >
                 <svg
