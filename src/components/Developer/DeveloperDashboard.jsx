@@ -2,12 +2,46 @@ import React, { useEffect, useState } from 'react'
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { API_ENDPOINTS } from '../../service/APIConfig';
-import img1 from "../../img/1.jpg";
-import img2 from "../../img/2.jpg";
 
 const DeveloperDashboard = () => {
+    const navigate = useNavigate();
+
     const [activeDropdown, setActiveDropdown] = useState(null);
     const [developerItems, setFDeveloperItems] = useState([]);
+    const [images, setImages] = useState([]);
+
+    const moveItem = async (index, direction) => {
+        const newItems = [...developerItems];
+        const targetIndex = direction === 'up' ? index - 1 : index + 1;
+
+        if (targetIndex < 0 || targetIndex >= newItems.length) return;
+
+        // Swap items locally
+        [newItems[index], newItems[targetIndex]] = [newItems[targetIndex], newItems[index]];
+
+        // Update d_order values
+        const updatedItems = newItems.map((item, i) => ({
+            ...item,
+            d_order: newItems.length - i 
+        }));
+
+        setFDeveloperItems(updatedItems);
+
+        try {
+            await updateOrderOnServer(updatedItems);
+        } catch (error) {
+            console.error("Failed to update order on server:", error);
+        }
+    };
+
+    const updateOrderOnServer = async (items) => {
+        const payload = items.map(item => ({
+            d_id: item.d_id,
+            d_order: item.d_order
+        }));
+
+        await axios.post(`${API_ENDPOINTS.orderDeveloper}`, payload);
+    };
 
     const fetchDeveloper = async () => {
         try {
@@ -15,15 +49,39 @@ const DeveloperDashboard = () => {
             const result = (response.data.data || []);
             const normalized = Array.isArray(result) ? result : result ? [result] : [];
             setFDeveloperItems(normalized);
-            // console.log('developer', sortedDevelopers);
+            console.log('developer', response.data);
         } catch (error) {
             console.error('Failed to fetch delvelopers:', error);
         }
     };
 
+    const fetchImages = async () => {
+        try {
+            const response = await axios.get(API_ENDPOINTS.getImages);
+            const data = response.data.data || [];
+            setImages(data);
+        } catch (err) {
+            console.error("Error fetching images:", err);
+        }
+    };
+
+    const getImageUrl = (imageId) => {
+        const found = images.find(img => img.image_id === imageId);
+        return found ? found.image_url : '';
+    };
+
+
+    const handleEdit = async (id) => {
+        const response = await axios.get(`${API_ENDPOINTS.getDevelopers}/${id}`);
+        const developData = response.data;
+        navigate('/developer/developer-details', { state: { developData } });
+    };
+
     useEffect(() => {
         fetchDeveloper();
+        fetchImages();
     }, []);
+
 
     return (
         <div className="relative overflow-x-auto shadow-md px-8">
@@ -57,21 +115,21 @@ const DeveloperDashboard = () => {
                                 No Developer member available.
                             </td>
                         </tr>
-                        ) : (
+                    ) : (
                         developerItems.map((item, index) => (
                             <tr key={item.d_id} className="odd:bg-white even:bg-gray-50 border">
                                 <td
                                     scope="row"
                                     className="px-6 py-4"
-                                    >
-                                    <img src={item.d_img?.img} alt="" className='size-12 rounded-full' />
+                                >
+                                    <img src={getImageUrl(item.d_img)} alt="" className='size-12 rounded-full' />
                                 </td>
                                 <td className="px-6 py-4">{item.d_name}</td>
                                 <td className="px-6 py-4">{item.d_position}</td>
                                 <td className="px-6 py-4">{{
-                                        1: 'English',
-                                        2: 'Khmer',
-                                    }[item.lang] || 'Unknown'}</td>
+                                    1: 'English',
+                                    2: 'Khmer',
+                                }[item.lang] || 'Unknown'}</td>
                                 <td className="px-6 py-4">
                                     <span className={`${item.display ? 'bg-blue-100 text-blue-800' : 'bg-red-100 text-red-800'} text-xs font-medium me-2 px-2.5 py-0.5 rounded-xl`}>
                                         {item.display ? 'Enable' : 'Disable'}
@@ -85,16 +143,25 @@ const DeveloperDashboard = () => {
                                         <i className="ti ti-chevron-down text-xl"></i>
                                     </a> |
                                     <div className="relative">
-                                        <button
+                                        {/* <button
                                             onClick={() => setActiveDropdown(activeDropdown === item.f_id ? null : item.f_id)}
                                             className="font-medium text-gray-900 hover:text-blue-500"
                                         >
                                             <i className="ti ti-dots-vertical text-xl"></i>
+                                        </button> */}
+                                        <button
+                                            onClick={() => setActiveDropdown(activeDropdown === item.d_id ? null : item.d_id)} // Toggling the dropdown
+                                            className="font-medium text-gray-900 hover:text-blue-500"
+                                        >
+                                            <i className="ti ti-dots-vertical text-xl"></i>
                                         </button>
-                                        {activeDropdown === item.f_id && (
-                                            <div className="fixed right-0 mt-2 w-36 mr-8 bg-white border border-gray-300 rounded-md shadow-md z-50">
+
+                                        {activeDropdown === item.d_id && (
+                                            <div key={index} className="fixed right-0 mt-2 w-36 mr-8 bg-white border border-gray-300 rounded-md shadow-md z-50">
                                                 <div className="py-1">
-                                                    <a className="cursor-pointer flex gap-2 items-center px-4 py-2 hover:bg-blue-100">
+                                                    <a
+                                                        onClick={() => handleEdit(item.d_id)}
+                                                        className="cursor-pointer flex gap-2 items-center px-4 py-2 hover:bg-blue-100">
                                                         <i className="ti ti-edit text-gray-500 text-xl"></i>
                                                         <span className="text-sm text-gray-700">Edit</span>
                                                     </a>

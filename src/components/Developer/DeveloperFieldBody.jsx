@@ -1,24 +1,62 @@
-import React, { useState } from 'react'
+import React, { useState, } from 'react'
 import MediaLibraryModal from '../MediaLibraryModal';
 import DeveloperFieldSocial from './DeveloperFieldSocial';
+import { API_ENDPOINTS } from '../../service/APIConfig';
+import axios from 'axios';
 
-const DeveloperFieldBody = ({formData, setFormData}) => {
+const config = {
+    readonly: false,
+    height: 400,
+    placeholder: 'Start typing...',
+    uploader: {
+        insertImageAsBase64URI: true,
+    },
+};
+
+const DeveloperFieldBody = ({ formData, setFormData, setSubtitleContent }) => {
     const [activeTab, setActiveTab] = useState(1);
     const [isMediaLibraryOpen, setMediaLibraryOpen] = useState(false);
-    // const [selectedImage, setSelectedImage] = useState("");
-    const [currentField, setCurrentField] = useState("");
+    const [selectedImage, setSelectedImage] = useState("");
+    // const [currentField, setCurrentField] = useState("");
 
-    const openMediaLibrary = (field) => {
-        setCurrentField(field);
+    const openMediaLibrary = () => {
         setMediaLibraryOpen(true);
+    }; 
+
+
+    const handleImageSelect = async (url) => {
+        setSelectedImage(url);
+        if (selectedImage) {
+            try {
+                const response = await axios.get(API_ENDPOINTS.getImages);
+                const images = Array.isArray(response.data) ? response.data : response.data.data;
+                const matchedImage = images.find(img => img.image_url === selectedImage);
+
+                const imageId = matchedImage?.image_id || null;
+
+                setFormData(prev => ({
+                    ...prev,
+                    d_img: imageId
+                }));
+
+                setSelectedImage("");
+
+            } catch (error) {
+                console.error("❌ Error finding image ID from selectedImage:", error);
+            }
+        }
     };
 
-    const handleImageSelect = (imageUrl, field) => {
-        if (field === "image") {
-            setFormData(prev => ({ ...prev, image: imageUrl }));
-        }
-        setMediaLibraryOpen(false);
-    };
+    // useEffect(() => {
+    //     if (typeof formData.display !== 'boolean') {
+    //         setFormData(prev => ({
+    //             ...prev,
+    //             display: !!parseInt(prev.display)
+    //         }));
+    //     }
+
+    // }, [formData]);
+
     return (
         <div className='px-8 py-2 mb-1'>
             <div className="tabs">
@@ -54,8 +92,8 @@ const DeveloperFieldBody = ({formData, setFormData}) => {
                             </label>
                             <div className="mt-2">
                                 <input
-                                    value={formData.fullName}
-                                    onChange={(e) => setFormData(prev => ({ ...prev, fullName: e.target.value }))}
+                                    value={formData.d_name}
+                                    onChange={(e) => setFormData(prev => ({ ...prev, d_name: e.target.value }))}
                                     type="text"
                                     className="block w-full !border-gray-200 border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
                                 />
@@ -68,8 +106,8 @@ const DeveloperFieldBody = ({formData, setFormData}) => {
                             </label>
                             <div className="mt-2">
                                 <input
-                                    value={formData.position}
-                                    onChange={(e) => setFormData(prev => ({ ...prev, position: e.target.value }))}
+                                    value={formData.d_position}
+                                    onChange={(e) => setFormData(prev => ({ ...prev, d_position: e.target.value }))}
                                     type="text"
                                     className="block w-full !border-gray-200 border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
                                 />
@@ -103,11 +141,10 @@ const DeveloperFieldBody = ({formData, setFormData}) => {
                                     <label
                                         className="flex flex-col items-center justify-center w-full h-60 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100"
                                     >
-                                        {formData.image ? (
+                                        {selectedImage ? (
                                             <div>
                                                 <img
-                                                    // src={selectedImage}
-                                                    src={formData.image}
+                                                    src={selectedImage}
                                                     alt="Selected"
                                                     className="h-40 w-40 object-contain"
                                                 />
@@ -185,8 +222,12 @@ const DeveloperFieldBody = ({formData, setFormData}) => {
                                 </label>
                                 <div className="mt-2">
                                     <textarea
-                                        value={formData.description}
-                                        onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                                        value={formData.d_write}
+                                        onChange={(e) => {
+                                            setSubtitleContent(e.target.value);
+                                            setFormData(prev => ({ ...prev, d_write: e.target.value }));
+                                        }}
+                                        config={config}
                                         className="!border-gray-300 h-60 block w-full rounded-md border-0 py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-2xl sm:leading-6"></textarea>
                                 </div>
                             </div>
@@ -196,7 +237,7 @@ const DeveloperFieldBody = ({formData, setFormData}) => {
                     <div>
                         <div className="py-2">
                             {/* Social */}
-                            <DeveloperFieldSocial formData={formData} setFormData={setFormData}/>
+                            <DeveloperFieldSocial formData={formData} setFormData={setFormData} />
                         </div>
                     </div>
                 </div>

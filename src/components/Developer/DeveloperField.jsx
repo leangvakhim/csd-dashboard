@@ -1,18 +1,22 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Aside from '../Aside'
 import DeveloperFieldHeader from './DeveloperFieldHeader'
 import DeveloperFieldBody from './DeveloperFieldBody'
 import axios from 'axios';
 import { API_ENDPOINTS } from '../../service/APIConfig';
+import { useLocation } from 'react-router-dom';
 
 const DeveloperField = () => {
 
+  const [subtitleContent, setSubtitleContent] = useState('');
+  // const [selectedImage, setSelectedImage] = useState("");
+
   const [formData, setFormData] = useState({
-    fullName: "",
-    position: "",
-    display: false,
-    image: "",
-    description: "",
+    d_name: "",
+    d_position: "",
+    d_img: "",
+    d_write: "",
+    display: true,
     lang: 1,
     socialSlider: []
   });
@@ -20,11 +24,12 @@ const DeveloperField = () => {
   const buildPayload = async (order) => {
 
     return {
-      d_name: formData.fullName,
-      d_position: formData.position,
-      d_write: formData.description,
-      d_img: await getImageIdByUrl(formData.image),
-      display: formData.display,
+      d_name: formData.d_name,
+      d_position: formData.d_position,
+      d_write: subtitleContent || '',
+      // d_img: await getImageIdByUrl(formData.d_img),
+      d_img: formData.d_img,
+      display: formData.display ? 1 : 0,
       lang: formData.lang,
       d_order: order,
       active: formData.active || 1,
@@ -38,33 +43,52 @@ const DeveloperField = () => {
     };
   };
 
-  const getImageIdByUrl = async (url) => {
-    try {
-      const response = await axios.get(API_ENDPOINTS.getImages);
-      const images = Array.isArray(response.data) ? response.data : response.data.data;
 
-      const matchedImage = images.find((img) => img.image_url === url);
-      return matchedImage?.image_id || null;
-    } catch (error) {
-      console.error('❌ Failed to fetch image ID:', error);
-      return null;
+  const location = useLocation();
+  const developData = location.state?.developData;
+
+  useEffect(() => {
+    //display dialog on
+    if (developData && developData.data) {
+      setFormData({
+        ...developData.data,
+        display: !!developData.data.display,
+      });
+
+      setFormData(developData.data);
+      setSubtitleContent(developData.data.d_write || "");
+
     }
-  };
+  }, [developData]);
 
   const handleSubmit = async () => {
+    console.log('data ', formData);
+
     try {
       const { data: developers } = await axios.get(API_ENDPOINTS.getDevelopers);
       const newOrder = developers.data.length + 1;
 
       const payload = await buildPayload(newOrder);
 
-      const fetchDeveloper = async () => {
-        await axios.post(API_ENDPOINTS.createDeveloper, {developer: [payload]});
-      };
-      // console.log("🔧 Payload sent to backend:", payload);
-      alert("Save developer member success");
+      const existedDev = developers.data.find(dev => dev.d_id === formData.d_id);
+      if (existedDev) {
+        const updateDeveloper = async () => {
+          await axios.post(`${API_ENDPOINTS.updateDeveloper}/${formData.d_id}`, { developer: payload });
+        };
 
-      fetchDeveloper();
+        alert("Update developer member success");
+        console.log(payload);
+        
+        updateDeveloper();
+
+      } else {
+        const fetchDeveloper = async () => {
+          await axios.post(API_ENDPOINTS.createDeveloper, { developer: [payload] });
+        };
+
+        alert("Save developer member success");
+        fetchDeveloper();
+      }
 
     } catch (error) {
       console.log('Unable to create developer: ', error);
@@ -73,12 +97,21 @@ const DeveloperField = () => {
 
 
   return (
-    <div id="main-wrapper" class=" flex">
+    <div id="main-wrapper" className=" flex">
       <Aside />
 
-      <div class=" w-full page-wrapper overflow-hidden">
+      <div className=" w-full page-wrapper overflow-hidden">
         <DeveloperFieldHeader handleSubmit={handleSubmit} />
-        <DeveloperFieldBody formData={formData} setFormData={setFormData} />
+        <DeveloperFieldBody
+          formData={formData}
+          setFormData={setFormData}
+          subtitleContent={subtitleContent}
+          setSubtitleContent={setSubtitleContent}
+        // onImageSelect={handleImageSelect} 
+        // getImageIdByUrl={getImageIdByUrl}
+        // selectedImage={selectedImage}
+        // setSelectedImage={setSelectedImage}
+        />
       </div>
     </div>
   )
