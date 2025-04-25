@@ -1484,19 +1484,15 @@ const PageField = () => {
                     page_id: savedPageId,
                 };
 
-                console.log("payload is; ",payload);
-
                 if (
                     sectionId &&
                     existingIds.includes(parseInt(item.slider_id)) &&
                     parseInt(sectionId) === parseInt(savedSectionId) &&
                     parseInt(pageId) === parseInt(savedPageId)
                 ) {
-                    console.log("Update");
                     await axios.post(`${API_ENDPOINTS.updateSlideshow}/${item.slider_id}`, { Slideshow: payload });
                 } else {
                     if (!item.slider_id || !existingIds.includes(parseInt(item.slider_id))) {
-                        console.log("Create");
                         await axios.post(API_ENDPOINTS.createSlideshow, { Slideshow: [payload] });
                     }
                 }
