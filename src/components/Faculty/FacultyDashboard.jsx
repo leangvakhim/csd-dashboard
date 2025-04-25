@@ -130,7 +130,7 @@ const FacultyDashboard = () => {
                                     scope="row"
                                     className="px-6 py-4"
                                     >
-                                    <img src={`${API}/storage/uploads/${item.img?.img}`} alt="" className='size-12 rounded-full' />
+                                    <img src={`${API}/storage/uploads/${item.img?.img}`} alt="" className='w-12 h-12 object-cover rounded' />
                                 </td>
                                 <td className="px-6 py-4">{item.f_name}</td>
                                 <td className="px-6 py-4">{item.f_position}</td>
