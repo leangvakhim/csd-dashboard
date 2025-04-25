@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } from "react";
 import Aside from '../Aside'
 import DeveloperFieldHeader from './DeveloperFieldHeader'
 import DeveloperFieldBody from './DeveloperFieldBody'
@@ -9,6 +9,7 @@ import { useLocation } from 'react-router-dom';
 const DeveloperField = () => {
   const location = useLocation();
   const developData = location.state?.developData;
+  const developerFieldRef = useRef();
   const [formData, setFormData] = useState({
     d_name: "",
     d_position: "",
@@ -37,12 +38,24 @@ const DeveloperField = () => {
 
     if (developData?.data?.d_id) {
       fetchDeveloper(developData.data.d_id);
+      fetchDeveloperSocials(developData.data.d_id);
     }
   }, [developData]);
 
-  // console.log("developData is: ",developData.data);
+  const fetchDeveloperSocials = async (developerId) => {
+    try {
+      const response = await axios.get(`${API_ENDPOINTS.getSocialDeveloper}?ds_developer=${developerId}`);
+      const socials = response.data?.data || [];
+      setFormData(prev => ({
+        ...prev,
+        socialSlider: socials
+      }));
+    } catch (error) {
+      console.error("Failed to fetch developer socials:", error);
+    }
+  };
 
-  const handleSubmit = async () => {
+  const saveDeveloper = async () => {
     try {
       const payload = {
         d_name: formData.d_name,
@@ -52,15 +65,56 @@ const DeveloperField = () => {
         display: formData.display ? 1 : 0,
         lang: formData.lang,
         active: formData.active || 1,
-      }
+      };
 
-      if (formData.d_id) {
-        await axios.post(`${API_ENDPOINTS.updateDeveloper}/${formData.d_id}`, { developer: payload });
+      let developerId = formData.d_id;
+
+      if (developerId) {
+        await axios.post(`${API_ENDPOINTS.updateDeveloper}/${developerId}`, { developer: payload });
       } else {
-        await axios.post(API_ENDPOINTS.createDeveloper, { developer: [payload] });
+        const response = await axios.post(API_ENDPOINTS.createDeveloper, { developer: [payload] });
+        developerId = response.data?.data?.[0]?.d_id;
       }
-      alert("Developer saved successfully");
 
+      if (developerId) {
+        await saveDeveloperSocials(developerId);
+      }
+
+    } catch (error) {
+      console.log('Unable to save developer: ', error);
+    }
+  };
+
+  const saveDeveloperSocials = async (developerId) => {
+    try {
+      const slidersData = await developerFieldRef.current?.getDevelopers?.();
+      if (!Array.isArray(slidersData)) return;
+
+      for (const social of slidersData) {
+        const payload = {
+          ...social,
+          ds_developer: developerId,
+          display: social.display ? 1 : 0,
+          active: 1
+        };
+
+        if (social.ds_id && Number(social.ds_id) > 0) {
+          console.log("Update");
+          await axios.post(`${API_ENDPOINTS.updateSocialDeveloper}/${social.ds_id}`, { developer_social: payload });
+        } else {
+          console.log("Create");
+          await axios.post(API_ENDPOINTS.createSocialDeveloper, { developer_social: [payload] });
+        }
+      }
+    } catch (error) {
+      console.error("Unable to save developer_social records:", error);
+    }
+  };
+
+  const handleSubmit = async () => {
+    try {
+      await saveDeveloper();
+      alert("Developer saved successfully");
     } catch (error) {
       console.log('Unable to save developer: ', error);
     }
@@ -75,6 +129,7 @@ const DeveloperField = () => {
         <DeveloperFieldBody
           formData={formData}
           setFormData={setFormData}
+          ref={developerFieldRef}
         />
       </div>
     </div>

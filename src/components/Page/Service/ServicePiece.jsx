@@ -12,10 +12,10 @@ const ServicePiece = forwardRef(({sectionId, pageId}, ref) => {
     getServices: async () => {
       const slidersData = await serviceSliderRef.current?.getSliders?.() || [];
       return {
-              slidersData,
-              sectionId,
-              pageId
-            };
+            services: Array.isArray(slidersData) ? slidersData : [],
+            sectionId: sectionId || null,
+            pageId: pageId || null
+        };
     }
   }));
 

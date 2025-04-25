@@ -4,18 +4,18 @@ import DeveloperFieldSocial from './DeveloperFieldSocial';
 import { API, API_ENDPOINTS } from '../../service/APIConfig';
 import axios from 'axios';
 
-const DeveloperFieldBody = ({ formData, setFormData }) => {
+const DeveloperFieldBody = forwardRef(({ formData, setFormData }, ref) => {
     const [activeTab, setActiveTab] = useState(1);
     const [isMediaLibraryOpen, setMediaLibraryOpen] = useState(false);
     const [selectedImage, setSelectedImage] = useState("");
     const developerSocialRef = useRef();
 
-    // useImperativeHandle(ref, () => ({
-    //     getSlideshows: async () => {
-    //         const slidersData = await developerSocialRef.current?.getDeveloperSocials?.() || [];
-    //         return slidersData;
-    //     }
-    // }));
+    useImperativeHandle(ref, () => ({
+        getDevelopers: async () => {
+            const slidersData = await developerSocialRef.current?.getDeveloperSocials?.();
+            return slidersData;
+        }
+    }));
 
     useEffect(() => {
         const fetchImage = async () => {
@@ -262,6 +262,6 @@ const DeveloperFieldBody = ({ formData, setFormData }) => {
             </div>
         </div>
     )
-}
+});
 
 export default DeveloperFieldBody

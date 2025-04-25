@@ -12,9 +12,9 @@ const CarouselPiece = forwardRef(({sectionId, pageId}, ref) => {
         getSlideshows: async () => {
             const slidersData = await carouselSliderRef.current?.getSliders?.() || [];
             return {
-                slidersData,
-                sectionId,
-                pageId
+                slideshows: Array.isArray(slidersData) ? slidersData : [],
+                sectionId: sectionId || null,
+                pageId: pageId || null
             };
         }
     }));

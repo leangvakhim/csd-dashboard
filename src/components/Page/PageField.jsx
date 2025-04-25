@@ -1467,7 +1467,10 @@ const PageField = () => {
 
     // sliders
     const saveSlideshow = async (savedSectionId, savedPageId) => {
-        const slideshows = await pageRef.current?.getSlideshows?.() || [];
+        const response = await pageRef.current?.getSlideshows?.() || [];
+        const slideshows = response?.slideshows;
+        const sectionId = response?.sectionId;
+        const pageId = response?.pageId;
 
         if (slideshows.length > 0 && savedSectionId) {
             const existingResponse = await axios.get(`${API_ENDPOINTS.getSlideshow}?slider_sec=${savedSectionId}`);
@@ -1481,15 +1484,19 @@ const PageField = () => {
                     page_id: savedPageId,
                 };
 
+                console.log("payload is; ",payload);
+
                 if (
-                    item.slider_sec &&
+                    sectionId &&
                     existingIds.includes(parseInt(item.slider_id)) &&
-                    parseInt(item.slider_sec) === parseInt(savedSectionId) &&
-                    parseInt(item.page_id) === parseInt(savedPageId)
+                    parseInt(sectionId) === parseInt(savedSectionId) &&
+                    parseInt(pageId) === parseInt(savedPageId)
                 ) {
+                    console.log("Update");
                     await axios.post(`${API_ENDPOINTS.updateSlideshow}/${item.slider_id}`, { Slideshow: payload });
                 } else {
                     if (!item.slider_id || !existingIds.includes(parseInt(item.slider_id))) {
+                        console.log("Create");
                         await axios.post(API_ENDPOINTS.createSlideshow, { Slideshow: [payload] });
                     }
                 }
@@ -1499,7 +1506,10 @@ const PageField = () => {
         }
     }
     const saveService = async (savedSectionId, savedPageId) => {
-        const services = await pageRef.current?.getServices?.() || [];
+        const response = await pageRef.current?.getServices?.() || [];
+        const services = response?.services;
+        const sectionId = response?.sectionId;
+        const pageId = response?.pageId;
 
         if (services.length > 0 && savedSectionId) {
             const existingResponse = await axios.get(`${API_ENDPOINTS.getService}?s_sec=${savedSectionId}`);
@@ -1514,10 +1524,10 @@ const PageField = () => {
                 };
 
             if (
-                item.s_sec &&
+                sectionId &&
                 existingIds.includes(parseInt(item.s_id)) &&
-                parseInt(item.s_sec) === parseInt(savedSectionId) &&
-                parseInt(item.page_id) === parseInt(savedPageId)
+                parseInt(sectionId) === parseInt(savedSectionId) &&
+                parseInt(pageId) === parseInt(savedPageId)
             ) {
                     await axios.post(`${API_ENDPOINTS.updateService}/${item.s_id}`, { Service: payload });
                 } else {
@@ -1531,8 +1541,8 @@ const PageField = () => {
         }
     }
     const reorderSlideshow = async () => {
-        const slideshows = await pageRef.current?.getSlideshows?.() || [];
-
+        const response = await pageRef.current?.getSlideshows?.();
+        const slideshows = Array.isArray(response?.slideshows) ? response.slideshows : [];
         const slideshowPayload = slideshows.map((slideshow, index) => ({
             slider_id: parseInt(slideshow.slider_id),
             slider_order: index + 1
@@ -1545,7 +1555,8 @@ const PageField = () => {
         }
     };
     const reorderService = async () => {
-        const services = await pageRef.current?.getServices?.() || [];
+        const response = await pageRef.current?.getServices?.();
+        const services = Array.isArray(response?.services) ? response.services : [];
 
         const servicePayload = services.map((service, index) => ({
             s_id: parseInt(service.s_id),
@@ -1755,6 +1766,8 @@ const PageField = () => {
             sidd_id: parseInt(item.sidd_id || item.id),
             sidd_order: index + 1,
         }));
+
+
 
         try {
             const response = await axios.post(API_ENDPOINTS.updateSubImportantOrder, reorderedPayload);

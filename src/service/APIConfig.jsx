@@ -1,5 +1,5 @@
-const API = "https://aimostore.shop";
-// const API = "http://127.0.0.1:8000";
+// const API = "https://aimostore.shop";
+const API = "http://127.0.0.1:8000";
 const API_BASEURL = `${API}/api`;
 
 const API_ENDPOINTS = {
@@ -351,6 +351,13 @@ const API_ENDPOINTS = {
     updateDeveloper: `${API_BASEURL}/developer/update`,
     orderDeveloper: `${API_BASEURL}/developer/reorder`,
     deleteDeveloper: `${API_BASEURL}/developer/visibility`,
+
+    // developersocial
+    getSocialDeveloper: `${API_BASEURL}/developersocial`,
+    createSocialDeveloper: `${API_BASEURL}/developersocial/create`,
+    updateSocialDeveloper: `${API_BASEURL}/developersocial/update`,
+    orderSocialDeveloper: `${API_BASEURL}/developersocial/reorder`,
+    deleteSocialDeveloper: `${API_BASEURL}/developersocial/visibility`,
 
     // button
     // buttons: `${API_BASEURL}/button`,

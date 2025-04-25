@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } from "react";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import MediaLibraryModal from "../MediaLibraryModal";
+import axios from "axios";
+import { API_ENDPOINTS, API } from "../../service/APIConfig";
 
 const DeveloperFieldSocial = forwardRef(({ formData, setFormData }, ref) => {
   const [currentSliderId, setCurrentSliderId] = useState(null);
@@ -17,32 +19,29 @@ const DeveloperFieldSocial = forwardRef(({ formData, setFormData }, ref) => {
       subtitle: "",
       image: "",
     };
+    setSocial((prev) => [...prev, newSocial]);
 
     // setSlider([...slider, newSlider]);
-    setFormData(prev => ({
-      ...prev,
-      socialSlider: [...(prev.socialSlider || []), newSlider],
-    }));
+    // setFormData(prev => ({
+    //   ...prev,
+    //   socialSlider: [...(prev.socialSlider || []), newSlider],
+    // }));
   };
 
   useImperativeHandle(ref, () => ({
-      getDeveloperSocials: async () => {
-          return await Promise.all(slider.map(async item => {
-              return {
-                  slider_id: item.id,
-                  slider_title: item.title || '',
-                  slider_text: item.subtitle || '',
-                  logo: item.logo ? await getImageIdByUrl(item.logo) : null,
-                  img: item.image ? await getImageIdByUrl(item.image) : null,
-                  btn1: btn1Id,
-                  btn2: btn2Id,
-                  display: item.display ? 1 : 0,
-                  active: 1,
-                  slider_sec: displaySlideshow || 0,
-              }
-          }))
-      }
-  }))
+    getDeveloperSocials: async () => {
+      return Promise.all(
+        slider.map(async (item) => ({
+          ds_id: item.id,
+          ds_title: item.title || '',
+          ds_link: item.subtitle || '',
+          ds_img: item.image ? await getImageIdByUrl(item.image) : null,
+          display: item.display ? 1 : 0,
+          active: 1,
+        }))
+      );
+    }
+  }));
 
   const toggleRotation = (id) => {
     setRotatedStates((prev) => ({
@@ -72,36 +71,71 @@ const DeveloperFieldSocial = forwardRef(({ formData, setFormData }, ref) => {
   };
 
   const handleImageSelect = (imageUrl) => {
-    setFormData(prev => ({
-      ...prev,
-      socialSlider: prev.socialSlider.map((item) =>
+    const finalUrl = typeof imageUrl === "object" && imageUrl?.url ? imageUrl.url : imageUrl;
+
+    setSlider((prevSlider) => {
+      const updated = prevSlider.map((item) =>
         item.id === currentSliderId
-          ? { ...item, [currentField]: imageUrl ? `${imageUrl}` : "" }
+          ? {
+              ...item,
+              [currentField]: finalUrl || "",
+              ...(finalUrl === "" && { img: { img: "" } }) // ensure 'img' field gets cleared visually
+            }
           : item
-      )
-    }));
+      );
+      return updated;
+    });
+
+    setFormData((prevForm) => {
+      const updated = Array.isArray(prevForm.socialSlider)
+        ? prevForm.socialSlider.map((item) =>
+            item.id === currentSliderId || item.ds_id?.toString() === currentSliderId?.toString()
+              ? {
+                  ...item,
+                  image: finalUrl || "",
+                  img: { img: finalUrl ? finalUrl.split('/').pop() : "" } // update image name only
+                }
+              : item
+          )
+        : prevForm.socialSlider;
+
+      return {
+        ...prevForm,
+        socialSlider: updated,
+      };
+    });
+
     setMediaLibraryOpen(false);
   };
 
-  const handleInputChange = (e, sliderId, field, value) => {
-    setFormData((prev) => {
-      const updatedSliders = prev.socialSlider.map((slider) => {
-        if (slider.id === sliderId) {
-          return { ...slider, [field]: value };
-        }
-        return slider;
-      });
+  const getImageIdByUrl = async (url) => {
+    try {
+      const response = await axios.get(API_ENDPOINTS.getImages);
+      const images = Array.isArray(response.data) ? response.data : response.data.data;
 
-      return {
-        ...prev,
-        socialSlider: updatedSliders,
-      };
-    });
+      const matchedImage = images.find((img) => img.image_url === url);
+      return matchedImage?.image_id || null;
+    } catch (error) {
+      console.error('❌ Failed to fetch image ID:', error);
+      return null;
+    }
   };
 
   useEffect(() => {
     if (formData?.socialSlider) {
-      setSlider(formData.socialSlider);
+      const safeArray = Array.isArray(formData.socialSlider)
+        ? formData.socialSlider
+        : [formData.socialSlider];
+
+      const transformed = safeArray.map(item => ({
+        id: item.ds_id?.toString() || (item.id?.toString() ?? ""),
+        title: item.ds_title || item.title || "",
+        subtitle: item.ds_link || item.subtitle || "",
+        image: item.img?.img ? `${API}/storage/uploads/${item.img.img}` : item.image || "",
+        display: item.display === 1 || item.display === true,
+      }));
+
+      setSlider(transformed);
     }
   }, [formData.socialSlider]);
 
@@ -115,7 +149,7 @@ const DeveloperFieldSocial = forwardRef(({ formData, setFormData }, ref) => {
             className="my-1"
           >
             <ul class="h-auto overflow-y-auto border rounded-t-lg mt-1">
-              {slider.map((sliders, index) => (
+              {(Array.isArray(slider) ? slider : []).map((sliders, index) => (
                 <Draggable
                   key={sliders.id}
                   draggableId={sliders.id}
@@ -200,9 +234,12 @@ const DeveloperFieldSocial = forwardRef(({ formData, setFormData }, ref) => {
                             <div className="mt-2">
                               <input
                                 type="text"
-                                // value={sliders.title}
                                 value={sliders.title}
-                                onChange={(e) => handleInputChange(e, sliders.id, 'title', e.target.value)}
+                                onChange={(e) => {
+                                  const newSocials = [...slider];
+                                  newSocials[index].title = e.target.value;
+                                  setSlider(newSocials);
+                                }}
                                 className="block w-full !border-gray-200 border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
                               />
                             </div>
@@ -217,7 +254,11 @@ const DeveloperFieldSocial = forwardRef(({ formData, setFormData }, ref) => {
                                 <input
                                   type="checkbox"
                                   checked={sliders.display}
-                                  onChange={(e) => handleInputChange(e, sliders.id, 'display', e.target.checked)}
+                                  onChange={(e) => {
+                                    const newSocials = [...slider];
+                                    newSocials[index].display = e.target.checked;
+                                    setSlider(newSocials);
+                                  }}
                                 />
                                 <span className="slider"></span>
                               </label>
@@ -232,10 +273,9 @@ const DeveloperFieldSocial = forwardRef(({ formData, setFormData }, ref) => {
                             </label>
                             <div className="flex items-center justify-center w-full mt-2 border-1">
                               <label className="flex flex-col items-center justify-center w-full h-60 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
-                                {sliders.image ? (
+                                {sliders.image && sliders.image !== "" && sliders.image.trim() !== "" ? (
                                   <div>
                                     <img
-                                      // src={sliders.image}
                                       src={sliders.image}
                                       alt="Selected"
                                       className="h-40 w-40 object-contain"
@@ -259,9 +299,11 @@ const DeveloperFieldSocial = forwardRef(({ formData, setFormData }, ref) => {
                                         />
                                       </svg>
                                       <svg
-                                        onClick={() =>
-                                          handleImageSelect("", "image")
-                                        }
+                                        onClick={() => {
+                                          setCurrentSliderId(sliders.id);
+                                          setCurrentField("image");
+                                          setTimeout(() => handleImageSelect(""), 0);
+                                        }}
                                         xmlns="http://www.w3.org/2000/svg"
                                         fill="none"
                                         viewBox="0 0 24 24"
@@ -318,12 +360,16 @@ const DeveloperFieldSocial = forwardRef(({ formData, setFormData }, ref) => {
 
                           <div className="flex-1">
                             <label className="block text-xl font-medium leading-6 text-white-900">
-                              Subtitle
+                              Link
                             </label>
                             <div className="mt-2">
                               <textarea
                                 value={sliders.subtitle}
-                                onChange={(e) => handleInputChange(e, sliders.id, 'subtitle', e.target.value)}
+                                onChange={(e) => {
+                                  const newSocials = [...slider];
+                                  newSocials[index].subtitle = e.target.value;
+                                  setSlider(newSocials);
+                                }}
                                 className="!border-gray-300 h-60 block w-full rounded-md border-0 py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-2xl sm:leading-6"></textarea>
                             </div>
                           </div>
