@@ -7,8 +7,6 @@ const CarouselPiece = forwardRef(({sectionId, pageId}, ref) => {
     const [isRotatedButton, setIsRotatedButton] = useState(false);
     const [displaySlideshow, setDisplaySlideshow] = useState(0);
     const carouselSliderRef = useRef();
-    console.log("sectionId is: ",sectionId);
-    console.log("pageId is: ",pageId);
 
     useImperativeHandle(ref, () => ({
         getSlideshows: async () => {

@@ -17,8 +17,8 @@ const CarouselPieceSlider = forwardRef(({displaySlideshow, sectionId, pageId}, r
             id: "1",
             title: "Slider 1",
             subtitle: "",
-            logo: "",
-            image: "",
+            logo: 0,
+            image: 0,
             firstbtntitle: "Button 1",
             firstbtnselect: "",
             secondbtntitle: "Button 2",
@@ -39,8 +39,8 @@ const CarouselPieceSlider = forwardRef(({displaySlideshow, sectionId, pageId}, r
                     id: item.slider_id.toString(),
                     title: item.slider_title || '',
                     subtitle: item.slider_text || '',
-                    logo: item.logo?.img ? `${API}/storage/uploads/${item.logo.img}` : '',
-                    image: item.img?.img ? `${API}/storage/uploads/${item.img.img}` : '',
+                    logo: item.logo?.img ? `${API}/storage/uploads/${item.logo.img}` : null,
+                    image: item.img?.img ? `${API}/storage/uploads/${item.img.img}` : null,
                     firstbtntitle: item.btn1?.bss_title || '',
                     firstbtnselect: item.btn1?.bss_routepage || '',
                     secondbtntitle: item.btn2?.bss_title || '',
@@ -59,8 +59,8 @@ const CarouselPieceSlider = forwardRef(({displaySlideshow, sectionId, pageId}, r
                         id: "1",
                         title: "Slider 1",
                         subtitle: "",
-                        logo: "",
-                        image: "",
+                        logo: null,
+                        image: null,
                         firstbtntitle: "Button 1",
                         firstbtnselect: "",
                         secondbtntitle: "Button 2",
@@ -105,11 +105,12 @@ const CarouselPieceSlider = forwardRef(({displaySlideshow, sectionId, pageId}, r
                         });
                     } else {
                         const res1 = await axios.post(API_ENDPOINTS.createBtnss, {
-                            bss_title: item.firstbtntitle || '',
-                            bss_routepage: item.firstbtnselect || '',
+                            bss_title: item.firstbtntitle,
+                            bss_routepage: item.firstbtnselect,
                             display: item.firstbtndisplay ? 1 : 0,
                         });
                         btn1Id = res1.data?.data?.bss_id || null;
+                        item.bss_id_btn1 = btn1Id;
                     }
                 } catch (error) {
                     console.error('btn1 error:', error);
@@ -125,11 +126,12 @@ const CarouselPieceSlider = forwardRef(({displaySlideshow, sectionId, pageId}, r
                         });
                     } else {
                         const res2 = await axios.post(API_ENDPOINTS.createBtnss, {
-                            bss_title: item.secondbtntitle || '',
-                            bss_routepage: item.secondbtnselect || '',
+                            bss_title: item.secondbtntitle,
+                            bss_routepage: item.secondbtnselect,
                             display: item.secondbtndisplay ? 1 : 0,
                         });
                         btn2Id = res2.data?.data?.bss_id || null;
+                        item.bss_id_btn2 = btn2Id;
                     }
                 } catch (error) {
                     console.error('btn2 error:', error);
@@ -139,8 +141,8 @@ const CarouselPieceSlider = forwardRef(({displaySlideshow, sectionId, pageId}, r
                     slider_id: item.id,
                     slider_title: item.title || '',
                     slider_text: item.subtitle || '',
-                    logo: item.logo ? await getImageIdByUrl(item.logo) : 0,
-                    img: item.image ? await getImageIdByUrl(item.image) : 0,
+                    logo: item.logo ? await getImageIdByUrl(item.logo) : null,
+                    img: item.image ? await getImageIdByUrl(item.image) : null,
                     btn1: btn1Id,
                     btn2: btn2Id,
                     display: item.display ? 1 : 0,
@@ -156,8 +158,8 @@ const CarouselPieceSlider = forwardRef(({displaySlideshow, sectionId, pageId}, r
             id: (slider.length + 1).toString(),
             title: `Slider ${slider.length + 1}`,
             subtitle: "",
-            logo: "",
-            image: "",
+            logo: null,
+            image: null,
             firstbtntitle: `Button 1`,
             firstbtnselect: "",
             secondbtntitle: `Button 2`,
