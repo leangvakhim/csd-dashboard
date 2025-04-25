@@ -22,6 +22,7 @@ const CareerPiece = forwardRef(({sectionId, pageId}, ref) => {
                 hsec_btntitle: btnTitle,
                 hsec_amount: parseInt(0),
                 hsec_routepage: redirectPage,
+                page_id: pageId,
             };
         return [data];
         }

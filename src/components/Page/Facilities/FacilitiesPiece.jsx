@@ -81,6 +81,7 @@ const FacilitiesPiece = forwardRef(({sectionId, pageId}, ref) => {
         af_sec: sectionId,
         af_text: textId,
         af_img: imageId,
+        page_id: pageId,
         subservices: await subserviceRef.current?.getSubserviceSliders(),
       };
 

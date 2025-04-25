@@ -11,7 +11,11 @@ const CarouselPiece = forwardRef(({sectionId, pageId}, ref) => {
     useImperativeHandle(ref, () => ({
         getSlideshows: async () => {
             const slidersData = await carouselSliderRef.current?.getSliders?.() || [];
-            return slidersData;
+            return {
+                slidersData,
+                sectionId,
+                pageId
+            };
         }
     }));
 

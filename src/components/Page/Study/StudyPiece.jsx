@@ -21,6 +21,7 @@ const StudyPiece = forwardRef(({sectionId, pageId}, ref) => {
         std_title: studyTitle,
         std_subtitle: studySubTitle,
         std_type: studytype,
+        page_id: pageId,
         substudys: await substudyRef.current?.getSubStudySliders(),
       };
 

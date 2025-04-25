@@ -43,10 +43,19 @@ const PageField = () => {
                     page_id: savedPageId,
                 };
 
-                if( program.dep_id && existingIds.includes(parseInt(program.dep_id))){
+                if(
+                    program.dep_id &&
+                    existingIds.includes(parseInt(program.dep_id)) &&
+                    parseInt(program.dep_sec) === parseInt(savedSectionId) &&
+                    parseInt(program.page_id) === parseInt(savedPageId)
+                ){
                     await axios.post(`${API_ENDPOINTS.updateDepartment}/${program.dep_id}`, { programs: programPayload });
                 } else {
-                    await axios.post(API_ENDPOINTS.createDepartment, { programs: [programPayload] });
+                    if (program.dep_sec) {
+                        if (!program.dep_id || !existingIds.includes(parseInt(program.dep_id))) {
+                            await axios.post(API_ENDPOINTS.createDepartment, { programs: [programPayload] });
+                        }
+                    }
                 }
             }
         }
@@ -68,10 +77,19 @@ const PageField = () => {
                     page_id: savedPageId,
                 };
 
-                if ( banner.ban_id && existingIds.includes(parseInt(banner.ban_id))) {
+                if (
+                    banner.ban_id &&
+                    existingIds.includes(parseInt(banner.ban_id)) &&
+                    parseInt(banner.ban_sec) === parseInt(savedSectionId) &&
+                    parseInt(banner.page_id) === parseInt(savedPageId)
+                ) {
                     await axios.post(`${API_ENDPOINTS.updateBanner}/${banner.ban_id}`, { banners: bannerPayload });
                 } else {
-                    await axios.post(API_ENDPOINTS.createBanner, { banners: [bannerPayload] });
+                    if (banner.ban_sec) {
+                        if (!banner.ban_id || !existingIds.includes(parseInt(banner.ban_id))) {
+                            await axios.post(API_ENDPOINTS.createBanner, { banners: [bannerPayload] });
+                        }
+                    }
                 }
             }
         }
@@ -93,10 +111,19 @@ const PageField = () => {
                     page_id: savedPageId,
                 };
 
-                if ( information.text_id && existingIds.includes(parseInt(information.text_id))) {
+                if (
+                    information.text_id &&
+                    existingIds.includes(parseInt(information.text_id)) &&
+                    parseInt(information.text_sec) === parseInt(savedSectionId) &&
+                    parseInt(information.page_id) === parseInt(savedPageId)
+                ) {
                     await axios.post(`${API_ENDPOINTS.updateText}/${information.text_id}`, { texts: informationPayload });
                 } else {
-                    await axios.post(API_ENDPOINTS.createText, { texts: [informationPayload] });
+                    if (information.text_sec) {
+                        if (!information.text_id || !existingIds.includes(parseInt(information.text_id))) {
+                            await axios.post(API_ENDPOINTS.createText, { texts: [informationPayload] });
+                        }
+                    }
                 }
             }
         }
@@ -116,10 +143,19 @@ const PageField = () => {
                     page_id: savedPageId,
                 };
 
-                if ( testimonial.t_id && existingIds.includes(parseInt(testimonial.t_id))) {
+                if (
+                    testimonial.t_sec &&
+                    existingIds.includes(parseInt(testimonial.t_id)) &&
+                    parseInt(testimonial.t_sec) === parseInt(savedSectionId) &&
+                    parseInt(testimonial.page_id) === parseInt(savedPageId)
+                ) {
                     await axios.post(`${API_ENDPOINTS.updateTestimonial}/${testimonial.t_id}`, { testimonials: testimonialPayload });
                 } else {
-                    await axios.post(API_ENDPOINTS.createTestimonial, { testimonials: [testimonialPayload] });
+                    if (testimonial.t_sec) {
+                        if (!testimonial.t_id || !existingIds.includes(parseInt(testimonial.t_id))) {
+                            await axios.post(API_ENDPOINTS.createTestimonial, { testimonials: [testimonialPayload] });
+                        }
+                    }
                 }
             }
         }
@@ -145,10 +181,19 @@ const PageField = () => {
                     page_id: savedPageId,
                 };
 
-                if ( academic.acad_id && existingIds.includes(parseInt(academic.acad_id)) ) {
+                if (
+                    academic.acad_sec &&
+                    existingIds.includes(parseInt(academic.acad_id)) &&
+                    parseInt(academic.acad_sec) === parseInt(savedSectionId) &&
+                    parseInt(academic.page_id) === parseInt(savedPageId)
+                ) {
                     await axios.post(`${API_ENDPOINTS.updateAcademic}/${academic.acad_id}`, { academics: academicPayload });
                 } else {
-                    await axios.post(API_ENDPOINTS.createAcademic, { academics: [academicPayload] });
+                    if (academic.acad_sec) {
+                        if (!academic.acad_id || !existingIds.includes(parseInt(academic.acad_id))) {
+                            await axios.post(API_ENDPOINTS.createAcademic, { academics: [academicPayload] });
+                        }
+                    }
                 }
             }
         }
@@ -172,10 +217,19 @@ const PageField = () => {
                     page_id: savedPageId,
                 };
 
-                if ( gallery.gal_id && existingIds.includes(parseInt(gallery.gal_id))) {
+                if (
+                    gallery.gal_sec &&
+                    existingIds.includes(parseInt(gallery.gal_id)) &&
+                    parseInt(gallery.gal_sec) === parseInt(savedSectionId) &&
+                    parseInt(gallery.page_id) === parseInt(savedPageId)
+                ) {
                     await axios.post(`${API_ENDPOINTS.updateGallery}/${gallery.gal_id}`, { gallery: galleryPayload });
                 } else {
-                    await axios.post(API_ENDPOINTS.createGallery, { gallery: [galleryPayload] });
+                    if (gallery.gal_sec) {
+                        if (!gallery.gal_id || !existingIds.includes(parseInt(gallery.gal_id))) {
+                            await axios.post(API_ENDPOINTS.createGallery, { gallery: [galleryPayload] });
+                        }
+                    }
                 }
             }
         }
@@ -200,10 +254,19 @@ const PageField = () => {
                     page_id: savedPageId,
                 };
 
-                if( criteria.gc_id && existingIds.includes(parseInt(criteria.gc_id))){
+                if(
+                    criteria.gc_sec &&
+                    existingIds.includes(parseInt(criteria.gc_id)) &&
+                    parseInt(criteria.gc_sec) === parseInt(savedSectionId) &&
+                    parseInt(criteria.page_id) === parseInt(savedPageId)
+                ){
                     await axios.post(`${API_ENDPOINTS.updateCriteria}/${criteria.gc_id}`, { criteria: criteriaPayload });
                 } else {
-                    await axios.post(API_ENDPOINTS.createCriteria, { criteria: [criteriaPayload] });
+                    if (criteria.gc_sec) {
+                        if (!criteria.gc_id || !existingIds.includes(parseInt(criteria.gc_id))) {
+                            await axios.post(API_ENDPOINTS.createCriteria, { criteria: [criteriaPayload] });
+                        }
+                    }
                 }
             }
         }
@@ -227,10 +290,19 @@ const PageField = () => {
                     page_id: savedPageId,
                 };
 
-                if( unlock.umd_id && existingIds.includes(parseInt(unlock.umd_id))){
+                if(
+                    unlock.umd_sec &&
+                    existingIds.includes(parseInt(unlock.umd_id)) &&
+                    parseInt(unlock.umd_sec) === parseInt(savedSectionId) &&
+                    parseInt(unlock.page_id) === parseInt(savedPageId)
+                ){
                     await axios.post(`${API_ENDPOINTS.updateUnlock}/${unlock.umd_id}`, { unlock: unlockPayload });
                 } else {
-                    await axios.post(API_ENDPOINTS.createUnlock, { unlock: [unlockPayload] });
+                    if (unlock.umd_sec) {
+                        if (!unlock.umd_id || !existingIds.includes(parseInt(unlock.umd_id))) {
+                            await axios.post(API_ENDPOINTS.createUnlock, { unlock: [unlockPayload] });
+                        }
+                    }
                 }
             }
         }
@@ -253,10 +325,19 @@ const PageField = () => {
                     page_id: savedPageId,
                 };
 
-                if( fee.fe_id && existingIds.includes(parseInt(fee.fe_id))){
+                if(
+                    fee.fe_sec &&
+                    existingIds.includes(parseInt(fee.fe_id)) &&
+                    parseInt(fee.fe_sec) === parseInt(savedSectionId) &&
+                    parseInt(fee.page_id) === parseInt(savedPageId)
+                ){
                     await axios.post(`${API_ENDPOINTS.updateFee}/${fee.fe_id}`, { fee: feePayload });
                 } else {
-                    await axios.post(API_ENDPOINTS.createFee, { fee: [feePayload] });
+                    if (fee.fe_sec) {
+                        if (!fee.fe_id || !existingIds.includes(parseInt(fee.fe_id))) {
+                            await axios.post(API_ENDPOINTS.createFee, { fee: [feePayload] });
+                        }
+                    }
                 }
             }
         }
@@ -280,10 +361,19 @@ const PageField = () => {
                 };
 
 
-                if( introduction.in_id && existingIds.includes(parseInt(introduction.in_id))){
+                if(
+                    introduction.in_sec &&
+                    existingIds.includes(parseInt(introduction.in_id)) &&
+                    parseInt(introduction.in_sec) === parseInt(savedSectionId) &&
+                    parseInt(introduction.page_id) === parseInt(savedPageId)
+                ){
                     await axios.post(`${API_ENDPOINTS.updateIntroduction}/${introduction.in_id}`, { introduction: introductionPayload });
                 } else {
-                    await axios.post(API_ENDPOINTS.createIntroduction, { introduction: [introductionPayload] });
+                    if (introduction.in_sec) {
+                        if (!introduction.in_id || !existingIds.includes(parseInt(introduction.in_id))) {
+                            await axios.post(API_ENDPOINTS.createIntroduction, { introduction: [introductionPayload] });
+                        }
+                    }
                 }
             }
         }
@@ -362,15 +452,24 @@ const PageField = () => {
                     page_id: savedPageId,
                 };
 
-                if ( acadFacility.af_id && existingIds.includes(parseInt(acadFacility.af_id)) ) {
+                if (
+                    acadFacility.af_sec &&
+                    existingIds.includes(parseInt(acadFacility.af_id)) &&
+                    parseInt(acadFacility.af_sec) === parseInt(savedSectionId) &&
+                    parseInt(acadFacility.page_id) === parseInt(savedPageId)
+                ) {
                     await axios.post(`${API_ENDPOINTS.updateAcadFacilities}/${acadFacility.af_id}`, { facilities: acadFacilitiesPayload });
                     await saveAcadFacilitySliders(acadFacility.af_id, acadFacility.subservices || []);
 
                 } else {
-                    const res = await axios.post(API_ENDPOINTS.createAcadFacilities, { facilities: [acadFacilitiesPayload] });
-                    const createdId = res.data?.data?.[0]?.af_id;
-                    if (createdId) {
-                        await saveAcadFacilitySliders(acadFacility.af_id, acadFacility.subservices || []);
+                    if (acadFacility.af_sec) {
+                        if (!acadFacility.af_id || !existingIds.includes(parseInt(acadFacility.af_id))) {
+                            const res = await axios.post(API_ENDPOINTS.createAcadFacilities, { facilities: [acadFacilitiesPayload] });
+                            const createdId = res.data?.data?.[0]?.af_id;
+                            if (createdId) {
+                                await saveAcadFacilitySliders(acadFacility.af_id, acadFacility.subservices || []);
+                            }
+                        }
                     }
                 }
             }
@@ -432,14 +531,23 @@ const PageField = () => {
                     page_id: savedPageId,
                 };
 
-                if ( specialization.ras_id && existingIds.includes(parseInt(specialization.ras_id))) {
+                if (
+                    specialization.ras_sec &&
+                    existingIds.includes(parseInt(specialization.ras_id)) &&
+                    parseInt(specialization.ras_sec) === parseInt(savedSectionId) &&
+                    parseInt(specialization.page_id) === parseInt(savedPageId)
+                ) {
                     await axios.post(`${API_ENDPOINTS.updateSpecialization}/${specialization.ras_id}`, { specialization: specializationPayload });
                     await saveSpecializationSliders(specialization.ras_id, specialization.subservices || []);
                 } else {
-                    const res = await axios.post(API_ENDPOINTS.createSpecialization, { specialization: [specializationPayload] });
-                    const createdId = res.data?.data?.[0]?.ras_id;
-                    if (createdId) {
-                        await saveSpecializationSliders(specialization.ras_id, specialization.subservices || []);
+                    if (specialization.ras_sec) {
+                        if (!specialization.ras_id || !existingIds.includes(parseInt(specialization.ras_id))) {
+                            const res = await axios.post(API_ENDPOINTS.createSpecialization, { specialization: [specializationPayload] });
+                            const createdId = res.data?.data?.[0]?.ras_id;
+                            if (createdId) {
+                                await saveSpecializationSliders(specialization.ras_id, specialization.subservices || []);
+                            }
+                        }
                     }
                 }
             }
@@ -500,14 +608,23 @@ const PageField = () => {
                     page_id: savedPageId,
                 };
 
-                if ( type.tse_id && existingIds.includes(parseInt(type.tse_id))) {
+                if (
+                    type.tse_sec &&
+                    existingIds.includes(parseInt(type.tse_id)) &&
+                    parseInt(type.tse_sec) === parseInt(savedSectionId) &&
+                    parseInt(type.page_id) === parseInt(savedPageId)
+                ) {
                     await axios.post(`${API_ENDPOINTS.updateType}/${type.tse_id}`, { type: TypePayload });
                     await saveSubTypeSliders(type.tse_id, type.subtypes || []);
                 } else {
-                    const res = await axios.post(API_ENDPOINTS.createType, { type: [TypePayload] });
-                    const createdId = res.data?.data?.[0]?.tse_id;
-                    if (createdId) {
-                        await saveSubTypeSliders(type.tse_id, type.subtypes || []);
+                    if (type.tse_sec) {
+                        if (!type.tse_id || !existingIds.includes(parseInt(type.tse_id))) {
+                            const res = await axios.post(API_ENDPOINTS.createType, { type: [TypePayload] });
+                            const createdId = res.data?.data?.[0]?.tse_id;
+                            if (createdId) {
+                                await saveSubTypeSliders(type.tse_id, type.subtypes || []);
+                            }
+                        }
                     }
                 }
             }
@@ -566,16 +683,25 @@ const PageField = () => {
                     page_id: savedPageId,
                 };
 
-                if ( csd.ras_id && existingIds.includes(parseInt(csd.ras_id))) {
+                if (
+                    csd.ras_sec &&
+                    existingIds.includes(parseInt(csd.ras_id)) &&
+                    parseInt(csd.ras_sec) === parseInt(savedSectionId) &&
+                    parseInt(csd.page_id) === parseInt(savedPageId)
+                ) {
                     await axios.post(`${API_ENDPOINTS.updateSpecialization}/${csd.ras_id}`, { specialization: csdPayload });
                     await saveCSDSliders(csd.ras_id, csd.subservices || []);
                     await saveCSDAddOn(csd.ras_id, csd.rasons || []);
                 } else {
-                    const res = await axios.post(API_ENDPOINTS.createSpecialization, { specialization: [csdPayload] });
-                    const createdId = res.data?.data?.[0]?.ras_id;
-                    if (createdId) {
-                        await saveCSDSliders(csd.ras_id, csd.subservices || []);
-                        await saveCSDAddOn(csd.ras_id, csd.rasons || []);
+                    if (csd.ras_sec) {
+                        if (!csd.ras_id || !existingIds.includes(parseInt(csd.ras_id))) {
+                            const res = await axios.post(API_ENDPOINTS.createSpecialization, { specialization: [csdPayload] });
+                            const createdId = res.data?.data?.[0]?.ras_id;
+                            if (createdId) {
+                                await saveCSDSliders(csd.ras_id, csd.subservices || []);
+                                await saveCSDAddOn(csd.ras_id, csd.rasons || []);
+                            }
+                        }
                     }
                 }
             }
@@ -673,14 +799,23 @@ const PageField = () => {
                     page_id: savedPageId,
                 };
 
-                if (study.std_id && existingIds.includes(parseInt(study.std_id))) {
+                if (
+                    study.std_sec &&
+                    existingIds.includes(parseInt(study.std_id)) &&
+                    parseInt(study.std_sec) === parseInt(savedSectionId) &&
+                    parseInt(study.page_id) === parseInt(savedPageId)
+                ) {
                     await axios.post(`${API_ENDPOINTS.updateStudy}/${study.std_id}`, { study: StudyPayload });
                     await saveSubStudyDegreeSliders(study.std_id, study.substudys || []);
                 } else {
-                    const res = await axios.post(API_ENDPOINTS.createStudy, { study: [StudyPayload] });
-                    const createdId = res.data?.data?.[0]?.std_id;
-                    if (createdId) {
-                        await saveSubStudyDegreeSliders(study.std_id, study.substudys || []);
+                    if (study.std_sec) {
+                        if (!study.std_id || !existingIds.includes(parseInt(study.std_id))) {
+                            const res = await axios.post(API_ENDPOINTS.createStudy, { study: [StudyPayload] });
+                            const createdId = res.data?.data?.[0]?.std_id;
+                            if (createdId) {
+                                await saveSubStudyDegreeSliders(study.std_id, study.substudys || []);
+                            }
+                        }
                     }
                 }
             }
@@ -738,14 +873,23 @@ const PageField = () => {
                     page_id: savedPageId,
                 };
 
-                if ( available.apd_idd && existingIds.includes(parseInt(available.apd_id)) ) {
+                if (
+                    available.apd_sec &&
+                    existingIds.includes(parseInt(available.apd_id)) &&
+                    parseInt(available.apd_sec) === parseInt(savedSectionId) &&
+                    parseInt(available.page_id) === parseInt(savedPageId)
+                ) {
                     await axios.post(`${API_ENDPOINTS.updateAvailable}/${available.apd_id}`, { available: AvailablePayload });
                     await saveSubAvailableSliders(available.apd_id, available.subavailables || []);
                 } else {
-                    const res = await axios.post(API_ENDPOINTS.createAvailable, { available: [AvailablePayload] });
-                    const createdId = res.data?.data?.[0]?.apd_id;
-                    if (createdId) {
-                        await saveSubAvailableSliders(available.apd_id, available.subavailables || []);
+                    if (available.apd_sec) {
+                        if (!available.apd_id || !existingIds.includes(parseInt(available.apd_id))) {
+                            const res = await axios.post(API_ENDPOINTS.createAvailable, { available: [AvailablePayload] });
+                            const createdId = res.data?.data?.[0]?.apd_id;
+                            if (createdId) {
+                                await saveSubAvailableSliders(available.apd_id, available.subavailables || []);
+                            }
+                        }
                     }
                 }
             }
@@ -807,14 +951,23 @@ const PageField = () => {
                     page_id: savedPageId,
                 };
 
-                if( requirement.gc_id && existingIds.includes(parseInt(requirement.gc_id)) ){
+                if(
+                    requirement.gc_sec &&
+                    existingIds.includes(parseInt(requirement.gc_id)) &&
+                    parseInt(requirement.gc_sec) === parseInt(savedSectionId) &&
+                    parseInt(requirement.page_id) === parseInt(savedPageId)
+                ){
                     await axios.post(`${API_ENDPOINTS.updateCriteria}/${requirement.gc_id}`, { criteria: requirementPayload });
                     await saveSubRequirement(requirement.gc_id, requirement.subrequirements || []);
                 } else {
-                    const res = await axios.post(API_ENDPOINTS.createCriteria, { criteria: [requirementPayload] });
-                    const createdId = res.data?.data?.[0]?.gc_id;
-                    if (createdId) {
-                        await saveSubRequirement(requirement.gc_id, requirement.subrequirements || []);
+                    if (requirement.gc_sec) {
+                        if (!requirement.gc_id || !existingIds.includes(parseInt(requirement.gc_id))) {
+                            const res = await axios.post(API_ENDPOINTS.createCriteria, { criteria: [requirementPayload] });
+                            const createdId = res.data?.data?.[0]?.gc_id;
+                            if (createdId) {
+                                await saveSubRequirement(requirement.gc_id, requirement.subrequirements || []);
+                            }
+                        }
                     }
                 }
             }
@@ -871,14 +1024,23 @@ const PageField = () => {
                     page_id: savedPageId,
                 };
 
-                if ( future.uf_id && existingIds.includes(parseInt(future.uf_id)) ) {
+                if (
+                    future.uf_sec &&
+                    existingIds.includes(parseInt(future.uf_id)) &&
+                    parseInt(future.uf_sec) === parseInt(savedSectionId) &&
+                    parseInt(future.page_id) === parseInt(savedPageId)
+                ) {
                     await axios.post(`${API_ENDPOINTS.updateFuture}/${future.uf_id}`, { future: FuturePayload });
                     await saveSubFutureSliders(future.uf_id, future.subfutures || []);
                 } else {
-                    const res = await axios.post(API_ENDPOINTS.createFuture, { future: [FuturePayload] });
-                    const createdId = res.data?.data?.[0]?.uf_id;
-                    if (createdId) {
-                        await saveSubFutureSliders(future.uf_id, future.subfutures || []);
+                    if (future.uf_sec) {
+                        if (!future.uf_id || !existingIds.includes(parseInt(future.uf_id))) {
+                            const res = await axios.post(API_ENDPOINTS.createFuture, { future: [FuturePayload] });
+                            const createdId = res.data?.data?.[0]?.uf_id;
+                            if (createdId) {
+                                await saveSubFutureSliders(future.uf_id, future.subfutures || []);
+                            }
+                        }
                     }
                 }
             }
@@ -937,14 +1099,23 @@ const PageField = () => {
                     page_id: savedPageId,
                 };
 
-                if ( potential.ras_id && existingIds.includes(parseInt(potential.ras_id)) ) {
+                if (
+                    potential.ras_sec &&
+                    existingIds.includes(parseInt(potential.ras_id)) &&
+                    parseInt(potential.ras_sec) === parseInt(savedSectionId) &&
+                    parseInt(potential.page_id) === parseInt(savedPageId)
+                ) {
                     await axios.post(`${API_ENDPOINTS.updateSpecialization}/${potential.ras_id}`, { specialization: potentialPayload });
                     await savePotentialSliders(potential.ras_id, potential.subservices || []);
                 } else {
-                    const res = await axios.post(API_ENDPOINTS.createSpecialization, { specialization: [potentialPayload] });
-                    const createdId = res.data?.data?.[0]?.ras_id;
-                    if (createdId) {
-                        await savePotentialSliders(potential.ras_id, potential.subservices || []);
+                    if (potential.ras_sec) {
+                        if (!potential.ras_id || !existingIds.includes(parseInt(potential.ras_id))) {
+                            const res = await axios.post(API_ENDPOINTS.createSpecialization, { specialization: [potentialPayload] });
+                            const createdId = res.data?.data?.[0]?.ras_id;
+                            if (createdId) {
+                                await savePotentialSliders(potential.ras_id, potential.subservices || []);
+                            }
+                        }
                     }
                 }
             }
@@ -1006,14 +1177,23 @@ const PageField = () => {
                     page_id: savedPageId,
                 };
 
-                if ( innovation.ras_id && existingIds.includes(parseInt(innovation.ras_id)) ) {
+                if (
+                    innovation.ras_sec &&
+                    existingIds.includes(parseInt(innovation.ras_id)) &&
+                    parseInt(innovation.ras_sec) === parseInt(savedSectionId) &&
+                    parseInt(innovation.page_id) === parseInt(savedPageId)
+                ) {
                     await axios.post(`${API_ENDPOINTS.updateSpecialization}/${innovation.ras_id}`, { specialization: innovationPayload });
                     await saveInnovationSliders(innovation.ras_id, innovation.subservices || []);
                 } else {
-                    const res = await axios.post(API_ENDPOINTS.createSpecialization, { specialization: [innovationPayload] });
-                    const createdId = res.data?.data?.[0]?.ras_id;
-                    if (createdId) {
-                        await saveInnovationSliders(innovation.ras_id, innovation.subservices || []);
+                    if (innovation.ras_sec) {
+                        if (!innovation.ras_id || !existingIds.includes(parseInt(innovation.ras_id))) {
+                            const res = await axios.post(API_ENDPOINTS.createSpecialization, { specialization: [innovationPayload] });
+                            const createdId = res.data?.data?.[0]?.ras_id;
+                            if (createdId) {
+                                await saveInnovationSliders(innovation.ras_id, innovation.subservices || []);
+                            }
+                        }
                     }
                 }
             }
@@ -1074,14 +1254,23 @@ const PageField = () => {
                     page_id: savedPageId,
                 };
 
-                if ( faq.faq_id && existingIds.includes(parseInt(faq.faq_id)) ) {
+                if (
+                    faq.faq_sec &&
+                    existingIds.includes(parseInt(faq.faq_id)) &&
+                    parseInt(faq.faq_sec) === parseInt(savedSectionId) &&
+                    parseInt(faq.page_id) === parseInt(savedPageId)
+                ) {
                     await axios.post(`${API_ENDPOINTS.updateFAQ}/${faq.faq_id}`, { faq: faqPayload });
                     await saveFAQSliders(faq.faq_id, faq.subfaqs || []);
                 } else {
-                    const res = await axios.post(API_ENDPOINTS.createFAQ, { faq: [faqPayload] });
-                    const createdId = res.data?.data?.[0]?.faq_id;
-                    if (createdId) {
-                        await saveFAQSliders(faq.faq_id, faq.subfaqs || []);
+                    if (faq.faq_sec) {
+                        if (!faq.faq_id || !existingIds.includes(parseInt(faq.faq_id))) {
+                            const res = await axios.post(API_ENDPOINTS.createFAQ, { faq: [faqPayload] });
+                            const createdId = res.data?.data?.[0]?.faq_id;
+                            if (createdId) {
+                                await saveFAQSliders(faq.faq_id, faq.subfaqs || []);
+                            }
+                        }
                     }
                 }
             }
@@ -1142,16 +1331,25 @@ const PageField = () => {
                     page_id: savedPageId,
                 };
 
-                if ( apply.ha_id && existingIds.includes(parseInt(apply.ha_id))) {
+                if (
+                    apply.ha_sec &&
+                    existingIds.includes(parseInt(apply.ha_id)) &&
+                    parseInt(apply.ha_sec) === parseInt(savedSectionId) &&
+                    parseInt(apply.page_id) === parseInt(savedPageId)
+                ) {
                     await axios.post(`${API_ENDPOINTS.updateApply}/${apply.ha_id}`, { apply: applyPayload });
                     await saveApplySliders(apply.ha_id, apply.subservices || []);
 
                 } else {
-                    const res = await axios.post(API_ENDPOINTS.createApply, { apply: [applyPayload] });
-                    const createdId = res.data?.data?.[0]?.ha_id;
-                    if (createdId) {
-                        await saveApplySliders(apply.ha_id, apply.subservices || []);
+                    if (apply.ha_sec) {
+                        if (!apply.ha_id || !existingIds.includes(parseInt(apply.ha_id))) {
+                            const res = await axios.post(API_ENDPOINTS.createApply, { apply: [applyPayload] });
+                            const createdId = res.data?.data?.[0]?.ha_id;
+                            if (createdId) {
+                                await saveApplySliders(apply.ha_id, apply.subservices || []);
 
+                            }
+                        }
                     }
                 }
             }
@@ -1207,14 +1405,23 @@ const PageField = () => {
                     page_id: savedPageId,
                 };
 
-                if ( important.idd_id && existingIds.includes(parseInt(important.idd_id))) {
+                if (
+                    important.idd_sec &&
+                    existingIds.includes(parseInt(important.idd_id)) &&
+                    parseInt(important.idd_sec) === parseInt(savedSectionId) &&
+                    parseInt(important.page_id) === parseInt(savedPageId)
+                ) {
                     await axios.post(`${API_ENDPOINTS.updateImportant}/${important.idd_id}`, { important: importantPayload });
                     await saveImportantSliders(important.idd_id, important.subservices || []);
                 } else {
-                    const res = await axios.post(API_ENDPOINTS.createImportant, { important: [importantPayload] });
-                    const createdId = res.data?.data?.[0]?.idd_id;
-                    if (createdId) {
-                        await saveImportantSliders(important.idd_id, important.subservices || []);
+                    if (important.idd_sec) {
+                        if (!important.idd_id || !existingIds.includes(parseInt(important.idd_id))) {
+                            const res = await axios.post(API_ENDPOINTS.createImportant, { important: [importantPayload] });
+                            const createdId = res.data?.data?.[0]?.idd_id;
+                            if (createdId) {
+                                await saveImportantSliders(createdId, important.subservices || []);
+                            }
+                        }
                     }
                 }
             }
@@ -1274,10 +1481,17 @@ const PageField = () => {
                     page_id: savedPageId,
                 };
 
-                if (item.slider_id && existingIds.includes(parseInt(item.slider_id))) {
+                if (
+                    item.slider_sec &&
+                    existingIds.includes(parseInt(item.slider_id)) &&
+                    parseInt(item.slider_sec) === parseInt(savedSectionId) &&
+                    parseInt(item.page_id) === parseInt(savedPageId)
+                ) {
                     await axios.post(`${API_ENDPOINTS.updateSlideshow}/${item.slider_id}`, { Slideshow: payload });
                 } else {
-                    await axios.post(API_ENDPOINTS.createSlideshow, { Slideshow: [payload] });
+                    if (!item.slider_id || !existingIds.includes(parseInt(item.slider_id))) {
+                        await axios.post(API_ENDPOINTS.createSlideshow, { Slideshow: [payload] });
+                    }
                 }
             }
 
@@ -1299,10 +1513,17 @@ const PageField = () => {
                     page_id: savedPageId,
                 };
 
-            if ( item.s_id && existingIds.includes(parseInt(item.s_id))) {
+            if (
+                item.s_sec &&
+                existingIds.includes(parseInt(item.s_id)) &&
+                parseInt(item.s_sec) === parseInt(savedSectionId) &&
+                parseInt(item.page_id) === parseInt(savedPageId)
+            ) {
                     await axios.post(`${API_ENDPOINTS.updateService}/${item.s_id}`, { Service: payload });
                 } else {
-                    await axios.post(API_ENDPOINTS.createService, { Service: [payload] });
+                    if (!item.s_id || !existingIds.includes(parseInt(item.s_id))) {
+                        await axios.post(API_ENDPOINTS.createService, { Service: [payload] });
+                    }
                 }
             }
 

@@ -11,7 +11,11 @@ const ServicePiece = forwardRef(({sectionId, pageId}, ref) => {
   useImperativeHandle(ref, () => ({
     getServices: async () => {
       const slidersData = await serviceSliderRef.current?.getSliders?.() || [];
-      return slidersData;
+      return {
+              slidersData,
+              sectionId,
+              pageId
+            };
     }
   }));
 

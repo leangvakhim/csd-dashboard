@@ -23,6 +23,7 @@ const NewPiece = forwardRef(({sectionId, pageId}, ref) => {
                 hsec_btntitle: btnTitle,
                 hsec_amount: parseInt(amount),
                 hsec_routepage: redirectPage,
+                page_id: pageId,
             };
         return [data];
         }

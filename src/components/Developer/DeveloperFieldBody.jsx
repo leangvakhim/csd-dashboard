@@ -1,61 +1,77 @@
-import React, { useState, } from 'react'
+import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } from "react";
 import MediaLibraryModal from '../MediaLibraryModal';
 import DeveloperFieldSocial from './DeveloperFieldSocial';
-import { API_ENDPOINTS } from '../../service/APIConfig';
+import { API, API_ENDPOINTS } from '../../service/APIConfig';
 import axios from 'axios';
 
-const config = {
-    readonly: false,
-    height: 400,
-    placeholder: 'Start typing...',
-    uploader: {
-        insertImageAsBase64URI: true,
-    },
-};
-
-const DeveloperFieldBody = ({ formData, setFormData, setSubtitleContent }) => {
+const DeveloperFieldBody = ({ formData, setFormData }) => {
     const [activeTab, setActiveTab] = useState(1);
     const [isMediaLibraryOpen, setMediaLibraryOpen] = useState(false);
     const [selectedImage, setSelectedImage] = useState("");
-    // const [currentField, setCurrentField] = useState("");
+    const developerSocialRef = useRef();
+
+    // useImperativeHandle(ref, () => ({
+    //     getSlideshows: async () => {
+    //         const slidersData = await developerSocialRef.current?.getDeveloperSocials?.() || [];
+    //         return slidersData;
+    //     }
+    // }));
+
+    useEffect(() => {
+        const fetchImage = async () => {
+            if (formData?.d_img && !selectedImage) {
+                try {
+                    const response = await axios.get(API_ENDPOINTS.getImages);
+                    const images = Array.isArray(response.data) ? response.data : response.data.data;
+                    const matchedImage = images.find(img => img.image_id === formData.d_img);
+                    if (matchedImage) {
+                        setSelectedImage(`${API}/storage/uploads/${matchedImage.img}`);
+                    }
+                } catch (error) {
+                    console.error("Error fetching image for d_img:", error);
+                }
+            }
+        };
+
+        fetchImage();
+    }, [formData, selectedImage]);
 
     const openMediaLibrary = () => {
         setMediaLibraryOpen(true);
-    }; 
-
-
-    const handleImageSelect = async (url) => {
-        setSelectedImage(url);
-        if (selectedImage) {
-            try {
-                const response = await axios.get(API_ENDPOINTS.getImages);
-                const images = Array.isArray(response.data) ? response.data : response.data.data;
-                const matchedImage = images.find(img => img.image_url === selectedImage);
-
-                const imageId = matchedImage?.image_id || null;
-
-                setFormData(prev => ({
-                    ...prev,
-                    d_img: imageId
-                }));
-
-                setSelectedImage("");
-
-            } catch (error) {
-                console.error("❌ Error finding image ID from selectedImage:", error);
-            }
-        }
     };
 
-    // useEffect(() => {
-    //     if (typeof formData.display !== 'boolean') {
-    //         setFormData(prev => ({
-    //             ...prev,
-    //             display: !!parseInt(prev.display)
-    //         }));
-    //     }
-
-    // }, [formData]);
+    const handleImageSelect = async (imageUrl, field) => {
+        if (field === "image") {
+            if (!imageUrl) {
+                // Clear selected image
+                setSelectedImage("");
+                setFormData(prevData => ({
+                    ...prevData,
+                    d_img: null,
+                }));
+            } else {
+                setSelectedImage(imageUrl);
+                try {
+                    const response = await fetch(`${API_ENDPOINTS.getImages}`);
+                    const result = await response.json();
+                    if (result.status_code === "success" && Array.isArray(result.data)) {
+                        const matchedImage = result.data.find(image => image.image_url === imageUrl);
+                        if (matchedImage) {
+                            setFormData(prevData => ({
+                                ...prevData,
+                                d_img: matchedImage.image_id,
+                            }));
+                        } else {
+                            console.warn("Image not found in API response for URL:", imageUrl);
+                        }
+                    }
+                } catch (error) {
+                    console.error("Failed to fetch images:", error);
+                }
+            }
+            setMediaLibraryOpen(false);
+        }
+    };
 
     return (
         <div className='px-8 py-2 mb-1'>
@@ -121,7 +137,7 @@ const DeveloperFieldBody = ({ formData, setFormData, setSubtitleContent }) => {
                             <div className="mt-2">
                                 <label class="toggle-switch mt-2">
                                     <input
-                                        value={formData.display}
+                                        checked={formData.display === 1 || formData.display === true}
                                         onChange={(e) => setFormData(prev => ({ ...prev, display: e.target.checked }))}
                                         type="checkbox"
                                     />
@@ -224,10 +240,8 @@ const DeveloperFieldBody = ({ formData, setFormData, setSubtitleContent }) => {
                                     <textarea
                                         value={formData.d_write}
                                         onChange={(e) => {
-                                            setSubtitleContent(e.target.value);
                                             setFormData(prev => ({ ...prev, d_write: e.target.value }));
                                         }}
-                                        config={config}
                                         className="!border-gray-300 h-60 block w-full rounded-md border-0 py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-2xl sm:leading-6"></textarea>
                                 </div>
                             </div>
@@ -237,7 +251,11 @@ const DeveloperFieldBody = ({ formData, setFormData, setSubtitleContent }) => {
                     <div>
                         <div className="py-2">
                             {/* Social */}
-                            <DeveloperFieldSocial formData={formData} setFormData={setFormData} />
+                            <DeveloperFieldSocial
+                                formData={formData}
+                                setFormData={setFormData}
+                                ref={developerSocialRef}
+                            />
                         </div>
                     </div>
                 </div>

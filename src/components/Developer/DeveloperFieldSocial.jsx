@@ -1,8 +1,8 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } from "react";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import MediaLibraryModal from "../MediaLibraryModal";
 
-const DeveloperFieldSocial = ({ formData, setFormData }) => {
+const DeveloperFieldSocial = forwardRef(({ formData, setFormData }, ref) => {
   const [currentSliderId, setCurrentSliderId] = useState(null);
   const [currentField, setCurrentField] = useState("");
   const [isMediaLibraryOpen, setMediaLibraryOpen] = useState(false);
@@ -21,9 +21,28 @@ const DeveloperFieldSocial = ({ formData, setFormData }) => {
     // setSlider([...slider, newSlider]);
     setFormData(prev => ({
       ...prev,
-      socialSlider: [...prev.socialSlider, newSlider],
+      socialSlider: [...(prev.socialSlider || []), newSlider],
     }));
   };
+
+  useImperativeHandle(ref, () => ({
+      getDeveloperSocials: async () => {
+          return await Promise.all(slider.map(async item => {
+              return {
+                  slider_id: item.id,
+                  slider_title: item.title || '',
+                  slider_text: item.subtitle || '',
+                  logo: item.logo ? await getImageIdByUrl(item.logo) : null,
+                  img: item.image ? await getImageIdByUrl(item.image) : null,
+                  btn1: btn1Id,
+                  btn2: btn2Id,
+                  display: item.display ? 1 : 0,
+                  active: 1,
+                  slider_sec: displaySlideshow || 0,
+              }
+          }))
+      }
+  }))
 
   const toggleRotation = (id) => {
     setRotatedStates((prev) => ({
@@ -51,15 +70,6 @@ const DeveloperFieldSocial = ({ formData, setFormData }) => {
     setCurrentField(field);
     setMediaLibraryOpen(true);
   };
-
-  // const handleImageSelect = (imageUrl) => {
-  //   setSlider((prev) =>
-  //     prev.map((item) =>
-  //       item.id === currentSliderId ? { ...item, [currentField]: imageUrl ? `${imageUrl}` : "" }: item
-  //     )
-  //   );
-  //   setMediaLibraryOpen(false);
-  // };
 
   const handleImageSelect = (imageUrl) => {
     setFormData(prev => ({
@@ -206,8 +216,7 @@ const DeveloperFieldSocial = ({ formData, setFormData }) => {
                               <label className="toggle-switch mt-2">
                                 <input
                                   type="checkbox"
-                                  // checked={sliders.display || false}
-                                  value={sliders.display}
+                                  checked={sliders.display}
                                   onChange={(e) => handleInputChange(e, sliders.id, 'display', e.target.checked)}
                                 />
                                 <span className="slider"></span>
@@ -343,13 +352,13 @@ const DeveloperFieldSocial = ({ formData, setFormData }) => {
                   d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
                 />
               </svg>
-              Add new service
+              Add new social
             </a>
           </div>
         )}
       </Droppable>
     </DragDropContext>
   )
-}
+});
 
 export default DeveloperFieldSocial

@@ -54,6 +54,7 @@ const TypePiece = forwardRef(({sectionId, pageId}, ref) => {
         tse_sec: sectionId,
         tse_type: parseInt(typeType),
         tse_text: textId,
+        page_id: pageId,
         subtypes: await subtypeRef.current?.getSubTypeSliders(),
       };
 

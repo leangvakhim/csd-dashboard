@@ -17,6 +17,7 @@ const AvailablePiece = forwardRef(({sectionId, pageId}, ref) => {
         apd_id: availableId,
         apd_sec: sectionId,
         apd_title: availabletitle,
+        page_id: pageId,
         subavailables: await subAvailableRef.current?.getSubAvailableSliders(),
       };
 

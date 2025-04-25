@@ -22,7 +22,7 @@ const DeveloperDashboard = () => {
         // Update d_order values
         const updatedItems = newItems.map((item, i) => ({
             ...item,
-            d_order: newItems.length - i 
+            d_order: newItems.length - i
         }));
 
         setFDeveloperItems(updatedItems);
@@ -49,7 +49,6 @@ const DeveloperDashboard = () => {
             const result = (response.data.data || []);
             const normalized = Array.isArray(result) ? result : result ? [result] : [];
             setFDeveloperItems(normalized);
-            console.log('developer', response.data);
         } catch (error) {
             console.error('Failed to fetch delvelopers:', error);
         }
@@ -82,6 +81,21 @@ const DeveloperDashboard = () => {
         fetchImages();
     }, []);
 
+    const handleDelete = async (id) => {
+        if (!window.confirm("Are you sure you want to delete of this developer memeber?")) return;
+
+        try {
+            await axios.put(`${API_ENDPOINTS.deleteDeveloper}/${id}`);
+            setFDeveloperItems(prevItems =>
+                prevItems.map(item =>
+                    item.d_id === id ? { ...item, active: item.active ? 0 : 1 } : item
+                )
+            );
+            window.location.reload();
+        } catch (error) {
+            console.error("Error toggling visibility:", error);
+        }
+    };
 
     return (
         <div className="relative overflow-x-auto shadow-md px-8">
@@ -165,14 +179,16 @@ const DeveloperDashboard = () => {
                                                         <i className="ti ti-edit text-gray-500 text-xl"></i>
                                                         <span className="text-sm text-gray-700">Edit</span>
                                                     </a>
-                                                    <a className="cursor-pointer flex gap-2 items-center px-4 py-2 hover:bg-blue-100">
+                                                    <a
+                                                        onClick={() => handleDelete(item.d_id)}
+                                                        className="cursor-pointer flex gap-2 items-center px-4 py-2 hover:bg-blue-100">
                                                         <i className="ti ti-trash text-gray-500 text-xl"></i>
                                                         <span className="text-sm text-gray-700">Delete</span>
                                                     </a>
-                                                    <a className="cursor-pointer flex gap-2 items-center px-4 py-2 hover:bg-blue-100">
+                                                    {/* <a className="cursor-pointer flex gap-2 items-center px-4 py-2 hover:bg-blue-100">
                                                         <i className="ti ti-copy text-gray-500 text-xl"></i>
                                                         <span className="text-sm text-gray-700">Duplicate</span>
-                                                    </a>
+                                                    </a> */}
                                                 </div>
                                             </div>
                                         )}

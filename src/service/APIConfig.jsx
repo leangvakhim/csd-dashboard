@@ -350,7 +350,7 @@ const API_ENDPOINTS = {
     createDeveloper: `${API_BASEURL}/developer/create`,
     updateDeveloper: `${API_BASEURL}/developer/update`,
     orderDeveloper: `${API_BASEURL}/developer/reorder`,
-    // viewDeveloper: `${API_BASEURL}/developer/visibility`,
+    deleteDeveloper: `${API_BASEURL}/developer/visibility`,
 
     // button
     // buttons: `${API_BASEURL}/button`,

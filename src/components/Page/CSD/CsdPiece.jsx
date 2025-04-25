@@ -90,6 +90,7 @@ const CsdPiece = forwardRef(({sectionId, pageId}, ref) => {
         ras_text: textId,
         ras_img1: imageId1,
         ras_img2: imageId2,
+        page_id: pageId,
         subservices: await subserviceRef.current?.getSubserviceSlidersCSD(),
         rasons: await addOnRef.current?.getAddOnCSD(),
       };

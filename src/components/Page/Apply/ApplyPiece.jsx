@@ -52,6 +52,7 @@ const ApplyPiece = forwardRef(({sectionId, pageId}, ref) => {
                 ha_subtitletag: applyTagSubTitle,
                 ha_date: applyTagDate,
                 ha_img: imageId,
+                page_id: pageId,
                 subservices: await subserviceRef.current?.getSubApplySliders(),
             };
 

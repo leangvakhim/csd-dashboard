@@ -71,6 +71,8 @@ const RequirementPiece = forwardRef(({sectionId, pageId}, ref) => {
           gc_img1: img1Id,
           gc_img2: img2Id,
           gc_detail: detail,
+          gc_sec: sectionId,
+          page_id: pageId,
           subrequirements : [{
             gca_id: btnId,
             gca_tag: btnTag,

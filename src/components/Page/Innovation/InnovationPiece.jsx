@@ -93,6 +93,7 @@ const InnovationPiece = forwardRef(({sectionId, pageId}, ref) => {
             ras_text: textId,
             ras_img1: imageId,
             ras_img2: null,
+            page_id: pageId,
             subservices: await subserviceRef.current?.getSubserviceSlidersInnovation(),
         };
 

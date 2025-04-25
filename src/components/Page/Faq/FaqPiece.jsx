@@ -19,6 +19,8 @@ const FaqPiece = forwardRef(({sectionId, pageId}, ref) => {
           faq_id: faqId,
           faq_title: title,
           faq_subtitle: detail,
+          page_id: pageId,
+          faq_sec: sectionId,
           subfaqs: await subserviceRef.current?.getSubserviceSlidersFAQ(),
         }
       ];

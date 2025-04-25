@@ -18,6 +18,7 @@ const ImportantPiece = forwardRef(({sectionId, pageId}, ref) => {
           idd_sec: sectionId,
           idd_title: importantTitle,
           idd_subtitle: importantSubtitle,
+          page_id: pageId,
           subservices: await subserviceRef.current?.getSubImportantSliders(),
       };
 
