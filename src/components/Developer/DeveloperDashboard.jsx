@@ -40,7 +40,7 @@ const DeveloperDashboard = () => {
             d_order: item.d_order
         }));
 
-        await axios.post(`${API_ENDPOINTS.orderDeveloper}`, payload);
+        await axios.post(`${API_ENDPOINTS.updateOrderDeveloper}`, payload);
     };
 
     const fetchDeveloper = async () => {
@@ -68,7 +68,6 @@ const DeveloperDashboard = () => {
         const found = images.find(img => img.image_id === imageId);
         return found ? found.image_url : '';
     };
-
 
     const handleEdit = async (id) => {
         const response = await axios.get(`${API_ENDPOINTS.getDevelopers}/${id}`);

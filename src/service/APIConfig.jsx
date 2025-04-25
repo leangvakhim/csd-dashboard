@@ -349,14 +349,14 @@ const API_ENDPOINTS = {
     getDevelopers: `${API_BASEURL}/developer`,
     createDeveloper: `${API_BASEURL}/developer/create`,
     updateDeveloper: `${API_BASEURL}/developer/update`,
-    orderDeveloper: `${API_BASEURL}/developer/reorder`,
+    updateOrderDeveloper: `${API_BASEURL}/developer/reorder`,
     deleteDeveloper: `${API_BASEURL}/developer/visibility`,
 
     // developersocial
     getSocialDeveloper: `${API_BASEURL}/developersocial`,
     createSocialDeveloper: `${API_BASEURL}/developersocial/create`,
     updateSocialDeveloper: `${API_BASEURL}/developersocial/update`,
-    orderSocialDeveloper: `${API_BASEURL}/developersocial/reorder`,
+    updateorderSocialDeveloper: `${API_BASEURL}/developersocial/reorder`,
     deleteSocialDeveloper: `${API_BASEURL}/developersocial/visibility`,
 
     // button

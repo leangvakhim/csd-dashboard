@@ -99,17 +99,33 @@ const DeveloperField = () => {
         };
 
         if (social.ds_id && Number(social.ds_id) > 0) {
-          console.log("Update");
           await axios.post(`${API_ENDPOINTS.updateSocialDeveloper}/${social.ds_id}`, { developer_social: payload });
         } else {
-          console.log("Create");
           await axios.post(API_ENDPOINTS.createSocialDeveloper, { developer_social: [payload] });
         }
       }
+
+      if (slidersData.length > 0) {reorderSocialDeveloper();}
+
     } catch (error) {
       console.error("Unable to save developer_social records:", error);
     }
   };
+
+  const reorderSocialDeveloper = async () => {
+        const slidersData = await developerFieldRef.current?.getDevelopers?.();
+
+        const socialDeveloperPayload = slidersData.map((slider, index) => ({
+            ds_id: parseInt(slider.ds_id),
+            ds_order: index + 1
+        }));
+
+        try {
+            await axios.post(API_ENDPOINTS.updateorderSocialDeveloper, socialDeveloperPayload);
+        } catch (error) {
+            console.error("Failed to reorder slideshow:", error.response?.data || error.message);
+        }
+    };
 
   const handleSubmit = async () => {
     try {

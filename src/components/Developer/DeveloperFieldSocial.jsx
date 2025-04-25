@@ -19,13 +19,7 @@ const DeveloperFieldSocial = forwardRef(({ formData, setFormData }, ref) => {
       subtitle: "",
       image: "",
     };
-    setSocial((prev) => [...prev, newSocial]);
-
-    // setSlider([...slider, newSlider]);
-    // setFormData(prev => ({
-    //   ...prev,
-    //   socialSlider: [...(prev.socialSlider || []), newSlider],
-    // }));
+    setSlider((prev) => [...prev, newSlider]);
   };
 
   useImperativeHandle(ref, () => ({
@@ -79,7 +73,7 @@ const DeveloperFieldSocial = forwardRef(({ formData, setFormData }, ref) => {
           ? {
               ...item,
               [currentField]: finalUrl || "",
-              ...(finalUrl === "" && { img: { img: "" } }) // ensure 'img' field gets cleared visually
+              ...(finalUrl === "" && { img: { img: "" } })
             }
           : item
       );
@@ -93,7 +87,7 @@ const DeveloperFieldSocial = forwardRef(({ formData, setFormData }, ref) => {
               ? {
                   ...item,
                   image: finalUrl || "",
-                  img: { img: finalUrl ? finalUrl.split('/').pop() : "" } // update image name only
+                  img: { img: finalUrl ? finalUrl.split('/').pop() : "" }
                 }
               : item
           )
