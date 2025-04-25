@@ -165,8 +165,8 @@ const StudyPiece = forwardRef(({sectionId, pageId}, ref) => {
               className="mt-2 block w-full border !border-gray-300 rounded-md py-2 pl-2 text-gray-900 shadow-sm focus:ring-2 focus:ring-indigo-500"
             >
               <option value="">Choose Option</option>
-              <option value="1">4 columns</option>
-              <option value="2">2 columns</option>
+              <option value="1">Study Year</option>
+              <option value="2">Strategic Pillars</option>
             </select>
           </div>
           </div>
