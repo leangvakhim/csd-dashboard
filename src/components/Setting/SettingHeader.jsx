@@ -1,7 +1,7 @@
 import React, {useEffect} from 'react'
 import { useNavigate } from 'react-router-dom';
 
-const SettingHeader = () => {
+const SettingHeader = ({ onSave }) => {
     const navigate = useNavigate();
 
     const gotoContactPage = () => {
@@ -81,7 +81,7 @@ const SettingHeader = () => {
                 </div>
                 <div className="flex items-center gap-4">
                     <button
-                        // onClick={onSave}
+                        onClick={onSave}
                         className="cursor-pointer bg-blue-600 !text-gray-100 font-medium px-4 py-2 rounded hover:bg-blue-700"
                         aria-current="page"
                     >

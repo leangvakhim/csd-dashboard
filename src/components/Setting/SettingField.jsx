@@ -1,26 +1,43 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { API_ENDPOINTS } from "../../service/APIConfig";
 import MediaLibraryModal from "../MediaLibraryModal";
 import SettingFieldSection from "./SettingFieldSection";
+import axios from "axios";
 
-const SettingField = () => {
+const SettingField = ({setFormData, formData}) => {
   const [activeTab, setActiveTab] = useState(1);
-  const [formData, setFormData] = useState({
-    e_title: "",
-    e_shorttitle: "",
-    e_img: "",
-    display: false,
-    e_tags: "",
-    e_date: "",
-    e_fav: false,
-    lang: 1,
-  });
   const [selectedImage, setSelectedImage] = useState("");
   const [isMediaLibraryOpen, setMediaLibraryOpen] = useState(false);
 
   const openMediaLibrary = () => {
     setMediaLibraryOpen(true);
   };
+
+  useEffect(() => {
+    const loadImageFromId = async () => {
+      if (formData.set_logo) {
+        try {
+          const response = await fetch(`${API_ENDPOINTS.getImages}`);
+          const result = await response.json();
+
+          if (result.status_code === "success" && Array.isArray(result.data)) {
+            const matchedImage = result.data.find(
+              (img) => img.image_id === formData.set_logo
+            );
+            if (matchedImage) {
+              setSelectedImage(`${matchedImage.image_url}`);
+            } else {
+              console.warn("Image not found for set_logo ID:", formData.set_logo);
+            }
+          }
+        } catch (err) {
+          console.error("Error fetching image:", err);
+        }
+      }
+    };
+
+    loadImageFromId();
+  }, [formData.set_logo]);
 
   const handleImageSelect = async (imageUrl, field) => {
     if (field === "image") {
@@ -36,7 +53,7 @@ const SettingField = () => {
           if (matchedImage) {
             setFormData((prevData) => ({
               ...prevData,
-              e_img: matchedImage.image_id,
+              set_logo: matchedImage.image_id,
             }));
           } else {
             console.warn("Image not found in API response for URL:", imageUrl);
@@ -88,11 +105,11 @@ const SettingField = () => {
               <div className="mt-2">
                 <input
                   type="text"
-                  value={formData.e_title}
+                  value={formData.set_facultytitle}
                   onChange={(e) =>
                     setFormData((prev) => ({
                       ...prev,
-                      e_title: e.target.value,
+                      set_facultytitle: e.target.value,
                     }))
                   }
                   className="block w-full !border-gray-200 border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
@@ -107,9 +124,9 @@ const SettingField = () => {
               <div className="mt-2">
                 <input
                   type="text"
-                  value={formData.e_shorttitle}
+                  value={formData.set_facultydep}
                   onChange={(e) =>
-                    setFormData({ ...formData, e_shorttitle: e.target.value })
+                    setFormData({ ...formData, set_facultydep: e.target.value })
                   }
                   className="block w-full !border-gray-200 border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
                 />
@@ -118,7 +135,7 @@ const SettingField = () => {
           </div>
 
           {/* Second row */}
-          <div className="w-full my-0 sm:my-6">
+          <div className="w-full my-0 sm:my-2">
             <div className="grid  grid-cols-1 md:!grid-cols-2 items-center gap-4">
               <div className="">
                 <label className="block text-xl font-medium leading-6 text-white-900">
@@ -136,11 +153,11 @@ const SettingField = () => {
                         <div className="flex gap-3 mt-2 justify-center">
                           <svg
                             onClick={() => openMediaLibrary("image")}
-                            value={formData.e_img}
+                            value={formData.set_logo}
                             onChange={(e) =>
                               setFormData({
                                 ...formData,
-                                e_img: e.target.value,
+                                set_logo: e.target.value,
                               })
                             }
                             xmlns="http://www.w3.org/2000/svg"
@@ -158,11 +175,11 @@ const SettingField = () => {
                           </svg>
                           <svg
                             onClick={() => handleImageSelect("", "image")}
-                            value={formData.e_img}
+                            value={formData.set_logo}
                             onChange={(e) =>
                               setFormData({
                                 ...formData,
-                                e_img: e.target.value,
+                                set_logo: e.target.value,
                               })
                             }
                             xmlns="http://www.w3.org/2000/svg"
@@ -183,9 +200,9 @@ const SettingField = () => {
                     ) : (
                       <div
                         onClick={() => openMediaLibrary("image")}
-                        value={formData.e_img}
+                        value={formData.set_logo}
                         onChange={(e) =>
-                          setFormData({ ...formData, e_img: e.target.value })
+                          setFormData({ ...formData, set_logo: e.target.value })
                         }
                         className="flex flex-col items-center justify-center pt-5 pb-6 "
                       >
@@ -232,9 +249,9 @@ const SettingField = () => {
                       </label>
                       <input
                         type="text"
-                        value={formData.e_tags}
+                        value={formData.set_amstu}
                         onChange={(e) =>
-                          setFormData({ ...formData, e_tags: e.target.value })
+                          setFormData({ ...formData, set_amstu: e.target.value })
                         }
                         className="mt-2 w-full py-2 border !border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
                         placeholder=""
@@ -248,9 +265,9 @@ const SettingField = () => {
                       </label>
                       <input
                         type="text"
-                        value={formData.e_tags}
+                        value={formData.set_enroll}
                         onChange={(e) =>
-                          setFormData({ ...formData, e_tags: e.target.value })
+                          setFormData({ ...formData, set_enroll: e.target.value })
                         }
                         className="mt-2 w-full py-2 border !border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
                         placeholder=""
@@ -264,10 +281,10 @@ const SettingField = () => {
                       </label>
                       <input
                         type="text"
-                        // value={formData.e_tags}
-                        // onChange={(e) =>
-                        //   setFormData({ ...formData, e_tags: e.target.value })
-                        // }
+                        value={formData.set_baseurl}
+                        onChange={(e) =>
+                          setFormData({ ...formData, set_baseurl: e.target.value })
+                        }
                         className="mt-2 w-full py-2 border !border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
                         placeholder=""
                       />

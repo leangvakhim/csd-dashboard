@@ -359,11 +359,10 @@ const API_ENDPOINTS = {
     updateorderSocialDeveloper: `${API_BASEURL}/developersocial/reorder`,
     deleteSocialDeveloper: `${API_BASEURL}/developersocial/visibility`,
 
-    // button
-    // buttons: `${API_BASEURL}/button`,
-
-    // addon
-    // addons: `${API_BASEURL}/addon`
+    // setting
+    getSetting: `${API_BASEURL}/setting2`,
+    createSetting: `${API_BASEURL}/setting2/create`,
+    updateSetting: `${API_BASEURL}/setting2/update`,
 };
 
 export { API_BASEURL, API_ENDPOINTS, API };
