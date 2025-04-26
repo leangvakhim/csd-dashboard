@@ -40,7 +40,7 @@ const Setting = () => {
 
     const saveSetting = async () => {
         const payload = {
-            lang: formData.lang,
+            lang: formData.lang || 1,
             set_facultytitle: formData.set_facultytitle,
             set_facultydep: formData.set_facultydep,
             set_logo: formData.set_logo,
