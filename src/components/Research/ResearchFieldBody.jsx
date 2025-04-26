@@ -1,19 +1,12 @@
-import React, { useState, useRef, useEffect } from 'react'
+import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } from "react";
 import MediaLibraryModal from '../MediaLibraryModal';
 import ResearchFieldSection from './ResearchFieldSection';
 import { API_ENDPOINTS } from '../../service/APIConfig';
-import { useLocation } from 'react-router-dom';
 
-const ResearchFieldBody = ({
-    formData,
-    setFormData,
-    onImageSelect,
-}) => {
+const ResearchFieldBody = forwardRef(({ formData, setFormData, onImageSelect, }, ref) => {
     const [activeTab, setActiveTab] = useState(formData.lang || 1);
     const [isMediaLibraryOpen, setMediaLibraryOpen] = useState(false);
     const [selectedImage, setSelectedImage] = useState("");
-    const location = useLocation();
-    const state = location.state;
 
     useEffect(() => {
         if (formData.lang) {
@@ -280,13 +273,13 @@ const ResearchFieldBody = ({
                     {/* Fourth row */}
                     <div>
                         <div className="grid grid-cols-1 gap-4 py-2">
-                            <ResearchFieldSection />
+                            <ResearchFieldSection ref={ref}/>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     );
-}
+});
 
 export default ResearchFieldBody

@@ -351,13 +351,11 @@ const PageSection = forwardRef(({ formData = {}, setFormData = {}, page_id }, re
   const [selectedSections, setSelectedSections] = useState([]);
 
   useEffect(() => {
-    // console.log("👀 useEffect triggered with page_id:", page_id);
     const fetchSections = async () => {
       if (!page_id) return;
 
       try {
         const response = await axios.get(`${API_ENDPOINTS.getSectionByPage}/${page_id}`);
-        // console.log(`${API_ENDPOINTS.getSectionByPage}/${page_id}`);
         const fetchedSections = response.data?.data || [];
 
         const mapped = fetchedSections.map((section) => ({

@@ -21,8 +21,7 @@ const FacultyFieldInfo = forwardRef(({ f_id }, ref) => {
         {
             id: "1",
             f_id: f_id,
-            title: "Information 1",
-            finfo_title: '',
+            finfo_title: "Information 1",
             finfo_detail: '',
             finfo_side: null,
             display: 0,
@@ -35,14 +34,14 @@ const FacultyFieldInfo = forwardRef(({ f_id }, ref) => {
             const sortedInfo = [...info].sort((a, b) => a.finfo_order - b.finfo_order || 0);
             const infoData = sortedInfo.map((item, index) => {
                 const baseItem = {
-                    f_id: item.f_id,
+                    finfo_f: f_id,
                     finfo_order: index + 1,
                     finfo_title: item.finfo_title,
                     finfo_detail: item.finfo_detail,
                     finfo_side: item.finfo_side,
                     display: item.display,
                     active: item.active,
-
+                    finfo_id: parseInt(item.id),
                 };
 
                 if (typeof item.id === 'number') {
@@ -80,10 +79,9 @@ const FacultyFieldInfo = forwardRef(({ f_id }, ref) => {
 
     const handleAddInfo = () => {
         const newInfo = {
-            id: `${Date.now()}`,
+            id: (info.length + 1).toString(),
             f_id: f_id,
-            title: `Information ${info.length + 1}`,
-            finfo_title: '',
+            finfo_title: `Information ${info.length + 1}`,
             finfo_detail: '',
             finfo_side: null,
             display: 0,
@@ -130,7 +128,19 @@ const FacultyFieldInfo = forwardRef(({ f_id }, ref) => {
                             display: Boolean(item.display ?? 0),
                             active: Boolean(item.active ?? 1),
                         }));
-                        setInfo(formatted);
+                        if (formatted.length > 0) {
+                            setInfo(formatted);
+                        } else {
+                            setSlider([{
+                                id: "1",
+                                f_id: f_id,
+                                finfo_title: "Information 1",
+                                finfo_detail: '',
+                                finfo_side: null,
+                                display: 0,
+                                active: 1,
+                            }]);
+                        }
                     }
                 })
                 .catch(err => console.error("❌ Error fetching faculty info:", err));

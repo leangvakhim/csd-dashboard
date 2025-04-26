@@ -19,7 +19,7 @@ const ResearchDashboard = () => {
                 const sortedReserachs = normalized.sort((a, b) => a.rsd_order - b.rsd_order);
                 setResearchItems(sortedReserachs);
             } catch (error) {
-                console.error('Failed to fetch researchlab:', error);
+                console.error('Failed to fetch research:', error);
             }
         };
 
@@ -122,8 +122,6 @@ const ResearchDashboard = () => {
                                 <td className="px-6 py-4">{{
                                         1: 'English',
                                         2: 'Khmer',
-                                        // 3: 'Chinese',
-                                        // 4: 'French'
                                     }[item.lang] || 'Unknown'}</td>
                                 <td className="px-6 py-4">
                                     <span className={`${item.display ? 'bg-blue-100 text-blue-800' : 'bg-red-100 text-red-800'} text-xs font-medium me-2 px-2.5 py-0.5 rounded-xl`}>

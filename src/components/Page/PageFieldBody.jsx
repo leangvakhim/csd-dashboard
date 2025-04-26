@@ -4,20 +4,6 @@ import PageSection from './PageSection'
 const PageFieldBody = forwardRef((props, pageRef) => {
     const { formData, setFormData, page_id } = props;
 
-    // useEffect(() => {
-    //     if (pageRef && pageRef.current) {
-    //         console.log("✅ pageRef is set:", pageRef.current);
-
-    //         if (typeof pageRef.current.getSlideshows === 'function') {
-    //             console.log("🎠 getSlideshows() function is ready.");
-    //         } else {
-    //             console.warn("❌ getSlideshows() is NOT defined on pageRef.current");
-    //         }
-    //     } else {
-    //         console.warn("❌ pageRef is missing or not set properly.");
-    //     }
-    // }, [pageRef]);
-
     return (
         <div className='px-4'>
             <div className="flex flex-row gap-4 px-4">

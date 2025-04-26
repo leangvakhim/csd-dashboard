@@ -272,6 +272,7 @@ const FacultyField = () => {
             finfo_title: item.finfo_title,
             finfo_detail: item.finfo_detail,
             finfo_side: item.finfo_side,
+            finfo_f: item.finfo_f,
             display: item.display ?? 1,
             active: item.active ?? 1
         }));
@@ -287,17 +288,19 @@ const FacultyField = () => {
                 finfo_side: item.finfo_side,
                 display: item.display ?? 1,
                 active: item.active ?? 1,
-                finfo_f: f_id
+                finfo_f: item.finfo_f,
             };
+
             await axios.post(`${API_ENDPOINTS.updateFacultyInfo}/${item.finfo_id}`, payload);
         }
 
         // 🆕 Create new infos
         if (newInfos.length > 0) {
             const createPayload = {
-                f_id: 1,
+                f_id: formData.f_id,
                 finfo_f: newInfos
             };
+
 
             try {
                 await axios.post(API_ENDPOINTS.createFacultyInfo, createPayload);

@@ -8,6 +8,8 @@ import axios from 'axios'
 
 const ResearchField = () => {
     const researchRef = useRef();
+    const location = useLocation();
+    const researchData = location.state?.researchData;
     const [formData, setFormData] = useState({
         lang: 1,
         rsd_title: '',
@@ -20,14 +22,22 @@ const ResearchField = () => {
         active: 1,
     });
 
-    const location = useLocation();
-    const researchData = location.state?.researchData;
-
     useEffect(() => {
-        if (researchData?.data) {
-            setFormData(researchData.data);
+        if (researchData?.data?.rsd_id) {
+            fetchResearchById(researchData.data.rsd_id);
         }
     }, [researchData]);
+
+    const fetchResearchById = async (id) => {
+        try {
+            const res = await axios.get(`${API_ENDPOINTS.getResearch}/${id}`);
+            if (res.data && res.data.data) {
+                setFormData(res.data.data);
+            }
+        } catch (error) {
+            console.error('❌ Failed to fetch research by ID:', error);
+        }
+    };
 
     const handleImageSelect = (imageId) => {
         setFormData(prev => ({
@@ -52,15 +62,15 @@ const ResearchField = () => {
             if (!isUpdate) {
                 const res = await axios.post(API_ENDPOINTS.createResearch, payload);
                 const createdResearch = res.data.data;
-                setFormData(prev => ({
-                    ...prev,
-                    rsd_id: createdResearch.rsd_id
-                }));
+                await fetchResearchById(createdResearch.rsd_id);
                 return createdResearch;
             } else {
-                await axios.post(`${API_ENDPOINTS.updateResearch}/${formData.rsd_id}`, payload);
+                const res = await axios.post(`${API_ENDPOINTS.updateResearch}/${formData.rsd_id}`, payload);
+                await fetchResearchById(formData.rsd_id);
                 return { rsd_id: formData.rsd_id };
             }
+
+
         } catch (error) {
             console.error('Error saving research:', error);
             if (error.response) {
@@ -70,6 +80,10 @@ const ResearchField = () => {
         }
 
     };
+
+    const savePageResearch = async () => {
+
+    }
 
     const handleSave = async () => {
         try {

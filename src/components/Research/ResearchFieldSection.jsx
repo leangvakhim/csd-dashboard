@@ -1,6 +1,5 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } from "react";
 import { TbFileDescription } from "react-icons/tb";
-import { FaRegListAlt } from "react-icons/fa";
 import { LiaProjectDiagramSolid } from "react-icons/lia";
 import { HiOutlineUserGroup } from "react-icons/hi2";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
@@ -8,7 +7,7 @@ import DescriptionSection from './Description/DescriptionSection';
 import ProjectSection from './Project/ProjectSection';
 import MeetingSection from './Meeting/MeetingSection';
 
-const ResearchFieldSection = () => {
+const ResearchFieldSection = forwardRef((props, ref) => {
     const [showSection, setShowSection] = useState(false);
     const [selectedSections, setSelectedSections] = useState([]);
 
@@ -23,6 +22,85 @@ const ResearchFieldSection = () => {
         ]);
         setShowSection(false);
     };
+
+    useImperativeHandle(ref, () => ({
+        getSections: () => {
+            return selectedSections.map((section, index) => {
+                return {
+                sec_id: section.id,
+                sec_type: section.type,
+                sec_order: index + 1,
+                lang: formData?.lang ?? 1,
+                display: 0,
+                active: 1,
+                ...section.data,
+                };
+            });
+            },
+
+            updateSectionIds: (newIds) => {
+            setSelectedSections(prev =>
+                prev.map(section => {
+                const match = newIds.find(n => n.tempId === section.id);
+                if (!match) return section;
+
+                const updatedData = { ...section.data };
+
+                if (updatedData.banners && Array.isArray(updatedData.banners)) {
+                    updatedData.banners = updatedData.banners.map(b => ({
+                    ...b,
+                    ban_sec: match.realId
+                    }));
+                }
+
+                    return {
+                        ...section,
+                        id: match.realId,
+                        isTemporary: false,
+                        data: updatedData,
+                    };
+                })
+            );
+        },
+
+        getPrograms: () => programPieceRef.current?.getPrograms?.() || [],
+        getBanners: () => bannerPieceRef.current?.getBanners?.() || [],
+        getSlideshows: () => slideshowPieceRef.current?.getSlideshows?.() || [],
+        getServices: () => servicePieceRef.current?.getServices?.() || [],
+        getAcademics: () => academicPieceRef.current?.getAcademics?.() || [],
+        getInformations: () => informationPieceRef.current?.getInformations?.() || [],
+        getFacilities: () => facilitiesPieceRef.current?.getFacilities?.() || [],
+        getGallery: () => galleryPieceRef.current?.getGallery?.() || [],
+        getSpecializations: () => specializationPieceRef.current?.getSpecializations?.() || [],
+        getTestimonials: () => testimonialPieceRef.current?.getTestimonials?.() || [],
+        getTypes: () => typePieceRef.current?.getTypes?.() || [],
+        getCriterias: () => criteriaPieceRef.current?.getCriterias?.() || [],
+        getCSDs: () => csdPieceRef.current?.getCSDs?.() || [],
+        getUnlocks: () => unlockPieceRef.current?.getUnlocks?.() || [],
+        getStudys: () => studyPieceRef.current?.getStudys?.() || [],
+        getAvailables: () => availablePieceRef.current?.getAvailables?.() || [],
+        getFees: () => feePieceRef.current?.getFees?.() || [],
+        getRequirements: () => requirementPieceRef.current?.getRequirements?.() || [],
+        getFutures: () => futurePieceRef.current?.getFutures?.() || [],
+        getPotentials: () => potentialPieceRef.current?.getPotentials?.() || [],
+        getIntroductions: () => introductionPieceRef.current?.getIntroductions?.() || [],
+        getInnovations: () => innovationPieceRef.current?.getInnovations?.() || [],
+        getFAQs: () => faqPieceRef.current?.getFAQs?.() || [],
+        getApplys: () => applyPieceRef.current?.getApplys?.() || [],
+        getImportants: () => importantPieceRef.current?.getImportants?.() || [],
+        getContacts: () => contactPieceRef.current?.getContacts?.() || [],
+        getQuestions: () => questionPieceRef.current?.getQuestions?.() || [],
+        getNews: () => newPieceRef.current?.getNews?.() || [],
+        getEvents: () => eventPieceRef.current?.getEvents?.() || [],
+        getAnnouncements: () => announcementPieceRef.current?.getAnnouncements?.() || [],
+        getResearchs: () => researchPieceRef.current?.getResearchs?.() || [],
+        getFacultys: () => facultyPieceRef.current?.getFacultys?.() || [],
+        getLabs: () => labPieceRef.current?.getLabs?.() || [],
+        getScholarships: () => scholarshipPieceRef.current?.getScholarships?.() || [],
+        getCareers: () => careerPieceRef.current?.getCareers?.() || [],
+        getPartners: () => partnerPieceRef.current?.getPartners?.() || [],
+        getFeedbacks: () => feedbackPieceRef.current?.getFeedbacks?.() || [],
+    }));
 
     const onDragEnd = (result) => {
         if (!result.destination) return;
@@ -103,40 +181,27 @@ const ResearchFieldSection = () => {
             {showSection && (
                 <div className="bg-gray-50 h-auto border !border-gray-200 rounded-b-lg overflow-y-auto mb-4">
                     <div className="grid !grid-cols-1 sm:!grid-cols-2 md:!grid-cols-3 gap-8 p-8">
-                        <div
-                            className="cursor-pointer hover:!bg-gray-100 bg-white grid-cols-1 h-auto border rounded-xl"
-                            onClick={() => handleAddSection("Description")}
-                        >
-                            <TbFileDescription className="w-24 h-24 mx-auto mt-8" />
-                            <h1 className="text-center text-2xl font-medium !mb-8">
-                                Description
-                            </h1>
-                        </div>
-
-                        <div
-                            className="cursor-pointer hover:!bg-gray-100 bg-white grid-cols-1 h-auto border rounded-xl"
-                            onClick={() => handleAddSection("Project")}
-                        >
-                            <LiaProjectDiagramSolid className="w-24 h-24 mx-auto mt-8" />
-                            <h1 className="text-center text-2xl font-medium !mb-8">
-                                Project
-                            </h1>
-                        </div>
-
-                        <div
-                            className="cursor-pointer hover:!bg-gray-100 bg-white grid-cols-1 h-auto border rounded-xl"
-                            onClick={() => handleAddSection("Meeting")}
-                        >
-                            <HiOutlineUserGroup className="w-24 h-24 mx-auto mt-8" />
-                            <h1 className="text-center text-2xl font-medium !mb-8">
-                                Meeting
-                            </h1>
-                        </div>
+                        {[
+                            { type: "Description", icon: <TbFileDescription className="w-24 h-24 mx-auto mt-8" />, label: "Description" },
+                            { type: "Project", icon: <LiaProjectDiagramSolid className="w-24 h-24 mx-auto mt-8" />, label: "Project" },
+                            { type: "Meeting", icon: <HiOutlineUserGroup className="w-24 h-24 mx-auto mt-8" />, label: "Meeting" },
+                        ].map((section) => (
+                            <div
+                                key={section.type}
+                                className="cursor-pointer hover:!bg-gray-100 bg-white grid-cols-1 h-auto border rounded-xl"
+                                onClick={() => handleAddSection(section.type)}
+                            >
+                                {section.icon}
+                                <h1 className="text-center text-2xl font-medium !mb-8">
+                                    {section.label}
+                                </h1>
+                            </div>
+                        ))}
                     </div>
                 </div>
             )}
         </div>
     )
-}
+});
 
 export default ResearchFieldSection
