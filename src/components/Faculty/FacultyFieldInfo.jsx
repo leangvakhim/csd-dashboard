@@ -116,7 +116,8 @@ const FacultyFieldInfo = forwardRef(({ f_id }, ref) => {
                 .then(res => res.json())
                 .then(result => {
                     if (Array.isArray(result.data)) {
-                        const formatted = result.data.map((item, index) => ({
+                        const sortedData = [...result.data].sort((a, b) => (a.finfo_order || 0) - (b.finfo_order || 0));
+                        const formatted = sortedData.map((item, index) => ({
                             finfo_id: item.finfo_id,
                             f_id: item.f_id,
                             id: item.finfo_id?.toString(),
@@ -131,7 +132,7 @@ const FacultyFieldInfo = forwardRef(({ f_id }, ref) => {
                         if (formatted.length > 0) {
                             setInfo(formatted);
                         } else {
-                            setSlider([{
+                            setInfo([{
                                 id: "1",
                                 f_id: f_id,
                                 finfo_title: "Information 1",

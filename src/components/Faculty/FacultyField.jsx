@@ -255,80 +255,57 @@ const FacultyField = () => {
         }
         const infoData = infoRef.current?.getData?.() || [];
 
-        // Filter duplicates based on title and ID
-        const seen = new Set();
-        const filteredInfo = Array.isArray(infoData)
-            ? infoData.filter(item => {
-                const key = `${item.finfo_title}-${item.finfo_detail}`;
-                if (seen.has(key)) return false;
-                seen.add(key);
-                return item.finfo_title;
-            })
-            : [];
+        if (!Array.isArray(infoData)) return;
 
-        // Split new vs existing
-        const newInfos = filteredInfo.filter(item => typeof item.finfo_id !== 'number').map(item => ({
-            finfo_order: item.finfo_order,
-            finfo_title: item.finfo_title,
-            finfo_detail: item.finfo_detail,
-            finfo_side: item.finfo_side,
-            finfo_f: item.finfo_f,
-            display: item.display ?? 1,
-            active: item.active ?? 1
+        for (const info of infoData) {
+            const payload = {
+                finfo_order: info.finfo_order,
+                finfo_title: info.finfo_title,
+                finfo_detail: info.finfo_detail,
+                finfo_side: info.finfo_side,
+                finfo_f: f_id,
+                display: info.display ?? 1,
+                active: info.active ?? 1
+            };
+
+            try {
+                if (info.finfo_id) {
+                    const res = await axios.get(`${API_ENDPOINTS.getFacultyInfo}/${info.finfo_id}`);
+
+                    if (res.data && res.data.data) {
+                        await axios.post(`${API_ENDPOINTS.updateFacultyInfo}/${info.finfo_id}`, payload);
+                    } else {
+                        await axios.post(API_ENDPOINTS.createFacultyInfo, { f_id, finfo_f: [payload] });
+                    }
+                } else {
+                    await axios.post(API_ENDPOINTS.createFacultyInfo, { f_id, finfo_f: [payload] });
+                }
+            } catch (error) {
+                if (error.response && error.response.status === 404) {
+                    await axios.post(API_ENDPOINTS.createFacultyInfo, { f_id, finfo_f: [payload] });
+                } else {
+                    console.error("❌ Error saving faculty info:", error);
+                }
+            }
+        }
+
+        if (infoData.length > 0) {reorderFacultyInfo();}
+
+    };
+
+    const reorderFacultyInfo = async () => {
+        const infoData = infoRef.current?.getData?.() || [];
+
+        const facultyInfoPayload = infoData.map((slider, index) => ({
+            finfo_id: parseInt(slider.finfo_id),
+            finfo_order: index + 1
         }));
 
-        const updateInfos = filteredInfo.filter(item => typeof item.finfo_id === 'number');
-
-        // 🔁 Update existing infos
-        for (const item of updateInfos) {
-            const payload = {
-                finfo_order: item.finfo_order,
-                finfo_title: item.finfo_title,
-                finfo_detail: item.finfo_detail,
-                finfo_side: item.finfo_side,
-                display: item.display ?? 1,
-                active: item.active ?? 1,
-                finfo_f: item.finfo_f,
-            };
-
-            await axios.post(`${API_ENDPOINTS.updateFacultyInfo}/${item.finfo_id}`, payload);
+        try {
+            await axios.post(API_ENDPOINTS.updateFacultyInfoOrder, facultyInfoPayload);
+        } catch (error) {
+            console.error("Failed to reorder facultyInfo:", error.response?.data || error.message);
         }
-
-        // 🆕 Create new infos
-        if (newInfos.length > 0) {
-            const createPayload = {
-                f_id: formData.f_id,
-                finfo_f: newInfos
-            };
-
-
-            try {
-                await axios.post(API_ENDPOINTS.createFacultyInfo, createPayload);
-            } catch (error) {
-                console.error("Error creating Faculty Infos:", error);
-                console.error("Response:", error.response.data);
-            }
-        }
-
-        const reorderPayload = filteredInfo
-            .filter(item => typeof item.finfo_id === "number")
-            .map(item => ({
-                finfo_id: item.finfo_id,
-                finfo_order: item.finfo_order
-            }));
-        if (reorderPayload.length > 0) {
-            try {
-                const reorderResponse = await axios.post(API_ENDPOINTS.updateFacultyInfoOrder, reorderPayload, {
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
-                    }
-                });
-            } catch (error) {
-                console.error("Error reordering Faculty Infos:", error.response ? error.response.data : error.message);
-            }
-        }
-
     };
 
     // Save Faculty Background (short version)
