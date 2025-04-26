@@ -1,14 +1,10 @@
-import React, { useState } from "react";
-import { TbFileDescription } from "react-icons/tb";
-import { FaRegListAlt } from "react-icons/fa";
-import { LiaProjectDiagramSolid } from "react-icons/lia";
-import { HiOutlineUserGroup } from "react-icons/hi2";
+import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } from "react";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
-import DescriptionSection from "../Research/Description/DescriptionSection";
-import ProjectSection from "../Research/Project/ProjectSection";
-import MeetingSection from "../Research/Meeting/MeetingSection";
+import MediaLibraryModal from "../MediaLibraryModal";
+import axios from "axios";
+import { API_ENDPOINTS, API } from "../../service/APIConfig";
 
-const SettingFieldSection = () => {
+const SettingFieldSection = forwardRef(({},ref) => {
   const [currentSliderId, setCurrentSliderId] = useState(null);
   const [currentField, setCurrentField] = useState("");
   const [isMediaLibraryOpen, setMediaLibraryOpen] = useState(false);
@@ -58,15 +54,85 @@ const SettingFieldSection = () => {
     setMediaLibraryOpen(true);
   };
 
+  const getImageIdByUrl = async (url) => {
+    try {
+      const response = await axios.get(API_ENDPOINTS.getImages);
+      const images = Array.isArray(response.data) ? response.data : response.data.data;
+
+      const matchedImage = images.find((img) => img.image_url === url);
+      return matchedImage?.image_id || null;
+    } catch (error) {
+      console.error('❌ Failed to fetch image ID:', error);
+      return null;
+    }
+  };
+
   const handleImageSelect = (imageUrl) => {
-    setSlider((prevSlider) =>
-      prevSlider.map((item) =>
+    const finalUrl = typeof imageUrl === "object" && imageUrl?.url ? imageUrl.url : imageUrl;
+
+    setSlider((prevSlider) => {
+      const updated = prevSlider.map((item) =>
         item.id === currentSliderId
-          ? { ...item, [currentField]: imageUrl ? `${imageUrl}` : "" }
+          ? {
+              ...item,
+              [currentField]: finalUrl || "",
+              ...(finalUrl === "" && { img: { img: "" } })
+            }
           : item
-      )
-    );
+      );
+      return updated;
+    });
+
     setMediaLibraryOpen(false);
+  };
+
+  useImperativeHandle(ref, () => ({
+    getUniversitySocials: async () => {
+      return Promise.all(
+        slider.map(async (item) => ({
+          setsoc_id: item.id,
+          setsoc_title: item.title || '',
+          setsoc_link: item.subtitle || '',
+          setsoc_img: item.image ? await getImageIdByUrl(item.image) : null,
+          display: item.display ? 1 : 0,
+          active: 1,
+        }))
+      );
+    }
+  }));
+
+  useEffect(() => {
+    const fetchSliderData = async () => {
+      try {
+        const response = await axios.get(API_ENDPOINTS.getSocialSetting);
+        const safeArray = Array.isArray(response.data.data) ? response.data.data : [];
+
+        const transformed = safeArray.map(item => ({
+          id: item.setsoc_id?.toString() || "",
+          title: item.setsoc_title || "",
+          subtitle: item.setsoc_link || "",
+          image: item.img?.img ? `${API}/storage/uploads/${item.img.img}` : "",
+          display: item.display === 1 || item.display === true,
+        }));
+
+        setSlider(transformed);
+      } catch (error) {
+        console.error("❌ Failed to fetch slider social data:", error);
+      }
+    };
+
+    fetchSliderData();
+  }, []);
+
+  const handleDeleteSlider = async (sliderId) => {
+    if (!window.confirm("Are you sure you want to delete this social slider?")) return;
+
+    try {
+        await axios.put(`${API_ENDPOINTS.deleteSocialSetting}/${sliderId}`);
+        setSlider((prevSlider) => prevSlider.filter((item) => item.id !== sliderId));
+    } catch (error) {
+        console.error('Failed to delete slider:', error);
+    }
   };
 
   return (
@@ -119,7 +185,7 @@ const SettingFieldSection = () => {
                           <span className=" shrink-0 transition-transform duration-500 group-open:-rotate-0 flex gap-2">
                             <div className="block">
                               <svg
-                                // onClick={() => handleDeleteSlider(sliders.id)}
+                                onClick={() => handleDeleteSlider(sliders.id)}
                                 xmlns="http://www.w3.org/2000/svg"
                                 fill="none"
                                 viewBox="0 0 24 24"
@@ -167,12 +233,12 @@ const SettingFieldSection = () => {
                               <input
                                 type="text"
                                 className="block w-full !border-gray-200 border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
-                                // value={sliders.title}
-                                // onChange={(e) => {
-                                //   const updatedSlider = [...slider];
-                                //   updatedSlider[index].title = e.target.value;
-                                //   setSlider(updatedSlider);
-                                // }}
+                                value={sliders.title}
+                                onChange={(e) => {
+                                  const newSocials = [...slider];
+                                  newSocials[index].title = e.target.value;
+                                  setSlider(newSocials);
+                                }}
                               />
                             </div>
                           </div>
@@ -185,12 +251,12 @@ const SettingFieldSection = () => {
                               <label class="toggle-switch mt-2">
                                 <input
                                   type="checkbox"
-                                  // checked={sliders.display === 1}
-                                  // onChange={(e) => {
-                                  //   const updatedSlider = [...slider];
-                                  //   updatedSlider[index].display = e.target.checked ? 1 : 0;
-                                  //   setSlider(updatedSlider);
-                                  // }}
+                                  checked={sliders.display === 1}
+                                  onChange={(e) => {
+                                    const newSocials = [...slider];
+                                    newSocials[index].display = e.target.checked ? 1 : 0;
+                                    setSlider(newSocials);
+                                  }}
                                 />
                                 <span class="slider"></span>
                               </label>
@@ -206,12 +272,12 @@ const SettingFieldSection = () => {
                             <div className="mt-2">
                               <textarea
                                 className="!border-gray-300 h-60 block w-full rounded-md border-0 py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-2xl sm:leading-6"
-                                // value={sliders.subtitle}
-                                // onChange={(e) => {
-                                //   const updatedSlider = [...slider];
-                                //   updatedSlider[index].subtitle = e.target.value;
-                                //   setSlider(updatedSlider);
-                                // }}
+                                value={sliders.subtitle}
+                                onChange={(e) => {
+                                  const newSocials = [...slider];
+                                  newSocials[index].subtitle = e.target.value;
+                                  setSlider(newSocials);
+                                }}
                               ></textarea>
                             </div>
                           </div>
@@ -222,7 +288,7 @@ const SettingFieldSection = () => {
                             </label>
                             <div className="flex items-center justify-center w-full mt-2 border-1">
                               <label className="flex flex-col items-center justify-center w-full h-60 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
-                                {sliders.image ? (
+                                {sliders.image && sliders.image !== "" && sliders.image.trim() !== "" ? (
                                   <div>
                                     <img
                                       src={sliders.image}
@@ -248,9 +314,11 @@ const SettingFieldSection = () => {
                                         />
                                       </svg>
                                       <svg
-                                        onClick={() =>
-                                          handleImageSelect("", "image")
-                                        }
+                                        onClick={() => {
+                                          setCurrentSliderId(sliders.id);
+                                          setCurrentField("image");
+                                          setTimeout(() => handleImageSelect(""), 0);
+                                        }}
                                         xmlns="http://www.w3.org/2000/svg"
                                         fill="none"
                                         viewBox="0 0 24 24"
@@ -336,6 +404,6 @@ const SettingFieldSection = () => {
       </Droppable>
     </DragDropContext>
   );
-};
+});
 
 export default SettingFieldSection;

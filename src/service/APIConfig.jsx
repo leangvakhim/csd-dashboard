@@ -363,6 +363,14 @@ const API_ENDPOINTS = {
     getSetting: `${API_BASEURL}/setting2`,
     createSetting: `${API_BASEURL}/setting2/create`,
     updateSetting: `${API_BASEURL}/setting2/update`,
+    getSettingByLang: `${API_BASEURL}/setting2/lang`,
+
+    // settingsocial
+    getSocialSetting: `${API_BASEURL}/settingsocial`,
+    createSocialSetting: `${API_BASEURL}/settingsocial/create`,
+    updateSocialSetting: `${API_BASEURL}/settingsocial/update`,
+    updateOrderSocialSetting: `${API_BASEURL}/settingsocial/reorder`,
+    deleteSocialSetting: `${API_BASEURL}/settingsocial/visibility`,
 };
 
 export { API_BASEURL, API_ENDPOINTS, API };

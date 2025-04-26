@@ -1,10 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } from "react";
 import { API_ENDPOINTS } from "../../service/APIConfig";
 import MediaLibraryModal from "../MediaLibraryModal";
 import SettingFieldSection from "./SettingFieldSection";
-import axios from "axios";
 
-const SettingField = ({setFormData, formData}) => {
+const SettingField = forwardRef(({setFormData, formData}, ref) => {
   const [activeTab, setActiveTab] = useState(1);
   const [selectedImage, setSelectedImage] = useState("");
   const [isMediaLibraryOpen, setMediaLibraryOpen] = useState(false);
@@ -77,8 +76,7 @@ const SettingField = ({setFormData, formData}) => {
             ].map((langOption) => (
               <li key={langOption.id}>
                 <a
-                  href="javascript:void(0)"
-                  className={`mx-2 inline-block py-1.5 px-6 text-gray-600 hover:text-gray-800 font-medium ${
+                  className={`cursor-pointer mx-2 inline-block py-1.5 px-6 text-gray-600 hover:text-gray-800 font-medium ${
                     activeTab === langOption.id
                       ? "bg-white rounded-lg text-gray-600"
                       : "tablink"
@@ -297,13 +295,13 @@ const SettingField = ({setFormData, formData}) => {
           {/* Third row */}
           <div>
             <div className="grid grid-cols-1">
-              <SettingFieldSection />
+              <SettingFieldSection ref={ref}/>
             </div>
           </div>
         </div>
       </div>
     </div>
   );
-};
+});
 
 export default SettingField;

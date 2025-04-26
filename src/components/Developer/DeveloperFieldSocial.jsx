@@ -115,6 +115,17 @@ const DeveloperFieldSocial = forwardRef(({ formData, setFormData }, ref) => {
     }
   };
 
+  const handleDeleteSlider = async (sliderId) => {
+    if (!window.confirm("Are you sure you want to delete this social slider?")) return;
+
+    try {
+        await axios.put(`${API_ENDPOINTS.deleteSocialDeveloper}/${sliderId}`);
+        setSlider((prevSlider) => prevSlider.filter((item) => item.id !== sliderId));
+    } catch (error) {
+        console.error('Failed to delete slider:', error);
+    }
+  };
+
   useEffect(() => {
     if (formData?.socialSlider) {
       const safeArray = Array.isArray(formData.socialSlider)
@@ -182,7 +193,7 @@ const DeveloperFieldSocial = forwardRef(({ formData, setFormData }, ref) => {
                           <span className=" shrink-0 transition-transform duration-500 group-open:-rotate-0 flex gap-2">
                             <div className="block">
                               <svg
-                                // onClick={() => handleDeleteSlider(sliders.id)}
+                                onClick={() => handleDeleteSlider(sliders.id)}
                                 xmlns="http://www.w3.org/2000/svg"
                                 fill="none"
                                 viewBox="0 0 24 24"

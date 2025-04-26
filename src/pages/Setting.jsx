@@ -6,7 +6,7 @@ import axios from 'axios';
 import { API_ENDPOINTS } from '../service/APIConfig';
 
 const Setting = () => {
-
+    const universitySocialRef = useRef();
     const [formData, setFormData] = useState({
         set_facultytitle: "",
         set_facultydep: "",
@@ -19,22 +19,26 @@ const Setting = () => {
 
     useEffect(() => {
         const fetchSetting = async () => {
-        try {
-            const response = await axios.get(`${API_ENDPOINTS.getSetting}`);
-            const setting = response.data?.data;
-            if (setting) {
+            try {
+                const { data } = await axios.get(`${API_ENDPOINTS.getSettingByLang}/${formData.lang}`);
                 setFormData({
-                    ...setting,
+                    ...data.data,
                 });
-            }
             } catch (err) {
-                console.error("Failed to fetch developer:", err);
+                if (err.response?.status === 404) {
+                    console.log(`No setting found for lang=${formData.lang}.`);
+                } else {
+                    console.error("Failed to fetch setting:", err);
+                }
             }
         };
-        fetchSetting();
-    }, []);
 
-    const handleSave = async () => {
+        if (formData.lang) {
+            fetchSetting();
+        }
+    }, [formData.lang]);
+
+    const saveSetting = async () => {
         const payload = {
             lang: formData.lang,
             set_facultytitle: formData.set_facultytitle,
@@ -46,18 +50,85 @@ const Setting = () => {
         };
 
         try {
-            if (formData.set_id && Number(formData.set_id) > 0) {
-                await axios.post(`${API_ENDPOINTS.updateSetting}/${formData.set_id}`, payload);
+            const checkResponse = await axios.get(`${API_ENDPOINTS.getSettingByLang}/${formData.lang}`);
+            const id = checkResponse?.data?.data?.set_id;
+            if (id) {
+                console.log("Update");
+                await axios.post(`${API_ENDPOINTS.updateSetting}/${id}`, payload);
             } else {
+                console.log("Create");
                 await axios.post(API_ENDPOINTS.createSetting, payload);
             }
-            alert("Setting saved successfully!");
         } catch (err) {
-            console.error("Error saving:", err);
-            if (err.response?.data?.errors) {
-                console.error("Validation failed:", err.response.data.errors);
+             if (err.response?.status === 404) {
+                await axios.post(API_ENDPOINTS.createSetting, payload);
+            } else {
+                console.error("Other error while saving:", err);
             }
         }
+    }
+
+    const saveSettingSocial = async () => {
+        let shouldCreate = true;
+        try {
+            const slidersData = await universitySocialRef.current?.getUniversitySocials?.();
+            if (!Array.isArray(slidersData)) return;
+
+        for (const social of slidersData) {
+            const payload = {
+                ...social,
+                active: 1
+            };
+
+            if (social.setsoc_id) {
+                try {
+                    const check = await axios.get(`${API_ENDPOINTS.getSocialSetting}/${social.setsoc_id}`);
+                    if (check?.data?.data) {
+                        shouldCreate = false;
+                    }
+                } catch (err) {
+                    if (err.response?.status === 404) {
+                        shouldCreate = true;
+                    } else {
+                        console.error("Error checking social setting:", err);
+                        continue;
+                    }
+                }
+            }
+
+            if (shouldCreate) {
+                await axios.post(API_ENDPOINTS.createSocialSetting, { setting_social: [payload] });
+            } else {
+                await axios.post(`${API_ENDPOINTS.updateSocialSetting}/${social.setsoc_id}`, { setting_social: payload });
+            }
+        }
+
+        if (slidersData.length > 0) {reorderSocialSetting();}
+
+        } catch (error) {
+            console.error("Unable to save setting_social records:", error);
+        }
+    }
+
+    const reorderSocialSetting = async () => {
+        const slidersData = await universitySocialRef.current?.getUniversitySocials?.();
+
+        const socialSettingPayload = slidersData.map((slider, index) => ({
+            setsoc_id: parseInt(slider.setsoc_id),
+            setsoc_order: index + 1
+        }));
+
+        try {
+            await axios.post(API_ENDPOINTS.updateOrderSocialSetting, socialSettingPayload);
+        } catch (error) {
+            console.error("Failed to reorder slideshow:", error.response?.data || error.message);
+        }
+    };
+
+    const handleSave = async () => {
+        await saveSetting();
+        await saveSettingSocial();
+        alert("Setting saved successfully!");
     }
     return (
         <div id="main-wrapper" className=" flex">
@@ -68,6 +139,7 @@ const Setting = () => {
                 <SettingField
                     formData={formData}
                     setFormData={setFormData}
+                    ref={universitySocialRef}
                 />
             </div>
         </div>
