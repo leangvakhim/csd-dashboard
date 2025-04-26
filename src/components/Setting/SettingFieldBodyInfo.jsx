@@ -1,29 +1,182 @@
-import React, { useState, lazy, Suspense } from "react";
-import { API_ENDPOINTS } from "../../service/APIConfig";
+import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } from "react";
+import { API_ENDPOINTS, API } from "../../service/APIConfig";
 import MediaLibraryModal from "../MediaLibraryModal";
+import axios from "axios";
 
-const SettingFieldBodyInfo = () => {
+const SettingFieldBodyInfo = forwardRef(({}, ref) => {
   const [activeTab, setActiveTab] = useState(1);
   const [isRotatedButton1, setIsRotatedButton1] = useState(false);
   const [isRotatedButton2, setIsRotatedButton2] = useState(false);
   const [isRotatedButton3, setIsRotatedButton3] = useState(false);
   const [selectedImage, setSelectedImage] = useState("");
+  const [selectedImage1, setSelectedImage1] = useState("");
+  const [selectedImage2, setSelectedImage2] = useState("");
+  const [selectedImage3, setSelectedImage3] = useState("");
+  const [c1Id, setC1Id] = useState(0);
+  const [c2Id, setC2Id] = useState(0);
+  const [c3Id, setC3Id] = useState(0);
   const [isMediaLibraryOpen, setMediaLibraryOpen] = useState(false);
+  const [title, setTitle] = useState(null);
+  const [firsttitle, setFirstTitle] = useState(null);
+  const [secondtitle, setSecondTitle] = useState(null);
+  const [thirdtitle, setThirdTitle] = useState(null);
+  const [firstsubtitle, setFirstsubtitle] = useState(null);
+  const [secondsubtitle, setSecondsubtitle] = useState(null);
+  const [thirdsubtitle, setThirdsubtitle] = useState(null);
+  const [subtitle, setSubtitle] = useState(null);
+  const [lang, setLang] = useState(1);
   const openMediaLibrary = () => {
     setMediaLibraryOpen(true);
   };
+
+  useEffect(() => {
+    const fetchContactData = async () => {
+      try {
+        const response = await axios.get(`${API_ENDPOINTS.getContactByLang}/${activeTab}`);
+        const data = response.data?.data;
+        if (data) {
+          setLang(data.lang || 1);
+          setTitle(data.con_title || '');
+          setSubtitle(data.con_subtitle || '');
+          setSelectedImage(data.con_img ? `${API}/storage/uploads/${data.image.img}` : '');
+          setC1Id(data.con_addon || 0);
+          setFirstTitle(data.subcontact1.scon_title || '');
+          setFirstsubtitle(data.subcontact1.scon_detail || '');
+          setSelectedImage1(data.subcontact1.scon_img ? `${API}/storage/uploads/${data.subcontact1.image.img}` : '');
+          setC2Id(data.con_addon2 || 0);
+          setSecondTitle(data.subcontact2.scon_title || '');
+          setSecondsubtitle(data.subcontact2.scon_detail || '');
+          setSelectedImage2(data.subcontact2.scon_img ? `${API}/storage/uploads/${data.subcontact2.image.img}` : '');
+          setC3Id(data.con_addon3 || 0);
+          setThirdTitle(data.subcontact3.scon_title || '');
+          setThirdsubtitle(data.subcontact3.scon_detail || '');
+          setSelectedImage3(data.subcontact3.scon_img ? `${API}/storage/uploads/${data.subcontact3.image.img}` : '');
+        }
+      } catch (error) {
+        console.error('❌ Failed to fetch contact university info:', error);
+      }
+    };
+
+    fetchContactData();
+  }, []);
 
   const handleImageSelect = (imageUrl, field) => {
     if (field === "image") {
       setSelectedImage(imageUrl ? `${imageUrl}` : "");
     }else if (field === "image1") {
-      setSelectedImage(imageUrl ? `${imageUrl}` : "");
+      setSelectedImage1(imageUrl ? `${imageUrl}` : "");
     } else if (field === "image2") {
-      setSelectedImage(imageUrl ? `${imageUrl}` : "");
+      setSelectedImage2(imageUrl ? `${imageUrl}` : "");
     } else if (field === "image3") {
-      setSelectedImage(imageUrl ? `${imageUrl}` : "");
+      setSelectedImage3(imageUrl ? `${imageUrl}` : "");
     }
     setMediaLibraryOpen(false);
+  };
+
+  useImperativeHandle(ref, () => ({
+    getUniversityContacts: async () => {
+      let currentC1Id = c1Id;
+      let currentC2Id = c2Id;
+      let currentC3Id = c3Id;
+
+      try {
+        if (currentC1Id) {
+          await axios.post(`${API_ENDPOINTS.updateSubContact}/${c1Id}`, {
+            scon_title: firsttitle || null,
+            scon_detail: firstsubtitle || null,
+            scon_img: selectedImage1 ? await getImageIdByUrl(selectedImage1) : null,
+          });
+        } else {
+          const res1 = await axios.post(API_ENDPOINTS.createSubContact, {
+            scon_title: firsttitle || null,
+            scon_detail: firstsubtitle || null,
+            scon_img: selectedImage1 ? await getImageIdByUrl(selectedImage1) : null,
+          });
+          const newC1Id = res1.data?.data?.scon_id || 0;
+          setC1Id(newC1Id);
+          currentC1Id = newC1Id;
+        }
+
+        if (currentC2Id) {
+          await axios.post(`${API_ENDPOINTS.updateSubContact}/${c2Id}`, {
+            scon_title: secondtitle || null,
+            scon_detail: secondsubtitle || null,
+            scon_img: selectedImage2 ? await getImageIdByUrl(selectedImage2) : null,
+          });
+        } else {
+          const res2 = await axios.post(API_ENDPOINTS.createSubContact, {
+            scon_title: secondtitle || null,
+            scon_detail: secondsubtitle || null,
+            scon_img: selectedImage2 ? await getImageIdByUrl(selectedImage2) : null,
+          });
+          const newC2Id = res2.data?.data?.scon_id || 0;
+          setC2Id(newC2Id);
+          currentC2Id = newC2Id;
+        }
+
+        if (currentC3Id) {
+          await axios.post(`${API_ENDPOINTS.updateSubContact}/${c3Id}`, {
+            scon_title: thirdtitle || null,
+            scon_detail: thirdsubtitle || null,
+            scon_img: selectedImage3 ? await getImageIdByUrl(selectedImage3) : null,
+          });
+        } else {
+          const res3 = await axios.post(API_ENDPOINTS.createSubContact, {
+            scon_title: thirdtitle || null,
+            scon_detail: thirdsubtitle || null,
+            scon_img: selectedImage3 ? await getImageIdByUrl(selectedImage3) : null,
+          });
+          const newC3Id = res3.data?.data?.scon_id || 0;
+          setC3Id(newC3Id);
+          currentC3Id = newC3Id;
+        }
+      } catch (error) {
+        console.error('❌ Error saving subcontacts:', error);
+      }
+
+      const data = {
+        con_title: title || null,
+        con_subtitle: subtitle || null,
+        con_img: selectedImage ? await getImageIdByUrl(selectedImage) : null,
+        con_addon: currentC1Id || null,
+        con_addon2: currentC2Id || null,
+        con_addon3: currentC3Id || null,
+        lang: lang,
+      }
+
+      return data;
+    }
+  }));
+
+  const getImageIdByUrl = async (url) => {
+    try {
+      const response = await axios.get(API_ENDPOINTS.getImages);
+      const images = Array.isArray(response.data) ? response.data : response.data.data;
+
+      const matchedImage = images.find((img) => img.image_url === url);
+      return matchedImage?.image_id || null;
+    } catch (error) {
+      console.error('❌ Failed to fetch image ID:', error);
+      return null;
+    }
+  };
+
+  const resetContactForm = () => {
+    setC1Id(0);
+    setC2Id(0);
+    setC3Id(0);
+    setTitle('');
+    setSubtitle('');
+    setSelectedImage('');
+    setFirstTitle('');
+    setFirstsubtitle('');
+    setSelectedImage1('');
+    setSecondTitle('');
+    setSecondsubtitle('');
+    setSelectedImage2('');
+    setThirdTitle('');
+    setThirdsubtitle('');
+    setSelectedImage3('');
   };
 
   return (
@@ -37,15 +190,40 @@ const SettingFieldBodyInfo = () => {
             ].map((langOption) => (
               <li key={langOption.id}>
                 <a
-                  href="javascript:void(0)"
-                  className={`mx-2 inline-block py-1.5 px-6 text-gray-600 hover:text-gray-800 font-medium ${
+                  className={`cursor-pointer mx-2 inline-block py-1.5 px-6 text-gray-600 hover:text-gray-800 font-medium ${
                     activeTab === langOption.id
                       ? "bg-white rounded-lg text-gray-600"
                       : "tablink"
                   } whitespace-nowrap`}
-                  onClick={() => {
+                  onClick={async () => {
                     setActiveTab(langOption.id);
-                    setFormData((prev) => ({ ...prev, lang: langOption.id }));
+                    setLang(Number(langOption.id));
+                    try {
+                      const response = await axios.get(`${API_ENDPOINTS.getContactByLang}/${langOption.id}`);
+                      const data = response.data?.data;
+                      if (data) {
+                        setC1Id(data.con_addon || 0);
+                        setC2Id(data.con_addon2 || 0);
+                        setC3Id(data.con_addon3 || 0);
+                        setTitle(data.con_title || '');
+                        setSubtitle(data.con_subtitle || '');
+                        setSelectedImage(data.con_img ? `${API}/storage/uploads/${data.image.img}` : '');
+                        setFirstTitle(data.subcontact1?.scon_title || '');
+                        setFirstsubtitle(data.subcontact1?.scon_detail || '');
+                        setSelectedImage1(data.subcontact1?.scon_img ? `${API}/storage/uploads/${data.subcontact1.image.img}` : '');
+                        setSecondTitle(data.subcontact2?.scon_title || '');
+                        setSecondsubtitle(data.subcontact2?.scon_detail || '');
+                        setSelectedImage2(data.subcontact2?.scon_img ? `${API}/storage/uploads/${data.subcontact2.image.img}` : '');
+                        setThirdTitle(data.subcontact3?.scon_title || '');
+                        setThirdsubtitle(data.subcontact3?.scon_detail || '');
+                        setSelectedImage3(data.subcontact3?.scon_img ? `${API}/storage/uploads/${data.subcontact3.image.img}` : '');
+                      } else {
+                        resetContactForm();
+                      }
+                    } catch (error) {
+                      console.error('❌ Failed to fetch contact university info:', error);
+                      resetContactForm();
+                    }
                   }}
                   role="tab"
                 >
@@ -64,6 +242,8 @@ const SettingFieldBodyInfo = () => {
               </label>
               <div className="mt-2">
                 <input
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
                   type="text"
                   className="block w-full !border-gray-200 border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
                 />
@@ -78,6 +258,8 @@ const SettingFieldBodyInfo = () => {
               </label>
               <div className="mt-2">
                 <textarea
+                  value={subtitle}
+                  onChange={(e) => setSubtitle(e.target.value)}
                   className="!border-gray-300 h-60 block w-full rounded-md border-0 py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-2xl sm:leading-6"></textarea>
               </div>
           </div>
@@ -202,6 +384,8 @@ const SettingFieldBodyInfo = () => {
                         </label>
                         <div className="mt-2">
                         <input
+                            value={firsttitle}
+                            onChange={(e) => setFirstTitle(e.target.value)}
                             type="text"
                             className="!border-gray-300 block w-full border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
                         />
@@ -216,8 +400,8 @@ const SettingFieldBodyInfo = () => {
                       </label>
                       <div className="mt-2">
                         <textarea
-                          // value={afSubTitle}
-                          // onChange={(e) => setAfSubTitle(e.target.value)}
+                          value={firstsubtitle}
+                          onChange={(e) => setFirstsubtitle(e.target.value)}
                           className="!border-gray-300 h-60 block w-full rounded-md border-0 py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-2xl sm:leading-6"></textarea>
                       </div>
                     </div>
@@ -227,10 +411,10 @@ const SettingFieldBodyInfo = () => {
                       </label>
                       <div className="flex items-center justify-center w-full mt-2 border-1">
                         <label className="flex flex-col items-center justify-center w-full h-60 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
-                          {selectedImage ? (
+                          {selectedImage1 ? (
                             <div>
                               <img
-                                src={selectedImage}
+                                src={selectedImage1}
                                 alt="Selected"
                                 className="h-40 w-40 object-contain"
                               />
@@ -343,6 +527,8 @@ const SettingFieldBodyInfo = () => {
                         </label>
                         <div className="mt-2">
                         <input
+                            value={secondtitle}
+                            onChange={(e) => setSecondTitle(e.target.value)}
                             type="text"
                             className="!border-gray-300 block w-full border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
                         />
@@ -357,8 +543,8 @@ const SettingFieldBodyInfo = () => {
                       </label>
                       <div className="mt-2">
                         <textarea
-                          // value={afSubTitle}
-                          // onChange={(e) => setAfSubTitle(e.target.value)}
+                          value={secondsubtitle}
+                          onChange={(e) => setSecondsubtitle(e.target.value)}
                           className="!border-gray-300 h-60 block w-full rounded-md border-0 py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-2xl sm:leading-6"></textarea>
                       </div>
                     </div>
@@ -368,10 +554,10 @@ const SettingFieldBodyInfo = () => {
                       </label>
                       <div className="flex items-center justify-center w-full mt-2 border-1">
                         <label className="flex flex-col items-center justify-center w-full h-60 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
-                          {selectedImage ? (
+                          {selectedImage2 ? (
                             <div>
                               <img
-                                src={selectedImage}
+                                src={selectedImage2}
                                 alt="Selected"
                                 className="h-40 w-40 object-contain"
                               />
@@ -483,6 +669,8 @@ const SettingFieldBodyInfo = () => {
                         </label>
                         <div className="mt-2">
                         <input
+                            value={thirdtitle}
+                            onChange={(e) => setThirdTitle(e.target.value)}
                             type="text"
                             className="!border-gray-300 block w-full border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
                         />
@@ -497,8 +685,8 @@ const SettingFieldBodyInfo = () => {
                       </label>
                       <div className="mt-2">
                         <textarea
-                          // value={afSubTitle}
-                          // onChange={(e) => setAfSubTitle(e.target.value)}
+                          value={thirdsubtitle}
+                          onChange={(e) => setThirdsubtitle(e.target.value)}
                           className="!border-gray-300 h-60 block w-full rounded-md border-0 py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-2xl sm:leading-6"></textarea>
                       </div>
                     </div>
@@ -508,10 +696,10 @@ const SettingFieldBodyInfo = () => {
                       </label>
                       <div className="flex items-center justify-center w-full mt-2 border-1">
                         <label className="flex flex-col items-center justify-center w-full h-60 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
-                          {selectedImage ? (
+                          {selectedImage3 ? (
                             <div>
                               <img
-                                src={selectedImage}
+                                src={selectedImage3}
                                 alt="Selected"
                                 className="h-40 w-40 object-contain"
                               />
@@ -591,6 +779,6 @@ const SettingFieldBodyInfo = () => {
       </div>
     </div>
   );
-};
+});
 
 export default SettingFieldBodyInfo;

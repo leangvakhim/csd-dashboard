@@ -53,10 +53,8 @@ const Setting = () => {
             const checkResponse = await axios.get(`${API_ENDPOINTS.getSettingByLang}/${formData.lang}`);
             const id = checkResponse?.data?.data?.set_id;
             if (id) {
-                console.log("Update");
                 await axios.post(`${API_ENDPOINTS.updateSetting}/${id}`, payload);
             } else {
-                console.log("Create");
                 await axios.post(API_ENDPOINTS.createSetting, payload);
             }
         } catch (err) {
