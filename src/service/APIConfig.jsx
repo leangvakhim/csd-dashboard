@@ -371,6 +371,18 @@ const API_ENDPOINTS = {
     updateSocialSetting: `${API_BASEURL}/settingsocial/update`,
     updateOrderSocialSetting: `${API_BASEURL}/settingsocial/reorder`,
     deleteSocialSetting: `${API_BASEURL}/settingsocial/visibility`,
+
+    // contact
+    getContact: `${API_BASEURL}/contact`,
+    createContact: `${API_BASEURL}/contact/create`,
+    updateContact: `${API_BASEURL}/contact/update`,
+    getContactByLang: `${API_BASEURL}/contact/lang`,
+
+
+    // subcontact
+    getSubContact: `${API_BASEURL}/subcontact`,
+    createSubContact: `${API_BASEURL}/subcontact/create`,
+    updateSubContact: `${API_BASEURL}/subcontact/update`,
 };
 
 export { API_BASEURL, API_ENDPOINTS, API };
