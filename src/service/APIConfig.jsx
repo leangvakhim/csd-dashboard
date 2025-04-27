@@ -313,6 +313,15 @@ const API_ENDPOINTS = {
     duplicateResearch: `${API_BASEURL}/rsd/duplicate`,
     updateResearchOrder: `${API_BASEURL}/rsd/reorder`,
 
+    // rsd-title rsdtitle
+    getResearchTitle: `${API_BASEURL}/rsd-title`,
+    createResearchTitle: `${API_BASEURL}/rsd-title/create`,
+    updateResearchTitle: `${API_BASEURL}/rsd-title/update`,
+    deleteResearchTitle: `${API_BASEURL}/rsd-title/visibility`,
+    updateResearchTitleOrder: `${API_BASEURL}/rsd-title/reorder`,
+    getResearchSectionByRsdtitle: `${API_BASEURL}/rsd-title/by-rsd`,
+    syncRsdTitle: `${API_BASEURL}/rsd-title/sync-title`,
+
     // researchlab
     getResearchlab: `${API_BASEURL}/rsdl`,
     createResearchlab: `${API_BASEURL}/rsdl/create`,
@@ -383,6 +392,26 @@ const API_ENDPOINTS = {
     getSubContact: `${API_BASEURL}/subcontact`,
     createSubContact: `${API_BASEURL}/subcontact/create`,
     updateSubContact: `${API_BASEURL}/subcontact/update`,
+
+    // rsd-desc (Research Description)
+    getRsdDescription: `${API_BASEURL}/rsd-desc`,
+    createRsdDescription: `${API_BASEURL}/rsd-desc/create`,
+    updateRsdDescription: `${API_BASEURL}/rsd-desc/update`,
+
+    // rsd-project (Research Project)
+    getRsdProject: `${API_BASEURL}/rsd-project`,
+    createRsdProject: `${API_BASEURL}/rsd-project/create`,
+    updateRsdProject: `${API_BASEURL}/rsd-project/update`,
+
+    // rsd-meet (Research Project)
+    getRsdMeeting: `${API_BASEURL}/rsd-meet`,
+    createRsdMeeting: `${API_BASEURL}/rsd-meet/create`,
+    updateRsdMeeting: `${API_BASEURL}/rsd-meet/update`,
+
+    // import announcement
+    ImportAnnouncementFile: `${API_BASEURL}/announcement/import`,
+    getAnnouncementStudent: `${API_BASEURL}/announcement/student`
+
 };
 
 export { API_BASEURL, API_ENDPOINTS, API };

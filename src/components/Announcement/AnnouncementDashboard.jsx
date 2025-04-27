@@ -11,8 +11,11 @@ const AnnouncementDashboard = () => {
     useEffect(() => {
         const fetchAnnouncements = async () => {
             try {
-                const response = await axios.get(API_ENDPOINTS.getAnnouncements); // Adjust endpoint
-                setAnnouncementItems(Array.isArray(response.data.data) ? response.data.data : []);
+                const response = await axios.get(API_ENDPOINTS.getAnnouncement);
+                const result = (response.data.data || []);
+                const normalized = Array.isArray(result) ? result : result ? [result] : [];
+                const sortedAnnouncements = normalized.sort((a, b) => b.am_orders - a.am_orders);
+                setAnnouncementItems(sortedAnnouncements);
             } catch (error) {
                 console.error('Failed to fetch announcements:', error);
             }
@@ -25,7 +28,7 @@ const AnnouncementDashboard = () => {
         if (!window.confirm('Are you sure you want to delete this announcement?')) return;
 
         try {
-            await axios.put(`${API_ENDPOINTS.deleteAnnouncement}/${id}`); // Adjust endpoint
+            await axios.put(`${API_ENDPOINTS.deleteAnnouncement}/${id}`);
             setAnnouncementItems((prevItems) =>
                 prevItems.map((item) =>
                     item.a_id === id ? { ...item, display: item.display ? 0 : 1 } : item
@@ -39,9 +42,10 @@ const AnnouncementDashboard = () => {
 
     const handleEdit = async (id) => {
         try {
-            const response = await axios.get(`${API_ENDPOINTS.getAnnouncement}/${id}`); // Adjust endpoint
+            const response = await axios.get(`${API_ENDPOINTS.getAnnouncement}/${id}`);
             const announcementData = response.data;
-            navigate('/announcement-details', { state: { announcementData } }); // Adjust route
+            navigate('/announcement/announcement-details', { state: { announcementData } });
+            // console.log("state is: ",announcementData);
         } catch (error) {
             console.error('Error fetching announcement for edit:', error);
         }

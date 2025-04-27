@@ -1,8 +1,11 @@
-import React from 'react'
+import React, {useState} from 'react'
 import { Link } from 'react-router-dom'
+import axios from 'axios';
+import { API_ENDPOINTS } from '../../service/APIConfig';
 
 const AnnouncementFieldImportFile = () => {
-    const handleFileUpload = (e) => {
+    const [file, setFile] = useState(null);
+    const handleFileUpload = async (e) => {
         const file = e.target.files[0];
         if (file) {
             const validTypes = [
@@ -15,9 +18,25 @@ const AnnouncementFieldImportFile = () => {
                 alert('Invalid file type. Please upload a CSV or Excel file.');
                 return;
             }
-
-            // Handle the file processing here
             console.log("Selected file:", file.name);
+        }
+
+        setFile(file);
+
+        const formData = new FormData();
+        formData.append('file', file);
+
+        try {
+            const response = await axios.post(API_ENDPOINTS.ImportAnnouncementFile, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        });
+
+            alert(response.data.message);
+        } catch (error) {
+            console.error('Import failed:', error);
+            alert('Import failed! Please check your file.');
         }
     };
 

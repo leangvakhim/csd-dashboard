@@ -24,7 +24,7 @@ const AnnouncementField = () => {
   });
 
   const handleSave = async () => {
-   
+
     const payload = {
       lang: formData.lang,
       am_title: formData.am_title,
@@ -37,8 +37,6 @@ const AnnouncementField = () => {
       active: formData.active ? 1 : 0,
       am_orders: formData.am_orders || 0,
     };
-
-    console.log('Submitting payload:', payload);
 
     try {
       let res;
@@ -56,14 +54,12 @@ const AnnouncementField = () => {
         });
       }
       alert('Announcement saved successfully!');
-      console.log('Response:', res.data);
     } catch (err) {
       console.error('Error saving announcement:', err);
       if (err.response) {
         console.error('Server response:', err.response.data);
-        alert(`Failed to save announcement: ${err.response.data.message || 'Unknown error'}`);
       } else {
-        alert('Failed to connect to the server.');
+        console.error('Failed to connect to the server.');
       }
     }
   };

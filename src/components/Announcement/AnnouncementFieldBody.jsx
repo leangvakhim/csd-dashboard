@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import MediaLibraryModal from '../MediaLibraryModal';
 import { API_ENDPOINTS } from '../../service/APIConfig';
+import AnnouncementFieldImportFile from './AnnouncementFieldImportFile';
+import { useLocation } from 'react-router-dom';
+import axios from 'axios';
+import AnnouncementStudentTable from './AnnouncementStudentTable';
 
 const AnnouncementFieldBody = ({
   formData,
@@ -12,12 +16,41 @@ const AnnouncementFieldBody = ({
   const [activeTab, setActiveTab] = useState(formData.lang || 1);
   const [isMediaLibraryOpen, setMediaLibraryOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState('');
+  const location = useLocation();
+  const announcementData = location.state?.announcementData;
 
   useEffect(() => {
     if (formData.lang) {
       setActiveTab(formData.lang);
     }
   }, [formData.lang]);
+
+  useEffect(() => {
+    const fetchAnnouncementById = async () => {
+      try {
+        const response = await axios.get(`${API_ENDPOINTS.getAnnouncement}/${announcementData.data.am_id}`);
+
+        const fetchedData = response.data.data;
+
+        setFormData((prevData) => ({
+          ...prevData,
+          ...fetchedData,
+          am_postdate: fetchedData.am_postdate ? fetchedData.am_postdate.split(' ')[0] : '',
+          am_fav: fetchedData.am_fav === 1,
+          display: fetchedData.display === 1,
+        }));
+
+        setSubtitleContent(fetchedData.am_detail || '');
+
+      } catch (error) {
+        console.error('Error fetching announcement:', error);
+      }
+    };
+
+    if (announcementData.data.am_id) {
+      fetchAnnouncementById();
+    }
+  }, [announcementData.data.am_id]);
 
   useEffect(() => {
     if (formData.am_img) {
@@ -318,6 +351,12 @@ const AnnouncementFieldBody = ({
               onClose={() => setMediaLibraryOpen(false)}
             />
           )}
+        </div>
+        <div className='gap-4 py-2'>
+          <AnnouncementFieldImportFile />
+        </div>
+        <div className='gap-4 py-2'>
+          <AnnouncementStudentTable />
         </div>
       </div>
     </div>
