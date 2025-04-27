@@ -6,101 +6,87 @@ import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import DescriptionSection from './Description/DescriptionSection';
 import ProjectSection from './Project/ProjectSection';
 import MeetingSection from './Meeting/MeetingSection';
+import axios from "axios";
+import { API_ENDPOINTS } from "../../service/APIConfig";
 
-const ResearchFieldSection = forwardRef((props, ref) => {
+const ResearchFieldSection = forwardRef(({formData, setFormData}, ref) => {
     const [showSection, setShowSection] = useState(false);
     const [selectedSections, setSelectedSections] = useState([]);
+    const descriptionPieceRefs = useRef({});
+    const projectPieceRefs = useRef({});
+    const meetingPieceRefs = useRef({});
 
     const handleAddPage = () => {
         setShowSection(!showSection);
     };
 
     const handleAddSection = (sectionType) => {
+        const newId = selectedSections.length + 1;
         setSelectedSections([
             ...selectedSections,
-            { id: Date.now(), type: sectionType },
+            { id: newId.toString(), type: sectionType, data: {} },
         ]);
         setShowSection(false);
     };
 
-    useImperativeHandle(ref, () => ({
-        getSections: () => {
-            return selectedSections.map((section, index) => {
-                return {
-                sec_id: section.id,
-                sec_type: section.type,
-                sec_order: index + 1,
-                lang: formData?.lang ?? 1,
-                display: 0,
-                active: 1,
-                ...section.data,
-                };
-            });
+    useEffect(() => {
+        const fetchResearchTitles = async () => {
+            try {
+                const rsdId = formData.rsd_id;
+                if (!rsdId) return;
+
+                const response = await axios.get(`${API_ENDPOINTS.getResearchSectionByRsdtitle}/${rsdId}`);
+
+                const fetchedSections = response.data.data.map((item) => ({
+                    id: item.rsdt_id.toString(),
+                    type: item.rsdt_type,
+                    data: {
+                        rsdt_order: item.rsdt_order,
+                        rsdt_code: item.rsdt_code,
+                        rsdt_text: item.rsdt_text,
+                        display: item.display,
+                    },
+                }));
+
+                setSelectedSections(fetchedSections);
+
+            } catch (error) {
+                console.error("❌ Error fetching research titles:", error.response?.data || error.message);
+            }
+        };
+
+        fetchResearchTitles();
+    }, [formData.rsd_id]);
+
+    useImperativeHandle(ref, () => {
+
+        return {
+            getResearchSections: () => {
+                return selectedSections.map((section, index) => {
+                    const data = {
+                        rsdt_id: parseInt(section.id),
+                        rsdt_type: section.type,
+                        rsdt_order: index + 1,
+                        display: 0,
+                        active: 1,
+                        ...section.data,
+                    };
+                    console.log("Data is: ", data);
+                    return data;
+                });
             },
 
-            updateSectionIds: (newIds) => {
-            setSelectedSections(prev =>
-                prev.map(section => {
-                const match = newIds.find(n => n.tempId === section.id);
-                if (!match) return section;
-
-                const updatedData = { ...section.data };
-
-                if (updatedData.banners && Array.isArray(updatedData.banners)) {
-                    updatedData.banners = updatedData.banners.map(b => ({
-                    ...b,
-                    ban_sec: match.realId
-                    }));
-                }
-
-                    return {
-                        ...section,
-                        id: match.realId,
-                        isTemporary: false,
-                        data: updatedData,
-                    };
-                })
-            );
-        },
-
-        getPrograms: () => programPieceRef.current?.getPrograms?.() || [],
-        getBanners: () => bannerPieceRef.current?.getBanners?.() || [],
-        getSlideshows: () => slideshowPieceRef.current?.getSlideshows?.() || [],
-        getServices: () => servicePieceRef.current?.getServices?.() || [],
-        getAcademics: () => academicPieceRef.current?.getAcademics?.() || [],
-        getInformations: () => informationPieceRef.current?.getInformations?.() || [],
-        getFacilities: () => facilitiesPieceRef.current?.getFacilities?.() || [],
-        getGallery: () => galleryPieceRef.current?.getGallery?.() || [],
-        getSpecializations: () => specializationPieceRef.current?.getSpecializations?.() || [],
-        getTestimonials: () => testimonialPieceRef.current?.getTestimonials?.() || [],
-        getTypes: () => typePieceRef.current?.getTypes?.() || [],
-        getCriterias: () => criteriaPieceRef.current?.getCriterias?.() || [],
-        getCSDs: () => csdPieceRef.current?.getCSDs?.() || [],
-        getUnlocks: () => unlockPieceRef.current?.getUnlocks?.() || [],
-        getStudys: () => studyPieceRef.current?.getStudys?.() || [],
-        getAvailables: () => availablePieceRef.current?.getAvailables?.() || [],
-        getFees: () => feePieceRef.current?.getFees?.() || [],
-        getRequirements: () => requirementPieceRef.current?.getRequirements?.() || [],
-        getFutures: () => futurePieceRef.current?.getFutures?.() || [],
-        getPotentials: () => potentialPieceRef.current?.getPotentials?.() || [],
-        getIntroductions: () => introductionPieceRef.current?.getIntroductions?.() || [],
-        getInnovations: () => innovationPieceRef.current?.getInnovations?.() || [],
-        getFAQs: () => faqPieceRef.current?.getFAQs?.() || [],
-        getApplys: () => applyPieceRef.current?.getApplys?.() || [],
-        getImportants: () => importantPieceRef.current?.getImportants?.() || [],
-        getContacts: () => contactPieceRef.current?.getContacts?.() || [],
-        getQuestions: () => questionPieceRef.current?.getQuestions?.() || [],
-        getNews: () => newPieceRef.current?.getNews?.() || [],
-        getEvents: () => eventPieceRef.current?.getEvents?.() || [],
-        getAnnouncements: () => announcementPieceRef.current?.getAnnouncements?.() || [],
-        getResearchs: () => researchPieceRef.current?.getResearchs?.() || [],
-        getFacultys: () => facultyPieceRef.current?.getFacultys?.() || [],
-        getLabs: () => labPieceRef.current?.getLabs?.() || [],
-        getScholarships: () => scholarshipPieceRef.current?.getScholarships?.() || [],
-        getCareers: () => careerPieceRef.current?.getCareers?.() || [],
-        getPartners: () => partnerPieceRef.current?.getPartners?.() || [],
-        getFeedbacks: () => feedbackPieceRef.current?.getFeedbacks?.() || [],
-    }));
+            getDescriptions: () => {
+                return Object.values(descriptionPieceRefs.current).flatMap(ref => ref.current?.getDescriptions?.() || []);
+            },
+            getProjects: () => {
+                return Object.values(projectPieceRefs.current).flatMap(ref => ref.current?.getProjects?.() || []);
+            },
+            getMeetings: () => {
+                return Object.values(meetingPieceRefs.current).flatMap(ref => ref.current?.getMeetings?.() || []);
+            },
+        };
+    });
 
     const onDragEnd = (result) => {
         if (!result.destination) return;
@@ -127,6 +113,7 @@ const ResearchFieldSection = forwardRef((props, ref) => {
                                     draggableId={section.id.toString()}
                                     index={index}
                                 >
+
                                     {(provided) => (
                                         <div
                                             ref={provided.innerRef}
@@ -134,14 +121,23 @@ const ResearchFieldSection = forwardRef((props, ref) => {
                                             {...provided.dragHandleProps}
                                             className="bg-gray-50 rounded-lg border border-gray-300 "
                                         >
-                                            {section.type === "Description" && (
-                                                <DescriptionSection/>
+                                            {/* {section.type === "Description" && (
+                                                <DescriptionSection ref={descriptionPieceRef}/>
                                             )}
                                             {section.type === "Project" && (
-                                                <ProjectSection/>
+                                                <ProjectSection ref={projectPieceRef}/>
                                             )}
                                             {section.type === "Meeting" && (
-                                                <MeetingSection/>
+                                                <MeetingSection ref={meetingPieceRef}/>
+                                            )} */}
+                                            {section.type === "Description" && (
+                                                <DescriptionSection ref={descriptionPieceRefs.current[section.id]} />
+                                            )}
+                                            {section.type === "Project" && (
+                                                <ProjectSection ref={projectPieceRefs.current[section.id]} />
+                                            )}
+                                            {section.type === "Meeting" && (
+                                                <MeetingSection ref={meetingPieceRefs.current[section.id]} />
                                             )}
                                         </div>
                                     )}

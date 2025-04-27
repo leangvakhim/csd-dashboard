@@ -23,15 +23,15 @@ const PageFieldBody = forwardRef((props, pageRef) => {
 
                 <div className="flex-1">
                     <label className="block text-xl font-medium leading-6 text-white-900">
-                    Alias
+                        Alias
                     </label>
                     <div className="mt-2">
-                    <input
-                        type="text"
-                        value={formData?.p_alias || ''}
-                        onChange={(e) => setFormData(prev => ({ ...prev, p_alias: e.target.value }))}
-                        className="block w-full !border-gray-200 border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
-                    />
+                        <input
+                            type="text"
+                            value={formData?.p_alias || ''}
+                            onChange={(e) => setFormData(prev => ({ ...prev, p_alias: e.target.value }))}
+                            className="block w-full !border-gray-200 border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
+                        />
                     </div>
                 </div>
 

@@ -63,10 +63,12 @@ const ResearchField = () => {
                 const res = await axios.post(API_ENDPOINTS.createResearch, payload);
                 const createdResearch = res.data.data;
                 await fetchResearchById(createdResearch.rsd_id);
+                await savePageResearch(createdResearch.rsd_id);
                 return createdResearch;
             } else {
                 const res = await axios.post(`${API_ENDPOINTS.updateResearch}/${formData.rsd_id}`, payload);
                 await fetchResearchById(formData.rsd_id);
+                await savePageResearch(formData.rsd_id);
                 return { rsd_id: formData.rsd_id };
             }
 
@@ -81,8 +83,58 @@ const ResearchField = () => {
 
     };
 
-    const savePageResearch = async () => {
+    const savePageResearch = async (rsdt_text) => {
+        const researchSection = researchRef.current?.getResearchSections?.() || [];
 
+        if (!rsdt_text) {
+            console.error("rsdt_text is undefined! Cannot sync section.");
+            return;
+        }
+
+        if (rsdt_text) {
+            const sectionPayload = researchSection.map((section, index) => ({
+                rsdt_id: section.rsdt_id || null,
+                rsdt_text: rsdt_text,
+                rsdt_order: section.rsdt_order,
+                rsdt_type: section.rsdt_type,
+                rsdt_code: section.rsdt_type + "-" + section.rsdt_id,
+                active: section.active ?? 1,
+            }));
+
+            console.log("Payload is: ",sectionPayload);
+
+            try {
+                await axios.put(API_ENDPOINTS.syncRsdTitle, {
+                    rsdt_text: rsdt_text,
+                    research_title: sectionPayload,
+                });
+
+                // Fetch updated section IDs after sync
+                // const updatedSectionRes = await axios.get(`${API_ENDPOINTS.getSection}?sec_page=${page_id}`);
+                // const updatedSections = updatedSectionRes.data?.data || [];
+
+                // const updatedSectionMap = updatedSections.reduce((acc, section) => {
+                //     acc[`${section.sec_order}_${section.sec_type}`] = section.sec_id;
+                //     return acc;
+                // }, {});
+
+                // for (const section of sections) {
+                //     const resolvedSecId = updatedSectionMap[`${section.sec_order}_${section.sec_type}`] || section.sec_id;
+                //     const resolvedPageId = section.sec_page || page_id;
+                //     const handler = sectionSaveHandlers[section.sec_type];
+                //     if (['New', 'Event', 'Announcement', 'Research', 'Faculty', 'Lab', 'Scholarship', 'Career', 'Partner', 'Feedback'].includes(section.sec_type)) {
+                //         await saveHeaderSection(section.sec_type.toLowerCase(), resolvedSecId, resolvedPageId);
+                //     } else if (handler) {
+                //         await handler(resolvedSecId, resolvedPageId);
+                //     } else {
+                //         console.warn(`⚠️ No save handler defined for section type: ${section.sec_type} with order: ${section.sec_order}`);
+                //     }
+                // }
+
+            } catch (error) {
+                console.error("Failed to sync section:", error.response?.data || error.message);
+            }
+        }
     }
 
     const handleSave = async () => {
@@ -108,7 +160,7 @@ const ResearchField = () => {
                     formData={formData}
                     onImageSelect={handleImageSelect}
                     setFormData={setFormData}
-                    researchRef={researchRef}
+                    ref={researchRef}
                 />
             </div>
         </div>

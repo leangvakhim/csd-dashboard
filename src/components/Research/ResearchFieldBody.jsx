@@ -273,7 +273,10 @@ const ResearchFieldBody = forwardRef(({ formData, setFormData, onImageSelect, },
                     {/* Fourth row */}
                     <div>
                         <div className="grid grid-cols-1 gap-4 py-2">
-                            <ResearchFieldSection ref={ref}/>
+                            <ResearchFieldSection
+                            formData={formData}
+                            setFormData={setFormData}
+                            ref={ref}/>
                         </div>
                     </div>
                 </div>

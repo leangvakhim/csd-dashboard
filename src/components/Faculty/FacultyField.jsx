@@ -255,6 +255,16 @@ const FacultyField = () => {
         }
         const infoData = infoRef.current?.getData?.() || [];
 
+        const seen = new Set();
+        const filteredInfos = Array.isArray(infoData)
+            ? infoData.filter(item => {
+                const key = `${item.finfo_title}-${item.finfo_detail}`;
+                if (seen.has(key)) return false;
+                seen.add(key);
+                return item.finfo_title || item.finfo_detail;
+            })
+            : [];
+
         if (!Array.isArray(infoData)) return;
 
         for (const info of infoData) {
@@ -288,9 +298,7 @@ const FacultyField = () => {
                 }
             }
         }
-
         if (infoData.length > 0) {reorderFacultyInfo();}
-
     };
 
     const reorderFacultyInfo = async () => {
