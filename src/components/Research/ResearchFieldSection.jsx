@@ -59,7 +59,6 @@ const ResearchFieldSection = forwardRef(({formData, setFormData}, ref) => {
     }, [formData.rsd_id]);
 
     useImperativeHandle(ref, () => {
-
         return {
             getResearchSections: () => {
                 return selectedSections.map((section, index) => {
@@ -71,19 +70,44 @@ const ResearchFieldSection = forwardRef(({formData, setFormData}, ref) => {
                         active: 1,
                         ...section.data,
                     };
-                    console.log("Data is: ", data);
                     return data;
                 });
             },
 
-            getDescriptions: () => {
-                return Object.values(descriptionPieceRefs.current).flatMap(ref => ref.current?.getDescriptions?.() || []);
+            getDescriptions: async () => {
+                const descriptionData = await Promise.all(
+                    Object.values(descriptionPieceRefs.current || {}).map(async (ref) => {
+                        if (ref?.current?.getDescriptions) {
+                            return await ref.current.getDescriptions();
+                        }
+                        return null;
+                    })
+                );
+                return descriptionData.filter(item => item !== null);
             },
-            getProjects: () => {
-                return Object.values(projectPieceRefs.current).flatMap(ref => ref.current?.getProjects?.() || []);
+
+            getProjects: async () => {
+                const projectData = await Promise.all(
+                    Object.values(projectPieceRefs.current || {}).map(async (ref) => {
+                        if (ref?.current?.getProjects) {
+                            return await ref.current.getProjects();
+                        }
+                        return null;
+                    })
+                );
+                return projectData.filter(item => item !== null);
             },
-            getMeetings: () => {
-                return Object.values(meetingPieceRefs.current).flatMap(ref => ref.current?.getMeetings?.() || []);
+
+            getMeetings: async () => {
+                const meetingData = await Promise.all(
+                    Object.values(meetingPieceRefs.current || {}).map(async (ref) => {
+                        if (ref?.current?.getMeetings) {
+                            return await ref.current.getMeetings();
+                        }
+                        return null;
+                    })
+                );
+                return meetingData.filter(item => item !== null);
             },
         };
     });
@@ -97,6 +121,7 @@ const ResearchFieldSection = forwardRef(({formData, setFormData}, ref) => {
 
         setSelectedSections(newSections);
     };
+
     return (
         <div>
             <DragDropContext onDragEnd={onDragEnd}>
@@ -107,7 +132,17 @@ const ResearchFieldSection = forwardRef(({formData, setFormData}, ref) => {
                             ref={provided.innerRef}
                             className="space-y-2"
                         >
-                            {selectedSections.map((section, index) => (
+                            {selectedSections.map((section, index) => {
+                                if (section.type === "Description" && !descriptionPieceRefs.current[section.id]) {
+                                    descriptionPieceRefs.current[section.id] = React.createRef();
+                                }
+                                if (section.type === "Project" && !projectPieceRefs.current[section.id]) {
+                                    projectPieceRefs.current[section.id] = React.createRef();
+                                }
+                                if (section.type === "Meeting" && !meetingPieceRefs.current[section.id]) {
+                                    meetingPieceRefs.current[section.id] = React.createRef();
+                                }
+                                return (
                                 <Draggable
                                     key={section.id.toString()}
                                     draggableId={section.id.toString()}
@@ -121,28 +156,29 @@ const ResearchFieldSection = forwardRef(({formData, setFormData}, ref) => {
                                             {...provided.dragHandleProps}
                                             className="bg-gray-50 rounded-lg border border-gray-300 "
                                         >
-                                            {/* {section.type === "Description" && (
-                                                <DescriptionSection ref={descriptionPieceRef}/>
-                                            )}
-                                            {section.type === "Project" && (
-                                                <ProjectSection ref={projectPieceRef}/>
-                                            )}
-                                            {section.type === "Meeting" && (
-                                                <MeetingSection ref={meetingPieceRef}/>
-                                            )} */}
                                             {section.type === "Description" && (
-                                                <DescriptionSection ref={descriptionPieceRefs.current[section.id]} />
+                                                <DescriptionSection
+                                                    ref={descriptionPieceRefs.current[section.id]}
+                                                    sectionId={parseInt(section.id)}
+                                                    rsdId={formData.rsd_id} />
                                             )}
                                             {section.type === "Project" && (
-                                                <ProjectSection ref={projectPieceRefs.current[section.id]} />
+                                                <ProjectSection
+                                                    ref={projectPieceRefs.current[section.id]}
+                                                    sectionId={parseInt(section.id)}
+                                                    rsdId={formData.rsd_id} />
                                             )}
                                             {section.type === "Meeting" && (
-                                                <MeetingSection ref={meetingPieceRefs.current[section.id]} />
+                                                <MeetingSection
+                                                    ref={meetingPieceRefs.current[section.id]}
+                                                    sectionId={parseInt(section.id)}
+                                                    rsdId={formData.rsd_id} />
                                             )}
                                         </div>
                                     )}
                                 </Draggable>
-                            ))}
+                                );
+                            })}
                             {provided.placeholder}
                         </div>
                     )}

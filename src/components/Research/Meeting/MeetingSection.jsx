@@ -1,8 +1,9 @@
-import React, {useState} from 'react'
+import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } from "react";
 import MediaLibraryModal from '../../MediaLibraryModal';
 import JoditEditor from 'jodit-react';
 import 'jodit/es5/jodit.css';
-import MeetingSectionContactInfo from './MeetingSectionContactInfo';
+import { API, API_ENDPOINTS } from '../../../service/APIConfig';
+import axios from 'axios';
 
 const config = {
     readonly: false,  // Set to true for read-only mode
@@ -13,11 +14,14 @@ const config = {
     },
 };
 
-const MeetingSection = () => {
+const MeetingSection = forwardRef(({sectionId, rsdId}, ref) => {
     const [isRotatedButton1, setIsRotatedButton1] = useState(false);
-    const [subtitleContent, setSubtitleContent] = useState('');
     const [isMediaLibraryOpen, setMediaLibraryOpen] = useState(false);
     const [selectedImage, setSelectedImage] = useState("");
+    const [displayMeeting, setDisplayMeeting] = useState(0);
+    const [detail, setDetail] = useState("");
+    const [title, setTitle] = useState("");
+    const [meetingId, setMeetingId] = useState(null);
 
     const openMediaLibrary = () => {
         // setCurrentField(field);
@@ -30,6 +34,88 @@ const MeetingSection = () => {
         }
         setMediaLibraryOpen(false);
     };
+
+    const getImageIdByUrl = async (url) => {
+        try {
+        const response = await axios.get(API_ENDPOINTS.getImages);
+        const images = Array.isArray(response.data) ? response.data : response.data.data;
+
+        const matchedImage = images.find((img) => img.image_url === url);
+        return matchedImage?.image_id || null;
+        } catch (error) {
+        console.error('❌ Failed to fetch image ID:', error);
+        return null;
+        }
+    };
+
+    const handleToggleDisplay = async () => {
+        try {
+            const newDisplay = displayMeeting === 1 ? 0 : 1;
+            await axios.post(`${API_ENDPOINTS.updateResearchTitle}/${sectionId}`, {
+                rsdt_id: sectionId,
+                display: newDisplay,
+            });
+            setDisplayMeeting(newDisplay);
+        } catch (error) {
+            console.error("Failed to update display:", error);
+        }
+    };
+
+    const handleDeleteSection = async () => {
+        if (!window.confirm("Are you sure you want to delete this section?")) return;
+
+        try {
+            await axios.put(`${API_ENDPOINTS.deleteResearchTitle}/${sectionId}`);
+            window.location.reload();
+        } catch (error) {
+            console.error('Failed to delete section:', error);
+        }
+    };
+
+    useImperativeHandle(ref, () => ({
+        getMeetings: async () => {
+        const imgId = await getImageIdByUrl(selectedImage);
+
+            const data = {
+                rsdm_id: meetingId,
+                rsdm_title: title,
+                rsdm_img: imgId,
+                rsdm_detail: detail,
+                rsdm_rsdtitle: sectionId,
+                rsdId: rsdId,
+            }
+            return data;
+        }
+    }));
+
+    useEffect(() => {
+        const fetchMeetings = async () => {
+        try {
+            const response = await axios.get(`${API_ENDPOINTS.getRsdMeeting}?rsdm_rsdtitle=${sectionId}`);
+            const meetings = response.data.data || [];
+            if (meetings.length > 0) {
+                const meeting = meetings.find(item => item?.title?.rsdt_text === rsdId);
+                if (meeting) {
+                    setMeetingId(meeting.rsdm_id || null);
+                    setTitle(meeting.rsdm_title || '');
+                    setDetail(meeting.rsdm_detail || '');
+                    setSelectedImage(meeting.img ? `${API}/storage/uploads/${meeting.img.img}` : '');
+                }
+            }
+
+            const sectionRes = await axios.get(`${API_ENDPOINTS.getResearchTitle}/${sectionId}`);
+            const sectionData = sectionRes.data.data;
+            setDisplayMeeting(sectionData.display || 0);
+
+        } catch (error) {
+            console.error("Failed to fetch banners:", error);
+        }
+        };
+
+        if(sectionId && rsdId){
+            fetchMeetings();
+        }
+    },[sectionId]);
 
     return (
         <div className="grid grid-cols-1 gap-4 ">
@@ -48,6 +134,7 @@ const MeetingSection = () => {
                         </div>
                         <div className="flex gap-1">
                             <svg
+                                onClick={() => handleDeleteSection()}
                                 xmlns="http://www.w3.org/2000/svg"
                                 fill="none"
                                 viewBox="0 0 24 24"
@@ -84,6 +171,8 @@ const MeetingSection = () => {
                         </label>
                         <div className="mt-2">
                         <input
+                            value={title}
+                            onChange={(e) => setTitle(e.target.value)}
                             type="text"
                             className="block w-full !border-gray-200 border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
                         />
@@ -96,14 +185,18 @@ const MeetingSection = () => {
                         </label>
                         <div className="mt-2">
                         <label class="toggle-switch mt-2">
-                            <input type="checkbox" />
+                            <input
+                                type="checkbox"
+                                checked={displayMeeting === 1}
+                                onChange={handleToggleDisplay}
+                                 />
                             <span class="slider"></span>
                         </label>
                         </div>
                     </div>
                 </div>
                 {/* Row 2 */}
-                <div className="grid grid-cols-1 md:!grid-cols-2 gap-4 mx-4 py-2">
+                <div className="grid grid-cols-1 gap-4 mx-4 py-2">
                     <div className="flex-1">
                         <label className="block text-xl font-medium leading-6 text-white-900">
                             Image
@@ -186,16 +279,6 @@ const MeetingSection = () => {
                             onClose={() => setMediaLibraryOpen(false)}
                         />
                     )}
-
-                    {/* <div className="flex-1">
-                        <label className="block text-xl font-medium leading-6 text-white-900">
-                            Contact Info
-                        </label>
-                        <div className="mt-2">
-                            <textarea className="!border-gray-300 h-60 block w-full rounded-md border-0 py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-2xl sm:leading-6"></textarea>
-                        </div>
-                    </div> */}
-                    <MeetingSectionContactInfo/>
                 </div>
                 {/* Row 3 */}
                 <div className="grid grid-cols-1 gap-4 px-4 py-2 mb-1">
@@ -205,17 +288,16 @@ const MeetingSection = () => {
                         </label>
                         <div className="mt-2 cursor-text">
                             <JoditEditor
-                                value={subtitleContent}
+                                value={detail}
                                 config={config}
-                                onChange={(newContent) => setSubtitleContent(newContent)}
+                                onChange={(newContent) => setDetail(newContent)}
                             />
-                            {/* <textarea className="!border-gray-300 h-60 block w-full rounded-md border-0 py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-2xl sm:leading-6"></textarea> */}
                         </div>
                     </div>
                 </div>
             </details>
         </div>
     )
-}
+})
 
 export default MeetingSection

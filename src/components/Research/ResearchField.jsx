@@ -83,6 +83,115 @@ const ResearchField = () => {
 
     };
 
+    const saveDescription = async (savedSectionId, savedRsdId) => {
+        const descriptions = await researchRef.current?.getDescriptions?.() || [];
+
+        if (descriptions.length > 0 && savedSectionId) {
+            const existingResponse = await axios.get(`${API_ENDPOINTS.getRsdDescription}?rsdd_rsdtile=${savedSectionId}`);
+            const existingItems = existingResponse.data?.data || [];
+            const existingIds = existingItems.map(slide => slide.rsdd_id);
+            for (const description of descriptions) {
+
+                const descriptionPayload = {
+                    rsdd_rsdtile: savedSectionId,
+                    rsdd_title: description.rsdd_title || '',
+                    rsdd_details: description.rsdd_details || '',
+                    rsdId: savedRsdId,
+                };
+
+                if(
+                    description.rsdd_id &&
+                    existingIds.includes(parseInt(description.rsdd_id)) &&
+                    parseInt(description.rsdd_rsdtile) === parseInt(savedSectionId) &&
+                    parseInt(description.rsdId) === parseInt(savedRsdId)
+                ){
+                    await axios.post(`${API_ENDPOINTS.updateRsdDescription}/${description.rsdd_id}`, { research_desc: descriptionPayload });
+                } else {
+                    if (description.rsdd_rsdtile) {
+                        if (!description.rsdd_id || !existingIds.includes(parseInt(description.rsdd_id))) {
+                            await axios.post(API_ENDPOINTS.createRsdDescription, { research_desc: [descriptionPayload] });
+                        }
+                    }
+                }
+            }
+        }
+    };
+
+    const saveProject = async (savedSectionId, savedRsdId) => {
+        const projects = await researchRef.current?.getProjects?.() || [];
+
+        if (projects.length > 0 && savedSectionId) {
+            const existingResponse = await axios.get(`${API_ENDPOINTS.getRsdProject}?rsdp_rsdtile=${savedSectionId}`);
+            const existingItems = existingResponse.data?.data || [];
+            const existingIds = existingItems.map(slide => slide.rsdp_id);
+            for (const project of projects) {
+
+                const projectPayload = {
+                    rsdp_rsdtile: savedSectionId,
+                    rsdp_title: project.rsdp_title || '',
+                    rsdp_detail: project.rsdp_detail || '',
+                    rsdId: savedRsdId,
+                };
+
+                if(
+                    project.rsdp_id &&
+                    existingIds.includes(parseInt(project.rsdp_id)) &&
+                    parseInt(project.rsdp_rsdtile) === parseInt(savedSectionId) &&
+                    parseInt(project.rsdId) === parseInt(savedRsdId)
+                ){
+                    await axios.post(`${API_ENDPOINTS.updateRsdProject}/${project.rsdp_id}`, { research_project: projectPayload });
+                } else {
+                    if (project.rsdp_rsdtile) {
+                        if (!project.rsdp_id || !existingIds.includes(parseInt(project.rsdp_id))) {
+                            await axios.post(API_ENDPOINTS.createRsdProject, { research_project: [projectPayload] });
+                        }
+                    }
+                }
+            }
+        }
+    };
+
+    const saveMeeting = async (savedSectionId, savedRsdId) => {
+        const meetings = await researchRef.current?.getMeetings?.() || [];
+
+        if (meetings.length > 0 && savedSectionId) {
+            const existingResponse = await axios.get(`${API_ENDPOINTS.getRsdMeeting}?rsdm_rsdtitle=${savedSectionId}`);
+            const existingItems = existingResponse.data?.data || [];
+            const existingIds = existingItems.map(slide => slide.rsdm_id);
+            for (const meeting of meetings) {
+
+                const meetingtPayload = {
+                    rsdm_rsdtitle: savedSectionId,
+                    rsdm_title: meeting.rsdm_title || '',
+                    rsdm_img: meeting.rsdm_img || '',
+                    rsdm_detail: meeting.rsdm_title || '',
+                    rsdId: savedRsdId,
+                };
+
+                if(
+                    meeting.rsdm_id &&
+                    existingIds.includes(parseInt(meeting.rsdm_id)) &&
+                    parseInt(meeting.rsdm_rsdtitle) === parseInt(savedSectionId) &&
+                    parseInt(meeting.rsdId) === parseInt(savedRsdId)
+                ){
+                    await axios.post(`${API_ENDPOINTS.updateRsdMeeting}/${meeting.rsdm_id}`, { research_meet: meetingtPayload });
+                } else {
+                    if (meeting.rsdm_rsdtitle) {
+                        if (!meeting.rsdm_id || !existingIds.includes(parseInt(meeting.rsdm_id))) {
+                            await axios.post(API_ENDPOINTS.createRsdMeeting, { research_meet: [meetingtPayload] });
+                        }
+                    }
+                }
+            }
+        }
+    };
+
+    const sectionSaveHandlers = {
+        Description: saveDescription,
+        Project: saveProject,
+        Meeting: saveMeeting,
+    };
+
     const savePageResearch = async (rsdt_text) => {
         const researchSection = researchRef.current?.getResearchSections?.() || [];
 
@@ -97,11 +206,8 @@ const ResearchField = () => {
                 rsdt_text: rsdt_text,
                 rsdt_order: section.rsdt_order,
                 rsdt_type: section.rsdt_type,
-                rsdt_code: section.rsdt_type + "-" + section.rsdt_id,
                 active: section.active ?? 1,
             }));
-
-            console.log("Payload is: ",sectionPayload);
 
             try {
                 await axios.put(API_ENDPOINTS.syncRsdTitle, {
@@ -110,26 +216,24 @@ const ResearchField = () => {
                 });
 
                 // Fetch updated section IDs after sync
-                // const updatedSectionRes = await axios.get(`${API_ENDPOINTS.getSection}?sec_page=${page_id}`);
-                // const updatedSections = updatedSectionRes.data?.data || [];
+                const updatedSectionRes = await axios.get(`${API_ENDPOINTS.getResearchTitle}?rsdt_text=${rsdt_text}`);
+                const updatedSections = updatedSectionRes.data?.data || [];
 
-                // const updatedSectionMap = updatedSections.reduce((acc, section) => {
-                //     acc[`${section.sec_order}_${section.sec_type}`] = section.sec_id;
-                //     return acc;
-                // }, {});
+                const updatedSectionMap = updatedSections.reduce((acc, section) => {
+                    acc[`${section.rsdt_order}_${section.rsdt_type}`] = section.rsdt_id;
+                    return acc;
+                }, {});
 
-                // for (const section of sections) {
-                //     const resolvedSecId = updatedSectionMap[`${section.sec_order}_${section.sec_type}`] || section.sec_id;
-                //     const resolvedPageId = section.sec_page || page_id;
-                //     const handler = sectionSaveHandlers[section.sec_type];
-                //     if (['New', 'Event', 'Announcement', 'Research', 'Faculty', 'Lab', 'Scholarship', 'Career', 'Partner', 'Feedback'].includes(section.sec_type)) {
-                //         await saveHeaderSection(section.sec_type.toLowerCase(), resolvedSecId, resolvedPageId);
-                //     } else if (handler) {
-                //         await handler(resolvedSecId, resolvedPageId);
-                //     } else {
-                //         console.warn(`⚠️ No save handler defined for section type: ${section.sec_type} with order: ${section.sec_order}`);
-                //     }
-                // }
+                for (const section of researchSection) {
+                    const resolvedSecId = updatedSectionMap[`${section.rsdt_order}_${section.rsdt_type}`] || section.rsdt_id;
+                    const resolvedRsdId = section.rsdt_text || rsdId;
+                    const handler = sectionSaveHandlers[section.rsdt_type];
+                    if (handler) {
+                        await handler(resolvedSecId, resolvedRsdId);
+                    } else {
+                        console.warn(`⚠️ No save handler defined for section type: ${section.rsdt_type} with order: ${section.rsdt_order}`);
+                    }
+                }
 
             } catch (error) {
                 console.error("Failed to sync section:", error.response?.data || error.message);
