@@ -64,41 +64,57 @@ const DeveloperFieldSocial = forwardRef(({ formData, setFormData }, ref) => {
     setMediaLibraryOpen(true);
   };
 
-  const handleImageSelect = (imageUrl) => {
-    const finalUrl = typeof imageUrl === "object" && imageUrl?.url ? imageUrl.url : imageUrl;
+  // const handleImageSelect = (imageUrl) => {
+  //   const finalUrl = typeof imageUrl === "object" && imageUrl?.url ? imageUrl.url : imageUrl;
 
-    setSlider((prevSlider) => {
-      const updated = prevSlider.map((item) =>
-        item.id === currentSliderId
-          ? {
+  //   setSlider((prevSlider) => {
+  //     const updated = prevSlider.map((item) =>
+  //       item.id === currentSliderId
+  //         ? {
+  //             ...item,
+  //             [currentField]: finalUrl || "",
+  //             // ...(finalUrl === "" && { img: { img: "" } })
+  //             img: { img: finalUrl ? finalUrl.split('/').pop() : "" }
+  //           }
+  //         : item
+  //     );
+  //     return updated;
+  //   });
+
+  //   setFormData((prevForm) => {
+  //     const updated = Array.isArray(prevForm.socialSlider)
+  //       ? prevForm.socialSlider.map((item) =>
+  //           item.id === currentSliderId || item.ds_id?.toString() === currentSliderId?.toString()
+  //             ? {
+  //                 ...item,
+  //                 image: finalUrl || "",
+  //                 img: { img: finalUrl ? finalUrl.split('/').pop() : "" }
+  //               }
+  //             : item
+  //         )
+  //       : prevForm.socialSlider;
+
+  //     return {
+  //       ...prevForm,
+  //       socialSlider: updated,
+  //     };
+  //   });
+
+  //   setMediaLibraryOpen(false);
+  // };
+
+  const handleImageSelect = (imageUrl, field) => {
+    setSlider((prevSlider) =>
+      prevSlider.map((item) => {
+        if (item.id === currentSliderId) {
+          return {
               ...item,
-              [currentField]: finalUrl || "",
-              ...(finalUrl === "" && { img: { img: "" } })
-            }
-          : item
-      );
-      return updated;
-    });
-
-    setFormData((prevForm) => {
-      const updated = Array.isArray(prevForm.socialSlider)
-        ? prevForm.socialSlider.map((item) =>
-            item.id === currentSliderId || item.ds_id?.toString() === currentSliderId?.toString()
-              ? {
-                  ...item,
-                  image: finalUrl || "",
-                  img: { img: finalUrl ? finalUrl.split('/').pop() : "" }
-                }
-              : item
-          )
-        : prevForm.socialSlider;
-
-      return {
-        ...prevForm,
-        socialSlider: updated,
-      };
-    });
-
+              [currentField]: imageUrl || null,
+          };
+        }
+        return item;
+      })
+    );
     setMediaLibraryOpen(false);
   };
 
@@ -132,15 +148,30 @@ const DeveloperFieldSocial = forwardRef(({ formData, setFormData }, ref) => {
         ? formData.socialSlider
         : [formData.socialSlider];
 
-      const transformed = safeArray.map(item => ({
-        id: item.ds_id?.toString() || (item.id?.toString() ?? ""),
-        title: item.ds_title || item.title || "",
-        subtitle: item.ds_link || item.subtitle || "",
-        image: item.img?.img ? `${API}/storage/uploads/${item.img.img}` : item.image || "",
-        display: item.display === 1 || item.display === true,
-      }));
+      const transformed = safeArray
+        .filter(item => {
+          const idToCompare = item.ds_developer;
+          return idToCompare?.toString() === formData.d_id?.toString();
+        })
+        .map(item => ({
+          id: item.ds_id?.toString() || (item.id?.toString() ?? ""),
+          title: item.ds_title || item.title || "",
+          subtitle: item.ds_link || item.subtitle || "",
+          image: item.img?.img ? `${API}/storage/uploads/${item.img.img}` : item.image || "",
+          display: item.display === 1 || item.display === true,
+        }));
 
-      setSlider(transformed);
+        if (transformed.length > 0) {
+          setSlider(transformed);
+        } else {
+          setSlider([{
+            id: "1",
+            title: "social 1",
+            subtitle: "",
+            image: "",
+            display: false || 0,
+          }]);
+        }
     }
   }, [formData.socialSlider]);
 
@@ -278,7 +309,7 @@ const DeveloperFieldSocial = forwardRef(({ formData, setFormData }, ref) => {
                             </label>
                             <div className="flex items-center justify-center w-full mt-2 border-1">
                               <label className="flex flex-col items-center justify-center w-full h-60 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
-                                {sliders.image && sliders.image !== "" && sliders.image.trim() !== "" ? (
+                                {sliders.image ? (
                                   <div>
                                     <img
                                       src={sliders.image}

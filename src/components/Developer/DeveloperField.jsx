@@ -98,10 +98,28 @@ const DeveloperField = () => {
           active: 1
         };
 
-        if (social.ds_id && Number(social.ds_id) > 0) {
-          await axios.post(`${API_ENDPOINTS.updateSocialDeveloper}/${social.ds_id}`, { developer_social: payload });
-        } else {
-          await axios.post(API_ENDPOINTS.createSocialDeveloper, { developer_social: [payload] });
+        try {
+          if (social.ds_id) {
+            const res = await axios.get(`${API_ENDPOINTS.getSocialDeveloper}/${social.ds_id}`);
+
+              if (res.data && res.data.data) {
+                if(res.data.data.ds_developer === developerId){
+                  await axios.post(`${API_ENDPOINTS.updateSocialDeveloper}/${social.ds_id}`, {developer_social: payload });
+                }else {
+                  await axios.post(API_ENDPOINTS.createSocialDeveloper, {developer_social: [payload] });
+                }
+              } else {
+                await axios.post(API_ENDPOINTS.createSocialDeveloper, {developer_social: [payload] });
+              }
+            } else {
+              await axios.post(API_ENDPOINTS.createSocialDeveloper, {developer_social: [payload] });
+            }
+        } catch (error) {
+            if (error.response && error.response.status === 404) {
+              await axios.post(API_ENDPOINTS.createSocialDeveloper, {developer_social: [payload] });
+            } else {
+              console.error("❌ Error saving developer info:", error);
+            }
         }
       }
 
