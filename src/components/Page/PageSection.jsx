@@ -78,6 +78,8 @@ import AnnouncementPiece from "./Announcement/AnnouncementPiece";
 import ContactPiece from "./Contact/ContactPiece";
 import QuestionPiece from "./Question/QuestionPiece";
 import AboutPiece from "./About/AboutPiece";
+import { useLocation } from "react-router-dom";
+import { useLoading } from "../Context/LoadingContext";
 const sectionOptions = [
   {
     type: "Slideshow",
@@ -349,12 +351,14 @@ const PageSection = forwardRef(({ formData = {}, setFormData = {}, page_id }, re
   const feedbackPieceRef = useRef();
   const [showSection, setShowSection] = useState(false);
   const [selectedSections, setSelectedSections] = useState([]);
+  const {setLoading} = useLoading();
 
   useEffect(() => {
     const fetchSections = async () => {
       if (!page_id) return;
 
       try {
+        setLoading(true);
         const response = await axios.get(`${API_ENDPOINTS.getSectionByPage}/${page_id}`);
         const fetchedSections = response.data?.data || [];
 
@@ -367,6 +371,8 @@ const PageSection = forwardRef(({ formData = {}, setFormData = {}, page_id }, re
         setSelectedSections(mapped);
       } catch (error) {
         console.error("❌ Failed to fetch sections:", error);
+      }finally{
+        setLoading(false);
       }
     };
 
@@ -461,7 +467,6 @@ const PageSection = forwardRef(({ formData = {}, setFormData = {}, page_id }, re
       id: selectedSections.length + 1,
       type: sectionType,
       isTemporary: true,
-      // data: sectionType === "Banner" ? { banners: [] } : {},
     };
 
     setSelectedSections([...selectedSections, newSection]);

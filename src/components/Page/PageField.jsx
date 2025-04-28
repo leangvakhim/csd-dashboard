@@ -5,11 +5,13 @@ import Aside from '../Aside'
 import axios from 'axios'
 import { API_ENDPOINTS } from '../../service/APIConfig'
 import { useLocation } from 'react-router-dom'
+import { useLoading } from '../Context/LoadingContext'
 
 const PageField = () => {
     const location = useLocation();
     const pageData = location.state?.pageData;
     const pageRef = useRef();
+    const {setLoading} = useLoading();
     const [formData, setFormData] = useState({
         p_title: '',
         p_alias: '',
@@ -20,8 +22,10 @@ const PageField = () => {
 
     useEffect(() => {
         if (pageData && pageData.data) {
+            // setLoading(true);
             setFormData(pageData.data);
         }
+        // setLoading(false);
     }, [pageData]);
 
     // Single
@@ -820,6 +824,7 @@ const PageField = () => {
                 }
             }
         }
+        // setLoading(false);
     };
     const saveSubStudyDegreeSliders = async (studyId, sliders) => {
         if (!studyId || !Array.isArray(sliders)) return;
@@ -1900,7 +1905,6 @@ const PageField = () => {
         try{
             await savePage();
             alert("Page save successfully");
-            // window.location.reload();
         } catch (err) {
             console.error(" Error saving:", err);
         }
