@@ -9,6 +9,7 @@ const DeveloperDashboard = () => {
     const [activeDropdown, setActiveDropdown] = useState(null);
     const [developerItems, setFDeveloperItems] = useState([]);
     const [images, setImages] = useState([]);
+    const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
 
     const moveItem = async (index, direction) => {
         const newItems = [...developerItems];
@@ -156,21 +157,24 @@ const DeveloperDashboard = () => {
                                         <i className="ti ti-chevron-down text-xl"></i>
                                     </a> |
                                     <div className="relative">
-                                        {/* <button
-                                            onClick={() => setActiveDropdown(activeDropdown === item.f_id ? null : item.f_id)}
-                                            className="font-medium text-gray-900 hover:text-blue-500"
-                                        >
-                                            <i className="ti ti-dots-vertical text-xl"></i>
-                                        </button> */}
                                         <button
-                                            onClick={() => setActiveDropdown(activeDropdown === item.d_id ? null : item.d_id)} // Toggling the dropdown
+                                            onClick={(e) => {
+                                                const button = e.currentTarget;
+                                                const parent = button.offsetParent;
+                                                const rect = button.getBoundingClientRect();
+                                                const parentRect = parent.getBoundingClientRect();
+                                                setDropdownPosition({ top: rect.bottom - parentRect.top, left: rect.left - parentRect.left });
+                                                setActiveDropdown(activeDropdown === item.d_id ? null : item.d_id);
+                                            }}
                                             className="font-medium text-gray-900 hover:text-blue-500"
                                         >
                                             <i className="ti ti-dots-vertical text-xl"></i>
                                         </button>
 
                                         {activeDropdown === item.d_id && (
-                                            <div key={index} className="fixed right-0 mt-2 w-36 mr-8 bg-white border border-gray-300 rounded-md shadow-md z-50">
+                                            <div key={index}
+                                                style={{ position: 'absolute', top: `${dropdownPosition.top}px`, left: `-65px` }}
+                                                className="fixed right-0 mt-2 w-36 mr-8 bg-white border border-gray-300 rounded-md shadow-md z-50">
                                                 <div className="py-1">
                                                     <a
                                                         onClick={() => handleEdit(item.d_id)}
