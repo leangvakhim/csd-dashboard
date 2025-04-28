@@ -5,6 +5,7 @@ import SettingHeader from '../components/Setting/SettingHeader'
 import SettingField from '../components/Setting/SettingField'
 import axios from 'axios';
 import { API_ENDPOINTS } from '../service/APIConfig';
+import Swal from 'sweetalert2';
 
 const Setting = () => {
 
@@ -33,15 +34,31 @@ const Setting = () => {
     useEffect(() => {
         const fetchSetting = async () => {
             try {
+                Swal.fire({
+                    title: 'Loading setting...',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+
                 const { data } = await axios.get(`${API_ENDPOINTS.getSettingByLang}/${formData.lang}`);
                 setFormData({
                     ...data.data,
                 });
+
+                Swal.close();
             } catch (err) {
+                Swal.close();
                 if (err.response?.status === 404) {
                     console.log(`No setting found for lang=${formData.lang}.`);
                 } else {
                     console.error("Failed to fetch setting:", err);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error!',
+                        text: 'Failed to fetch setting.',
+                    });
                 }
             }
         };
@@ -52,17 +69,17 @@ const Setting = () => {
     }, [formData.lang]);
 
     const saveSetting = async () => {
-        const payload = {
-            lang: formData.lang || 1,
-            set_facultytitle: formData.set_facultytitle,
-            set_facultydep: formData.set_facultydep,
-            set_logo: formData.set_logo,
-            set_amstu: parseFloat(formData.set_amstu),
-            set_baseurl: formData.set_baseurl,
-            set_enroll: parseFloat(formData.set_enroll),
-        };
-
         try {
+            const payload = {
+                lang: formData.lang || 1,
+                set_facultytitle: formData.set_facultytitle,
+                set_facultydep: formData.set_facultydep,
+                set_logo: formData.set_logo,
+                set_amstu: parseFloat(formData.set_amstu),
+                set_baseurl: formData.set_baseurl,
+                set_enroll: parseFloat(formData.set_enroll),
+            };
+
             const checkResponse = await axios.get(`${API_ENDPOINTS.getSettingByLang}/${formData.lang}`);
             const id = checkResponse?.data?.data?.set_id;
             if (id) {
@@ -137,9 +154,33 @@ const Setting = () => {
     };
 
     const handleSave = async () => {
-        await saveSetting();
-        await saveSettingSocial();
-        alert("Setting saved successfully!");
+        try {
+            Swal.fire({
+                title: 'Saving settings...',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            await saveSetting();
+            await saveSettingSocial();
+
+            Swal.fire({
+                icon: 'success',
+                title: 'Saved!',
+                text: 'Settings saved successfully',
+                timer: 1500,
+                showConfirmButton: false
+            });
+        } catch (error) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error!',
+                text: 'Failed to save settings.',
+            });
+            console.error('Error saving settings:', error);
+        }
     }
     return (
         <div id="main-wrapper" className=" flex">
