@@ -5,19 +5,21 @@ import AnnouncementFieldImportFile from './AnnouncementFieldImportFile';
 import { useLocation } from 'react-router-dom';
 import axios from 'axios';
 import AnnouncementStudentTable from './AnnouncementStudentTable';
+import Swal from 'sweetalert2';
 
 const AnnouncementFieldBody = ({
   formData,
   setFormData,
   subtitleContent,
   setSubtitleContent,
-  onImageSelect,
+  onImageSelect
 }) => {
   const [activeTab, setActiveTab] = useState(formData.lang || 1);
   const [isMediaLibraryOpen, setMediaLibraryOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState('');
   const location = useLocation();
   const announcementData = location.state?.announcementData;
+  const [selectedStudents, setSelectedStudents] = useState([]);
 
   useEffect(() => {
     if (formData.lang) {
@@ -120,6 +122,47 @@ const AnnouncementFieldBody = ({
       }
     }
     setMediaLibraryOpen(false);
+  };
+
+  const handleDeleteRecords = async () => {
+    if (selectedStudents.length === 0) {
+      Swal.fire('Warning', 'Please select at least one student to delete.', 'warning');
+      return;
+    }
+
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+      buttonsStyling: false,
+      customClass: {
+        confirmButton: 'bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded !mr-2',
+        cancelButton: '!bg-red-600 hover:!bg-red-700 text-white py-2 px-4 rounded',
+      }
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          const response = await axios.post(`${API_ENDPOINTS.DeleteAnnouncementStudentRecord}`, {
+            student_ids: selectedStudents
+          });
+
+          Swal.fire({
+            title: "Deleted!",
+            text: response.data.message || "Records deleted successfully.",
+            icon: "success"
+          });
+
+          window.location.reload();
+        } catch (error) {
+          console.error('Error delete records:', error);
+          Swal.fire('Error', 'Failed to delete the records.', 'error');
+        }
+      }
+    });
   };
 
   return (
@@ -353,10 +396,15 @@ const AnnouncementFieldBody = ({
           )}
         </div>
         <div className='gap-4 py-2'>
-          <AnnouncementFieldImportFile />
+          <AnnouncementFieldImportFile
+            onDelete={handleDeleteRecords}
+            selectedStudents={selectedStudents}
+          />
         </div>
         <div className='gap-4 py-2'>
-          <AnnouncementStudentTable />
+          <AnnouncementStudentTable
+            onSelectedStudentsChange={setSelectedStudents}
+          />
         </div>
       </div>
     </div>
