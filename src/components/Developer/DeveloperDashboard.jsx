@@ -135,7 +135,7 @@ const DeveloperDashboard = () => {
                                     scope="row"
                                     className="px-6 py-4"
                                 >
-                                    <img src={getImageUrl(item.d_img)} alt="" className='size-12 rounded-full' />
+                                    <img src={getImageUrl(item.d_img)} alt="" className='size-12' />
                                 </td>
                                 <td className="px-6 py-4">{item.d_name}</td>
                                 <td className="px-6 py-4">{item.d_position}</td>
