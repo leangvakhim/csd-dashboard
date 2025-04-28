@@ -97,7 +97,7 @@ const DeveloperDashboard = () => {
     };
 
     return (
-        <div className="relative overflow-x-auto shadow-md px-8">
+        <div className="relative overflow-x-auto shadow-md px-8 mb-32">
             <table className="w-full text-sm text-left border border-gray-200 text-gray-500 ">
                 <thead className="text-xs text-gray-700  uppercase bg-gray-50 ">
                     <tr>
