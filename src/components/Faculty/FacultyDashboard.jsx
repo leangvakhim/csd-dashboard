@@ -2,22 +2,27 @@ import React, { useEffect, useState } from 'react'
 import { API_BASEURL, API_ENDPOINTS, API } from '../../service/APIConfig'
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { useLoading } from '../Context/LoadingContext';
 
 const FacultyDashboard = () => {
     const [activeDropdown, setActiveDropdown] = useState(null);
     const [facultyItems, setFacultyItems] = useState([]);
     const navigate = useNavigate();
+    const {setLoading} = useLoading();
     const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
 
     useEffect(() => {
         const fetchEvents = async () => {
             try {
+                setLoading(true);
                 const response = await axios.get(API_ENDPOINTS.getFaculty);
                 const result = response.data.data;
                 const normalized = Array.isArray(result) ? result : result ? [result] : [];
                 setFacultyItems(normalized);
             } catch (error) {
                 console.error('Failed to fetch events:', error);
+            }finally{
+                setLoading(false);
             }
         };
 

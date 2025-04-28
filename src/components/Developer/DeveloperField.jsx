@@ -5,11 +5,13 @@ import DeveloperFieldBody from './DeveloperFieldBody'
 import axios from 'axios';
 import { API_ENDPOINTS } from '../../service/APIConfig';
 import { useLocation } from 'react-router-dom';
+import { useLoading } from "../Context/LoadingContext";
 
 const DeveloperField = () => {
   const location = useLocation();
   const developData = location.state?.developData;
   const developerFieldRef = useRef();
+  const {setLoading} = useLoading();
   const [formData, setFormData] = useState({
     d_name: "",
     d_position: "",
@@ -36,9 +38,16 @@ const DeveloperField = () => {
       }
     };
 
-    if (developData?.data?.d_id) {
+    try{
+      setLoading(true);
+      if (developData?.data?.d_id) {
       fetchDeveloper(developData.data.d_id);
       fetchDeveloperSocials(developData.data.d_id);
+    }
+    }catch(error){
+      console.error(error);
+    }finally{
+      setLoading(false);
     }
   }, [developData]);
 
@@ -147,10 +156,12 @@ const DeveloperField = () => {
 
   const handleSubmit = async () => {
     try {
+      setLoading(true);
       await saveDeveloper();
-      alert("Developer saved successfully");
     } catch (error) {
       console.log('Unable to save developer: ', error);
+    }finally{
+      setLoading(false);
     }
   };
 

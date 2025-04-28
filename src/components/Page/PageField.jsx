@@ -6,6 +6,7 @@ import axios from 'axios'
 import { API_ENDPOINTS } from '../../service/APIConfig'
 import { useLocation } from 'react-router-dom'
 import { useLoading } from '../Context/LoadingContext'
+import Swal from 'sweetalert2';
 
 const PageField = () => {
     const location = useLocation();
@@ -1902,13 +1903,34 @@ const PageField = () => {
     }
 
     const handleSave = async () => {
-        try{
+        try {
+            Swal.fire({
+                title: 'Saving...',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
             await savePage();
-            alert("Page save successfully");
+
+            Swal.fire({
+                icon: 'success',
+                title: 'Saved!',
+                text: 'Page saved successfully',
+                timer: 1500,
+                showConfirmButton: false
+            });
         } catch (err) {
-            console.error(" Error saving:", err);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error!',
+                text: 'Failed to save the page',
+            });
+            console.error("Error saving:", err);
         }
     };
+
 
     return (
         <div id="main-wrapper" className=" flex">

@@ -2,39 +2,51 @@ import React, { useEffect, useState } from 'react'
 import { API_ENDPOINTS } from '../../service/APIConfig';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { useLoading } from '../Context/LoadingContext';
 
 const PageDashboard = () => {
     const [activeDropdown, setActiveDropdown] = useState(null);
     const [pageItems, setPageItems] = useState([]);
     const [menuOptions, setMenuOptions] = useState([]);
     const navigate = useNavigate();
+    const {setLoading} = useLoading();
     const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
 
     useEffect(() => {
-        const fetchPages = async () => {
+        const fetchData = async () => {
             try {
-                const response = await axios.get(API_ENDPOINTS.getPage);
-                const result = (response.data.data || []);
-                const normalized = Array.isArray(result) ? result : result ? [result] : [];
-                setPageItems(normalized);
-            } catch (error) {
-                console.error('Failed to fetch page:', error);
-                setPageItems([]);
-            }
-        };
-        const fetchMenu = async () => {
-            try {
-                const res = await axios.get(API_ENDPOINTS.getMenu);
-                if (res.data && res.data.data) {
-                    setMenuOptions(res.data.data);
-                }
-            } catch (err) {
-                console.error('❌ Failed to fetch pages:', err);
+                setLoading(true);
+
+                await Promise.all([
+                    (async () => {
+                        try {
+                            const res = await axios.get(API_ENDPOINTS.getMenu);
+                            if (res.data && res.data.data) {
+                                setMenuOptions(res.data.data);
+                            }
+                        } catch (err) {
+                            console.error('❌ Failed to fetch menu:', err);
+                        }
+                    })(),
+                    (async () => {
+                        try {
+                            const response = await axios.get(API_ENDPOINTS.getPage);
+                            const result = (response.data.data || []);
+                            const normalized = Array.isArray(result) ? result : result ? [result] : [];
+                            setPageItems(normalized);
+                        } catch (error) {
+                            console.error('❌ Failed to fetch page:', error);
+                            setPageItems([]);
+                        }
+                    })()
+                ]);
+
+            } finally {
+                setLoading(false);
             }
         };
 
-        fetchMenu();
-        fetchPages();
+        fetchData();
     }, []);
 
     const handleEdit = async (id) => {

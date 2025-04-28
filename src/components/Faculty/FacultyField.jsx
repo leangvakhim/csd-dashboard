@@ -40,8 +40,15 @@ const FacultyField = () => {
     };
 
     useEffect(() => {
-        if (facultyData && facultyData.data) {
-            setFormData(facultyData.data);
+        try{
+            setLoading(true);
+            if (facultyData && facultyData.data) {
+                setFormData(facultyData.data);
+            }
+        }catch(error){
+            console.error(error);
+        }finally{
+            setLoading(false);
         }
     }, [facultyData]);
 

@@ -7,7 +7,7 @@ function GlobalLoading() {
   if (!loading) return null;
 
   return (
-    <div className="fixed inset-0 bg-gray-800 bg-opacity-40 flex flex-col justify-center items-center z-1000  animate-fade-in">
+    <div className="fixed inset-0 opacity-90 bg-black bg-opacity-40 flex flex-col justify-center items-center z-1000  animate-fade-in">
       <HashLoader
         size={100}
         color="#F7F7F7"

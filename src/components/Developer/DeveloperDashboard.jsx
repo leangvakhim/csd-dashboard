@@ -2,10 +2,11 @@ import React, { useEffect, useState } from 'react'
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { API_ENDPOINTS } from '../../service/APIConfig';
+import { useLoading } from '../Context/LoadingContext';
 
 const DeveloperDashboard = () => {
     const navigate = useNavigate();
-
+    const {setLoading} = useLoading();
     const [activeDropdown, setActiveDropdown] = useState(null);
     const [developerItems, setFDeveloperItems] = useState([]);
     const [images, setImages] = useState([]);
@@ -77,8 +78,15 @@ const DeveloperDashboard = () => {
     };
 
     useEffect(() => {
-        fetchDeveloper();
-        fetchImages();
+        try{
+            setLoading(true);
+            fetchDeveloper();
+            fetchImages();
+        }catch(error){
+            console.error(error);
+        }finally{
+            setLoading(false);
+        }
     }, []);
 
     const handleDelete = async (id) => {
