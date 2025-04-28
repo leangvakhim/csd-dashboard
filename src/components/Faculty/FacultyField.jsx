@@ -5,12 +5,14 @@ import FacultyFieldBody from './FacultyFieldBody'
 import { useLocation } from 'react-router-dom'
 import { API_ENDPOINTS, API } from '../../service/APIConfig'
 import axios from 'axios'
+import { useLoading } from '../Context/LoadingContext'
 
 const FacultyField = () => {
     const socialRef = useRef();
     const contactRef = useRef();
     const backgroundRef = useRef();
     const infoRef = useRef();
+    const {setLoading} = useLoading();
     const [subtitleContent, setSubtitleContent] = useState('');
     const location = useLocation();
     const facultyData = location.state?.facultyData;
@@ -320,7 +322,6 @@ const FacultyField = () => {
         }
     };
 
-    // Save Faculty Background (short version)
     const saveFacultyBG = async () => {
         const f_id = formData.f_id;
         if (!f_id) {
@@ -390,18 +391,20 @@ const FacultyField = () => {
 
     const handleSave = async () => {
         try {
+            setLoading(true);
             await saveFaculty();
             await saveFacultySocial();
             await saveFacultyContact();
             await saveFacultyBG();
             await saveFacultyInfo();
-            alert("Faculty information saved successfully!");
         } catch (err) {
             if (err.response?.data?.errors) {
                 console.log('Validation errors:', err.response.data.errors);
             } else {
                 console.log('Full error:', err);
             }
+        }finally{
+            setLoading(false);
         }
     };
 

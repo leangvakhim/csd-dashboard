@@ -1,11 +1,24 @@
 import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } from "react";
 import Aside from '../components/Aside'
+import { useLoading } from "../components/Context/LoadingContext";
 import SettingHeader from '../components/Setting/SettingHeader'
 import SettingField from '../components/Setting/SettingField'
 import axios from 'axios';
 import { API_ENDPOINTS } from '../service/APIConfig';
 
 const Setting = () => {
+
+    const { loading, setLoading } = useLoading();
+
+    useEffect(() => {
+        if (loading) {
+        const timer = setTimeout(() => {
+            setLoading(false);
+        }, 200);
+        return () => clearTimeout(timer);
+        }
+    }, [loading]);
+
     const universitySocialRef = useRef();
     const [formData, setFormData] = useState({
         set_facultytitle: "",

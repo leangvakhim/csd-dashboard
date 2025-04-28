@@ -3,10 +3,12 @@ import React from 'react'
 import logo from '../img/samplelogo.svg';
 import profile from '../img/profile.svg';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { useLoading } from './Context/LoadingContext';
 
 const Aside = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { setLoading } = useLoading();
 
   const handleLogout = () => {
     navigate('/login');
@@ -60,6 +62,7 @@ const Aside = () => {
                                 ) : (
                                   <Link
                                     to={to}
+                                    onClick={() => setLoading(true)}
                                     className={`sidebar-link gap-3 px-3 py-2 rounded-md w-full flex items-center ${
                                       location.pathname.startsWith(to)
                                         ? 'bg-blue-600 text-white'

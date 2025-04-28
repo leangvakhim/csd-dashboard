@@ -29,45 +29,87 @@ import Setting from './pages/Setting';
 import SettingFieldBody from './components/Setting/SettingFieldBody';
 import Developer from './pages/Developer';
 import DeveloperField from './components/Developer/DeveloperField';
+import GlobalLoading from './components/GlobalLoading';
+import { LoadingProvider } from './components/Context/LoadingContext';
 
 function App() {
 
   return (
-    <Router>
-      <Routes>
-        <Route path='/' element={<Navigate to="/menu"/>}/>
-        <Route path='/menu' element={<Menu/>} />
-        <Route path='/page' element={<Page/>} />
-        <Route path='/page/page-detail' element={<PageField/>} />
-        <Route path='/faculty' element={<Faculty/>} />
-        <Route path='/faculty/faculty-detail' element={<FacultyField/>} />
-        <Route path='/event' element={<Event/>} />
-        <Route path='/event/event-detail' element={<EventsField/>} />
-        <Route path='/news' element={<New/>} />
-        <Route path='/news/news-details' element={<NewsField />} />
-        <Route path='/announcement' element={<Announcement/>} />
-        <Route path='/announcement/announcement-details' element={<AnnouncementField/>} />
-        <Route path='/career' element={<Career/>} />
-        <Route path='/career/career-details' element={<CareerField />} />
-        <Route path='/scholarship' element={<Scholarship/>} />
-        <Route path='/scholarship/scholarship-details' element={<ScholarshipField />} />
-        <Route path='/research' element={<Research/>} />
-        <Route path='/research/research-detail' element={<ResearchField/>} />
-        <Route path='/lab' element={<Researchlab/>} />
-        <Route path='/lab/researchlab-details' element={<ResearchlabField/>} />
-        <Route path='/feedback' element={<Feedback/>} />
-        <Route path='/feedback/feedback-details' element={<FeedBackField/>} />
-        <Route path='/partnership' element={<Partnership/>} />
-        <Route path='/partnership/partnership-details' element={<PartnershipField />} />
-        <Route path='/image' element={<Image/>} />
-        <Route path='/developer' element={<Developer/>} />
-        <Route path='/developer/developer-details' element={<DeveloperField/>} />
-        <Route path='/setting' element={<Setting/>} />
-        <Route path='/setting/setting-details' element={<SettingFieldBody/>} />
-        <Route path='/login' element={<Login/>} />
-      </Routes>
-    </Router>
-  )
+    <LoadingProvider>
+      <Router>
+        <GlobalLoading />
+        <Routes>
+          <Route path='/' element={<Navigate to="/menu"/>}/>
+          <Route path='/menu' element={<Menu/>} />
+          <Route path='/page' element={<Page/>} />
+          <Route path='/page/page-detail' element={<PageField/>} />
+          <Route path='/faculty' element={<Faculty/>} />
+          <Route path='/faculty/faculty-detail' element={<FacultyField/>} />
+          <Route path='/event' element={<Event/>} />
+          <Route path='/event/event-detail' element={<EventsField/>} />
+          <Route path='/news' element={<New/>} />
+          <Route path='/news/news-details' element={<NewsField />} />
+          <Route path='/announcement' element={<Announcement/>} />
+          <Route path='/announcement/announcement-details' element={<AnnouncementField/>} />
+          <Route path='/career' element={<Career/>} />
+          <Route path='/career/career-details' element={<CareerField />} />
+          <Route path='/scholarship' element={<Scholarship/>} />
+          <Route path='/scholarship/scholarship-details' element={<ScholarshipField />} />
+          <Route path='/research' element={<Research/>} />
+          <Route path='/research/research-detail' element={<ResearchField/>} />
+          <Route path='/lab' element={<Researchlab/>} />
+          <Route path='/lab/researchlab-details' element={<ResearchlabField/>} />
+          <Route path='/feedback' element={<Feedback/>} />
+          <Route path='/feedback/feedback-details' element={<FeedBackField/>} />
+          <Route path='/partnership' element={<Partnership/>} />
+          <Route path='/partnership/partnership-details' element={<PartnershipField />} />
+          <Route path='/image' element={<Image/>} />
+          <Route path='/developer' element={<Developer/>} />
+          <Route path='/developer/developer-details' element={<DeveloperField/>} />
+          <Route path='/setting' element={<Setting/>} />
+          <Route path='/setting/setting-details' element={<SettingFieldBody/>} />
+          <Route path='/login' element={<Login/>} />
+        </Routes>
+      </Router>
+    </LoadingProvider>
+  );
+
+  // return (
+  //   <Router>
+  //     <Routes>
+        // <Route path='/' element={<Navigate to="/menu"/>}/>
+        // <Route path='/menu' element={<Menu/>} />
+        // <Route path='/page' element={<Page/>} />
+        // <Route path='/page/page-detail' element={<PageField/>} />
+        // <Route path='/faculty' element={<Faculty/>} />
+        // <Route path='/faculty/faculty-detail' element={<FacultyField/>} />
+        // <Route path='/event' element={<Event/>} />
+        // <Route path='/event/event-detail' element={<EventsField/>} />
+        // <Route path='/news' element={<New/>} />
+        // <Route path='/news/news-details' element={<NewsField />} />
+        // <Route path='/announcement' element={<Announcement/>} />
+        // <Route path='/announcement/announcement-details' element={<AnnouncementField/>} />
+        // <Route path='/career' element={<Career/>} />
+        // <Route path='/career/career-details' element={<CareerField />} />
+        // <Route path='/scholarship' element={<Scholarship/>} />
+        // <Route path='/scholarship/scholarship-details' element={<ScholarshipField />} />
+        // <Route path='/research' element={<Research/>} />
+        // <Route path='/research/research-detail' element={<ResearchField/>} />
+        // <Route path='/lab' element={<Researchlab/>} />
+        // <Route path='/lab/researchlab-details' element={<ResearchlabField/>} />
+        // <Route path='/feedback' element={<Feedback/>} />
+        // <Route path='/feedback/feedback-details' element={<FeedBackField/>} />
+        // <Route path='/partnership' element={<Partnership/>} />
+        // <Route path='/partnership/partnership-details' element={<PartnershipField />} />
+        // <Route path='/image' element={<Image/>} />
+        // <Route path='/developer' element={<Developer/>} />
+        // <Route path='/developer/developer-details' element={<DeveloperField/>} />
+        // <Route path='/setting' element={<Setting/>} />
+        // <Route path='/setting/setting-details' element={<SettingFieldBody/>} />
+        // <Route path='/login' element={<Login/>} />
+  //     </Routes>
+  //   </Router>
+  // )
 }
 
 export default App

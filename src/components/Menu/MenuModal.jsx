@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 import { API_ENDPOINTS } from '../../service/APIConfig'
+import { useLoading } from '../Context/LoadingContext'
 
 const MenuModal = ({ isOpen, onClose, data}) => {
     const [menuOptions, setMenuOptions] = useState([]);
     const [pageOptions, setPageOptions] = useState([]);
+    const {setLoading} = useLoading();
     const [formData, setFormData] = useState({
         lang: 1,
         title: null,
@@ -61,31 +63,38 @@ const MenuModal = ({ isOpen, onClose, data}) => {
     }, [data]);
 
     const saveMenu = async () => {
-        const payload = {
-            lang: parseInt(formData.lang) || 1,
-            title: formData.title || null,
-            menup_id: formData.menup_id ? parseInt(formData.menup_id) : null,
-            display: formData.display === true ? 1 : 0,
-            active: formData.active ? 1 : 0,
-            p_menu: formData.p_menu ? parseInt(formData.p_menu) : null,
-        };
-        let res;
-        if (data?.menu_id) {
-            res = await axios.post(`${API_ENDPOINTS.updateMenu}/${data.menu_id}`, payload);
-            if (formData.p_menu) {
-                await axios.put(`${API_ENDPOINTS.updatePageByMenu}/${formData.p_menu}`, {
-                    p_menu: res.data?.data?.menu_id || null,
-                });
+        try{
+            setLoading(true);
+                const payload = {
+                lang: parseInt(formData.lang) || 1,
+                title: formData.title || null,
+                menup_id: formData.menup_id ? parseInt(formData.menup_id) : null,
+                display: formData.display === true ? 1 : 0,
+                active: formData.active ? 1 : 0,
+                p_menu: formData.p_menu ? parseInt(formData.p_menu) : null,
+            };
+            let res;
+            if (data?.menu_id) {
+                res = await axios.post(`${API_ENDPOINTS.updateMenu}/${data.menu_id}`, payload);
+                if (formData.p_menu) {
+                    await axios.put(`${API_ENDPOINTS.updatePageByMenu}/${formData.p_menu}`, {
+                        p_menu: res.data?.data?.menu_id || null,
+                    });
+                }
+                window.location.reload();
+            } else {
+                res = await axios.post(API_ENDPOINTS.createMenu, payload);
+                if (formData.p_menu) {
+                    await axios.put(`${API_ENDPOINTS.updatePageByMenu}/${formData.p_menu}`, {
+                        p_menu: res.data?.data?.menu_id || null,
+                    });
+                }
+                window.location.reload();
             }
-            window.location.reload();
-        } else {
-            res = await axios.post(API_ENDPOINTS.createMenu, payload);
-            if (formData.p_menu) {
-                await axios.put(`${API_ENDPOINTS.updatePageByMenu}/${formData.p_menu}`, {
-                    p_menu: res.data?.data?.menu_id || null,
-                });
-            }
-            window.location.reload();
+        }catch(error){
+            console.log(error);
+        }finally{
+            setLoading(false);
         }
     }
 
