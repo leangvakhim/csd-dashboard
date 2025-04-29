@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
+import Swal from 'sweetalert2';
 import Aside from '../Aside'
 import ResearchFieldHeader from './ResearchFieldHeader'
 import ResearchFieldBody from './ResearchFieldBody'
@@ -243,9 +244,47 @@ const ResearchField = () => {
 
     const handleSave = async () => {
         try {
+            Swal.fire({
+                title: 'Saving Research...',
+                allowOutsideClick: false,
+                backdrop: true,
+                didOpen: () => {
+                    Swal.showLoading();
+                },
+                buttonsStyling: false,
+                customClass: {
+                    popup: 'bg-white rounded-lg shadow-lg',
+                    title: 'text-lg font-semibold text-gray-700',
+                    confirmButton: 'bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded'
+                }
+            });
+
             await saveResearch();
-            alert("Research saved successfully!");
+
+            Swal.fire({
+                icon: 'success',
+                title: 'Success!',
+                text: 'Research saved successfully!',
+                timer: 1500,
+                showConfirmButton: false,
+                buttonsStyling: false,
+                customClass: {
+                    popup: 'bg-white rounded-lg shadow-lg',
+                    title: 'text-lg font-semibold text-green-600'
+                }
+            });
         } catch (err) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error!',
+                text: 'Failed to save research.',
+                buttonsStyling: false,
+                customClass: {
+                    popup: 'bg-white rounded-lg shadow-lg',
+                    title: 'text-lg font-semibold text-red-600'
+                }
+            });
+
             if (err.response?.data?.errors) {
                 console.log('Validation errors:', err.response.data.errors);
             } else {
