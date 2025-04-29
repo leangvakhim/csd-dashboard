@@ -42,14 +42,11 @@ const FacultyField = () => {
 
     useEffect(() => {
         try{
-            setLoading(true);
             if (facultyData && facultyData.data) {
                 setFormData(facultyData.data);
             }
         }catch(error){
             console.error(error);
-        }finally{
-            setLoading(false);
         }
     }, [facultyData]);
 
