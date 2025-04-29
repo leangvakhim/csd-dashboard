@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 import { API_ENDPOINTS } from '../../service/APIConfig'
 import { useLoading } from '../Context/LoadingContext'
+import Swal from 'sweetalert2';
 
 const MenuModal = ({ isOpen, onClose, data}) => {
     const [menuOptions, setMenuOptions] = useState([]);
@@ -63,9 +64,22 @@ const MenuModal = ({ isOpen, onClose, data}) => {
     }, [data]);
 
     const saveMenu = async () => {
-        try{
-            setLoading(true);
-                const payload = {
+        try {
+            Swal.fire({
+                title: 'Saving Menu...',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                },
+                backdrop: true,
+                buttonsStyling: false,
+                customClass: {
+                    popup: 'bg-white rounded-lg shadow-lg',
+                    title: 'text-lg font-semibold text-gray-700'
+                }
+            });
+
+            const payload = {
                 lang: parseInt(formData.lang) || 1,
                 title: formData.title || null,
                 menup_id: formData.menup_id ? parseInt(formData.menup_id) : null,
@@ -81,7 +95,6 @@ const MenuModal = ({ isOpen, onClose, data}) => {
                         p_menu: res.data?.data?.menu_id || null,
                     });
                 }
-                window.location.reload();
             } else {
                 res = await axios.post(API_ENDPOINTS.createMenu, payload);
                 if (formData.p_menu) {
@@ -89,12 +102,36 @@ const MenuModal = ({ isOpen, onClose, data}) => {
                         p_menu: res.data?.data?.menu_id || null,
                     });
                 }
-                window.location.reload();
             }
-        }catch(error){
+
+            Swal.fire({
+                icon: 'success',
+                title: 'Success!',
+                text: 'Menu saved successfully!',
+                timer: 1500,
+                showConfirmButton: false,
+                backdrop: true,
+                buttonsStyling: false,
+                customClass: {
+                    popup: 'bg-white rounded-lg shadow-lg',
+                    title: 'text-lg font-semibold text-green-600'
+                }
+            }).then(() => {
+                window.location.reload();
+            });
+        } catch (error) {
             console.log(error);
-        }finally{
-            setLoading(false);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error!',
+                text: 'Failed to save menu.',
+                backdrop: true,
+                buttonsStyling: false,
+                customClass: {
+                    popup: 'bg-white rounded-lg shadow-lg',
+                    title: 'text-lg font-semibold text-red-600'
+                }
+            });
         }
     }
 
