@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { API_ENDPOINTS, API } from '../../service/APIConfig'
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
 
 const ResearchDashboard = () => {
     const [activeDropdown, setActiveDropdown] = useState(null);
@@ -27,7 +28,22 @@ const ResearchDashboard = () => {
     }, []);
 
     const handleDelete = async (id) => {
-        if (!window.confirm("Are you sure you want to delete this research?")) return;
+        const result = await Swal.fire({
+            title: 'Are you sure?',
+            text: 'Do you want to delete this research?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, delete it!',
+            cancelButtonText: 'Cancel',
+            reverseButtons: true,
+            buttonsStyling: false,
+            customClass: {
+                confirmButton: 'bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded !ml-2',
+                cancelButton: '!bg-red-600 hover:!bg-red-700 text-white py-2 px-4 rounded'
+            }
+        });
+
+        if (!result.isConfirmed) return;
 
         try {
             await axios.put(`${API_ENDPOINTS.deleteResearch}/${id}`);
@@ -36,9 +52,33 @@ const ResearchDashboard = () => {
                     item.rsd_id === id ? { ...item, active: item.active ? 0 : 1 } : item
                 )
             );
+
+            await Swal.fire({
+                icon: 'success',
+                title: 'Deleted!',
+                text: 'The research has been deleted.',
+                timer: 1500,
+                showConfirmButton: false,
+                buttonsStyling: false,
+                customClass: {
+                    popup: 'bg-white rounded-lg shadow-lg',
+                    title: 'text-lg font-semibold text-green-600'
+                }
+            });
+
             window.location.reload();
         } catch (error) {
             console.error("Error toggling visibility:", error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error!',
+                text: 'Failed to delete research.',
+                buttonsStyling: false,
+                customClass: {
+                    popup: 'bg-white rounded-lg shadow-lg',
+                    title: 'text-lg font-semibold text-red-600'
+                }
+            });
         }
     };
 
