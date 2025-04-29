@@ -207,7 +207,27 @@ const ImageBody = () => {
                                     src={image.image_url}
                                     alt={image.img}
                                     className="mx-auto my-auto object-contain max-h-40 cursor-pointer"
-                                    onClick={() => setSelectedImageName(image.img)}
+                                    onClick={async () => {
+                                        Swal.fire({
+                                            title: 'Loading image...',
+                                            allowOutsideClick: false,
+                                            showConfirmButton: false,
+                                            backdrop: true,
+                                            didOpen: () => {
+                                                Swal.showLoading();
+                                            },
+                                            customClass: {
+                                                popup: 'bg-white rounded-lg shadow-lg',
+                                                title: 'text-lg font-semibold text-gray-700',
+                                            }
+                                        });
+
+                                        await new Promise(resolve => setTimeout(resolve, 300));
+
+                                        setSelectedImageName(image.img);
+
+                                        Swal.close();
+                                    }}
                                 />
                                 <button
                                     className="h-8 w-8 absolute top-1 right-1 bg-red-500 text-white p-1 rounded-full opacity-100 hover:opacity-100 transition"
