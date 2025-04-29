@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { API_ENDPOINTS } from '../../service/APIConfig';
 import ImageHeader from './ImageHeader';
+import Swal from 'sweetalert2';
 
 const ImageBody = () => {
     const [images, setImages] = useState([]);
@@ -50,12 +51,27 @@ const ImageBody = () => {
 
         const formData = new FormData();
         for (let file of files) {
-            console.log("📁 Appending file:", file.name);
             formData.append("img[]", file);
         }
 
         try {
             setIsUploading(true);
+
+            Swal.fire({
+                title: 'Uploading images...',
+                allowOutsideClick: false,
+                backdrop: true,
+                buttonsStyling: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                },
+                customClass: {
+                    popup: 'bg-white rounded-lg shadow-lg',
+                    title: 'text-lg font-semibold text-gray-700',
+                    confirmButton: 'bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded mt-4'
+                }
+            });
+
             const response = await axios.post(API_ENDPOINTS.uploadImage, formData, {
                 headers: {
                     "Content-Type": "multipart/form-data",
@@ -71,27 +87,81 @@ const ImageBody = () => {
             } else {
                 console.error("❌ Upload failed or response malformed:", response.data);
             }
+
+            Swal.fire({
+                icon: 'success',
+                title: 'Uploaded!',
+                text: 'Images uploaded successfully.',
+                timer: 1500,
+                showConfirmButton: false,
+                buttonsStyling: false,
+                customClass: {
+                    popup: 'bg-white rounded-lg shadow-lg',
+                    title: 'text-lg font-semibold text-green-600'
+                }
+            });
         } catch (error) {
             console.error("🔥 Error uploading images:", error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Upload Failed',
+                text: 'An error occurred while uploading images.',
+                buttonsStyling: false,
+                customClass: {
+                    popup: 'bg-white rounded-lg shadow-lg',
+                    title: 'text-lg font-semibold text-red-600'
+                }
+            });
         } finally {
             setIsUploading(false);
         }
     };
 
     const handleDeleteImage = async (imageId) => {
-        const confirmDelete = window.confirm("Are you sure you want to delete this image?");
-        if (!confirmDelete) return;
+        const result = await Swal.fire({
+            title: 'Are you sure?',
+            text: 'Do you want to delete this image?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, delete it!',
+            cancelButtonText: 'Cancel',
+            reverseButtons: true,
+            buttonsStyling: false,
+            customClass: {
+                confirmButton: 'bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded !ml-2',
+                cancelButton: '!bg-red-600 hover:!bg-red-700 text-white py-2 px-4 rounded',
+            }
+        });
+
+        if (!result.isConfirmed) return;
 
         try {
             const response = await axios.delete(`${API_ENDPOINTS.deleteImage}/${imageId}`);
             if (response.status === 200) {
                 setImages(images.filter(image => image.image_id !== imageId));
-                setFilteredImages(filteredImages.filter(image => image.image_id !== imageId)); // Update filtered images
+                setFilteredImages(filteredImages.filter(image => image.image_id !== imageId));
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Deleted!',
+                    text: 'The image has been deleted.',
+                    timer: 1500,
+                    showConfirmButton: true,
+                });
             } else {
                 console.error("Failed to delete image:", response.data);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Failed to delete the image.'
+                });
             }
         } catch (error) {
             console.error("Error deleting image:", error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'An error occurred while deleting the image.'
+            });
         }
     };
 

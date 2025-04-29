@@ -56,19 +56,6 @@ const AnnouncementFieldImportFile = ({ onDelete, selectedStudents }) => {
             console.error('Import failed:', error);
             Swal.fire('Error', 'Import failed! Please check your file.', 'error');
         }
-
-        // try {
-        //     const response = await axios.post(API_ENDPOINTS.ImportAnnouncementFile, formData, {
-        //     headers: {
-        //         'Content-Type': 'multipart/form-data'
-        //     }
-        // });
-
-        //     alert(response.data.message);
-        // } catch (error) {
-        //     console.error('Import failed:', error);
-        //     alert('Import failed! Please check your file.');
-        // }
     };
 
     return (
