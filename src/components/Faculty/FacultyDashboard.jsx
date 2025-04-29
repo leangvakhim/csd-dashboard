@@ -14,15 +14,12 @@ const FacultyDashboard = () => {
     useEffect(() => {
         const fetchEvents = async () => {
             try {
-                setLoading(true);
                 const response = await axios.get(API_ENDPOINTS.getFaculty);
                 const result = response.data.data;
                 const normalized = Array.isArray(result) ? result : result ? [result] : [];
                 setFacultyItems(normalized);
             } catch (error) {
                 console.error('Failed to fetch events:', error);
-            }finally{
-                setLoading(false);
             }
         };
 

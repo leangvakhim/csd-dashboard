@@ -8,18 +8,6 @@ import { API_ENDPOINTS } from '../service/APIConfig';
 import Swal from 'sweetalert2';
 
 const Setting = () => {
-
-    const { loading, setLoading } = useLoading();
-
-    useEffect(() => {
-        if (loading) {
-        const timer = setTimeout(() => {
-            setLoading(false);
-        }, 200);
-        return () => clearTimeout(timer);
-        }
-    }, [loading]);
-
     const universitySocialRef = useRef();
     const [formData, setFormData] = useState({
         set_facultytitle: "",

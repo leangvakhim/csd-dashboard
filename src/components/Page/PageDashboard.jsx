@@ -15,8 +15,6 @@ const PageDashboard = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                setLoading(true);
-
                 await Promise.all([
                     (async () => {
                         try {
@@ -42,7 +40,6 @@ const PageDashboard = () => {
                 ]);
 
             } finally {
-                setLoading(false);
             }
         };
 

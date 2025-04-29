@@ -1,14 +1,12 @@
 import React from 'react'
-// import logo from '../img/rupp.png';
+import Swal from 'sweetalert2';
 import logo from '../img/samplelogo.svg';
 import profile from '../img/profile.svg';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { useLoading } from './Context/LoadingContext';
 
 const Aside = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { setLoading } = useLoading();
 
   const handleLogout = () => {
     navigate('/login');
@@ -49,7 +47,7 @@ const Aside = () => {
                               { to: '/feedback', icon: 'ti-brand-hipchat', label: 'Feedback' },
                               { to: '/partnership', icon: 'ti-heart-handshake', label: 'Partnership' },
                               { to: '/image', icon: 'ti-photo', label: 'Image' },
-                              { to: '#', icon: 'ti-user-circle', label: 'User', external: true },
+                              // { to: '#', icon: 'ti-user-circle', label: 'User', external: true },
                               { to: '/developer', icon: 'ti-user-code', label: 'Developer' },
                               { to: '/setting', icon: 'ti-settings', label: 'Setting'},
                             ].map(({ to, icon, label, external }) => (
@@ -62,7 +60,23 @@ const Aside = () => {
                                 ) : (
                                   <Link
                                     to={to}
-                                    onClick={() => setLoading(true)}
+                                    onClick={() => {
+                                      Swal.fire({
+                                        title: 'Loading...',
+                                        allowOutsideClick: false,
+                                        didOpen: () => {
+                                          Swal.showLoading();
+                                        },
+                                        showConfirmButton: false,
+                                        timer: 1000,
+                                        backdrop: true,
+                                        customClass: {
+                                          popup: 'bg-white rounded-lg shadow-lg',
+                                          title: 'text-lg font-semibold text-gray-700'
+                                        }
+                                      });
+                                      setLoading(true);
+                                    }}
                                     className={`sidebar-link gap-3 px-3 py-2 rounded-md w-full flex items-center ${
                                       location.pathname.startsWith(to)
                                         ? 'bg-blue-600 text-white'
