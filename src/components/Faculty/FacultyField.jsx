@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
+import Swal from 'sweetalert2';
 import Aside from '../Aside'
 import FacultyFieldHeader from './FacultyFieldHeader'
 import FacultyFieldBody from './FacultyFieldBody'
@@ -398,20 +399,55 @@ const FacultyField = () => {
 
     const handleSave = async () => {
         try {
-            setLoading(true);
+            Swal.fire({
+                title: 'Saving Faculty...',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                },
+                buttonsStyling: false,
+                backdrop: true,
+                customClass: {
+                    popup: 'bg-white rounded-lg shadow-lg',
+                    title: 'text-lg font-semibold text-gray-700',
+                }
+            });
+
             await saveFaculty();
             await saveFacultySocial();
             await saveFacultyContact();
             await saveFacultyBG();
             await saveFacultyInfo();
+
+            Swal.fire({
+                icon: 'success',
+                title: 'Success!',
+                text: 'Faculty saved successfully!',
+                timer: 1500,
+                showConfirmButton: false,
+                buttonsStyling: false,
+                customClass: {
+                    popup: 'bg-white rounded-lg shadow-lg',
+                    title: 'text-lg font-semibold text-green-600'
+                }
+            });
         } catch (err) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error!',
+                text: 'Failed to save faculty data.',
+                buttonsStyling: false,
+                customClass: {
+                    popup: 'bg-white rounded-lg shadow-lg',
+                    title: 'text-lg font-semibold text-red-600'
+                }
+            });
+
             if (err.response?.data?.errors) {
                 console.log('Validation errors:', err.response.data.errors);
             } else {
-                console.log('Full error:', err);
+                console.error('Full error:', err);
             }
-        }finally{
-            setLoading(false);
         }
     };
 
