@@ -49,10 +49,10 @@ const AnnouncementFieldBody = ({
       }
     };
 
-    if (announcementData.data.am_id) {
+    if (announcementData?.data?.am_id) {
       fetchAnnouncementById();
     }
-  }, [announcementData.data.am_id]);
+  }, [announcementData?.data?.am_id]);
 
   useEffect(() => {
     if (formData.am_img) {
