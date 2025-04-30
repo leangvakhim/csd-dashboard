@@ -7,7 +7,7 @@ import { API_ENDPOINTS } from '../../service/APIConfig'
 import axios from 'axios';
 import { useEffect } from 'react'
 import { useLocation } from 'react-router-dom';
-
+import Swal from 'sweetalert2';
 
 const PartnershipField = () => {
     const location = useLocation();
@@ -37,6 +37,12 @@ const PartnershipField = () => {
         };
 
         try {
+            Swal.fire({
+                title: 'Saving...',
+                allowOutsideClick: false,
+                didOpen: () => Swal.showLoading(),
+            });
+
             if (formData.ps_id) {
                 // Perform update
                 res = await axios.post(`${API_ENDPOINTS.updatePartnership}/${formData.ps_id}`, payload);
@@ -45,12 +51,26 @@ const PartnershipField = () => {
                 const { ps_order, ...createPayload } = payload;
                 res = await axios.post(API_ENDPOINTS.createPartnership, createPayload);
             }
-            alert("Partnership saved successfully!");
+
+            Swal.close();
+            Swal.fire({
+                icon: 'success',
+                title: 'Success',
+                text: 'Partnership saved successfully!',
+                timer: 2000,
+                showConfirmButton: false
+            });
         } catch (err) {
+            Swal.close();
             console.error("Error saving:", err);
             if (err.response?.data?.errors) {
                 console.error("Validation failed:", err.response.data.errors);
             }
+            Swal.fire({
+                icon: 'error',
+                title: 'Failed',
+                text: 'Error saving partnership data.'
+            });
         }
     };
 
