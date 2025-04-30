@@ -141,7 +141,7 @@ const FeedbackDashboard = () => {
                                     <img src={`${API}/storage/uploads/${item.image?.img}`} alt="" className='size-12' />
                                 </td>
                                 <td className="px-6 py-4">{item.fb_title}</td>
-                                <td className="px-6 py-4">{item.fb_subtitle}</td>
+                                <td className="px-6 py-4">{item.fb_writer}</td>
                                 <td className="px-6 py-4"> {{
                                         1: 'English',
                                         2: 'Khmer',

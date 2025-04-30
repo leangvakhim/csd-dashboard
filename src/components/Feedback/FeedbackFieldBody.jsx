@@ -93,20 +93,6 @@ const FeedbackFieldBody = ({ formData, setFormData, onImageSelect }) => {
                     <div className="flex flex-col sm:!flex-row items-center gap-4 py-2 mb-1">
                         <div className="flex-1 w-full">
                             <label className="block text-xl font-medium leading-6 text-white-900">
-                                Full name
-                            </label>
-                            <div className="mt-2">
-                                <input
-                                    type="text"
-                                    value={formData.fb_title || ""}
-                                    onChange={e => setFormData(prev => ({ ...prev, fb_title: e.target.value }))}
-                                    className="block w-full !border-gray-200 border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
-                                />
-                            </div>
-                        </div>
-
-                        <div className="flex-1 w-full">
-                            <label className="block text-xl font-medium leading-6 text-white-900">
                                 Title
                             </label>
                             <div className="mt-2">
@@ -114,6 +100,20 @@ const FeedbackFieldBody = ({ formData, setFormData, onImageSelect }) => {
                                     type="text"
                                     value={formData.fb_writer || ""}
                                     onChange={e => setFormData(prev => ({ ...prev, fb_writer: e.target.value }))}
+                                    className="block w-full !border-gray-200 border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
+                                />
+                            </div>
+                        </div>
+
+                        <div className="flex-1 w-full">
+                            <label className="block text-xl font-medium leading-6 text-white-900">
+                                Full name
+                            </label>
+                            <div className="mt-2">
+                                <input
+                                    type="text"
+                                    value={formData.fb_title || ""}
+                                    onChange={e => setFormData(prev => ({ ...prev, fb_title: e.target.value }))}
                                     className="block w-full !border-gray-200 border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
                                 />
                             </div>
