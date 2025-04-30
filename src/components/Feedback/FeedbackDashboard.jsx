@@ -138,7 +138,7 @@ const FeedbackDashboard = () => {
                                     scope="row"
                                     className="px-6 py-4"
                                 >
-                                    <img src={`${API}/storage/uploads/${item.image?.img}`} alt="" className='size-12 rounded-full' />
+                                    <img src={`${API}/storage/uploads/${item.image?.img}`} alt="" className='size-12' />
                                 </td>
                                 <td className="px-6 py-4">{item.fb_title}</td>
                                 <td className="px-6 py-4">{item.fb_subtitle}</td>
