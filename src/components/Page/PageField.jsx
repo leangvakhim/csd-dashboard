@@ -627,7 +627,7 @@ const PageField = () => {
                             const res = await axios.post(API_ENDPOINTS.createType, { type: [TypePayload] });
                             const createdId = res.data?.data?.[0]?.tse_id;
                             if (createdId) {
-                                await saveSubTypeSliders(type.tse_id, type.subtypes || []);
+                                await saveSubTypeSliders(createdId, type.subtypes || []);
                             }
                         }
                     }
@@ -645,6 +645,10 @@ const PageField = () => {
             .map(item => item.stse_id);
 
         for (const stse of sliders) {
+            if (!typeId) {
+                console.warn("❌ Type ID is missing for stse:", stse);
+                continue;
+            }
             const stsePayload = {
                 stse_tse: typeId,
                 stse_title: stse.stse_title,
@@ -652,6 +656,8 @@ const PageField = () => {
                 display: stse.display,
             };
             const stseId = stse.id || stse.stse_id;
+
+            console.log("stsePayload is: ",stsePayload);
 
             try {
                 if (
