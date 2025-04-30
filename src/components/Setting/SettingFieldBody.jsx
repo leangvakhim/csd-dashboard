@@ -4,11 +4,13 @@ import SettingFieldBodyInfo from './SettingFieldBodyInfo'
 import Aside from '../Aside'
 import axios from "axios";
 import { API_ENDPOINTS, API } from "../../service/APIConfig";
+import Swal from 'sweetalert2';
 
 const SettingFieldBody = () => {
     const universityContactRef = useRef();
 
     const handleSave = async () => {
+        Swal.fire({ title: 'Saving...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
         try {
             const slidersData = await universityContactRef.current?.getUniversityContacts?.();
 
@@ -31,8 +33,16 @@ const SettingFieldBody = () => {
                     console.error("Other error while saving:", err);
                 }
             }
-
+            Swal.close();
+            Swal.fire({
+                icon: 'success',
+                title: 'Success',
+                text: 'Setting contact saved successfully.',
+                timer: 2000,
+                showConfirmButton: false
+            });
         } catch (error) {
+            Swal.close();
             console.error("Unable to save contact university records:", error);
         }
     }

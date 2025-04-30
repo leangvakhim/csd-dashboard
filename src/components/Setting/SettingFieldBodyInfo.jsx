@@ -492,14 +492,14 @@ const SettingFieldBodyInfo = forwardRef(({}, ref) => {
           </div>
           {/* Button 2 */}
           <div className="grid grid-cols-1 gap-4 py-2">
-              {/* Location */}
+              {/* Phone number */}
               <details className=" group [&_summary::-webkit-details-marker]:hidden border-2 rounded-lg grid-cols-1">
                   <summary
                       className="cursor-pointer flex justify-between rounded-lg py-2 w-full "
                   >
                       <div className="cursor-pointer flex items-center justify-between w-full px-4" onClick={() => setIsRotatedButton2(!isRotatedButton2)}>
                           <span className=" text-xl font-medium">
-                            Address
+                            Phone number
                           </span>
                           <div className={`cursor-pointer shrink-0 transition-transform duration-300 ${isRotatedButton2 ? 'rotate-180' : ''}`}>
                               <svg
