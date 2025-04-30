@@ -489,6 +489,7 @@ const PageField = () => {
         const existingSubIds = existingSubservices
             .filter(item => item.ss_ras === null)
             .map(item => item.ss_id);
+        const existingSubAcadFacilityId = existingSubservices.map(item => item.ss_af);
 
         for (const ss of sliders) {
             const ssPayload = {
@@ -500,15 +501,17 @@ const PageField = () => {
                 display: ss.display,
             };
             const ssId = ss.id || ss.ss_id;
+            const ssAF = ss.ss_af;
 
             try {
                 if (
                     ssId &&
-                    existingSubIds.includes(parseInt(ssId))
+                    existingSubIds.includes(parseInt(ssId)) &&
+                    existingSubAcadFacilityId.includes(parseInt(ssAF))
                 ) {
                     await axios.post(`${API_ENDPOINTS.updateSubserviceAF}/${ssId}`, { subservice: ssPayload });
                 } else {
-                    if (!ssId || !existingSubIds.includes(parseInt(ssId))) {
+                    if (!ssId || !existingSubIds.includes(parseInt(ssId)) || !existingSubAcadFacilityId.includes(parseInt(ssAF))) {
                         await axios.post(API_ENDPOINTS.createSubserviceAF, { subservice: [ssPayload] });
                     }
                 }
@@ -567,6 +570,7 @@ const PageField = () => {
         const existingSubIds = existingSubservices
             .filter(item => item.ss_af === null)
             .map(item => item.ss_id);
+        const existingSubRasId = existingSubservices.map(item => item.ss_ras);
 
         for (const ss of sliders) {
             const ssPayload = {
@@ -578,15 +582,17 @@ const PageField = () => {
                 display: ss.display,
             };
             const ssId = ss.id || ss.ss_id;
+            const ssRasId = ss.ss_ras;
 
             try {
                 if (
                     ssId &&
-                    existingSubIds.includes(parseInt(ssId))
+                    existingSubIds.includes(parseInt(ssId)) &&
+                    existingSubRasId.includes(parseInt(ssRasId))
                 ) {
                     await axios.post(`${API_ENDPOINTS.updateSubserviceRAS}/${ssId}`, { subservice: ssPayload });
                 } else {
-                    if (!ssId || !existingSubIds.includes(parseInt(ssId))) {
+                    if (!ssId || !existingSubIds.includes(parseInt(ssId)) || !existingSubRasId.includes(parseInt(ssRasId))) {
                         await axios.post(API_ENDPOINTS.createSubserviceRAS, { subservice: [ssPayload] });
                     }
                 }
@@ -645,10 +651,6 @@ const PageField = () => {
         const existingSubTypeId = existingSubservices.map(item => item.stse_tse);
 
         for (const stse of sliders) {
-            if (!typeId) {
-                console.warn("❌ Type ID is missing for stse:", stse);
-                continue;
-            }
             const stsePayload = {
                 stse_tse: typeId,
                 stse_title: stse.stse_title,
@@ -727,6 +729,7 @@ const PageField = () => {
         const existingSubIds = existingSubservices
             .filter(item => item.ss_af === null)
             .map(item => item.ss_id);
+        const existingSubRasId = existingSubservices.map(item => item.ss_ras);
 
         for (const ss of sliders) {
             const ssPayload = {
@@ -738,15 +741,17 @@ const PageField = () => {
                 display: ss.display,
             };
             const ssId = ss.id || ss.ss_id;
+            const ssRasId = ss.ss_ras;
 
             try {
                 if (
                     ssId &&
-                    existingSubIds.includes(parseInt(ssId))
+                    existingSubIds.includes(parseInt(ssId)) &&
+                    existingSubRasId.includes(parseInt(ssRasId))
                 ) {
                     await axios.post(`${API_ENDPOINTS.updateSubserviceRAS}/${ssId}`, { subservice: ssPayload });
                 } else {
-                    if (!ssId || !existingSubIds.includes(parseInt(ssId))) {
+                    if (!ssId || !existingSubIds.includes(parseInt(ssId)) || !existingSubRasId.includes(parseInt(ssRasId))) {
                         await axios.post(API_ENDPOINTS.createSubserviceRAS, { subservice: [ssPayload] });
                     }
                 }
@@ -765,6 +770,7 @@ const PageField = () => {
         const existingSubservices = Array.isArray(raw) ? raw : raw ? [raw] : [];
         const existingSubIds = existingSubservices
             .map(item => item.rason_id);
+        const existingSubCSDAddOnId = existingSubservices.map(item => item.rason_ras);
 
         for (const rason of sliders) {
             const rasonPayload = {
@@ -774,15 +780,17 @@ const PageField = () => {
                 rason_amount: rason.rason_amount,
             };
             const ssId = rason.id || rason.rason_id;
+            const RasOnId = rason.rason_ras;
 
             try {
                 if (
                     ssId &&
-                    existingSubIds.includes(parseInt(ssId))
+                    existingSubIds.includes(parseInt(ssId)) &&
+                    existingSubCSDAddOnId.includes(parseInt(RasOnId))
                 ) {
                     await axios.post(`${API_ENDPOINTS.updateAddOnCSD}/${ssId}`, { rasons: rasonPayload });
                 } else {
-                    if (!ssId || !existingSubIds.includes(parseInt(ssId))) {
+                    if (!ssId || !existingSubIds.includes(parseInt(ssId)) || !existingSubCSDAddOnId.includes(parseInt(RasOnId))) {
                         await axios.post(API_ENDPOINTS.createAddOnCSD, { rasons: [rasonPayload] });
                     }
                 }
@@ -841,6 +849,7 @@ const PageField = () => {
         const existingSubservices = Array.isArray(raw) ? raw : raw ? [raw] : [];
         const existingSubIds = existingSubservices
             .map(item => item.y_id);
+        const existingSubStudyDegreeId = existingSubservices.map(item => item.y_std);
 
         for (const year of sliders) {
             const yearPayload = {
@@ -851,15 +860,17 @@ const PageField = () => {
                 display: year.display,
             };
             const yId = year.id || year.y_id;
+            const yStdId = year.y_std;
 
             try {
                 if (
                     yId &&
-                    existingSubIds.includes(parseInt(yId))
+                    existingSubIds.includes(parseInt(yId)) &&
+                    existingSubStudyDegreeId.includes(parseInt(yStdId))
                 ) {
                     await axios.post(`${API_ENDPOINTS.updateSubStudyDegree}/${yId}`, { year: yearPayload });
                 } else {
-                    if (!yId || !existingSubIds.includes(parseInt(yId))) {
+                    if (!yId || !existingSubIds.includes(parseInt(yId)) || !existingSubStudyDegreeId.includes(parseInt(yStdId))) {
                         await axios.post(API_ENDPOINTS.createSubStudyDegree, { year: [yearPayload] });
                     }
                 }
@@ -915,6 +926,7 @@ const PageField = () => {
         const existingSubservices = Array.isArray(raw) ? raw : raw ? [raw] : [];
         const existingSubIds = existingSubservices
             .map(item => item.sapd_id);
+        const existingSubAvailableId = existingSubservices.map(item => item.sapd_apd);
 
         for (const subavailable of sliders) {
             const subAvailablePayload = {
@@ -925,15 +937,17 @@ const PageField = () => {
                 display: subavailable.display,
             };
             const sapdId = subavailable.id || subavailable.sapd_id;
+            const sapdApd = subavailable.sapd_apd;
 
             try {
                 if (
                     sapdId &&
-                    existingSubIds.includes(parseInt(sapdId))
+                    existingSubIds.includes(parseInt(sapdId)) &&
+                    existingSubAvailableId.includes(parseInt(sapdApd))
                 ) {
                     await axios.post(`${API_ENDPOINTS.updateSubAvailable}/${sapdId}`, { subapd: subAvailablePayload });
                 } else {
-                    if (!sapdId || !existingSubIds.includes(parseInt(sapdId))) {
+                    if (!sapdId || !existingSubIds.includes(parseInt(sapdId)) || !existingSubAvailableId.includes(parseInt(sapdApd))) {
                         await axios.post(API_ENDPOINTS.createSubAvailable, { subapd: [subAvailablePayload] });
                     }
                 }
@@ -993,6 +1007,7 @@ const PageField = () => {
         const existingSubservices = Array.isArray(raw) ? raw : raw ? [raw] : [];
         const existingSubIds = existingSubservices
             .map(item => item.gca_id);
+        const existingSubRequirementId = existingSubservices.map(item => item.gca_gc);
 
         for (const subavailable of sliders) {
             const subAvailablePayload = {
@@ -1002,15 +1017,17 @@ const PageField = () => {
                 gca_btnlink: subavailable.gca_btnlink,
             };
             const gcaddonId = subavailable.id || subavailable.gca_id;
+            const gcaGC = subavailable.gca_gc;
 
             try {
                 if (
                     gcaddonId &&
-                    existingSubIds.includes(parseInt(gcaddonId))
+                    existingSubIds.includes(parseInt(gcaddonId)) &&
+                    existingSubRequirementId.includes(parseInt(gcaGC))
                 ) {
                     await axios.post(`${API_ENDPOINTS.updateSubRequirement}/${gcaddonId}`, { gcaddon: subAvailablePayload });
                 } else {
-                    if (!gcaddonId || !existingSubIds.includes(parseInt(gcaddonId))) {
+                    if (!gcaddonId || !existingSubIds.includes(parseInt(gcaddonId)) || !existingSubRequirementId.includes(parseInt(gcaGC))) {
                         await axios.post(API_ENDPOINTS.createSubRequirement, { gcaddon: [subAvailablePayload] });
                     }
                 }
@@ -1066,6 +1083,7 @@ const PageField = () => {
         const existingSubservices = Array.isArray(raw) ? raw : raw ? [raw] : [];
         const existingSubIds = existingSubservices
             .map(item => item.ufa_id);
+        const existingSubFutureId = existingSubservices.map(item => item.ufa_uf);
 
         for (const subfuture of sliders) {
             const subFuturePayload = {
@@ -1075,15 +1093,17 @@ const PageField = () => {
                 display: subfuture.display,
             };
             const subfutureId = subfuture.id || subfuture.ufa_id;
+            const ufaUF = subfuture.ufa_uf;
 
             try {
                 if (
                     subfutureId &&
-                    existingSubIds.includes(parseInt(subfutureId))
+                    existingSubIds.includes(parseInt(subfutureId)) &&
+                    existingSubFutureId.includes(parseInt(ufaUF))
                 ) {
                     await axios.post(`${API_ENDPOINTS.updateSubFuture}/${subfutureId}`, { ufaddon: subFuturePayload });
                 } else {
-                    if (!subfutureId || !existingSubIds.includes(parseInt(subfutureId))) {
+                    if (!subfutureId || !existingSubIds.includes(parseInt(subfutureId)) || !existingSubFutureId.includes(parseInt(ufaUF))) {
                         await axios.post(API_ENDPOINTS.createSubFuture, { ufaddon: [subFuturePayload] });
                     }
                 }
@@ -1142,6 +1162,7 @@ const PageField = () => {
         const existingSubIds = existingSubservices
             .filter(item => item.ss_af === null)
             .map(item => item.ss_id);
+        const existingSubPotentialId = existingSubservices.map(item => item.ss_ras);
 
         for (const ss of sliders) {
             const ssPayload = {
@@ -1153,15 +1174,17 @@ const PageField = () => {
                 display: ss.display,
             };
             const ssId = ss.id || ss.ss_id;
+            const ssRAS = ss.stse_tse;
 
             try {
                 if (
                     ssId &&
-                    existingSubIds.includes(parseInt(ssId))
+                    existingSubIds.includes(parseInt(ssId)) &&
+                    existingSubPotentialId.includes(parseInt(ssRAS))
                 ) {
                     await axios.post(`${API_ENDPOINTS.updateSubserviceRAS}/${ssId}`, { subservice: ssPayload });
                 } else {
-                    if (!ssId || !existingSubIds.includes(parseInt(ssId))) {
+                    if (!ssId || !existingSubIds.includes(parseInt(ssId)) || !existingSubPotentialId.includes(parseInt(ssRAS))) {
                         await axios.post(API_ENDPOINTS.createSubserviceRAS, { subservice: [ssPayload] });
                     }
                 }
@@ -1220,6 +1243,7 @@ const PageField = () => {
         const existingSubIds = existingSubservices
             .filter(item => item.ss_af === null)
             .map(item => item.ss_id);
+        const existingSubInnovationId = existingSubservices.map(item => item.ss_ras);
 
         for (const ss of sliders) {
             const ssPayload = {
@@ -1231,15 +1255,17 @@ const PageField = () => {
                 display: ss.display,
             };
             const ssId = ss.id || ss.ss_id;
+            const ssRAS = ss.ss_ras;
 
             try {
                 if (
                     ssId &&
-                    existingSubIds.includes(parseInt(ssId))
+                    existingSubIds.includes(parseInt(ssId)) &&
+                    existingSubInnovationId.includes(parseInt(ssRAS))
                 ) {
                     await axios.post(`${API_ENDPOINTS.updateSubserviceRAS}/${ssId}`, { subservice: ssPayload });
                 } else {
-                    if (!ssId || !existingSubIds.includes(parseInt(ssId))) {
+                    if (!ssId || !existingSubIds.includes(parseInt(ssId)) || !existingSubInnovationId.includes(parseInt(ssRAS))) {
                         await axios.post(API_ENDPOINTS.createSubserviceRAS, { subservice: [ssPayload] });
                     }
                 }
@@ -1296,6 +1322,7 @@ const PageField = () => {
         const existingSubservices = Array.isArray(raw) ? raw : raw ? [raw] : [];
         const existingSubIds = existingSubservices
             .map(item => item.fa_id);
+        const existingSubFAQId = existingSubservices.map(item => item.fa_faq);
 
         for (const fa of sliders) {
             const faPayload = {
@@ -1305,15 +1332,17 @@ const PageField = () => {
                 display: fa.display,
             };
             const faId = fa.id || fa.fa_id;
+            const faFAQ = fa.faFAQ;
 
             try {
                 if (
                     faId &&
-                    existingSubIds.includes(parseInt(faId))
+                    existingSubIds.includes(parseInt(faId)) &&
+                    existingSubFAQId.includes(parseInt(faFAQ))
                 ) {
                     await axios.post(`${API_ENDPOINTS.updateSubFAQ}/${faId}`, { faqaddon: faPayload });
                 } else {
-                    if (!faId || !existingSubIds.includes(parseInt(faId))) {
+                    if (!faId || !existingSubIds.includes(parseInt(faId)) || !existingSubFAQId.includes(parseInt(faFAQ))) {
                         await axios.post(API_ENDPOINTS.createSubFAQ, { faqaddon: [faPayload] });
                     }
                 }
@@ -1374,6 +1403,7 @@ const PageField = () => {
         const existingSubservices = Array.isArray(raw) ? raw : raw ? [raw] : [];
         const existingSubIds = existingSubservices
             .map(item => item.sha_id);
+        const existingSubApplyId = existingSubservices.map(item => item.sha_ha);
 
         for (const sha of sliders) {
             const subApplyPayload = {
@@ -1382,15 +1412,17 @@ const PageField = () => {
                 display: sha.display,
             };
             const shaId = sha.id || sha.sha_id;
+            const shaHA = sha.sha_ha;
 
             try {
                 if (
                     shaId &&
-                    existingSubIds.includes(parseInt(shaId))
+                    existingSubIds.includes(parseInt(shaId)) &&
+                    existingSubApplyId.includes(parseInt(shaHA))
                 ) {
                     await axios.post(`${API_ENDPOINTS.updateSubApply}/${shaId}`, { subapply: subApplyPayload });
                 } else {
-                    if (!shaId || !existingSubIds.includes(parseInt(shaId))) {
+                    if (!shaId || !existingSubIds.includes(parseInt(shaId)) || !existingSubApplyId.includes(parseInt(shaHA))) {
                         await axios.post(API_ENDPOINTS.createSubApply, { subapply: [subApplyPayload] });
                     }
                 }
@@ -1446,6 +1478,7 @@ const PageField = () => {
         const existingSubservices = Array.isArray(raw) ? raw : raw ? [raw] : [];
         const existingSubIds = existingSubservices
             .map(item => item.sidd_id);
+        const existingSubImportantId = existingSubservices.map(item => item.sidd_idd);
 
         for (const sidd of sliders) {
             const subApplyPayload = {
@@ -1457,15 +1490,17 @@ const PageField = () => {
                 display: sidd.display,
             };
             const siddId = sidd.id || sidd.sidd_id;
+            const siddIDD = sidd.sidd_idd;
 
             try {
                 if (
                     siddId &&
-                    existingSubIds.includes(parseInt(siddId))
+                    existingSubIds.includes(parseInt(siddId)) &&
+                    existingSubImportantId.includes(parseInt(siddIDD))
                 ) {
                     await axios.post(`${API_ENDPOINTS.updateSubImportant}/${siddId}`, { subimportant: subApplyPayload });
                 } else {
-                    if (!siddId || !existingSubIds.includes(parseInt(siddId))) {
+                    if (!siddId || !existingSubIds.includes(parseInt(siddId)) || !existingSubImportantId.includes(parseInt(siddIDD))) {
                         await axios.post(API_ENDPOINTS.createSubImportant, { subimportant: [subApplyPayload] });
                     }
                 }
