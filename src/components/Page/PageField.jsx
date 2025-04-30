@@ -34,9 +34,10 @@ const PageField = () => {
         const programs = await pageRef.current?.getPrograms?.() || [];
 
         if (programs.length > 0 && savedSectionId) {
-            const existingResponse = await axios.get(`${API_ENDPOINTS.getDepartment}?dep_sec=${savedSectionId}`);
-            const existingItems = existingResponse.data?.data || [];
+            const existingResponse = await axios.get(API_ENDPOINTS.getDepartment);
+            const existingItems = (existingResponse.data?.data || []).filter(item => parseInt(item.dep_sec) === parseInt(savedSectionId));
             const existingIds = existingItems.map(slide => slide.dep_id);
+            const existingDepartments = existingItems.map(slide => slide.dep_sec);
             for (const program of programs) {
 
                 const programPayload = {
@@ -52,12 +53,13 @@ const PageField = () => {
                     program.dep_id &&
                     existingIds.includes(parseInt(program.dep_id)) &&
                     parseInt(program.dep_sec) === parseInt(savedSectionId) &&
-                    parseInt(program.page_id) === parseInt(savedPageId)
+                    parseInt(program.page_id) === parseInt(savedPageId) &&
+                    existingDepartments.includes(parseInt(savedSectionId))
                 ){
                     await axios.post(`${API_ENDPOINTS.updateDepartment}/${program.dep_id}`, { programs: programPayload });
                 } else {
                     if (program.dep_sec) {
-                        if (!program.dep_id || !existingIds.includes(parseInt(program.dep_id))) {
+                        if (!program.dep_id || !existingIds.includes(parseInt(program.dep_id)) || !existingDepartments.includes(parseInt(savedSectionId))) {
                             await axios.post(API_ENDPOINTS.createDepartment, { programs: [programPayload] });
                         }
                     }
@@ -69,9 +71,10 @@ const PageField = () => {
         const banners = await pageRef.current?.getBanners?.() || [];
 
         if (banners.length > 0 && savedSectionId) {
-            const existingResponse = await axios.get(`${API_ENDPOINTS.getBanner}?ban_sec=${savedSectionId}`);
-            const existingItems = existingResponse.data?.data || [];
+            const existingResponse = await axios.get(API_ENDPOINTS.getBanner);
+            const existingItems = (existingResponse.data?.data || []).filter(item => parseInt(item.ban_sec) === parseInt(savedSectionId));
             const existingIds = existingItems.map(slide => slide.ban_id);
+            const existingBanners = existingItems.map(slide => slide.ban_sec);
             for (const banner of banners) {
 
                 const bannerPayload = {
@@ -86,12 +89,13 @@ const PageField = () => {
                     banner.ban_id &&
                     existingIds.includes(parseInt(banner.ban_id)) &&
                     parseInt(banner.ban_sec) === parseInt(savedSectionId) &&
-                    parseInt(banner.page_id) === parseInt(savedPageId)
+                    parseInt(banner.page_id) === parseInt(savedPageId) &&
+                    existingBanners.includes(parseInt(banner.ban_sec))
                 ) {
                     await axios.post(`${API_ENDPOINTS.updateBanner}/${banner.ban_id}`, { banners: bannerPayload });
                 } else {
                     if (banner.ban_sec) {
-                        if (!banner.ban_id || !existingIds.includes(parseInt(banner.ban_id))) {
+                        if (!banner.ban_id || !existingIds.includes(parseInt(banner.ban_id)) || !existingBanners.includes(parseInt(banner.ban_sec))) {
                             await axios.post(API_ENDPOINTS.createBanner, { banners: [bannerPayload] });
                         }
                     }
@@ -103,9 +107,13 @@ const PageField = () => {
         const informations = await pageRef.current?.getInformations?.() || [];
 
         if (informations.length > 0 && savedSectionId) {
-            const existingResponse = await axios.get(`${API_ENDPOINTS.getText}?text_sec=${savedSectionId}`);
-            const existingItems = existingResponse.data?.data || [];
+            const existingResponse = await axios.get(API_ENDPOINTS.getText);
+            const existingItems = (existingResponse.data?.data || []).filter(item => {
+                const section = item.text_sec;
+                return section && parseInt(section.sec_id) === parseInt(savedSectionId);
+            });
             const existingIds = existingItems.map(slide => slide.text_id);
+            const existingInformations = existingItems.map(slide => slide.text_sec);
             for (const information of informations) {
 
                 const informationPayload = {
@@ -120,12 +128,13 @@ const PageField = () => {
                     information.text_id &&
                     existingIds.includes(parseInt(information.text_id)) &&
                     parseInt(information.text_sec) === parseInt(savedSectionId) &&
-                    parseInt(information.page_id) === parseInt(savedPageId)
+                    parseInt(information.page_id) === parseInt(savedPageId) &&
+                    existingInformations.includes(parseInt(savedSectionId))
                 ) {
                     await axios.post(`${API_ENDPOINTS.updateText}/${information.text_id}`, { texts: informationPayload });
                 } else {
                     if (information.text_sec) {
-                        if (!information.text_id || !existingIds.includes(parseInt(information.text_id))) {
+                        if (!information.text_id || !existingIds.includes(parseInt(information.text_id)) || !existingInformations.includes(parseInt(savedSectionId))) {
                             await axios.post(API_ENDPOINTS.createText, { texts: [informationPayload] });
                         }
                     }
@@ -137,9 +146,10 @@ const PageField = () => {
         const testimonials = await pageRef.current?.getTestimonials?.() || [];
 
         if (testimonials.length > 0 && savedSectionId) {
-            const existingResponse = await axios.get(`${API_ENDPOINTS.getTestimonial}?t_sec=${savedSectionId}`);
-            const existingItems = existingResponse.data?.data || [];
+            const existingResponse = await axios.get(API_ENDPOINTS.getTestimonial);
+            const existingItems = (existingResponse.data?.data || []).filter(item => parseInt(item.t_sec) === parseInt(savedSectionId));
             const existingIds = existingItems.map(slide => slide.t_id);
+            const existingTestimonials = existingItems.map(slide => slide.t_sec);
             for (const testimonial of testimonials) {
 
                 const testimonialPayload = {
@@ -152,12 +162,13 @@ const PageField = () => {
                     testimonial.t_sec &&
                     existingIds.includes(parseInt(testimonial.t_id)) &&
                     parseInt(testimonial.t_sec) === parseInt(savedSectionId) &&
-                    parseInt(testimonial.page_id) === parseInt(savedPageId)
+                    parseInt(testimonial.page_id) === parseInt(savedPageId) &&
+                    existingTestimonials.includes(parseInt(savedSectionId))
                 ) {
                     await axios.post(`${API_ENDPOINTS.updateTestimonial}/${testimonial.t_id}`, { testimonials: testimonialPayload });
                 } else {
                     if (testimonial.t_sec) {
-                        if (!testimonial.t_id || !existingIds.includes(parseInt(testimonial.t_id))) {
+                        if (!testimonial.t_id || !existingIds.includes(parseInt(testimonial.t_id)) || !existingTestimonials.includes(parseInt(savedSectionId))) {
                             await axios.post(API_ENDPOINTS.createTestimonial, { testimonials: [testimonialPayload] });
                         }
                     }
@@ -169,9 +180,10 @@ const PageField = () => {
         const academics = await pageRef.current?.getAcademics?.() || [];
 
         if (academics.length > 0 && savedSectionId) {
-            const existingResponse = await axios.get(`${API_ENDPOINTS.getAcademic}?acad_sec=${savedSectionId}`);
-            const existingItems = existingResponse.data?.data || [];
+            const existingResponse = await axios.get(API_ENDPOINTS.getAcademic);
+            const existingItems = (existingResponse.data?.data || []).filter(item => parseInt(item.acad_sec) === parseInt(savedSectionId));
             const existingIds = existingItems.map(slide => slide.acad_id);
+            const existingAcademics = existingItems.map(slide => slide.acad_sec);
             for (const academic of academics) {
 
                 const academicPayload = {
@@ -190,12 +202,13 @@ const PageField = () => {
                     academic.acad_sec &&
                     existingIds.includes(parseInt(academic.acad_id)) &&
                     parseInt(academic.acad_sec) === parseInt(savedSectionId) &&
-                    parseInt(academic.page_id) === parseInt(savedPageId)
+                    parseInt(academic.page_id) === parseInt(savedPageId) &&
+                    existingAcademics.includes(parseInt(savedSectionId))
                 ) {
                     await axios.post(`${API_ENDPOINTS.updateAcademic}/${academic.acad_id}`, { academics: academicPayload });
                 } else {
                     if (academic.acad_sec) {
-                        if (!academic.acad_id || !existingIds.includes(parseInt(academic.acad_id))) {
+                        if (!academic.acad_id || !existingIds.includes(parseInt(academic.acad_id)) || !existingAcademics.includes(parseInt(savedSectionId))) {
                             await axios.post(API_ENDPOINTS.createAcademic, { academics: [academicPayload] });
                         }
                     }
@@ -207,9 +220,10 @@ const PageField = () => {
         const galleries = await pageRef.current?.getGallery?.() || [];
 
         if (galleries.length > 0 && savedSectionId) {
-            const existingResponse = await axios.get(`${API_ENDPOINTS.getGallery}?gal_sec=${savedSectionId}`);
-            const existingItems = existingResponse.data?.data || [];
+            const existingResponse = await axios.get(API_ENDPOINTS.getGallery);
+            const existingItems = (existingResponse.data?.data || []).filter(item => parseInt(item.gal_sec) === parseInt(savedSectionId));
             const existingIds = existingItems.map(slide => slide.gal_id);
+            const existingGallerys = existingItems.map(slide => slide.gal_sec);
             for (const gallery of galleries) {
                 const galleryPayload = {
                     gal_sec: savedSectionId,
@@ -226,12 +240,13 @@ const PageField = () => {
                     gallery.gal_sec &&
                     existingIds.includes(parseInt(gallery.gal_id)) &&
                     parseInt(gallery.gal_sec) === parseInt(savedSectionId) &&
-                    parseInt(gallery.page_id) === parseInt(savedPageId)
+                    parseInt(gallery.page_id) === parseInt(savedPageId) &&
+                    existingGallerys.includes(parseInt(savedSectionId))
                 ) {
                     await axios.post(`${API_ENDPOINTS.updateGallery}/${gallery.gal_id}`, { gallery: galleryPayload });
                 } else {
                     if (gallery.gal_sec) {
-                        if (!gallery.gal_id || !existingIds.includes(parseInt(gallery.gal_id))) {
+                        if (!gallery.gal_id || !existingIds.includes(parseInt(gallery.gal_id)) || !existingGallerys.includes(parseInt(savedSectionId))) {
                             await axios.post(API_ENDPOINTS.createGallery, { gallery: [galleryPayload] });
                         }
                     }
@@ -243,9 +258,10 @@ const PageField = () => {
         const criterias = await pageRef.current?.getCriterias?.() || [];
 
         if (criterias.length > 0 && savedSectionId) {
-            const existingResponse = await axios.get(`${API_ENDPOINTS.getCriteria}?gc_sec=${savedSectionId}`);
-            const existingItems = existingResponse.data?.data || [];
+            const existingResponse = await axios.get(API_ENDPOINTS.getCriteria);
+            const existingItems = (existingResponse.data?.data || []).filter(item => parseInt(item.gc_sec) === parseInt(savedSectionId));
             const existingIds = existingItems.map(slide => slide.gc_id);
+            const existingCriterias = existingItems.map(slide => slide.gc_sec);
             for (const criteria of criterias) {
 
                 const criteriaPayload = {
@@ -263,12 +279,13 @@ const PageField = () => {
                     criteria.gc_sec &&
                     existingIds.includes(parseInt(criteria.gc_id)) &&
                     parseInt(criteria.gc_sec) === parseInt(savedSectionId) &&
-                    parseInt(criteria.page_id) === parseInt(savedPageId)
+                    parseInt(criteria.page_id) === parseInt(savedPageId) &&
+                    existingCriterias.includes(parseInt(savedSectionId))
                 ){
                     await axios.post(`${API_ENDPOINTS.updateCriteria}/${criteria.gc_id}`, { criteria: criteriaPayload });
                 } else {
                     if (criteria.gc_sec) {
-                        if (!criteria.gc_id || !existingIds.includes(parseInt(criteria.gc_id))) {
+                        if (!criteria.gc_id || !existingIds.includes(parseInt(criteria.gc_id)) || !existingCriterias.includes(parseInt(savedSectionId))) {
                             await axios.post(API_ENDPOINTS.createCriteria, { criteria: [criteriaPayload] });
                         }
                     }
@@ -280,9 +297,10 @@ const PageField = () => {
         const unlocks = await pageRef.current?.getUnlocks?.() || [];
 
         if (unlocks.length > 0 && savedSectionId) {
-            const existingResponse = await axios.get(`${API_ENDPOINTS.getUnlock}?umd_sec=${savedSectionId}`);
-            const existingItems = existingResponse.data?.data || [];
+            const existingResponse = await axios.get(API_ENDPOINTS.getUnlock);
+            const existingItems = (existingResponse.data?.data || []).filter(item => parseInt(item.umd_sec) === parseInt(savedSectionId));
             const existingIds = existingItems.map(slide => slide.umd_id);
+            const existingUnlocks = existingItems.map(slide => slide.umd_sec);
             for (const unlock of unlocks) {
 
                 const unlockPayload = {
@@ -299,12 +317,13 @@ const PageField = () => {
                     unlock.umd_sec &&
                     existingIds.includes(parseInt(unlock.umd_id)) &&
                     parseInt(unlock.umd_sec) === parseInt(savedSectionId) &&
-                    parseInt(unlock.page_id) === parseInt(savedPageId)
+                    parseInt(unlock.page_id) === parseInt(savedPageId) &&
+                    existingUnlocks.includes(parseInt(savedSectionId))
                 ){
                     await axios.post(`${API_ENDPOINTS.updateUnlock}/${unlock.umd_id}`, { unlock: unlockPayload });
                 } else {
                     if (unlock.umd_sec) {
-                        if (!unlock.umd_id || !existingIds.includes(parseInt(unlock.umd_id))) {
+                        if (!unlock.umd_id || !existingIds.includes(parseInt(unlock.umd_id)) || !existingUnlocks.includes(parseInt(savedSectionId))) {
                             await axios.post(API_ENDPOINTS.createUnlock, { unlock: [unlockPayload] });
                         }
                     }
@@ -316,9 +335,10 @@ const PageField = () => {
         const fees = await pageRef.current?.getFees?.() || [];
 
         if (fees.length > 0 && savedSectionId) {
-            const existingResponse = await axios.get(`${API_ENDPOINTS.getFee}?fe_sec=${savedSectionId}`);
-            const existingItems = existingResponse.data?.data || [];
+            const existingResponse = await axios.get(API_ENDPOINTS.getFee);
+            const existingItems = (existingResponse.data?.data || []).filter(item => parseInt(item.fe_sec) === parseInt(savedSectionId));
             const existingIds = existingItems.map(slide => slide.fe_id);
+            const existingFees = existingItems.map(slide => slide.fe_sec);
             for (const fee of fees) {
 
                 const feePayload = {
@@ -334,12 +354,13 @@ const PageField = () => {
                     fee.fe_sec &&
                     existingIds.includes(parseInt(fee.fe_id)) &&
                     parseInt(fee.fe_sec) === parseInt(savedSectionId) &&
-                    parseInt(fee.page_id) === parseInt(savedPageId)
+                    parseInt(fee.page_id) === parseInt(savedPageId) &&
+                    existingFees.includes(parseInt(savedSectionId))
                 ){
                     await axios.post(`${API_ENDPOINTS.updateFee}/${fee.fe_id}`, { fee: feePayload });
                 } else {
                     if (fee.fe_sec) {
-                        if (!fee.fe_id || !existingIds.includes(parseInt(fee.fe_id))) {
+                        if (!fee.fe_id || !existingIds.includes(parseInt(fee.fe_id)) || !existingFees.includes(parseInt(savedSectionId))) {
                             await axios.post(API_ENDPOINTS.createFee, { fee: [feePayload] });
                         }
                     }
@@ -351,9 +372,10 @@ const PageField = () => {
         const introductions = await pageRef.current?.getIntroductions?.() || [];
 
         if (introductions.length > 0 && savedSectionId) {
-            const existingResponse = await axios.get(`${API_ENDPOINTS.getIntroduction}?in_sec=${savedSectionId}`);
-            const existingItems = existingResponse.data?.data || [];
+            const existingResponse = await axios.get(API_ENDPOINTS.getIntroduction);
+            const existingItems = (existingResponse.data?.data || []).filter(item => parseInt(item.in_sec) === parseInt(savedSectionId));
             const existingIds = existingItems.map(slide => slide.in_id);
+            const existingIntroductions = existingItems.map(slide => slide.in_sec);
             for (const introduction of introductions) {
                 const introductionPayload = {
                     in_sec: savedSectionId,
@@ -370,12 +392,13 @@ const PageField = () => {
                     introduction.in_sec &&
                     existingIds.includes(parseInt(introduction.in_id)) &&
                     parseInt(introduction.in_sec) === parseInt(savedSectionId) &&
-                    parseInt(introduction.page_id) === parseInt(savedPageId)
+                    parseInt(introduction.page_id) === parseInt(savedPageId) &&
+                    existingIntroductions.includes(parseInt(savedSectionId))
                 ){
                     await axios.post(`${API_ENDPOINTS.updateIntroduction}/${introduction.in_id}`, { introduction: introductionPayload });
                 } else {
                     if (introduction.in_sec) {
-                        if (!introduction.in_id || !existingIds.includes(parseInt(introduction.in_id))) {
+                        if (!introduction.in_id || !existingIds.includes(parseInt(introduction.in_id)) || !existingIntroductions.includes(parseInt(savedSectionId))) {
                             await axios.post(API_ENDPOINTS.createIntroduction, { introduction: [introductionPayload] });
                         }
                     }
@@ -405,9 +428,10 @@ const PageField = () => {
         const createEndpoint = API_ENDPOINTS.createHeaderSection;
 
         const items = await pageRef.current?.[dataKey]?.() || [];
-        const response = await axios.get(`${API_ENDPOINTS.getHeaderSection}?hsec_sec=${savedSectionId}`);
-        const existingItems = response.data?.data || [];
+        const existingResponse = await axios.get(API_ENDPOINTS.getHeaderSection);
+        const existingItems = (existingResponse.data?.data || []).filter(item => parseInt(item.hsec_sec) === parseInt(savedSectionId));
         const existingIds = existingItems.map(item => item.hsec_id);
+        const existingHeaderSections = existingItems.map(slide => slide.hsec_sec);
 
         if (items.length > 0 && savedSectionId) {
             for (const item of items) {
@@ -428,11 +452,12 @@ const PageField = () => {
                     itemId &&
                     existingIds.includes(parseInt(itemId)) &&
                     parseInt(hsec_sec) === parseInt(savedSectionId) &&
-                    parseInt(resolvedPageId) === parseInt(savedPageId)
+                    parseInt(resolvedPageId) === parseInt(savedPageId) &&
+                    existingHeaderSections.includes(parseInt(savedSectionId))
                 ) {
                     await axios.post(`${updateEndpoint}/${itemId}`, { [itemsKey]: payload });
                 } else {
-                    if (!itemId || !existingIds.includes(parseInt(itemId))) {
+                    if (!itemId || !existingIds.includes(parseInt(itemId)) || !existingHeaderSections.includes(parseInt(savedSectionId))) {
                         await axios.post(createEndpoint, { [itemsKey]: [payload] });
                     }
                 }
@@ -445,9 +470,10 @@ const PageField = () => {
         const acadFacilities = await pageRef.current?.getFacilities?.() || [];
 
         if (acadFacilities.length > 0 && savedSectionId) {
-            const existingResponse = await axios.get(`${API_ENDPOINTS.getAcadFacilities}?af_sec=${savedSectionId}`);
-            const existingItems = existingResponse.data?.data || [];
+            const existingResponse = await axios.get(API_ENDPOINTS.getAcadFacilities);
+            const existingItems = (existingResponse.data?.data || []).filter(item => parseInt(item.af_sec) === parseInt(savedSectionId));
             const existingIds = existingItems.map(slide => slide.af_id);
+            const existingFacilities = existingItems.map(slide => slide.af_sec);
             for (const acadFacility of acadFacilities) {
 
                 const acadFacilitiesPayload = {
@@ -461,14 +487,15 @@ const PageField = () => {
                     acadFacility.af_sec &&
                     existingIds.includes(parseInt(acadFacility.af_id)) &&
                     parseInt(acadFacility.af_sec) === parseInt(savedSectionId) &&
-                    parseInt(acadFacility.page_id) === parseInt(savedPageId)
+                    parseInt(acadFacility.page_id) === parseInt(savedPageId) &&
+                    existingFacilities.includes(parseInt(savedSectionId))
                 ) {
                     await axios.post(`${API_ENDPOINTS.updateAcadFacilities}/${acadFacility.af_id}`, { facilities: acadFacilitiesPayload });
                     await saveAcadFacilitySliders(acadFacility.af_id, acadFacility.subservices || []);
 
                 } else {
                     if (acadFacility.af_sec) {
-                        if (!acadFacility.af_id || !existingIds.includes(parseInt(acadFacility.af_id))) {
+                        if (!acadFacility.af_id || !existingIds.includes(parseInt(acadFacility.af_id)) || !existingFacilities.includes(parseInt(savedSectionId))) {
                             const res = await axios.post(API_ENDPOINTS.createAcadFacilities, { facilities: [acadFacilitiesPayload] });
                             const createdId = res.data?.data?.[0]?.af_id;
                             if (createdId) {
@@ -526,9 +553,10 @@ const PageField = () => {
         const Specializations = await pageRef.current?.getSpecializations?.() || [];
 
         if (Specializations.length > 0 && savedSectionId) {
-            const existingResponse = await axios.get(`${API_ENDPOINTS.getSpecialization}?ras_sec=${savedSectionId}`);
-            const existingItems = existingResponse.data?.data || [];
+            const existingResponse = await axios.get(API_ENDPOINTS.getSpecialization);
+            const existingItems = (existingResponse.data?.data || []).filter(item => parseInt(item.ras_sec) === parseInt(savedSectionId));
             const existingIds = existingItems.map(slide => slide.ras_id);
+            const existingSpecializations = existingItems.map(slide => slide.ras_sec);
             for (const specialization of Specializations) {
 
                 const specializationPayload = {
@@ -543,13 +571,14 @@ const PageField = () => {
                     specialization.ras_sec &&
                     existingIds.includes(parseInt(specialization.ras_id)) &&
                     parseInt(specialization.ras_sec) === parseInt(savedSectionId) &&
-                    parseInt(specialization.page_id) === parseInt(savedPageId)
+                    parseInt(specialization.page_id) === parseInt(savedPageId) &&
+                    existingSpecializations.includes(parseInt(savedSectionId))
                 ) {
                     await axios.post(`${API_ENDPOINTS.updateSpecialization}/${specialization.ras_id}`, { specialization: specializationPayload });
                     await saveSpecializationSliders(specialization.ras_id, specialization.subservices || []);
                 } else {
                     if (specialization.ras_sec) {
-                        if (!specialization.ras_id || !existingIds.includes(parseInt(specialization.ras_id))) {
+                        if (!specialization.ras_id || !existingIds.includes(parseInt(specialization.ras_id)) || !existingSpecializations.includes(parseInt(savedSectionId))) {
                             const res = await axios.post(API_ENDPOINTS.createSpecialization, { specialization: [specializationPayload] });
                             const createdId = res.data?.data?.[0]?.ras_id;
                             if (createdId) {
@@ -607,9 +636,10 @@ const PageField = () => {
         const types = await pageRef.current?.getTypes?.() || [];
 
         if (types.length > 0 && savedSectionId) {
-            const existingResponse = await axios.get(`${API_ENDPOINTS.getType}?tse_sec=${savedSectionId}`);
-            const existingItems = existingResponse.data?.data || [];
+            const existingResponse = await axios.get(API_ENDPOINTS.getType);
+            const existingItems = (existingResponse.data?.data || []).filter(item => parseInt(item.tse_sec) === parseInt(savedSectionId));
             const existingIds = existingItems.map(slide => slide.tse_id);
+            const existingTypes = existingItems.map(slide => slide.tse_sec);
             for (const type of types) {
 
                 const TypePayload = {
@@ -623,13 +653,14 @@ const PageField = () => {
                     type.tse_sec &&
                     existingIds.includes(parseInt(type.tse_id)) &&
                     parseInt(type.tse_sec) === parseInt(savedSectionId) &&
-                    parseInt(type.page_id) === parseInt(savedPageId)
+                    parseInt(type.page_id) === parseInt(savedPageId) &&
+                    existingTypes.includes(parseInt(savedSectionId))
                 ) {
                     await axios.post(`${API_ENDPOINTS.updateType}/${type.tse_id}`, { type: TypePayload });
                     await saveSubTypeSliders(type.tse_id, type.subtypes || []);
                 } else {
                     if (type.tse_sec) {
-                        if (!type.tse_id || !existingIds.includes(parseInt(type.tse_id))) {
+                        if (!type.tse_id || !existingIds.includes(parseInt(type.tse_id)) || !existingTypes.includes(parseInt(savedSectionId))) {
                             const res = await axios.post(API_ENDPOINTS.createType, { type: [TypePayload] });
                             const createdId = res.data?.data?.[0]?.tse_id;
                             if (createdId) {
@@ -683,9 +714,10 @@ const PageField = () => {
         const csds = await pageRef.current?.getCSDs?.() || [];
 
         if (csds.length > 0 && savedSectionId) {
-            const existingResponse = await axios.get(`${API_ENDPOINTS.getSpecialization}?ras_sec=${savedSectionId}`);
-            const existingItems = existingResponse.data?.data || [];
+            const existingResponse = await axios.get(API_ENDPOINTS.getSpecialization);
+            const existingItems = (existingResponse.data?.data || []).filter(item => parseInt(item.ras_sec) === parseInt(savedSectionId));
             const existingIds = existingItems.map(slide => slide.ras_id);
+            const existingCSDs = existingItems.map(slide => slide.ras_sec);
             for (const csd of csds) {
 
                 const csdPayload = {
@@ -700,14 +732,15 @@ const PageField = () => {
                     csd.ras_sec &&
                     existingIds.includes(parseInt(csd.ras_id)) &&
                     parseInt(csd.ras_sec) === parseInt(savedSectionId) &&
-                    parseInt(csd.page_id) === parseInt(savedPageId)
+                    parseInt(csd.page_id) === parseInt(savedPageId) &&
+                    existingCSDs.includes(parseInt(savedSectionId))
                 ) {
                     await axios.post(`${API_ENDPOINTS.updateSpecialization}/${csd.ras_id}`, { specialization: csdPayload });
                     await saveCSDSliders(csd.ras_id, csd.subservices || []);
                     await saveCSDAddOn(csd.ras_id, csd.rasons || []);
                 } else {
                     if (csd.ras_sec) {
-                        if (!csd.ras_id || !existingIds.includes(parseInt(csd.ras_id))) {
+                        if (!csd.ras_id || !existingIds.includes(parseInt(csd.ras_id)) || !existingCSDs.includes(parseInt(savedSectionId))) {
                             const res = await axios.post(API_ENDPOINTS.createSpecialization, { specialization: [csdPayload] });
                             const createdId = res.data?.data?.[0]?.ras_id;
                             if (createdId) {
@@ -805,9 +838,10 @@ const PageField = () => {
         const studys = await pageRef.current?.getStudys?.() || [];
 
         if (studys.length > 0 && savedSectionId) {
-            const existingResponse = await axios.get(`${API_ENDPOINTS.getStudy}?std_sec=${savedSectionId}`);
-            const existingItems = existingResponse.data?.data || [];
+            const existingResponse = await axios.get(API_ENDPOINTS.getStudy);
+            const existingItems = (existingResponse.data?.data || []).filter(item => parseInt(item.std_sec) === parseInt(savedSectionId));
             const existingIds = existingItems.map(slide => slide.std_id);
+            const existingStudys = existingItems.map(slide => slide.std_sec);
             for (const study of studys) {
 
                 const StudyPayload = {
@@ -822,13 +856,14 @@ const PageField = () => {
                     study.std_sec &&
                     existingIds.includes(parseInt(study.std_id)) &&
                     parseInt(study.std_sec) === parseInt(savedSectionId) &&
-                    parseInt(study.page_id) === parseInt(savedPageId)
+                    parseInt(study.page_id) === parseInt(savedPageId) &&
+                    existingStudys.includes(parseInt(savedSectionId))
                 ) {
                     await axios.post(`${API_ENDPOINTS.updateStudy}/${study.std_id}`, { study: StudyPayload });
                     await saveSubStudyDegreeSliders(study.std_id, study.substudys || []);
                 } else {
                     if (study.std_sec) {
-                        if (!study.std_id || !existingIds.includes(parseInt(study.std_id))) {
+                        if (!study.std_id || !existingIds.includes(parseInt(study.std_id)) || !existingStudys.includes(parseInt(savedSectionId))) {
                             const res = await axios.post(API_ENDPOINTS.createStudy, { study: [StudyPayload] });
                             const createdId = res.data?.data?.[0]?.std_id;
                             if (createdId) {
@@ -885,9 +920,10 @@ const PageField = () => {
         const availables = await pageRef.current?.getAvailables?.() || [];
 
         if (availables.length > 0 && savedSectionId) {
-            const existingResponse = await axios.get(`${API_ENDPOINTS.getAvailable}?apd_sec=${savedSectionId}`);
-            const existingItems = existingResponse.data?.data || [];
+            const existingResponse = await axios.get(API_ENDPOINTS.getAvailable);
+            const existingItems = (existingResponse.data?.data || []).filter(item => parseInt(item.apd_sec) === parseInt(savedSectionId));
             const existingIds = existingItems.map(slide => slide.apd_id);
+            const existingAvailables = existingItems.map(slide => slide.apd_sec);
             for (const available of availables) {
 
                 const AvailablePayload = {
@@ -900,13 +936,14 @@ const PageField = () => {
                     available.apd_sec &&
                     existingIds.includes(parseInt(available.apd_id)) &&
                     parseInt(available.apd_sec) === parseInt(savedSectionId) &&
-                    parseInt(available.page_id) === parseInt(savedPageId)
+                    parseInt(available.page_id) === parseInt(savedPageId) &&
+                    existingAvailables.includes(parseInt(savedSectionId))
                 ) {
                     await axios.post(`${API_ENDPOINTS.updateAvailable}/${available.apd_id}`, { available: AvailablePayload });
                     await saveSubAvailableSliders(available.apd_id, available.subavailables || []);
                 } else {
                     if (available.apd_sec) {
-                        if (!available.apd_id || !existingIds.includes(parseInt(available.apd_id))) {
+                        if (!available.apd_id || !existingIds.includes(parseInt(available.apd_id)) || !existingAvailables.includes(parseInt(savedSectionId))) {
                             const res = await axios.post(API_ENDPOINTS.createAvailable, { available: [AvailablePayload] });
                             const createdId = res.data?.data?.[0]?.apd_id;
                             if (createdId) {
@@ -962,9 +999,10 @@ const PageField = () => {
         const requirements = await pageRef.current?.getRequirements?.() || [];
 
         if (requirements.length > 0 && savedSectionId) {
-            const existingResponse = await axios.get(`${API_ENDPOINTS.getCriteria}?gc_sec=${savedSectionId}`);
-            const existingItems = existingResponse.data?.data || [];
+            const existingResponse = await axios.get(API_ENDPOINTS.getCriteria);
+            const existingItems = (existingResponse.data?.data || []).filter(item => parseInt(item.gc_sec) === parseInt(savedSectionId));
             const existingIds = existingItems.map(slide => slide.gc_id);
+            const existingCriterias = existingItems.map(slide => slide.gc_sec);
             for (const requirement of requirements) {
                 const requirementPayload = {
                     gc_sec: savedSectionId,
@@ -981,13 +1019,14 @@ const PageField = () => {
                     requirement.gc_sec &&
                     existingIds.includes(parseInt(requirement.gc_id)) &&
                     parseInt(requirement.gc_sec) === parseInt(savedSectionId) &&
-                    parseInt(requirement.page_id) === parseInt(savedPageId)
+                    parseInt(requirement.page_id) === parseInt(savedPageId) &&
+                    existingCriterias.includes(parseInt(savedSectionId))
                 ){
                     await axios.post(`${API_ENDPOINTS.updateCriteria}/${requirement.gc_id}`, { criteria: requirementPayload });
                     await saveSubRequirement(requirement.gc_id, requirement.subrequirements || []);
                 } else {
                     if (requirement.gc_sec) {
-                        if (!requirement.gc_id || !existingIds.includes(parseInt(requirement.gc_id))) {
+                        if (!requirement.gc_id || !existingIds.includes(parseInt(requirement.gc_id)) || !existingCriterias.includes(parseInt(savedSectionId))) {
                             const res = await axios.post(API_ENDPOINTS.createCriteria, { criteria: [requirementPayload] });
                             const createdId = res.data?.data?.[0]?.gc_id;
                             if (createdId) {
@@ -1040,9 +1079,10 @@ const PageField = () => {
         const futures = await pageRef.current?.getFutures?.() || [];
 
         if (futures.length > 0 && savedSectionId) {
-            const existingResponse = await axios.get(`${API_ENDPOINTS.getFuture}?uf_sec=${savedSectionId}`);
-            const existingItems = existingResponse.data?.data || [];
+            const existingResponse = await axios.get(API_ENDPOINTS.getFuture);
+            const existingItems = (existingResponse.data?.data || []).filter(item => parseInt(item.uf_sec) === parseInt(savedSectionId));
             const existingIds = existingItems.map(slide => slide.uf_id);
+            const existingFutures = existingItems.map(slide => slide.uf_sec);
             for (const future of futures) {
 
                 const FuturePayload = {
@@ -1057,13 +1097,14 @@ const PageField = () => {
                     future.uf_sec &&
                     existingIds.includes(parseInt(future.uf_id)) &&
                     parseInt(future.uf_sec) === parseInt(savedSectionId) &&
-                    parseInt(future.page_id) === parseInt(savedPageId)
+                    parseInt(future.page_id) === parseInt(savedPageId) &&
+                    existingFutures.includes(parseInt(savedSectionId))
                 ) {
                     await axios.post(`${API_ENDPOINTS.updateFuture}/${future.uf_id}`, { future: FuturePayload });
                     await saveSubFutureSliders(future.uf_id, future.subfutures || []);
                 } else {
                     if (future.uf_sec) {
-                        if (!future.uf_id || !existingIds.includes(parseInt(future.uf_id))) {
+                        if (!future.uf_id || !existingIds.includes(parseInt(future.uf_id)) || !existingFutures.includes(parseInt(savedSectionId))) {
                             const res = await axios.post(API_ENDPOINTS.createFuture, { future: [FuturePayload] });
                             const createdId = res.data?.data?.[0]?.uf_id;
                             if (createdId) {
@@ -1118,9 +1159,10 @@ const PageField = () => {
         const Potentials = await pageRef.current?.getPotentials?.() || [];
 
         if (Potentials.length > 0 && savedSectionId) {
-            const existingResponse = await axios.get(`${API_ENDPOINTS.getSpecialization}?ras_sec=${savedSectionId}`);
-            const existingItems = existingResponse.data?.data || [];
+            const existingResponse = await axios.get(API_ENDPOINTS.getSpecialization);
+            const existingItems = (existingResponse.data?.data || []).filter(item => parseInt(item.ras_sec) === parseInt(savedSectionId));
             const existingIds = existingItems.map(slide => slide.ras_id);
+            const existingPotentials = existingItems.map(slide => slide.ras_sec);
             for (const potential of Potentials) {
 
                 const potentialPayload = {
@@ -1135,13 +1177,14 @@ const PageField = () => {
                     potential.ras_sec &&
                     existingIds.includes(parseInt(potential.ras_id)) &&
                     parseInt(potential.ras_sec) === parseInt(savedSectionId) &&
-                    parseInt(potential.page_id) === parseInt(savedPageId)
+                    parseInt(potential.page_id) === parseInt(savedPageId) &&
+                    existingPotentials.includes(parseInt(savedSectionId))
                 ) {
                     await axios.post(`${API_ENDPOINTS.updateSpecialization}/${potential.ras_id}`, { specialization: potentialPayload });
                     await savePotentialSliders(potential.ras_id, potential.subservices || []);
                 } else {
                     if (potential.ras_sec) {
-                        if (!potential.ras_id || !existingIds.includes(parseInt(potential.ras_id))) {
+                        if (!potential.ras_id || !existingIds.includes(parseInt(potential.ras_id)) || !existingPotentials.includes(parseInt(savedSectionId))) {
                             const res = await axios.post(API_ENDPOINTS.createSpecialization, { specialization: [potentialPayload] });
                             const createdId = res.data?.data?.[0]?.ras_id;
                             if (createdId) {
@@ -1199,9 +1242,10 @@ const PageField = () => {
         const innovations = await pageRef.current?.getInnovations?.() || [];
 
         if (innovations.length > 0 && savedSectionId) {
-            const existingResponse = await axios.get(`${API_ENDPOINTS.getSpecialization}?ras_sec=${savedSectionId}`);
-            const existingItems = existingResponse.data?.data || [];
+            const existingResponse = await axios.get(API_ENDPOINTS.getSpecialization);
+            const existingItems = (existingResponse.data?.data || []).filter(item => parseInt(item.ras_sec) === parseInt(savedSectionId));
             const existingIds = existingItems.map(slide => slide.ras_id);
+            const existingInnovations = existingItems.map(slide => slide.ras_sec);
             for (const innovation of innovations) {
 
                 const innovationPayload = {
@@ -1216,13 +1260,14 @@ const PageField = () => {
                     innovation.ras_sec &&
                     existingIds.includes(parseInt(innovation.ras_id)) &&
                     parseInt(innovation.ras_sec) === parseInt(savedSectionId) &&
-                    parseInt(innovation.page_id) === parseInt(savedPageId)
+                    parseInt(innovation.page_id) === parseInt(savedPageId) &&
+                    existingInnovations.includes(parseInt(savedSectionId))
                 ) {
                     await axios.post(`${API_ENDPOINTS.updateSpecialization}/${innovation.ras_id}`, { specialization: innovationPayload });
                     await saveInnovationSliders(innovation.ras_id, innovation.subservices || []);
                 } else {
                     if (innovation.ras_sec) {
-                        if (!innovation.ras_id || !existingIds.includes(parseInt(innovation.ras_id))) {
+                        if (!innovation.ras_id || !existingIds.includes(parseInt(innovation.ras_id)) || !existingInnovations.includes(parseInt(savedSectionId))) {
                             const res = await axios.post(API_ENDPOINTS.createSpecialization, { specialization: [innovationPayload] });
                             const createdId = res.data?.data?.[0]?.ras_id;
                             if (createdId) {
@@ -1280,9 +1325,10 @@ const PageField = () => {
         const faqs = await pageRef.current?.getFAQs?.() || [];
 
         if (faqs.length > 0 && savedSectionId) {
-            const existingResponse = await axios.get(`${API_ENDPOINTS.getFAQ}?faq_sec=${savedSectionId}`);
-            const existingItems = existingResponse.data?.data || [];
+            const existingResponse = await axios.get(API_ENDPOINTS.getFAQ);
+            const existingItems = (existingResponse.data?.data || []).filter(item => parseInt(item.faq_sec) === parseInt(savedSectionId));
             const existingIds = existingItems.map(slide => slide.faq_id);
+            const existingFAQs = existingItems.map(slide => slide.faq_sec);
             for (const faq of faqs) {
 
                 const faqPayload = {
@@ -1296,13 +1342,14 @@ const PageField = () => {
                     faq.faq_sec &&
                     existingIds.includes(parseInt(faq.faq_id)) &&
                     parseInt(faq.faq_sec) === parseInt(savedSectionId) &&
-                    parseInt(faq.page_id) === parseInt(savedPageId)
+                    parseInt(faq.page_id) === parseInt(savedPageId) &&
+                    existingFAQs.includes(parseInt(savedSectionId))
                 ) {
                     await axios.post(`${API_ENDPOINTS.updateFAQ}/${faq.faq_id}`, { faq: faqPayload });
                     await saveFAQSliders(faq.faq_id, faq.subfaqs || []);
                 } else {
                     if (faq.faq_sec) {
-                        if (!faq.faq_id || !existingIds.includes(parseInt(faq.faq_id))) {
+                        if (!faq.faq_id || !existingIds.includes(parseInt(faq.faq_id)) || !existingFAQs.includes(parseInt(savedSectionId))) {
                             const res = await axios.post(API_ENDPOINTS.createFAQ, { faq: [faqPayload] });
                             const createdId = res.data?.data?.[0]?.faq_id;
                             if (createdId) {
@@ -1357,9 +1404,10 @@ const PageField = () => {
         const applys = await pageRef.current?.getApplys?.() || [];
 
         if (applys.length > 0 && savedSectionId) {
-            const existingResponse = await axios.get(`${API_ENDPOINTS.getApply}?ha_sec=${savedSectionId}`);
-            const existingItems = existingResponse.data?.data || [];
+            const existingResponse = await axios.get(API_ENDPOINTS.getApply);
+            const existingItems = (existingResponse.data?.data || []).filter(item => parseInt(item.ha_sec) === parseInt(savedSectionId));
             const existingIds = existingItems.map(slide => slide.ha_id);
+            const existingApplys = existingItems.map(slide => slide.ha_sec);
             for (const apply of applys) {
 
                 const applyPayload = {
@@ -1376,14 +1424,15 @@ const PageField = () => {
                     apply.ha_sec &&
                     existingIds.includes(parseInt(apply.ha_id)) &&
                     parseInt(apply.ha_sec) === parseInt(savedSectionId) &&
-                    parseInt(apply.page_id) === parseInt(savedPageId)
+                    parseInt(apply.page_id) === parseInt(savedPageId) &&
+                    existingApplys.includes(parseInt(savedSectionId))
                 ) {
                     await axios.post(`${API_ENDPOINTS.updateApply}/${apply.ha_id}`, { apply: applyPayload });
                     await saveApplySliders(apply.ha_id, apply.subservices || []);
 
                 } else {
                     if (apply.ha_sec) {
-                        if (!apply.ha_id || !existingIds.includes(parseInt(apply.ha_id))) {
+                        if (!apply.ha_id || !existingIds.includes(parseInt(apply.ha_id)) || !existingApplys.includes(parseInt(savedSectionId))) {
                             const res = await axios.post(API_ENDPOINTS.createApply, { apply: [applyPayload] });
                             const createdId = res.data?.data?.[0]?.ha_id;
                             if (createdId) {
@@ -1437,9 +1486,10 @@ const PageField = () => {
         const importants = await pageRef.current?.getImportants?.() || [];
 
         if (importants.length > 0 && savedSectionId) {
-            const existingResponse = await axios.get(`${API_ENDPOINTS.getImportant}?idd_sec=${savedSectionId}`);
-            const existingItems = existingResponse.data?.data || [];
+            const existingResponse = await axios.get(API_ENDPOINTS.getImportant);
+            const existingItems = (existingResponse.data?.data || []).filter(item => parseInt(item.idd_sec) === parseInt(savedSectionId));
             const existingIds = existingItems.map(slide => slide.idd_id);
+            const existingImportants = existingItems.map(slide => slide.idd_sec);
             for (const important of importants) {
 
                 const importantPayload = {
@@ -1453,13 +1503,14 @@ const PageField = () => {
                     important.idd_sec &&
                     existingIds.includes(parseInt(important.idd_id)) &&
                     parseInt(important.idd_sec) === parseInt(savedSectionId) &&
-                    parseInt(important.page_id) === parseInt(savedPageId)
+                    parseInt(important.page_id) === parseInt(savedPageId) &&
+                    existingImportants.includes(parseInt(savedSectionId))
                 ) {
                     await axios.post(`${API_ENDPOINTS.updateImportant}/${important.idd_id}`, { important: importantPayload });
                     await saveImportantSliders(important.idd_id, important.subservices || []);
                 } else {
                     if (important.idd_sec) {
-                        if (!important.idd_id || !existingIds.includes(parseInt(important.idd_id))) {
+                        if (!important.idd_id || !existingIds.includes(parseInt(important.idd_id)) || !existingImportants.includes(parseInt(savedSectionId))) {
                             const res = await axios.post(API_ENDPOINTS.createImportant, { important: [importantPayload] });
                             const createdId = res.data?.data?.[0]?.idd_id;
                             if (createdId) {
@@ -1520,9 +1571,13 @@ const PageField = () => {
         const pageId = response?.pageId;
 
         if (slideshows.length > 0 && savedSectionId) {
-            const existingResponse = await axios.get(`${API_ENDPOINTS.getSlideshow}?slider_sec=${savedSectionId}`);
-            const existingItems = existingResponse.data?.data || [];
+            const existingResponse = await axios.get(API_ENDPOINTS.getSlideshow);
+            const existingItems = (existingResponse.data?.data || []).filter(item => {
+                const section = item.slider_sec;
+                return section && parseInt(section.sec_id) === parseInt(savedSectionId);
+            });
             const existingIds = existingItems.map(slide => slide.slider_id);
+            const existingSliders = existingItems.map(slide => slide.slider_sec.sec_id);
             for (const item of slideshows) {
 
                 const payload = {
@@ -1535,11 +1590,12 @@ const PageField = () => {
                     sectionId &&
                     existingIds.includes(parseInt(item.slider_id)) &&
                     parseInt(sectionId) === parseInt(savedSectionId) &&
-                    parseInt(pageId) === parseInt(savedPageId)
+                    parseInt(pageId) === parseInt(savedPageId) &&
+                    existingSliders.includes(parseInt(savedSectionId))
                 ) {
                     await axios.post(`${API_ENDPOINTS.updateSlideshow}/${item.slider_id}`, { Slideshow: payload });
                 } else {
-                    if (!item.slider_id || !existingIds.includes(parseInt(item.slider_id))) {
+                    if (!item.slider_id || !existingIds.includes(parseInt(item.slider_id)) || !existingSliders.includes(parseInt(savedSectionId))) {
                         await axios.post(API_ENDPOINTS.createSlideshow, { Slideshow: [payload] });
                     }
                 }
@@ -1555,9 +1611,11 @@ const PageField = () => {
         const pageId = response?.pageId;
 
         if (services.length > 0 && savedSectionId) {
-            const existingResponse = await axios.get(`${API_ENDPOINTS.getService}?s_sec=${savedSectionId}`);
-            const existingItems = existingResponse.data?.data || [];
+            const existingResponse = await axios.get(API_ENDPOINTS.getService);
+            const existingItems = (existingResponse.data?.data || []).filter(item => parseInt(item.s_sec) === parseInt(savedSectionId));
             const existingIds = existingItems.map(slide => slide.s_id);
+            const existingServices = existingItems.map(slide => slide.s_sec);
+
             for (const item of services) {
 
                 const payload = {
@@ -1570,11 +1628,12 @@ const PageField = () => {
                 sectionId &&
                 existingIds.includes(parseInt(item.s_id)) &&
                 parseInt(sectionId) === parseInt(savedSectionId) &&
-                parseInt(pageId) === parseInt(savedPageId)
+                parseInt(pageId) === parseInt(savedPageId) &&
+                existingServices.includes(parseInt(savedSectionId))
             ) {
                     await axios.post(`${API_ENDPOINTS.updateService}/${item.s_id}`, { Service: payload });
                 } else {
-                    if (!item.s_id || !existingIds.includes(parseInt(item.s_id))) {
+                    if (!item.s_id || !existingIds.includes(parseInt(item.s_id)) || !existingServices.includes(parseInt(savedSectionId))) {
                         await axios.post(API_ENDPOINTS.createService, { Service: [payload] });
                     }
                 }

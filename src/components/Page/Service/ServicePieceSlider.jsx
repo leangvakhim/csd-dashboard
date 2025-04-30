@@ -132,7 +132,7 @@ const ServicePieceSlider = forwardRef(({sectionId, pageId}, ref) => {
             } else {
               setSlider([{
                   id: "1",
-                  title: "Slider 1",
+                  title: "Service 1",
                   subtitle: "",
                   image: "",
                   display: 0,
