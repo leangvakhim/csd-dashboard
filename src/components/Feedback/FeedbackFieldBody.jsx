@@ -107,13 +107,13 @@ const FeedbackFieldBody = ({ formData, setFormData, onImageSelect }) => {
 
                         <div className="flex-1 w-full">
                             <label className="block text-xl font-medium leading-6 text-white-900">
-                                Writter
+                                Title
                             </label>
                             <div className="mt-2">
                                 <input
                                     type="text"
-                                    value={formData.fb_subtitle || ""}
-                                    onChange={e => setFormData(prev => ({ ...prev, fb_subtitle: e.target.value }))}
+                                    value={formData.fb_writer || ""}
+                                    onChange={e => setFormData(prev => ({ ...prev, fb_writer: e.target.value }))}
                                     className="block w-full !border-gray-200 border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
                                 />
                             </div>
@@ -237,8 +237,8 @@ const FeedbackFieldBody = ({ formData, setFormData, onImageSelect }) => {
                                 <label className="block text-lg font-semibold text-gray-700">Details</label>
                                 <div className="mt-2">
                                     <textarea
-                                        value={formData.fb_writer}
-                                        onChange={(e) => setFormData({ ...formData, fb_writer: e.target.value })}
+                                        value={formData.fb_subtitle}
+                                        onChange={(e) => setFormData({ ...formData, fb_subtitle: e.target.value })}
                                         className="h-60 w-full bg-gray-200 border !border-gray-300 rounded-md py-2 px-3 text-gray-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
                                         placeholder="Enter details here..."
                                     ></textarea>
