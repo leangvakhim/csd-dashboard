@@ -638,11 +638,11 @@ const PageField = () => {
     const saveSubTypeSliders = async (typeId, sliders) => {
         if (!typeId || !Array.isArray(sliders)) return;
 
-        const res = await axios.get(`${API_ENDPOINTS.getSubType}?tse_sec=${typeId}`);
+        const res = await axios.get(`${API_ENDPOINTS.getSubType}?stse_sec=${typeId}`);
         const raw = res.data?.data;
         const existingSubservices = Array.isArray(raw) ? raw : raw ? [raw] : [];
-        const existingSubIds = existingSubservices
-            .map(item => item.stse_id);
+        const existingSubIds = existingSubservices.map(item => item.stse_id);
+        const existingSubTypeId = existingSubservices.map(item => item.stse_tse);
 
         for (const stse of sliders) {
             if (!typeId) {
@@ -656,17 +656,17 @@ const PageField = () => {
                 display: stse.display,
             };
             const stseId = stse.id || stse.stse_id;
-
-            console.log("stsePayload is: ",stsePayload);
+            const stseTse = stse.stse_tse;
 
             try {
                 if (
                     stseId &&
-                    existingSubIds.includes(parseInt(stseId))
+                    existingSubIds.includes(parseInt(stseId)) &&
+                    existingSubTypeId.includes(parseInt(stseTse))
                 ) {
                     await axios.post(`${API_ENDPOINTS.updateSubType}/${stseId}`, { subtse: stsePayload });
                 } else {
-                    if (!stseId || !existingSubIds.includes(parseInt(stseId))) {
+                    if (!stseId || !existingSubIds.includes(parseInt(stseId)) || !existingSubTypeId.includes(parseInt(stseTse))) {
                         await axios.post(API_ENDPOINTS.createSubType, { subtse: [stsePayload] });
                     }
                 }

@@ -33,6 +33,7 @@ const TypePieceSlider = forwardRef(({typeId}, ref) => {
             stse_detail: slide.subtitle,
             display: slide.display,
             stse_id: slide.id,
+            stse_tse: typeId,
           };
         })
       );
