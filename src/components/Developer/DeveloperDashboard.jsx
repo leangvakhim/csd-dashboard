@@ -50,7 +50,8 @@ const DeveloperDashboard = () => {
             const response = await axios.get(API_ENDPOINTS.getDevelopers);
             const result = (response.data.data || []);
             const normalized = Array.isArray(result) ? result : result ? [result] : [];
-            setFDeveloperItems(normalized);
+            const sortedDeveloper = normalized.sort((a, b) => b.d_order - a.d_order);
+            setFDeveloperItems(sortedDeveloper);
         } catch (error) {
             console.error('Failed to fetch delvelopers:', error);
         }
