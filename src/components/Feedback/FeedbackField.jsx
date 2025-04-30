@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import axios from 'axios';
+import Swal from 'sweetalert2';
 
 import Aside from '../Aside';
 import FeedbackFieldHeader from './FeedbackFieldHeader';
@@ -10,7 +11,6 @@ import { API_ENDPOINTS } from '../../service/APIConfig';
 const FeedBackField = () => {
     const location = useLocation();
     const eventData = location.state?.eventData;
-
     const [formData, setFormData] = useState({
         lang: 1,
         fb_title: '',
@@ -30,8 +30,30 @@ const FeedBackField = () => {
         }
     }, [eventData]);
 
+    useEffect(() => {
+        const fetchFeedback = async () => {
+            try {
+            const id = eventData?.data?.fb_id || formData?.fb_id;
+            if (!id) return;
+
+            const response = await axios.get(`${API_ENDPOINTS.getFeedback}/${id}`);
+            setFormData(response.data.data);
+            } catch (error) {
+            console.error("Error fetching feedback data:", error);
+            }
+        };
+
+        fetchFeedback();
+    }, []);
+
     const handleSave = async () => {
         setLoading(true);
+
+        Swal.fire({
+            title: 'Saving feedback...',
+            allowOutsideClick: false,
+            didOpen: () => Swal.showLoading(),
+        });
 
         const payload = {
             lang: formData.lang,
@@ -47,22 +69,30 @@ const FeedBackField = () => {
         try {
             let res;
             if (formData.fb_id) {
-                // Update existing feedback
                 res = await axios.post(`${API_ENDPOINTS.updateFeedback}/${formData.fb_id}`, payload);
-                console.log('Update response:', res.data);
             } else {
-                // Create new feedback (omit fb_order if not needed on creation)
                 const { fb_order, ...createPayload } = payload;
                 res = await axios.post(API_ENDPOINTS.createFeedback, createPayload);
-                console.log('Create response:', res.data);
             }
-            alert("Feedback saved successfully!");
+            Swal.close();
+            Swal.fire({
+                icon: 'success',
+                title: 'Feedback Saved',
+                text: 'Your feedback has been successfully saved!',
+                timer: 2000,
+                showConfirmButton: false
+            });
         } catch (err) {
             console.error("Error saving feedback:", err);
             if (err.response?.data?.errors) {
                 console.error("Validation errors:", err.response.data.errors);
             }
-            alert("Failed to save feedback. Check console for details.");
+            Swal.close();
+            Swal.fire({
+                icon: 'error',
+                title: 'Failed',
+                text: 'Something went wrong while saving feedback.',
+            });
         } finally {
             setLoading(false);
         }
