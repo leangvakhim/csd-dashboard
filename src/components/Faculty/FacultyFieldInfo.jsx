@@ -56,12 +56,27 @@ const FacultyFieldInfo = forwardRef(({ f_id }, ref) => {
     }));
 
     const handleDeleteInfo = async (id) => {
-        const confirmDelete = window.confirm("Are you sure you want to delete this information?");
-        if (!confirmDelete) return;
+        const Swal = (await import('sweetalert2')).default;
+
+        const result = await Swal.fire({
+            title: 'Are you sure?',
+            text: 'Do you want to delete this information?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, delete it!',
+            cancelButtonText: 'Cancel',
+            customClass: {
+                confirmButton: '!bg-red-600 hover:!bg-red-700 text-white py-2 px-4 rounded !mr-2',
+                cancelButton: 'bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded',
+                popup: 'rounded-lg shadow-lg',
+            },
+            buttonsStyling: false
+        });
+
+        if (!result.isConfirmed) return;
 
         try {
             await axios.put(`${API_ENDPOINTS.deleteFacultyInfo}/${id}/`);
-
             setInfo(prevInfo =>
                 prevInfo.map(item =>
                     item.id === id
@@ -69,11 +84,21 @@ const FacultyFieldInfo = forwardRef(({ f_id }, ref) => {
                         : item
                 )
             );
-
-            console.log("✅ Information deleted successfully.");
-            window.location.reload();
+            Swal.fire({
+                title: 'Deleted!',
+                text: 'The information has been deleted.',
+                icon: 'success',
+                timer: 1500,
+                showConfirmButton: false
+            });
+            setTimeout(() => window.location.reload(), 1600);
         } catch (error) {
             console.error("❌ Error deleting information:", error);
+            Swal.fire({
+                title: 'Error!',
+                text: 'Something went wrong while deleting.',
+                icon: 'error'
+            });
         }
     };
 
@@ -108,9 +133,6 @@ const FacultyFieldInfo = forwardRef(({ f_id }, ref) => {
     };
 
     useEffect(() => {
-        if (!f_id) {
-            console.error("❌ f_id is undefined or missing.");
-        }
         if (f_id) {
             fetch(`${API_ENDPOINTS.getFacultyInfoByFaculty}/${f_id}`)
                 .then(res => res.json())
@@ -241,15 +263,13 @@ const FacultyFieldInfo = forwardRef(({ f_id }, ref) => {
                                                                 const updatedInfo = [...info];
                                                                     updatedInfo[index].finfo_side = parseInt(e.target.value, 10); // Convert to integer
                                                                     setInfo(updatedInfo);
-
                                                             }}
-                                                            className="w-full border rounded-md p-2"
+                                                            className="w-full border !border-gray-300 rounded-md p-2"
                                                         >
                                                             <option value="">Choose side</option>
                                                             <option value={1}>Left</option> {/* Use integer values for the options */}
                                                             <option value={2}>Right</option> {/* Use integer values for the options */}
                                                         </select>
-
                                                     </div>
 
                                                     <div className="grid grid-cols-1 gap-4 px-4 py-2">

@@ -5,7 +5,6 @@ import axios from 'axios';
 import { useEffect } from 'react';
 
 const FacultyFieldContactInfo = forwardRef(({ f_id }, ref) => {
-
     const [rotatedStates, setRotatedStates] = useState({});
     const [contactinfo, setContactinfo] = useState([
         {
@@ -17,6 +16,8 @@ const FacultyFieldContactInfo = forwardRef(({ f_id }, ref) => {
             active: 1,
         },
     ]);
+
+    console.log("f_id is; ",f_id);
 
     useImperativeHandle(ref, () => ({
         getData: () => {
@@ -46,10 +47,9 @@ const FacultyFieldContactInfo = forwardRef(({ f_id }, ref) => {
     const handleDeleteContactinfo = async (id) => {
         const confirmDelete = window.confirm("Are you sure you want to delete this contact?");
         if (!confirmDelete) return;
-        console.log("dfghj", id)
 
         try {
-            await axios.put(`${API_ENDPOINTS.deleteFacultyContact}/${id}/`);
+            await axios.put(`${API_ENDPOINTS.deleteFacultyContact}/${id}`);
 
             // Update contact state without reloading the page
             setContactinfo(prevContactinfo =>
@@ -60,7 +60,6 @@ const FacultyFieldContactInfo = forwardRef(({ f_id }, ref) => {
                 )
             );
 
-            console.log("✅ Contact info deleted successfully.");
             window.location.reload();
         } catch (error) {
             console.error("❌ Error deleting contact info:", error);
@@ -69,9 +68,8 @@ const FacultyFieldContactInfo = forwardRef(({ f_id }, ref) => {
 
 
     const handleAddContactinfo = async () => {
-
         const newContactinfo = {
-            id: `${Date.now()}`,
+            id: (contactinfo.length + 1).toString(),
             f_id: f_id,
             title: `Contact info ${contactinfo.length + 1}`,
             fc_name: null,
@@ -100,9 +98,6 @@ const FacultyFieldContactInfo = forwardRef(({ f_id }, ref) => {
     };
 
     useEffect(() => {
-        if (!f_id) {
-            console.error("❌ f_id is undefined or missing.");
-        }
         if (f_id) {
             fetch(`${API_ENDPOINTS.getFacultyContactByFaculty}/${f_id}`)
                 .then(res => res.json())
