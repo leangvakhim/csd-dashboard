@@ -3,6 +3,7 @@ import { API_BASEURL, API_ENDPOINTS, API } from '../../service/APIConfig'
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { useLoading } from '../Context/LoadingContext';
+import Swal from 'sweetalert2';
 
 const FacultyDashboard = () => {
     const [activeDropdown, setActiveDropdown] = useState(null);
@@ -27,7 +28,20 @@ const FacultyDashboard = () => {
     }, []);
 
     const handleDelete = async (id) => {
-        if (!window.confirm("Are you sure you want to delete of this faculty memeber?")) return;
+        const result = await Swal.fire({
+            title: 'Are you sure?',
+            text: "Do you want to delete this faculty member?",
+            icon: 'warning',
+            showCancelButton: true,
+            customClass: {
+                confirmButton: 'bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-blue-400 !mr-2',
+                cancelButton: '!bg-red-600 hover:!bg-red-700 text-white py-2 px-4 rounded focus:outline-none focus:ring-2 focus:!ring-red-400'
+            },
+            buttonsStyling: false,
+            confirmButtonText: 'Yes, delete it!'
+        });
+
+        if (!result.isConfirmed) return;
 
         try {
             await axios.put(`${API_ENDPOINTS.deleteFaculty}/${id}`);
@@ -36,9 +50,24 @@ const FacultyDashboard = () => {
                     item.f_id === id ? { ...item, active: item.active ? 0 : 1 } : item
                 )
             );
-            window.location.reload();
+            Swal.fire({
+                icon: 'success',
+                title: 'Deleted!',
+                text: 'Faculty member has been deleted.',
+                showConfirmButton: false,
+                timer: 1000,
+                timerProgressBar: true,
+                customClass: {
+                    popup: 'rounded-lg shadow-lg',
+                    title: 'text-green-700',
+                    htmlContainer: 'text-gray-600',
+                }
+            }).then(() => {
+                window.location.reload();
+            });
         } catch (error) {
             console.error("Error toggling visibility:", error);
+            Swal.fire('Error', 'Failed to delete faculty member.', 'error');
         }
     };
 

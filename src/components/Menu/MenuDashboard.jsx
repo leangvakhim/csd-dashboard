@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios';
+import Swal from 'sweetalert2';
 import { API_ENDPOINTS } from '../../service/APIConfig';
 import MenuModal from './MenuModal';
 
@@ -48,7 +49,20 @@ const MenuDashboard = () => {
     }, []);
 
     const handleDelete = async (id) => {
-        if (!window.confirm("Are you sure you want to delete of this menu?")) return;
+        const result = await Swal.fire({
+            title: 'Are you sure?',
+            text: "This menu will be deleted or disabled!",
+            icon: 'warning',
+            showCancelButton: true,
+            customClass: {
+                confirmButton: 'bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-blue-400 !mr-2',
+                cancelButton: '!bg-red-600 hover:!bg-red-700 text-white py-2 px-4 rounded focus:outline-none focus:ring-2 focus:!ring-red-400'
+            },
+            buttonsStyling: false,
+            confirmButtonText: 'Yes, delete it!'
+        });
+
+        if (!result.isConfirmed) return;
 
         try {
             await axios.put(`${API_ENDPOINTS.deleteMenu}/${id}`);
@@ -57,9 +71,27 @@ const MenuDashboard = () => {
                     item.menu_id === id ? { ...item, active: item.active ? 0 : 1 } : item
                 )
             );
-            window.location.reload();
+
+            Swal.fire({
+                title: 'Success!',
+                text: 'Menu delete successfully.',
+                icon: 'success',
+                showConfirmButton: false,
+                timer: 1000
+            });
+
+            setTimeout(() => {
+                window.location.reload();
+            }, 1100);
         } catch (error) {
             console.error("Error toggling visibility:", error);
+            Swal.fire({
+                title: 'Error!',
+                text: 'Failed to update menu.',
+                icon: 'error',
+                timer: 2000,
+                showConfirmButton: false
+            });
         }
     };
 

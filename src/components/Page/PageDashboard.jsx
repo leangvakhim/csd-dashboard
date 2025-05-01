@@ -3,6 +3,7 @@ import { API_ENDPOINTS } from '../../service/APIConfig';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { useLoading } from '../Context/LoadingContext';
+import Swal from 'sweetalert2';
 
 const PageDashboard = () => {
     const [activeDropdown, setActiveDropdown] = useState(null);
@@ -53,18 +54,47 @@ const PageDashboard = () => {
     };
 
     const handleDelete = async (id) => {
-        if (!window.confirm("Are you sure you want to delete of this page?")) return;
+        const Swal = (await import('sweetalert2')).default;
 
-        try {
-            await axios.put(`${API_ENDPOINTS.deletePage}/${id}`);
-            setPageItems(prevItems =>
-                prevItems.map(item =>
-                    item.p_id === id ? { ...item, active: item.active ? 0 : 1 } : item
-                )
-            );
-            window.location.reload();
-        } catch (error) {
-            console.error("Error toggling visibility:", error);
+        const result = await Swal.fire({
+            title: "Are you sure?",
+            text: "You won't be able to revert this!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Yes, delete it!",
+            cancelButtonText: "Cancel",
+            customClass: {
+                popup: 'text-sm rounded-md',
+                confirmButton: '!bg-red-600 text-white px-4 py-2 rounded hover:!bg-red-700 !mr-2',
+                cancelButton: '!bg-blue-600 text-white px-4 py-2 rounded hover:!bg-blue-700',
+            },
+            buttonsStyling: false,
+        });
+
+        if (result.isConfirmed) {
+            try {
+                await axios.put(`${API_ENDPOINTS.deletePage}/${id}`);
+                setPageItems(prevItems =>
+                    prevItems.map(item =>
+                        item.p_id === id ? { ...item, active: item.active ? 0 : 1 } : item
+                    )
+                );
+                await Swal.fire({
+                    icon: 'success',
+                    title: 'Deleted!',
+                    text: 'The page has been deleted.',
+                    timer: 1000,
+                    showConfirmButton: false,
+                });
+                window.location.reload();
+            } catch (error) {
+                console.error("Error toggling visibility:", error);
+                await Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'Something went wrong!',
+                });
+            }
         }
     };
 

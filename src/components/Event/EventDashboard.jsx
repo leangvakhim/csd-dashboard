@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { API_ENDPOINTS } from '../../service/APIConfig';
+import Swal from 'sweetalert2';
 
 const EventDashboard = () => {
     const [activeDropdown, setActiveDropdown] = useState(null);
@@ -75,9 +76,39 @@ const EventDashboard = () => {
         }
     };
 
-    const handleDelete = async (id) => {
-        if (!window.confirm("Are you sure you want to delete of this event?")) return;
+    // const handleDelete = async (id) => {
+    //     if (!window.confirm("Are you sure you want to delete of this event?")) return;
 
+    //     try {
+    //         await axios.put(`${API_ENDPOINTS.deleteEvent}/${id}`);
+    //         setEventItems(prevItems =>
+    //             prevItems.map(item =>
+    //                 item.e_id === id ? { ...item, active: item.active ? 0 : 1 } : item
+    //             )
+    //         );
+    //         window.location.reload();
+    //     } catch (error) {
+    //         console.error("Error toggling visibility:", error);
+    //     }
+    // };
+
+    const handleDelete = async (id) => {
+    const result = await Swal.fire({
+        title: 'Are you sure?',
+        text: 'Do you want to delete this event?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, delete it!',
+        cancelButtonText: 'Cancel',
+        customClass: {
+            popup: 'bg-white rounded-lg shadow-lg',
+            title: 'text-lg font-semibold text-gray-800',
+            htmlContainer: 'text-sm text-gray-600',
+            confirmButton: '!bg-red-600 text-white px-4 py-2 rounded hover:!bg-red-700',
+            cancelButton: 'bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-400',
+        }
+    });
+        if (!result.isConfirmed) return;
         try {
             await axios.put(`${API_ENDPOINTS.deleteEvent}/${id}`);
             setEventItems(prevItems =>
@@ -85,11 +116,37 @@ const EventDashboard = () => {
                     item.e_id === id ? { ...item, active: item.active ? 0 : 1 } : item
                 )
             );
-            window.location.reload();
+
+            Swal.fire({
+                icon: 'success',
+                title: 'Deleted!',
+                text: 'The event has been deleted.',
+                showConfirmButton: false,
+                timer: 1500,
+                customClass: {
+                    popup: 'bg-white rounded-lg shadow-lg',
+                    title: 'text-lg font-semibold text-gray-800',
+                    htmlContainer: 'text-sm text-gray-600',
+                }
+            });
+            setTimeout(() => {
+                window.location.reload();
+            }, 1600);
         } catch (error) {
-            console.error("Error toggling visibility:", error);
+            console.error("Error delete events:", error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error!',
+                text: 'Something went wrong.',
+                customClass: {
+                    popup: 'bg-white rounded-lg shadow-lg',
+                    title: 'text-lg font-semibold !text-red-700',
+                    htmlContainer: 'text-sm text-gray-600',
+                }
+            });
         }
     };
+
 
     return (
         <div className="relative overflow-x-auto shadow-md px-8">

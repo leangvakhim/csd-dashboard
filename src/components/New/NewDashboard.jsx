@@ -77,7 +77,22 @@ const NewDashboard = () => {
     };
 
     const handleDelete = async (id) => {
-        if (!window.confirm("Are you sure you want to delete of this news?")) return;
+        const Swal = (await import('sweetalert2')).default;
+
+        const result = await Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            customClass: {
+                confirmButton: 'bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-blue-400 !mr-2',
+                cancelButton: '!bg-red-600 hover:!bg-red-700 text-white py-2 px-4 rounded focus:outline-none focus:ring-2 focus:!ring-red-400'
+            },
+            buttonsStyling: false,
+            confirmButtonText: 'Yes, delete it!'
+        });
+
+        if (!result.isConfirmed) return;
 
         try {
             await axios.put(`${API_ENDPOINTS.deleteNews}/${id}`);
@@ -86,9 +101,23 @@ const NewDashboard = () => {
                     item.n_id === id ? { ...item, active: item.active ? 0 : 1 } : item
                 )
             );
-            window.location.reload();
+            Swal.fire({
+                title: 'Deleted!',
+                text: 'The news has been deleted.',
+                icon: 'success',
+                timer: 1500,
+                showConfirmButton: false
+            });
+            setTimeout(() => {
+                window.location.reload();
+            }, 1600);
         } catch (error) {
             console.error("Error toggling visibility:", error);
+            Swal.fire({
+                title: 'Error!',
+                text: 'Failed to delete the news.',
+                icon: 'error'
+            });
         }
     };
 
