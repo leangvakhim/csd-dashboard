@@ -1,4 +1,5 @@
 import React from 'react'
+import Swal from 'sweetalert2';
 import Aside from '../Aside'
 import NewsFieldHeader from './NewsFieldHeader'
 import NewsFieldBody from './NewsFieldBody'
@@ -12,6 +13,7 @@ const NewsField = () => {
     const [subtitleContent, setSubtitleContent] = useState('');
     const location = useLocation();
     const eventData = location.state?.eventData;
+    const newID = eventData.data.n_id;
     const [formData, setFormData] = useState({
         lang: 1,
         n_title: null,
@@ -24,6 +26,35 @@ const NewsField = () => {
     });
 
     const handleSave = async () => {
+        try {
+            Swal.fire({
+                title: 'Saving...',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                },
+            });
+
+            await saveNews();
+
+            Swal.fire({
+                icon: 'success',
+                title: 'Saved!',
+                text: 'News saved successfully!',
+                timer: 2000,
+                showConfirmButton: false,
+            });
+        } catch (error) {
+            console.error("Error saving:", error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Failed to save news. Please try again.',
+            });
+        }
+    };
+
+    const saveNews = async () => {
         let res;
         const payload = {
             lang: formData.lang,
@@ -47,20 +78,30 @@ const NewsField = () => {
                 const { n_order, ...createPayload } = payload;
                 res = await axios.post(API_ENDPOINTS.createNews, createPayload);
             }
-            alert("News saved successfully!");
         } catch (err) {
             console.error("Error saving:", err);
             if (err.response?.data?.errors) {
                 console.error("Validation failed:", err.response.data.errors);
             }
         }
-    };
+    }
 
     useEffect(() => {
         if (eventData && eventData.data) {
-            setFormData(eventData.data);
-            setSubtitleContent(eventData.data.n_detail || "");
+            const fetchNews = async () => {
+                try {
+                    const response = await axios.get(`${API_ENDPOINTS.getNews}/${newID}`);
+                    if (response.data && response.data.data) {
+                        setFormData(response.data.data);
+                        setSubtitleContent(response.data.data.n_detail || "");
+                    }
+                } catch (error) {
+                    console.error("Failed to fetch news by ID:", error);
+                }
+            };
+            fetchNews();
         }
+
     }, [eventData]);
 
     const handleImageSelect = (imageId) => {
