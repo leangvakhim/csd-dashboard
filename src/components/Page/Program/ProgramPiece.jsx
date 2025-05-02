@@ -66,8 +66,6 @@ const ProgramPiece = forwardRef(({sectionId, pageId}, ref) => {
           page_id: pageId,
         }
 
-        console.log("Data is: ",data);
-
       return [data];
     }
   }));
