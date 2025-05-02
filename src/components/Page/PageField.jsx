@@ -883,9 +883,10 @@ const PageField = () => {
         const res = await axios.get(`${API_ENDPOINTS.getSubStudyDegree}?y_std=${studyId}`);
         const raw = res.data?.data;
         const existingSubservices = Array.isArray(raw) ? raw : raw ? [raw] : [];
-        const existingSubIds = existingSubservices
-            .map(item => item.y_id);
-        const existingSubStudyDegreeId = existingSubservices.map(item => item.y_std);
+        const existingPairs = existingSubservices.map(item => ({
+            y_id: parseInt(item.y_id),
+            y_std: parseInt(item.y_std)
+        }));
 
         for (const year of sliders) {
             const yearPayload = {
@@ -901,13 +902,14 @@ const PageField = () => {
             try {
                 if (
                     yId &&
-                    existingSubIds.includes(parseInt(yId)) &&
-                    existingSubStudyDegreeId.includes(parseInt(yStdId))
+                    existingPairs.some(pair => pair.y_id === parseInt(yId) && pair.y_std === parseInt(yStdId))
                 ) {
                     await axios.post(`${API_ENDPOINTS.updateSubStudyDegree}/${yId}`, { year: yearPayload });
                 } else {
-                    if (!yId || !existingSubIds.includes(parseInt(yId)) || !existingSubStudyDegreeId.includes(parseInt(yStdId))) {
-                        await axios.post(API_ENDPOINTS.createSubStudyDegree, { year: [yearPayload] });
+                    const res = await axios.post(API_ENDPOINTS.createSubStudyDegree, { year: [yearPayload] });
+                    const createdId = res.data?.data?.[0]?.y_id;
+                    if (createdId) {
+                        year.y_id = createdId;
                     }
                 }
             } catch (error) {
