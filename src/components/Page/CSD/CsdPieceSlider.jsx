@@ -115,8 +115,9 @@ const CsdPieceOne = forwardRef(({csdId}, ref) => {
                 title: item.ss_title || '',
                 subtitle: item.ss_subtitle || '',
                 image: item.image?.img ? `${API}/storage/uploads/${item.image.img}` : '',
-                display: item.display === 1,
+                display: item.display === 1 || item.display === true,
             }));
+            console.log("formattedData is: ",formattedData);
 
             if (formattedData.length > 0) {
                 setSlider(formattedData);
@@ -261,7 +262,7 @@ const CsdPieceOne = forwardRef(({csdId}, ref) => {
                                                         <div className="mt-2">
                                                             <label class="toggle-switch mt-2">
                                                                 <input
-                                                                value={sliders.display}
+                                                                checked={sliders.display === 1 || sliders.display === true}
                                                                 onChange={(e) => {
                                                                     const updatedSlider = [...slider];
                                                                     updatedSlider[index].display = e.target.checked;
