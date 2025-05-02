@@ -3,6 +3,8 @@ import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import MediaLibraryModal from "../MediaLibraryModal";
 import { API_ENDPOINTS, API } from "../../service/APIConfig";
 import axios from "axios";
+import Swal from 'sweetalert2';
+import 'sweetalert2/dist/sweetalert2.min.css';
 
 const ResearchlabTagSection = forwardRef(({ rsdl_id }, ref) => {
   const [rotatedStates, setRotatedStates] = useState({});
@@ -37,9 +39,22 @@ const ResearchlabTagSection = forwardRef(({ rsdl_id }, ref) => {
     },
   }));
 
-  const handleDeleteTag = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this tag?")) return;
+const handleDeleteTag = async (id) => {
+  const result = await Swal.fire({
+    title: 'Are you sure?',
+    text: 'Do you want to delete this tag?',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Yes, delete it!',
+    cancelButtonText: 'Cancel',
+    customClass: {
+      popup: 'rounded-lg border border-gray-200 shadow-md',
+      confirmButton: '!bg-red-600 text-white px-4 py-2 rounded hover:!bg-red-700',
+      cancelButton: 'bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700'
+    },
+  });
 
+  if (result.isConfirmed) {
     try {
       await axios.put(`${API_ENDPOINTS.deleteResearchlabTag}/${id}`);
       setTags((prevItems) =>
@@ -47,11 +62,31 @@ const ResearchlabTagSection = forwardRef(({ rsdl_id }, ref) => {
           item.rsdlt === id ? { ...item, active: item.active ? 0 : 1 } : item
         )
       );
-      window.location.reload();
+      Swal.fire({
+        title: 'Deleted!',
+        text: 'Tag has been deleted.',
+        icon: 'success',
+        timer: 1000,
+        showConfirmButton: false,
+        customClass: {
+          popup: 'rounded-lg border border-gray-200 shadow-md',
+        },
+      });
+      setTimeout(() => {
+          window.location.reload();
+      }, 1100);
     } catch (error) {
       console.error("Error toggling visibility:", error);
+      Swal.fire({
+        title: 'Error!',
+        text: 'Something went wrong.',
+        icon: 'error',
+        timer: 1500,
+        showConfirmButton: false,
+      });
     }
-  };
+  }
+};
 
   const handleAddTag = () => {
     const newTag = {

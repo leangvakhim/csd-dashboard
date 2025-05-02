@@ -134,18 +134,23 @@ const ResearchlabField = () => {
 
                     if (res.data && res.data.data) {
                         if(res.data.data.rsdl.rsdl_id === rsdl_id){
+                            // console.log("Update");
                             await axios.post(`${API_ENDPOINTS.updateResearchlabTag}/${item.rsdlt}`, {rsdlt_tags: [payload]});
                         }else {
+                            // console.log("Create1");
                             await axios.post(API_ENDPOINTS.createResearchlabTag, { rsdl_id, rsdlt_tags: [payload] });
                         }
                     } else {
+                            // console.log("Create2");
                         await axios.post(API_ENDPOINTS.createResearchlabTag, { rsdl_id, rsdlt_tags: [payload] });
                     }
                 } else {
+                            // console.log("Create3");
                     await axios.post(API_ENDPOINTS.createResearchlabTag, { rsdl_id, rsdlt_tags: [payload] });
                 }
             } catch (error) {
                 if (error.response && error.response.status === 404) {
+                    // console.log("Creat4");
                     await axios.post(API_ENDPOINTS.createResearchlabTag, { rsdl_id, rsdlt_tags: [payload] });
                 } else {
                     console.error("❌ Error saving faculty info:", error);
