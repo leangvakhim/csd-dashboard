@@ -1,3 +1,4 @@
+import Swal from 'sweetalert2';
 import React, {useState, useEffect} from 'react'
 import Aside from '../Aside'
 import EventsFieldHeader from './EventsFieldHeader'
@@ -10,6 +11,7 @@ const EventsField = () => {
     const [subtitleContent, setSubtitleContent] = useState('');
     const location = useLocation();
     const eventData = location.state?.eventData;
+    const eventID = eventData.data.e_id;
     const [formData, setFormData] = useState({
         lang: 1,
         e_title: null,
@@ -23,8 +25,18 @@ const EventsField = () => {
 
     useEffect(() => {
         if (eventData && eventData.data) {
-            setFormData(eventData.data);
-            setSubtitleContent(eventData.data.e_detail || "");
+            const fetchEvent = async () => {
+                try {
+                    const response = await axios.get(`${API_ENDPOINTS.getEvent}/${eventID}`);
+                    if (response.data && response.data.data) {
+                        setFormData(response.data.data);
+                        setSubtitleContent(response.data.data.n_detail || "");
+                    }
+                } catch (error) {
+                    console.error("Failed to fetch news by ID:", error);
+                }
+            };
+            fetchEvent();
         }
     }, [eventData]);
 
@@ -36,6 +48,35 @@ const EventsField = () => {
     };
 
     const handleSave = async () => {
+        try {
+            Swal.fire({
+                title: 'Saving...',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                },
+            });
+
+            await saveEvent();
+
+            Swal.fire({
+                icon: 'success',
+                title: 'Saved!',
+                text: 'Event saved successfully!',
+                timer: 2000,
+                showConfirmButton: false,
+            });
+        } catch (error) {
+            console.error("Error saving:", error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Failed to save event. Please try again.',
+            });
+        }
+    };
+
+    const saveEvent = async () => {
         let res;
         const payload = {
             lang: formData.lang,
@@ -59,14 +100,13 @@ const EventsField = () => {
                 const { e_order, ...createPayload } = payload;
                 res = await axios.post(API_ENDPOINTS.createEvent, createPayload);
             }
-            alert("Event saved successfully!");
         } catch (err) {
             console.error("Error saving:", err);
             if (err.response?.data?.errors) {
                 console.error("Validation failed:", err.response.data.errors);
             }
         }
-    };
+    }
 
     return (
         <div id="main-wrapper" class=" flex">
