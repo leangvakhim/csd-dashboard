@@ -202,6 +202,7 @@ const TypePiece = forwardRef(({sectionId, pageId}, ref) => {
               value={typeType}
               onChange={(e) => setTypeType(e.target.value)}
               class="mt-2 !border-gray-300 block w-full border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6">
+              <option value="0">Select Display Type</option>
               <option value="1">With Check</option>
               <option value="2">No Check</option>
             </select>
