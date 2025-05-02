@@ -117,7 +117,6 @@ const CsdPieceOne = forwardRef(({csdId}, ref) => {
                 image: item.image?.img ? `${API}/storage/uploads/${item.image.img}` : '',
                 display: item.display === 1 || item.display === true,
             }));
-            console.log("formattedData is: ",formattedData);
 
             if (formattedData.length > 0) {
                 setSlider(formattedData);
