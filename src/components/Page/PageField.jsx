@@ -2018,7 +2018,7 @@ const PageField = () => {
                 icon: 'success',
                 title: 'Saved!',
                 text: 'Page saved successfully',
-                timer: 1500,
+                timer: 3000,
                 showConfirmButton: false
             });
         } catch (err) {
