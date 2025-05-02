@@ -65,6 +65,7 @@ const StudyPieceOne = forwardRef(({studyId}, ref) => {
                 y_detail: slide.detail,
                 display: slide.display ? 1 : 0,
                 id: slide.id,
+                y_std: studyId,
               };
             })
           );
