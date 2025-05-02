@@ -18,7 +18,7 @@ const ProgramPiece = forwardRef(({sectionId, pageId}, ref) => {
         const informations = response.data.data || [];
         if (informations.length > 0) {
           const information = informations.find(item => item?.text_sec?.sec_page === pageId);
-          // console.log(information);
+          // console.log("Information: ",information);
           if (information) {
             setTextId(information.text_id || null);
             setTitle(information.title || '');
@@ -163,6 +163,7 @@ const ProgramPiece = forwardRef(({sectionId, pageId}, ref) => {
               value={type}
               onChange={(e) => setType(e.target.value)}
               class="mt-2 !border-gray-300 block w-full border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6">
+              <option value="0">Select Information Type</option>
               <option value="1">1 columns</option>
               <option value="2">2 columns</option>
             </select>

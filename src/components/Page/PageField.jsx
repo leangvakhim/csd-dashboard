@@ -55,6 +55,7 @@ const PageField = () => {
                     parseInt(program.dep_sec) === parseInt(savedSectionId) &&
                     parseInt(program.page_id) === parseInt(savedPageId) &&
                     existingDepartments.includes(parseInt(savedSectionId))
+
                 ){
                     await axios.post(`${API_ENDPOINTS.updateDepartment}/${program.dep_id}`, { programs: programPayload });
                 } else {
@@ -120,7 +121,7 @@ const PageField = () => {
                     text_sec: savedSectionId,
                     title: information.title || '',
                     desc: information.desc || '',
-                    text_type: information.text_type || null,
+                    text_type: parseInt(information.text_type) || null,
                     page_id: savedPageId,
                 };
 
@@ -129,7 +130,7 @@ const PageField = () => {
                     existingIds.includes(parseInt(information.text_id)) &&
                     parseInt(information.text_sec) === parseInt(savedSectionId) &&
                     parseInt(information.page_id) === parseInt(savedPageId) &&
-                    existingInformations.includes(parseInt(savedSectionId))
+                    existingInformations.some(info => parseInt(info.sec_id) === parseInt(savedSectionId))
                 ) {
                     await axios.post(`${API_ENDPOINTS.updateText}/${information.text_id}`, { texts: informationPayload });
                 } else {

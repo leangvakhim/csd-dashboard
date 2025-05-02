@@ -56,8 +56,7 @@ const ProgramPiece = forwardRef(({sectionId, pageId}, ref) => {
       const img1Id = await getImageIdByUrl(selectedImage1);
       const img2Id = await getImageIdByUrl(selectedImage2);
 
-      return [
-        {
+      const data = {
           dep_id: depId,
           dep_title: title,
           dep_img1: img1Id,
@@ -66,7 +65,10 @@ const ProgramPiece = forwardRef(({sectionId, pageId}, ref) => {
           dep_sec: sectionId,
           page_id: pageId,
         }
-      ];
+
+        console.log("Data is: ",data);
+
+      return [data];
     }
   }));
 
@@ -86,10 +88,13 @@ const ProgramPiece = forwardRef(({sectionId, pageId}, ref) => {
   useEffect(() => {
     const fetchDepartments = async () => {
       try {
-        const response = await axios.get(`${API_ENDPOINTS.getDepartment}?ban_sec=${sectionId}`);
+        const response = await axios.get(`${API_ENDPOINTS.getDepartment}`);
         const departments = response.data.data || [];
         if (departments.length > 0) {
-          const department = departments.find(item => item?.section?.sec_page === pageId);
+          const department = departments.find(item =>
+            item.dep_sec === sectionId &&
+            item.section?.sec_page === pageId
+          );
           if (department) {
             setDepId(department.dep_id || null);
             setTitle(department.dep_title || '');
