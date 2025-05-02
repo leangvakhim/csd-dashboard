@@ -165,7 +165,7 @@ const ResearchField = () => {
                     rsdm_rsdtitle: savedSectionId,
                     rsdm_title: meeting.rsdm_title || '',
                     rsdm_img: meeting.rsdm_img || '',
-                    rsdm_detail: meeting.rsdm_title || '',
+                    rsdm_detail: meeting.rsdm_detail || '',
                     rsdId: savedRsdId,
                 };
 
