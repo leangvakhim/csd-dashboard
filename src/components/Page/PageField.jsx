@@ -1993,8 +1993,8 @@ const PageField = () => {
 
             const savedPageId = response.data?.data?.p_id;
 
-            syncSection(savedPageId);
-            reorderSection();
+            await syncSection(savedPageId);
+            await reorderSection();
 
         } catch (error) {
             console.error('❌ Failed to save page or sections:', error.response?.data || error.message);
@@ -2014,11 +2014,13 @@ const PageField = () => {
 
             await savePage();
 
+            Swal.close();
+
             Swal.fire({
                 icon: 'success',
                 title: 'Saved!',
                 text: 'Page saved successfully',
-                timer: 3000,
+                timer: 1500,
                 showConfirmButton: false
             });
         } catch (err) {
