@@ -34,7 +34,7 @@ const AnnouncementFieldImportFile = ({ onDelete, selectedStudents }) => {
             });
 
             Swal.fire({
-                title: "Drag me!",
+                title: "Import File!",
                 text: response.data.message || "Import successful!",
                 icon: "success",
                 allowOutsideClick: false,
@@ -51,10 +51,20 @@ const AnnouncementFieldImportFile = ({ onDelete, selectedStudents }) => {
                         e.dataTransfer.setData('text/plain', null);
                     });
                 }
+            }).then(() => {
+                window.location.reload();
             });
         } catch (error) {
             console.error('Import failed:', error);
-            Swal.fire('Error', 'Import failed! Please check your file.', 'error');
+            Swal.fire({
+                title: 'Error',
+                text: 'Import failed! Please check your file.',
+                icon: 'error',
+                buttonsStyling: false,
+                customClass: {
+                    confirmButton: 'bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded',
+                },
+            });
         }
     };
 

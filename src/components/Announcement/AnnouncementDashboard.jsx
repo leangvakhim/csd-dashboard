@@ -164,8 +164,8 @@ const handleDelete = async (id) => {
                                     {item.am_title || 'No Title'}
                                 </th>
                                 <td className="px-6 py-4">
-                                    {item.am_date
-                                        ? new Date(item.am_date).toLocaleDateString('en-US', {
+                                    {item.am_postdate
+                                        ? new Date(item.am_postdate).toLocaleDateString('en-US', {
                                               year: 'numeric',
                                               month: 'long',
                                               day: 'numeric',

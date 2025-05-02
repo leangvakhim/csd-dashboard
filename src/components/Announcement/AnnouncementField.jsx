@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import Swal from 'sweetalert2';
 import Aside from '../Aside';
 import AnnouncementFieldHeader from './AnnouncementFieldHeader';
 import AnnouncementFieldBody from './AnnouncementFieldBody';
@@ -23,8 +24,42 @@ const AnnouncementField = () => {
     am_orders: 0,
   });
 
-  const handleSave = async () => {
+const handleSave = async () => {
+  try {
+    Swal.fire({
+      title: 'Saving...',
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading();
+      },
+    });
 
+    await saveAnnouncement();
+
+    Swal.fire({
+      icon: 'success',
+      title: 'Saved!',
+      text: 'Announcement saved successfully!',
+      timer: 2000,
+      showConfirmButton: false,
+    });
+  } catch (err) {
+    console.error('Error announcement:', err);
+    if (err.response) {
+      console.error('Server response:', err.response.data);
+    } else {
+      console.error('Failed to connect to the server.');
+    }
+
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: 'Failed to save announcement. Please try again.',
+    });
+  }
+};
+
+  const saveAnnouncement = async () => {
     const payload = {
       lang: formData.lang,
       am_title: formData.am_title,
@@ -53,7 +88,6 @@ const AnnouncementField = () => {
           headers: { 'Content-Type': 'application/json' },
         });
       }
-      alert('Announcement saved successfully!');
     } catch (err) {
       console.error('Error saving announcement:', err);
       if (err.response) {
@@ -62,7 +96,7 @@ const AnnouncementField = () => {
         console.error('Failed to connect to the server.');
       }
     }
-  };
+  }
 
   useEffect(() => {
     if (announcementData) {

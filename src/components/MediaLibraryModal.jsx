@@ -73,7 +73,7 @@ const MediaLibraryModal = ({ onSelect, onClose }) => {
                 <div className="flex justify-start py-2 items-center gap-2">
                     <div className="relative max-w-sm">
                         <input
-                            className="w-60 px-4 h-9 rounded-md shadow-sm" type="search" placeholder="Search images"
+                            className="w-60 px-4 h-9 rounded-md !border-gray-200 shadow-sm" type="search" placeholder="Search images"
                             onChange={handleSearch}
                         />
                     </div>
