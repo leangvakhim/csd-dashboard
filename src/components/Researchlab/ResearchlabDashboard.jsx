@@ -72,7 +72,6 @@ const handleDelete = async (id) => {
         const response = await axios.get(`${API_ENDPOINTS.getResearchlab}/${id}`);
         const researchlabData = response.data;
         navigate(`/lab/researchlab-details`, { state: { researchlabData } });
-        console.log("Passing data: ",researchlabData);
     };
 
     const moveItem = async (index, direction) => {

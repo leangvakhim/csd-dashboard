@@ -57,7 +57,6 @@ const ResearchlabFieldBody = ({
     };
 
     useEffect(() => {
-        // console.log("Loaded formData:", formData);
         if (typeof formData.display !== 'boolean') {
             setFormData(prev => ({
                 ...prev,

@@ -12,7 +12,7 @@ const ResearchlabTagSection = forwardRef(({ rsdl_id }, ref) => {
     {
       id: "1",
       title: "Tag 1",
-      rsdlt_title: null,
+      rsdlt_title: "Tag 1",
       rsdlt_img: null,
       active: 1,
       rsdlt_order: 1,
@@ -58,7 +58,7 @@ const ResearchlabTagSection = forwardRef(({ rsdl_id }, ref) => {
       id: (tags.length + 1).toString(),
       rsdl_id: rsdl_id,
       title: `Tag ${tags.length + 1}`,
-      rsdlt_title: null,
+      rsdlt_title: `Tag ${tags.length + 1}`,
       rsdlt_img: null,
       active: 1,
     };
@@ -148,8 +148,19 @@ const ResearchlabTagSection = forwardRef(({ rsdl_id }, ref) => {
                 console.log("Data is: ", data);
               return data;
             });
+            if(formattedTags.length > 0){
+              setTags(formattedTags);
+            } else{
+              setTags([{
+                id: "1",
+                title: "Tag 1",
+                rsdlt_title: "Tag 1",
+                rsdlt_img: null,
+                active: 1,
+                rsdlt_order: 1,
+              }])
+            }
 
-            setTags(formattedTags);
           }
         })
         .catch((err) => console.error("Error fetching tag data:", err));

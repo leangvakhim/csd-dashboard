@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import Swal from 'sweetalert2';
 import { useLocation } from 'react-router-dom';
 import axios from 'axios';
 import Aside from '../Aside';
@@ -10,6 +11,7 @@ const ResearchlabField = () => {
     const researchlabTagRef = useRef();
     const location = useLocation();
     const researchlabData = location.state?.researchlabData;
+    const rsdlID = researchlabData.data.rsdl_id;
     const [formData, setFormData] = useState({
         lang: 1,
         rsdl_title: '',
@@ -22,8 +24,16 @@ const ResearchlabField = () => {
     });
 
     useEffect(() => {
-        if (researchlabData && researchlabData.data) {
-            setFormData(researchlabData.data);
+        if (rsdlID) {
+            axios.get(`${API_ENDPOINTS.getResearchlab}/${rsdlID}`)
+                .then(res => {
+                    if (res.data && res.data.data) {
+                        setFormData(res.data.data);
+                    }
+                })
+                .catch(err => {
+                    console.error("Failed to fetch researchlab data by ID:", err);
+                });
         }
     }, [researchlabData]);
 
@@ -117,24 +127,59 @@ const ResearchlabField = () => {
                 rsdlt_img: item.rsdlt_img_id || null,
                 rsdlt_rsdl: rsdl_id,
             };
-            if (item.rsdlt) {
-                await axios.post(`${API_ENDPOINTS.updateResearchlabTag}/${item.rsdlt}`, {rsdlt_tags: [payload]});
-            } else {
-                await axios.post(API_ENDPOINTS.createResearchlabTag, {
-                    rsdl_id,
-                    rsdlt_tags: [payload],
-                });
+
+            try {
+                if (item.rsdlt) {
+                    const res = await axios.get(`${API_ENDPOINTS.getResearchlabTag}/${item.rsdlt}`);
+
+                    if (res.data && res.data.data) {
+                        if(res.data.data.rsdl.rsdl_id === rsdl_id){
+                            await axios.post(`${API_ENDPOINTS.updateResearchlabTag}/${item.rsdlt}`, {rsdlt_tags: [payload]});
+                        }else {
+                            await axios.post(API_ENDPOINTS.createResearchlabTag, { rsdl_id, rsdlt_tags: [payload] });
+                        }
+                    } else {
+                        await axios.post(API_ENDPOINTS.createResearchlabTag, { rsdl_id, rsdlt_tags: [payload] });
+                    }
+                } else {
+                    await axios.post(API_ENDPOINTS.createResearchlabTag, { rsdl_id, rsdlt_tags: [payload] });
+                }
+            } catch (error) {
+                if (error.response && error.response.status === 404) {
+                    await axios.post(API_ENDPOINTS.createResearchlabTag, { rsdl_id, rsdlt_tags: [payload] });
+                } else {
+                    console.error("❌ Error saving faculty info:", error);
+                }
             }
         }
     };
 
     const handleSave = async () => {
         try {
+            Swal.fire({
+                title: 'Saving...',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                },
+            });
+
             await saveResearchlab();
             await saveResearchlabTags();
-            alert("Research lab saved successfully!");
+            Swal.fire({
+                icon: 'success',
+                title: 'Saved!',
+                text: 'Research lab saved successfully!',
+                timer: 2000,
+                showConfirmButton: false,
+            });
         } catch (err) {
             console.error('Error saving research lab:', err);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Failed to save research lab. Please try again.',
+            });
         }
     };
 
