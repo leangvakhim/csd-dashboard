@@ -1898,7 +1898,7 @@ const PageField = () => {
         Type: saveType,
         CSD: saveCSD,
         Study: saveStudy,
-        Available: saveAvailable,
+        Avaialable: saveAvailable,
         Requirement: saveRequirement,
         Future: saveFuture,
         Potential: savePotentials,
