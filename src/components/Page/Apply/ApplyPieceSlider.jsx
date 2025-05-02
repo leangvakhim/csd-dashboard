@@ -44,11 +44,12 @@ const ApplyPieceOne = forwardRef(({applyId}, ref) => {
         getSubApplySliders: async () => {
             const updatedSliders = await Promise.all(
                 slider.map(async (slide) => {
-                return {
-                    sha_title: slide.title,
-                    display: slide.display ? 1 : 0,
-                    sha_id: slide.id,
-                };
+                    return {
+                        sha_title: slide.title,
+                        display: slide.display ? 1 : 0,
+                        sha_id: slide.id,
+                        sha_ha: applyId,
+                    };
                 })
             );
 

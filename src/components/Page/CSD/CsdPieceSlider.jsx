@@ -89,6 +89,7 @@ const CsdPieceOne = forwardRef(({csdId}, ref) => {
                     image: imageId || null,
                     display: slide.display ? 1 : 0,
                     id: slide.id,
+                    ss_ras: csdId,
                 };
             })
         );

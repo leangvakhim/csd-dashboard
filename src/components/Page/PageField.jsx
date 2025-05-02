@@ -1217,7 +1217,7 @@ const PageField = () => {
                 display: ss.display,
             };
             const ssId = ss.id || ss.ss_id;
-            const ssRAS = ss.stse_tse;
+            const ssRAS = ss.ss_ras;
 
             try {
                 if (

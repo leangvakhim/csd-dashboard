@@ -50,14 +50,15 @@ const ImportantPieceSlider = forwardRef(({importantId}, ref) => {
     getSubImportantSliders: async () => {
       const updatedSliders = await Promise.all(
           slider.map(async (slide) => {
-          return {
-              sidd_title: slide.title,
-              sidd_subtitle: slide.subtitle,
-              sidd_tag: slide.tag,
-              sidd_date: slide.date,
-              display: slide.display ? 1 : 0,
-              sidd_id: slide.id,
-          };
+            return {
+                sidd_title: slide.title,
+                sidd_subtitle: slide.subtitle,
+                sidd_tag: slide.tag,
+                sidd_date: slide.date,
+                display: slide.display ? 1 : 0,
+                sidd_id: slide.id,
+                sidd_idd: importantId,
+            };
           })
         );
 

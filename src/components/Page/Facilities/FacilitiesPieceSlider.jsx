@@ -43,6 +43,7 @@ const FacilitiesPieceSlider = forwardRef(({facilityId}, ref) => {
             image: imageId,
             display: slide.display,
             id: slide.id,
+            ss_af: facilityId,
           };
         })
       );

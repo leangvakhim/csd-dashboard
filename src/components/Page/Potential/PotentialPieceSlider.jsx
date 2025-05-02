@@ -37,13 +37,14 @@ const PotentaiPieceOne = forwardRef(({potentialId}, ref) => {
         const updatedSliders = await Promise.all(
             slider.map(async (slide) => {
             const imageId = await getImageIdByUrl(slide.image);
-            return {
-                title: slide.title,
-                subtitle: slide.subtitle,
-                image: imageId,
-                display: slide.display ? 1 : 0,
-                id: slide.id,
-            };
+                return {
+                    title: slide.title,
+                    subtitle: slide.subtitle,
+                    image: imageId,
+                    display: slide.display ? 1 : 0,
+                    id: slide.id,
+                    ss_ras: potentialId,
+                };
             })
         );
 

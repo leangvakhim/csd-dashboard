@@ -18,6 +18,7 @@ const AddOn = forwardRef(({csdId}, ref) => {
             rason_title: title,
             rason_subtitle: subtitle,
             rason_amount: amount,
+            rason_ras: csdId,
             }
         ];
         }

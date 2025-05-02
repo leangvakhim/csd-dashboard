@@ -90,6 +90,7 @@ const AvailablePieceSlider = forwardRef(({availableId}, ref) => {
             sapd_routepage: slide.routepage,
             display: slide.display ? 1 : 0,
             id: slide.id,
+            sapd_apd: availableId,
           };
         })
       );

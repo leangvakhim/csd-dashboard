@@ -46,12 +46,13 @@ const FaqPieceOne = forwardRef(({faqId}, ref) => {
         getSubserviceSlidersFAQ: async () => {
         const updatedSliders = await Promise.all(
             slider.map(async (slide) => {
-            return {
-                fa_question: slide.title,
-                fa_answer: slide.subtitle,
-                display: slide.display ? 1 : 0,
-                id: slide.id,
-            };
+                return {
+                    fa_question: slide.title,
+                    fa_answer: slide.subtitle,
+                    display: slide.display ? 1 : 0,
+                    id: slide.id,
+                    fa_faq: faqId,
+                };
             })
         );
 

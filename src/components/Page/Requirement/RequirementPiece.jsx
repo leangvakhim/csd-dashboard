@@ -78,6 +78,7 @@ const RequirementPiece = forwardRef(({sectionId, pageId}, ref) => {
             gca_tag: btnTag,
             gca_btnlink: btnLink,
             gca_btntitle: btnTitle,
+            gca_gc: requirementId,
           }]
         }
       ];

@@ -43,6 +43,7 @@ const SpecializationPieceSlider = forwardRef(({specializationId}, ref) => {
             image: imageId,
             display: slide.display,
             id: slide.id,
+            ss_ras: specializationId
           };
         })
       );
