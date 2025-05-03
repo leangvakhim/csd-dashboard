@@ -7,6 +7,7 @@ const PartnershipDashboard = () => {
     const [activeDropdown, setActiveDropdown] = useState(null);
     const [facultyItems, setFacultyItems] = useState([]);
     const navigate = useNavigate();
+    const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
 
     const fetchImageById = async (id) => {
         try {
@@ -182,23 +183,32 @@ const PartnershipDashboard = () => {
                                 </button> |
                                 <div className="relative">
                                     <button
-                                        onClick={() => setActiveDropdown(activeDropdown === item.ps_id ? null : item.ps_id)}
+                                        onClick={(e) => {
+                                            const button = e.currentTarget;
+                                            const parent = button.offsetParent;
+                                            const rect = button.getBoundingClientRect();
+                                            const parentRect = parent.getBoundingClientRect();
+                                            setDropdownPosition({ top: rect.bottom - parentRect.top, left: rect.left - parentRect.left });
+                                            setActiveDropdown(activeDropdown === item.ps_id ? null : item.ps_id);
+                                        }}
                                         className="font-medium text-gray-900 hover:text-blue-500"
                                     >
                                         <i className="ti ti-dots-vertical text-xl"></i>
                                     </button>
                                     {activeDropdown === item.ps_id && (
-                                        <div className="fixed right-0 mt-2 w-36 mr-8 bg-white border border-gray-300 rounded-md shadow-md z-50">
+                                        <div
+                                            style={{ position: 'absolute', top: `${dropdownPosition.top}px`, left: `${dropdownPosition.left}px` }}
+                                            className="absolute right-0 mt-2 w-36 mr-8 bg-white border border-gray-300 rounded-md shadow-md z-50">
                                             <div className="py-1">
                                                 <a
                                                     onClick={() => handleEdit(item.ps_id)}
-                                                    href="#" className="flex gap-2 items-center px-4 py-2 hover:bg-blue-100">
+                                                    className="cursor-pointer flex gap-2 items-center px-4 py-2 hover:bg-blue-100">
                                                     <i className="ti ti-edit text-gray-500 text-xl"></i>
                                                     <span className="text-sm text-gray-700">Edit</span>
                                                 </a>
                                                 <a
                                                     onClick={() => handleDelete(item.ps_id)}
-                                                    href="#" className="flex gap-2 items-center px-4 py-2 hover:bg-blue-100">
+                                                    className="cursor-pointer flex gap-2 items-center px-4 py-2 hover:bg-blue-100">
                                                     <i className="ti ti-trash text-gray-500 text-xl"></i>
                                                     <span className="text-sm text-gray-700">Delete</span>
                                                 </a>

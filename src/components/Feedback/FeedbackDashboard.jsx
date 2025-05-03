@@ -8,6 +8,7 @@ const FeedbackDashboard = () => {
     const [activeDropdown, setActiveDropdown] = useState(null);
     const [eventItems, setEventItems] = useState([]);
     const navigate = useNavigate();
+    const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
 
     useEffect(() => {
         const fetchNews = async () => {
@@ -191,27 +192,36 @@ const FeedbackDashboard = () => {
                                     </button> |
                                     <div className="relative">
                                         <button
-                                            onClick={() => setActiveDropdown(activeDropdown === item.fb_id ? null : item.fb_id)}
+                                            onClick={(e) => {
+                                                const button = e.currentTarget;
+                                                const parent = button.offsetParent;
+                                                const rect = button.getBoundingClientRect();
+                                                const parentRect = parent.getBoundingClientRect();
+                                                setDropdownPosition({ top: rect.bottom - parentRect.top, left: rect.left - parentRect.left });
+                                                setActiveDropdown(activeDropdown === item.fb_id ? null : item.fb_id);
+                                            }}
                                             className="font-medium text-gray-900 hover:text-blue-500"
                                         >
                                             <i className="ti ti-dots-vertical text-xl"></i>
                                         </button>
                                         {activeDropdown === item.fb_id && (
-                                            <div className="fixed right-0 mt-2 w-36 mr-8 bg-white border border-gray-300 rounded-md shadow-md z-50">
+                                            <div
+                                                style={{ position: 'absolute', top: `${dropdownPosition.top}px`, left: `-50px` }}
+                                                className="absolute w-36 bg-white border border-gray-300 rounded-md shadow-md max-h-48 z-50 overflow-y-auto">
                                                 <div className="py-1">
                                                     <a
                                                      onClick={() => handleEdit(item.fb_id)}
-                                                    href="#" className="flex gap-2 items-center px-4 py-2 hover:bg-blue-100">
+                                                     className="cursor-pointer flex gap-2 items-center px-4 py-2 hover:bg-blue-100">
                                                         <i className="ti ti-edit text-gray-500 text-xl"></i>
                                                         <span className="text-sm text-gray-700">Edit</span>
                                                     </a>
-                                                    <a href="#"
+                                                    <a
                                                     onClick={() => handleDelete(item.fb_id)}
-                                                    className="flex gap-2 items-center px-4 py-2 hover:bg-blue-100">
+                                                    className="cursor-pointer flex gap-2 items-center px-4 py-2 hover:bg-blue-100">
                                                         <i className="ti ti-trash text-gray-500 text-xl"></i>
                                                         <span className="text-sm text-gray-700">Delete</span>
                                                     </a>
-                                                    <button onClick={() => duplicateItem(item.fb_id)} className="flex gap-2 items-center px-4 py-2 hover:bg-blue-100">
+                                                    <button onClick={() => duplicateItem(item.fb_id)} className="cursor-pointer flex gap-2 items-center px-4 py-2 hover:bg-blue-100">
                                                         <i className="ti ti-copy text-gray-500 text-xl"></i>
                                                         <span className="text-sm text-gray-700">Duplicate</span>
                                                     </button>
