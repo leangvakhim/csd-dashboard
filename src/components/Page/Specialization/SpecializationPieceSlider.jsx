@@ -265,7 +265,7 @@ const SpecializationPieceSlider = forwardRef(({specializationId}, ref) => {
                               <label class="toggle-switch mt-2">
                                 <input
                                   type="checkbox"
-                                  checked={sliders.display === 1}
+                                  checked={sliders.display === 1 || sliders.display === true}
                                   onChange={(e) => {
                                     const updatedSlider = [...slider];
                                     updatedSlider[index].display = e.target.checked ? 1 : 0;
