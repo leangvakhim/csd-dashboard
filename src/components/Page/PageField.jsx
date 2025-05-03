@@ -1574,8 +1574,8 @@ const PageField = () => {
                 ) {
                     await axios.post(`${API_ENDPOINTS.updateSubImportant}/${siddId}`, { subimportant: subApplyPayload });
                 } else {
-                    const res = await axios.post(API_ENDPOINTS.createSubApply, { subapply: [subApplyPayload] });
-                    const createdId = res.data?.data?.[0]?.sidd_idd;
+                    const res = await axios.post(API_ENDPOINTS.createSubImportant, { subimportant: [subApplyPayload] });
+                    const createdId = res.data?.data?.[0]?.sidd_id;
                     if (createdId) {
                         sidd.sidd_idd = createdId;
                     }

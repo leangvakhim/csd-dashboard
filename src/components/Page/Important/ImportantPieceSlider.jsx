@@ -92,7 +92,7 @@ const ImportantPieceSlider = forwardRef(({importantId}, ref) => {
           } else {
               setSlider([{
               id: "1",
-              title: "information 1",
+              title: "important 1",
               subtitle: "",
               tag: "",
               date: null,
