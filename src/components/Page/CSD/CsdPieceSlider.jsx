@@ -38,7 +38,7 @@ const CsdPieceOne = forwardRef(({csdId}, ref) => {
 
     const handleAddSlider = () => {
         const newSlider = {
-            id: (slider.length + 1).toString(),
+            id: `temp-${slider.length + 1}`,
             title: `csd ${slider.length + 1}`,
             subtitle: "",
             image: "",
@@ -88,7 +88,7 @@ const CsdPieceOne = forwardRef(({csdId}, ref) => {
                     subtitle: slide.subtitle,
                     image: imageId || null,
                     display: slide.display ? 1 : 0,
-                    id: slide.id,
+                    ...(slide.id && !isNaN(Number(slide.id)) ? { ss_id: Number(slide.id) } : {}),
                     ss_ras: csdId,
                 };
             })

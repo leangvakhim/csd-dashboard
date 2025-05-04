@@ -42,7 +42,7 @@ const FacilitiesPieceSlider = forwardRef(({facilityId}, ref) => {
             subtitle: slide.subtitle,
             image: imageId,
             display: slide.display,
-            id: slide.id,
+            ...(slide.id && !isNaN(Number(slide.id)) ? { ss_id: Number(slide.id) } : {}),
             ss_af: facilityId,
           };
         })
@@ -54,7 +54,7 @@ const FacilitiesPieceSlider = forwardRef(({facilityId}, ref) => {
 
   const handleAddSlider = () => {
     const newSlider = {
-      id: (slider.length + 1).toString(),
+      id: `temp-${slider.length + 1}`,
       title: `Facilities ${slider.length + 1}`,
       subtitle: "",
       image: "",

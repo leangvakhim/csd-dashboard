@@ -16,7 +16,7 @@ const FaqPieceOne = forwardRef(({faqId}, ref) => {
 
     const handleAddSlider = () => {
         const newSlider = {
-            id: (slider.length + 1).toString(),
+            id: `temp-${slider.length + 1}`,
             title: `faq ${slider.length + 1}`,
             subtitle: "",
             display: 0,
@@ -51,6 +51,7 @@ const FaqPieceOne = forwardRef(({faqId}, ref) => {
                     fa_answer: slide.subtitle,
                     display: slide.display ? 1 : 0,
                     id: slide.id,
+                    ...(slide.id && !isNaN(Number(slide.id)) ? { fa_id: Number(slide.id) } : {}),
                     fa_faq: faqId,
                 };
             })

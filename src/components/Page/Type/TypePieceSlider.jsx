@@ -32,7 +32,7 @@ const TypePieceSlider = forwardRef(({typeId}, ref) => {
             stse_title: slide.title,
             stse_detail: slide.subtitle,
             display: slide.display,
-            stse_id: slide.id,
+            ...(slide.id && !isNaN(Number(slide.id)) ? { stse_id: Number(slide.id) } : {}),
             stse_tse: typeId,
           };
         })
@@ -44,7 +44,7 @@ const TypePieceSlider = forwardRef(({typeId}, ref) => {
 
   const handleAddSlider = () => {
     const newSlider = {
-      id: (slider.length + 1).toString(),
+      id: `temp-${slider.length + 1}`,
       title: `type ${slider.length + 1}`,
       subtitle: "",
       display: 0,

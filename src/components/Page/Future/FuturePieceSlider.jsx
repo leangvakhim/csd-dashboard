@@ -16,7 +16,7 @@ const FuturePieceOne = forwardRef(({futureId}, ref) => {
 
     const handleAddSlider = () => {
         const newSlider = {
-            id: (slider.length + 1).toString(),
+            id: `temp-${slider.length + 1}`,
             title: `future ${slider.length + 1}`,
             subtitle: "",
             display: 0,
@@ -50,7 +50,7 @@ const FuturePieceOne = forwardRef(({futureId}, ref) => {
                         ufa_title: slide.title,
                         ufa_subtitle: slide.subtitle,
                         display: slide.display ? 1 : 0,
-                        id: slide.id,
+                        ...(slide.id && !isNaN(Number(slide.id)) ? { ufa_id: Number(slide.id) } : {}),
                         ufa_uf: futureId,
                     };
                 })

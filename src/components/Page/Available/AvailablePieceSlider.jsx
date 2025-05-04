@@ -22,7 +22,7 @@ const AvailablePieceSlider = forwardRef(({availableId}, ref) => {
 
   const handleAddSlider = () => {
     const newSlider = {
-      id: (slider.length + 1).toString(),
+      id: `temp-${slider.length + 1}`,
       title: `available ${slider.length + 1}`,
       image: "",
       routepage: "",
@@ -89,7 +89,7 @@ const AvailablePieceSlider = forwardRef(({availableId}, ref) => {
             sapd_image: imageId,
             sapd_routepage: slide.routepage,
             display: slide.display ? 1 : 0,
-            id: slide.id,
+            ...(slide.id && !isNaN(Number(slide.id)) ? { sapd_id: Number(slide.id) } : {}),
             sapd_apd: availableId,
           };
         })

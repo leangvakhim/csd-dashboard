@@ -28,7 +28,7 @@ const StudyPieceOne = forwardRef(({studyId}, ref) => {
 
     const handleAddSlider = () => {
         const newSlider = {
-            id: (slider.length + 1).toString(),
+            id: `temp-${slider.length + 1}`,
             title: `year ${slider.length + 1}`,
             subtitle: "",
             detail: "",
@@ -64,7 +64,7 @@ const StudyPieceOne = forwardRef(({studyId}, ref) => {
                 y_subtitle: slide.subtitle,
                 y_detail: slide.detail,
                 display: slide.display ? 1 : 0,
-                id: slide.id,
+                ...(slide.id && !isNaN(Number(slide.id)) ? { y_id: Number(slide.id) } : {}),
                 y_std: studyId,
               };
             })

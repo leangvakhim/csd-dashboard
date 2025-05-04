@@ -42,7 +42,7 @@ const PotentaiPieceOne = forwardRef(({potentialId}, ref) => {
                     subtitle: slide.subtitle,
                     image: imageId,
                     display: slide.display ? 1 : 0,
-                    id: slide.id,
+                    ...(slide.id && !isNaN(Number(slide.id)) ? { ss_id: Number(slide.id) } : {}),
                     ss_ras: potentialId,
                 };
             })
@@ -54,7 +54,7 @@ const PotentaiPieceOne = forwardRef(({potentialId}, ref) => {
 
     const handleAddSlider = () => {
         const newSlider = {
-            id: (slider.length + 1).toString(),
+            id: `temp-${slider.length + 1}`,
             title: `potential ${slider.length + 1}`,
             subtitle: "",
             image: "",
