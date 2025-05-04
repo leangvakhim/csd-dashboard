@@ -15,7 +15,7 @@ const ApplyPieceOne = forwardRef(({applyId}, ref) => {
 
     const handleAddSlider = () => {
         const newSlider = {
-            id: (slider.length + 1).toString(),
+            id: `temp-${slider.length + 1}`,
             title: `apply ${slider.length + 1}`,
             display: 0,
         };
@@ -47,7 +47,7 @@ const ApplyPieceOne = forwardRef(({applyId}, ref) => {
                     return {
                         sha_title: slide.title,
                         display: slide.display ? 1 : 0,
-                        sha_id: slide.id,
+                        ...(slide.id && !isNaN(Number(slide.id)) ? { sha_id: Number(slide.id) } : {}),
                         sha_ha: applyId,
                     };
                 })
@@ -79,9 +79,9 @@ const ApplyPieceOne = forwardRef(({applyId}, ref) => {
                 setSlider(formattedData);
             } else {
                 setSlider([{
-                id: "1",
-                title: "apply 1",
-                display: 0
+                    id: "1",
+                    title: "apply 1",
+                    display: 0
                 }]);
             }
             }

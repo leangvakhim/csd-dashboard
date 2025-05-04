@@ -18,7 +18,7 @@ const ImportantPieceSlider = forwardRef(({importantId}, ref) => {
 
   const handleAddSlider = () => {
     const newSlider = {
-      id: (slider.length + 1).toString(),
+      id: `temp-${slider.length + 1}`,
       title: `Important ${slider.length + 1}`,
       subtitle: "",
       tag: "",
@@ -56,7 +56,7 @@ const ImportantPieceSlider = forwardRef(({importantId}, ref) => {
                 sidd_tag: slide.tag,
                 sidd_date: slide.date,
                 display: slide.display ? 1 : 0,
-                sidd_id: slide.id,
+                ...(slide.id && !isNaN(Number(slide.id)) ? { sidd_id: Number(slide.id) } : {}),
                 sidd_idd: importantId,
             };
           })
@@ -91,12 +91,12 @@ const ImportantPieceSlider = forwardRef(({importantId}, ref) => {
               setSlider(formattedData);
           } else {
               setSlider([{
-              id: "1",
-              title: "important 1",
-              subtitle: "",
-              tag: "",
-              date: null,
-              display: 0
+                id: "1",
+                title: "important 1",
+                subtitle: "",
+                tag: "",
+                date: null,
+                display: 0
               }]);
           }
           }
@@ -112,7 +112,7 @@ const ImportantPieceSlider = forwardRef(({importantId}, ref) => {
       if (!window.confirm("Are you sure you want to delete this slider?")) return;
 
       try {
-          await axios.put(`${API_ENDPOINTS.deleteSubserviceRAS}/${sliderId}`);
+          await axios.put(`${API_ENDPOINTS.deleteSubImportant}/${sliderId}`);
           setSlider((prevSlider) => prevSlider.filter((item) => item.id !== sliderId));
       } catch (error) {
           console.error('Failed to delete slider:', error);
