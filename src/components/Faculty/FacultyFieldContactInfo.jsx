@@ -17,8 +17,6 @@ const FacultyFieldContactInfo = forwardRef(({ f_id }, ref) => {
         },
     ]);
 
-    console.log("f_id is; ",f_id);
-
     useImperativeHandle(ref, () => ({
         getData: () => {
             const sortedContactinfo = [...contactinfo].sort((a, b) => a.fc_order - b.fc_order || 0);

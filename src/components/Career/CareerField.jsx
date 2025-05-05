@@ -20,6 +20,7 @@ const CareerField = () => {
         display: true,
         c_date: null,
         c_fav: true,
+        ref_id: null,
         active: 1,
     });
 
@@ -33,6 +34,7 @@ const CareerField = () => {
             c_fav: formData.c_fav ? 1 : 0,
             c_img: formData.c_img || null,
             display: formData.display ? 1 : 0,
+            ref_id: parseInt(formData.ref_id) || null,
             c_detail: subtitleContent || '',
             active: formData.active ? 1 : 0
         };

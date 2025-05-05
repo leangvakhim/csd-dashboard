@@ -21,6 +21,7 @@ const AnnouncementField = () => {
     am_fav: false,
     active: 1,
     am_img: null,
+    ref_id: null,
     am_orders: 0,
   });
 
@@ -69,6 +70,7 @@ const handleSave = async () => {
       am_img: formData.am_img || null,
       display: formData.display ? 1 : 0,
       am_detail: subtitleContent,
+      ref_id: parseInt(formData.ref_id) || null,
       active: formData.active ? 1 : 0,
       am_orders: formData.am_orders || 0,
     };

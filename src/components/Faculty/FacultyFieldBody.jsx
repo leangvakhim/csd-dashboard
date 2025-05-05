@@ -5,6 +5,7 @@ import FacultyFieldContactInfo from './FacultyFieldContactInfo';
 import FacultyFieldSocial from './FacultyFieldSocial';
 import MediaLibraryModal from '../MediaLibraryModal';
 import { API_ENDPOINTS } from '../../service/APIConfig';
+import axios from 'axios';
 const FacultyFieldBody = ({
         formData,
         setFormData,
@@ -19,6 +20,32 @@ const FacultyFieldBody = ({
     const [activeTab, setActiveTab] = useState(formData.lang || 1);
     const [isMediaLibraryOpen, setMediaLibraryOpen] = useState(false);
     const [selectedImage, setSelectedImage] = useState("");
+    const [refOptions, setRefOptions] = useState([]);
+    useEffect(() => {
+      const fetchRefOptions = async () => {
+        const currentLang = formData.lang;
+        const oppositeLang = currentLang === 1 ? 2 : 1;
+
+        try {
+          const response = await axios.get(`${API_ENDPOINTS.getFaculty}`);
+          const result = response.data;
+          if (result.status_code === "success" && Array.isArray(result.data)) {
+            const filtered = result.data.filter(item => item.lang === oppositeLang);
+
+            setRefOptions(filtered.map(item => ({
+              value: item.ref_id,
+              label: item.f_name
+            })));
+          }
+        } catch (error) {
+          console.error("Failed to fetch opposite language faculty options:", error);
+        }
+      };
+
+      if (formData.lang) {
+        fetchRefOptions();
+      }
+    }, [formData.lang]);
 
     useEffect(() => {
         if (formData.lang) {
@@ -109,7 +136,7 @@ const FacultyFieldBody = ({
                 <div className="mt-3">
                     {/* First row */}
                     <div className="flex flex-row gap-4 py-2 mb-1">
-                        <div className="flex-1">
+                          <div className="flex-1">
                             <label className="block text-xl font-medium leading-6 text-white-900">
                             Full name
                             </label>
@@ -120,7 +147,7 @@ const FacultyFieldBody = ({
                                 type="text"
                                 className="block w-full !border-gray-200 border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
                             />
-                            </div>
+                          </div>
                         </div>
                         <div className="flex-1">
                             <label className="block text-xl font-medium leading-6 text-white-900">
@@ -234,7 +261,25 @@ const FacultyFieldBody = ({
                                 onClose={() => setMediaLibraryOpen(false)}
                               />
                             )}
-                            <div className="flex-1">
+                            <div>
+                              <div className="flex-1">
+                                <div className="">
+                                  <label className="block text-xl font-medium text-gray-700">Reference</label>
+                                  <select
+                                    value={formData.ref_id || ""}
+                                    onChange={(e) => setFormData({ ...formData, ref_id: parseInt(e.target.value) })}
+                                    className="mt-2 block w-full border !border-gray-300 rounded-md py-2 pl-2 text-gray-900 shadow-sm focus:ring-2 focus:ring-indigo-500"
+                                  >
+                                    <option value="">-- Select Reference --</option>
+                                    {refOptions.map(option => (
+                                      <option key={option.value} value={option.value}>
+                                        {option.label}
+                                      </option>
+                                    ))}
+                                  </select>
+                                </div>
+
+                                <div className="flex-1">
                                 <label className="block text-xl font-medium leading-6 text-white-900">
                                     Portfolio url links
                                 </label>
@@ -242,9 +287,11 @@ const FacultyFieldBody = ({
                                     <textarea
                                       value={formData.f_portfolio}
                                       onChange={(e) => setFormData(prev => ({ ...prev, f_portfolio: e.target.value }))}
-                                      className="!border-gray-300 h-60 block w-full rounded-md border-0 py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-2xl sm:leading-6"></textarea>
+                                      className="!border-gray-300 h-40 block w-full rounded-md border-0 py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-2xl sm:leading-6"></textarea>
                                 </div>
                             </div>
+                            </div>
+                          </div>
                         </div>
                     </div>
                     {/* Third row */}

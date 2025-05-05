@@ -20,6 +20,7 @@ const EventsField = () => {
         display: true,
         e_date: null,
         e_fav: true,
+        ref_id: null,
         active: 1,
     });
 
@@ -86,6 +87,7 @@ const EventsField = () => {
             e_date: formData.e_date || null,
             e_fav: formData.e_fav ? 1 : 0,
             e_img: formData.e_img || null,
+            ref_id: parseInt(formData.ref_id) || null,
             display: formData.display ? 1 : 0,
             e_detail: subtitleContent || '',
             active: formData.active ? 1 : 0

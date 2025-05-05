@@ -24,6 +24,7 @@ const FacultyField = () => {
         f_portfolio: null,
         display: true,
         f_img: null,
+        ref_id: null,
         active: 1,
     });
 
@@ -84,6 +85,7 @@ const FacultyField = () => {
             f_position: formData.f_position || '',
             f_portfolio: formData.f_portfolio || '',
             f_img: formData.f_img || null,
+            ref_id: parseInt(formData.ref_id) || null,
             display: formData.display ? 1 : 0,
             active: formData.active ? 1 : 0,
         };

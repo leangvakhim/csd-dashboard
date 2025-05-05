@@ -11,7 +11,7 @@ const ResearchlabField = () => {
     const researchlabTagRef = useRef();
     const location = useLocation();
     const researchlabData = location.state?.researchlabData;
-    const rsdlID = researchlabData.data.rsdl_id;
+    const rsdlID = researchlabData?.data.rsdl_id;
     const [formData, setFormData] = useState({
         lang: 1,
         rsdl_title: '',
@@ -19,6 +19,7 @@ const ResearchlabField = () => {
         rsdl_detail: '',
         rsdl_img: null,
         rsdl_order: '',
+        ref_id: null,
         active: 1,
         display: true,
     });
@@ -84,6 +85,7 @@ const ResearchlabField = () => {
             rsdl_detail: formData.rsdl_detail || '',
             rsdl_img: await getImageIdByUrl(formData.rsdl_img) || null,
             rsdl_order: formData.rsdl_order || 0,
+            ref_id: parseInt(formData.ref_id) || null,
             display: formData.display ? 1 : 0,
             active: formData.active ? 1 : 0,
         };

@@ -13,7 +13,7 @@ const NewsField = () => {
     const [subtitleContent, setSubtitleContent] = useState('');
     const location = useLocation();
     const eventData = location.state?.eventData;
-    const newID = eventData.data.n_id;
+    const newID = eventData?.data.n_id;
     const [formData, setFormData] = useState({
         lang: 1,
         n_title: null,
@@ -22,6 +22,7 @@ const NewsField = () => {
         display: true,
         n_date: null,
         n_fav: true,
+        ref_id: null,
         active: 1,
     });
 
@@ -64,6 +65,7 @@ const NewsField = () => {
             n_date: formData.n_date || null,
             n_fav: formData.n_fav ? 1 : 0,
             n_img: formData.n_img || null,
+            ref_id: parseInt(formData.ref_id) || null,
             display: formData.display ? 1 : 0,
             n_detail: subtitleContent || '',
             active: formData.active ? 1 : 0

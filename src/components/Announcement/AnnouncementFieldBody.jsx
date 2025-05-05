@@ -20,6 +20,33 @@ const AnnouncementFieldBody = ({
   const location = useLocation();
   const announcementData = location.state?.announcementData;
   const [selectedStudents, setSelectedStudents] = useState([]);
+  const [refOptions, setRefOptions] = useState([]);
+
+  useEffect(() => {
+    const fetchRefOptions = async () => {
+    const currentLang = formData.lang;
+    const oppositeLang = currentLang === 1 ? 2 : 1;
+
+    try {
+        const response = await axios.get(`${API_ENDPOINTS.getAnnouncement}`);
+        const result = response.data;
+        if (Array.isArray(result.data)) {
+        const filtered = result.data.filter(item => item.lang === oppositeLang);
+
+        setRefOptions(filtered.map(item => ({
+          value: item.ref_id,
+          label: item.am_title
+        })));
+        }
+    } catch (error) {
+        console.error("Failed to fetch opposite language faculty options:", error);
+    }
+    };
+
+      if (formData.lang) {
+          fetchRefOptions();
+      }
+    }, [formData.lang]);
 
   useEffect(() => {
     if (formData.lang) {
@@ -304,7 +331,7 @@ const AnnouncementFieldBody = ({
                 Image
               </label>
               <div className="flex items-center justify-center w-full mt-2 border-1">
-                <label className="flex flex-col items-center justify-center w-full h-60 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+                <label className="flex flex-col items-center justify-center w-full h-84 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
                   {selectedImage ? (
                     <div>
                       <img
@@ -375,7 +402,23 @@ const AnnouncementFieldBody = ({
             </div>
 
             <div className="flex-1">
-              <label className="block text-xl font-medium leading-6 text-gray-900">
+              <div className="">
+                <label className="block text-xl font-medium text-gray-700">Reference</label>
+                    <select
+                        value={formData.ref_id || ""}
+                        onChange={(e) => setFormData({ ...formData, ref_id: parseInt(e.target.value) })}
+                        className="mt-2 block w-full border !border-gray-300 rounded-md py-2 pl-2 text-gray-900 shadow-sm focus:ring-2 focus:ring-indigo-500"
+                    >
+                    <option value="">-- Select Reference --</option>
+                    {refOptions.map(option => (
+                    <option key={option.value} value={option.value}>
+                        {option.label}
+                    </option>
+                    ))}
+                </select>
+              </div>
+
+              <label className="block text-xl font-medium leading-6 text-gray-900 mt-4">
                 Detail
               </label>
               <div className="mt-2">

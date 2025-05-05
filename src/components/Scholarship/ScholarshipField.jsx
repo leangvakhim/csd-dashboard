@@ -23,6 +23,7 @@ const ScholarshipField = () => {
         scletter_img: '',
         sc_fav: '',
         sc_orders: '',
+        ref_id: null,
         active: 1,
         display: 1,
     });
@@ -46,6 +47,7 @@ const ScholarshipField = () => {
             sc_postdate: formData.sc_postdate,
             sc_img: formData.sc_img,
             scletter_img: formData.scletter_img,
+            ref_id: parseInt(formData.ref_id) || null,
             sc_fav: formData.sc_fav,
             sc_orders: formData.sc_orders,
             active: formData.active ? 1 : 0,

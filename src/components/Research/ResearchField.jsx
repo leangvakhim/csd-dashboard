@@ -19,6 +19,7 @@ const ResearchField = () => {
         rsd_fav: '',
         rsd_img: '',
         rsd_order: '',
+        ref_id: null,
         display: 1,
         active: 1,
     });
@@ -55,6 +56,7 @@ const ResearchField = () => {
             rsd_subtitle: formData.rsd_subtitle || '',
             rsd_lead: formData.rsd_lead || '',
             rsd_fav: parseInt(formData.rsd_fav),
+            ref_id: parseInt(formData.ref_id) || null,
             rsd_img: formData.rsd_img || undefined,
             display: formData.display ? 1 : 0,
         };

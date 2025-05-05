@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import MediaLibraryModal from '../MediaLibraryModal';
 import JoditEditor from 'jodit-react';
 import 'jodit/es5/jodit.css';
+import axios from 'axios';
 import { API_ENDPOINTS } from '../../service/APIConfig';
 
 const EDITOR_CONFIG = {
@@ -19,6 +20,33 @@ const ScholarshipFieldBody = ({ formData, setFormData, onImageSelect }) => {
     const [selectedImage, setSelectedImage] = useState("");
     const [selectedLetterImage, setSelectedLetterImage] = useState("");
     const [currentField, setCurrentField] = useState("");
+    const [refOptions, setRefOptions] = useState([]);
+
+    useEffect(() => {
+        const fetchRefOptions = async () => {
+        const currentLang = formData.lang;
+        const oppositeLang = currentLang === 1 ? 2 : 1;
+
+        try {
+            const response = await axios.get(`${API_ENDPOINTS.getScholarship}`);
+            const result = response.data;
+            if (result.status_code === "success" && Array.isArray(result.data)) {
+            const filtered = result.data.filter(item => item.lang === oppositeLang);
+
+            setRefOptions(filtered.map(item => ({
+              value: item.ref_id,
+              label: item.sc_title
+            })));
+            }
+        } catch (error) {
+            console.error("Failed to fetch opposite language faculty options:", error);
+        }
+      };
+
+      if (formData.lang) {
+        fetchRefOptions();
+      }
+    }, [formData.lang]);
 
     // Set active tab based on form data
     useEffect(() => {
@@ -307,6 +335,37 @@ const ScholarshipFieldBody = ({ formData, setFormData, onImageSelect }) => {
                             </div>
 
                             <div className="flex flex-col sm:!flex-row gap-6 bg-white shadow-md rounded-lg">
+                                {/* References */}
+                                <div className="flex flex-col w-full">
+                                    <label className="block text-xl font-medium text-gray-700">Reference</label>
+                                        <select
+                                            value={formData.ref_id || ""}
+                                            onChange={(e) => setFormData({ ...formData, ref_id: parseInt(e.target.value) })}
+                                            className="mt-2 block w-full border !border-gray-300 rounded-md py-2 pl-2 text-gray-900 shadow-sm focus:ring-2 focus:ring-indigo-500"
+                                        >
+                                        <option value="">-- Select Reference --</option>
+                                        {refOptions.map(option => (
+                                        <option key={option.value} value={option.value}>
+                                            {option.label}
+                                        </option>
+                                        ))}
+                                    </select>
+                                </div>
+
+                                {/* Sponsor */}
+                                <div className="flex flex-col w-full">
+                                    <label className="text-lg font-semibold text-gray-700">Sponsor</label>
+                                    <input
+                                        type="text"
+                                        name="sc_sponsor"
+                                        value={formData.sc_sponsor}
+                                        onChange={handleInputChange}
+                                        className="mt-2 w-full bg-gray-200 py-2 px-3 border !border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="flex flex-col sm:!flex-row gap-6 bg-white shadow-md rounded-lg">
                                 {/* Short Title */}
                                 <div className="flex flex-col w-full">
                                     <label className="text-lg font-semibold text-gray-700">Short Title</label>
@@ -337,7 +396,7 @@ const ScholarshipFieldBody = ({ formData, setFormData, onImageSelect }) => {
                         </div>
                     </div>
 
-                    {/* Third row - Images */}
+                    {/* Fourth row - Images */}
                     <div className="w-full my-0 sm:my-6">
                         <div className="grid grid-cols-1 md:!grid-cols-2 items-center gap-4">
                             {renderImageUpload("image", selectedImage, setSelectedImage)}
