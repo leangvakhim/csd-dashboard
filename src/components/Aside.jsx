@@ -47,6 +47,7 @@ const Aside = () => {
                               { to: '/feedback', icon: 'ti-brand-hipchat', label: 'Feedback' },
                               { to: '/partnership', icon: 'ti-heart-handshake', label: 'Partnership' },
                               { to: '/image', icon: 'ti-photo', label: 'Image' },
+                              { to: '/email', icon: 'ti-mail', label: 'Email' },
                               // { to: '#', icon: 'ti-user-circle', label: 'User', external: true },
                               { to: '/developer', icon: 'ti-user-code', label: 'Developer' },
                               { to: '/setting', icon: 'ti-settings', label: 'Setting'},

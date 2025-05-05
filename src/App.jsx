@@ -31,6 +31,7 @@ import Developer from './pages/Developer';
 import DeveloperField from './components/Developer/DeveloperField';
 import GlobalLoading from './components/GlobalLoading';
 import { LoadingProvider } from './components/Context/LoadingContext';
+import Email from './pages/Email';
 
 function App() {
 
@@ -64,6 +65,7 @@ function App() {
           <Route path='/partnership' element={<Partnership/>} />
           <Route path='/partnership/partnership-details' element={<PartnershipField />} />
           <Route path='/image' element={<Image/>} />
+          <Route path='/email' element={<Email/>} />
           <Route path='/developer' element={<Developer/>} />
           <Route path='/developer/developer-details' element={<DeveloperField/>} />
           <Route path='/setting' element={<Setting/>} />

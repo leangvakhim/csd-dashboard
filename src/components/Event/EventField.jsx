@@ -11,7 +11,7 @@ const EventsField = () => {
     const [subtitleContent, setSubtitleContent] = useState('');
     const location = useLocation();
     const eventData = location.state?.eventData;
-    const eventID = eventData.data.e_id;
+    const eventID = eventData?.data?.e_id;
     const [formData, setFormData] = useState({
         lang: 1,
         e_title: null,
