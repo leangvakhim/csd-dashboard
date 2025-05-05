@@ -30,7 +30,7 @@ const EventsField = () => {
                     const response = await axios.get(`${API_ENDPOINTS.getEvent}/${eventID}`);
                     if (response.data && response.data.data) {
                         setFormData(response.data.data);
-                        setSubtitleContent(response.data.data.n_detail || "");
+                        setSubtitleContent(response.data.data.e_detail || "");
                     }
                 } catch (error) {
                     console.error("Failed to fetch news by ID:", error);
