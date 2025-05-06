@@ -22,6 +22,23 @@ const PageField = () => {
     });
 
     useEffect(() => {
+        if (pageData?.data?.p_id) {
+            fetchPageById(pageData?.data?.p_id);
+        }
+    }, [pageData]);
+
+    const fetchPageById = async (id) => {
+        try {
+            const res = await axios.get(`${API_ENDPOINTS.getPage}/${id}`);
+            if (res.data && res.data.data) {
+                setFormData(res.data.data);
+            }
+        } catch (error) {
+            console.error('❌ Failed to fetch research by ID:', error);
+        }
+    };
+
+    useEffect(() => {
         if (pageData && pageData.data) {
             // setLoading(true);
             setFormData(pageData.data);
