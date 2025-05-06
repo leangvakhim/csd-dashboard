@@ -57,36 +57,36 @@ const handleDeleteTag = async (id) => {
   if (result.isConfirmed) {
     try {
       await axios.put(`${API_ENDPOINTS.deleteResearchlabTag}/${id}`);
-      setTags((prevItems) =>
-        prevItems.map((item) =>
-          item.rsdlt === id ? { ...item, active: item.active ? 0 : 1 } : item
-        )
-      );
-      Swal.fire({
-        title: 'Deleted!',
-        text: 'Tag has been deleted.',
-        icon: 'success',
-        timer: 1000,
-        showConfirmButton: false,
-        customClass: {
-          popup: 'rounded-lg border border-gray-200 shadow-md',
-        },
-      });
-      setTimeout(() => {
-          window.location.reload();
-      }, 1100);
-    } catch (error) {
-      console.error("Error toggling visibility:", error);
-      Swal.fire({
-        title: 'Error!',
-        text: 'Something went wrong.',
-        icon: 'error',
-        timer: 1500,
-        showConfirmButton: false,
-      });
+        setTags((prevItems) =>
+          prevItems.map((item) =>
+            item.rsdlt === id ? { ...item, active: item.active ? 0 : 1 } : item
+          )
+        );
+        Swal.fire({
+          title: 'Deleted!',
+          text: 'Tag has been deleted.',
+          icon: 'success',
+          timer: 1000,
+          showConfirmButton: false,
+          customClass: {
+            popup: 'rounded-lg border border-gray-200 shadow-md',
+          },
+        });
+        setTimeout(() => {
+            window.location.reload();
+        }, 1100);
+      } catch (error) {
+        console.error("Error toggling visibility:", error);
+        Swal.fire({
+          title: 'Error!',
+          text: 'Something went wrong.',
+          icon: 'error',
+          timer: 1500,
+          showConfirmButton: false,
+        });
+      }
     }
-  }
-};
+  };
 
   const handleAddTag = () => {
     const newTag = {
@@ -157,49 +157,50 @@ const handleDeleteTag = async (id) => {
   };
 
   useEffect(() => {
-    if (rsdl_id) {
-      fetch(`${API_ENDPOINTS.getResearchlabTag}`)
-        .then((res) => res.json())
-        .then(async (result) => {
-          if (Array.isArray(result.data)) {
-            const imgRes = await fetch(`${API_ENDPOINTS.getImages}`);
-            const imgData = await imgRes.json();
+    if (!rsdl_id) return;
 
-            const formattedTags = result.data.map((item, index) => {
-              const matchedImage = Array.isArray(imgData?.data)
-                ? imgData.data.find((img) => String(img.image_id) === String(item.rsdlt_img))
-                : null;
+    axios.get(`${API_ENDPOINTS.getResearchlabTag}`)
+      .then(async (res) => {
+        const allTags = res.data?.data || [];
+        const filteredTags = allTags.filter(
+          (item) => String(item.rsdlt_rsdl) === String(rsdl_id)
+        );
 
-                const data = {
-                  id: item.rsdlt || null,
-                  rsdl_id: rsdl_id,
-                  title: `Tag ${index + 1}`,
-                  rsdlt_title: item.rsdlt_title || "",
-                  rsdlt_img: matchedImage ? `${API}/storage/uploads/${matchedImage.img}` : null,
-                  rsdlt_img_id: item.rsdlt_img || null,
-                  active: item.active ?? 1,
-                  rsdlt_order: index + 1,
-                };
-                console.log("Data is: ", data);
-              return data;
-            });
-            if(formattedTags.length > 0){
-              setTags(formattedTags);
-            } else{
-              setTags([{
+        const imgRes = await fetch(`${API_ENDPOINTS.getImages}`);
+        const imgData = await imgRes.json();
+
+        const formattedTags = filteredTags.map((item, index) => {
+          const matchedImage = Array.isArray(imgData?.data)
+            ? imgData.data.find((img) => String(img.image_id) === String(item.rsdlt_img))
+            : null;
+
+          return {
+            id: item.rsdlt || null,
+            rsdl_id: rsdl_id,
+            rsdlt: item.rsdlt || null,
+            title: `Tag ${index + 1}`,
+            rsdlt_title: item.rsdlt_title || "",
+            rsdlt_img: matchedImage ? `${API}/storage/uploads/${matchedImage.img}` : null,
+            rsdlt_img_id: item.rsdlt_img || null,
+            active: item.active ?? 1,
+            rsdlt_order: index + 1,
+          };
+        });
+
+        setTags(
+          formattedTags.length > 0
+            ? formattedTags
+            : [{
                 id: "1",
                 title: "Tag 1",
                 rsdlt_title: "Tag 1",
                 rsdlt_img: null,
                 active: 1,
                 rsdlt_order: 1,
-              }])
-            }
-
-          }
-        })
-        .catch((err) => console.error("Error fetching tag data:", err));
-    }
+              }]
+        );
+      })
+      .catch((err) => console.error("Error fetching tag data:", err));
   }, [rsdl_id]);
 
   return (

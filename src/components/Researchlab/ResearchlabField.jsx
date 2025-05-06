@@ -17,7 +17,7 @@ const ResearchlabField = () => {
         rsdl_title: '',
         rsdl_fav: '0',
         rsdl_detail: '',
-        rsdl_img: null,
+        rsdl_img: '',
         rsdl_order: '',
         ref_id: null,
         active: 1,
@@ -83,7 +83,9 @@ const ResearchlabField = () => {
             rsdl_title: formData.rsdl_title || '',
             rsdl_fav: formData.rsdl_fav || '0',
             rsdl_detail: formData.rsdl_detail || '',
-            rsdl_img: await getImageIdByUrl(formData.rsdl_img) || null,
+            rsdl_img: isNaN(formData.rsdl_img)
+                ? await getImageIdByUrl(formData.rsdl_img) || null
+                : formData.rsdl_img,
             rsdl_order: formData.rsdl_order || 0,
             ref_id: parseInt(formData.ref_id) || null,
             display: formData.display ? 1 : 0,
@@ -104,10 +106,10 @@ const ResearchlabField = () => {
         }
     };
 
-    const saveResearchlabTags = async () => {
-        const rsdl_id = formData.rsdl_id;
-        if (!rsdl_id) {
-            console.warn("Cannot save tags: missing researchlab ID.");
+
+    const saveResearchlabTags = async (rsdl_id) => {
+        if (!rsdl_id || isNaN(rsdl_id) || rsdl_id === 'undefined') {
+            console.warn("⛔ Cannot save tags: invalid or missing researchlab ID:", rsdl_id);
             return;
         }
 
@@ -116,12 +118,23 @@ const ResearchlabField = () => {
         const seen = new Set();
         const filteredTags = Array.isArray(tagData)
             ? tagData.filter(item => {
-                  const key = `${item.rsdlt_title}-${item.rsdlt_id}`;
-                  if (seen.has(key)) return false;
-                  seen.add(key);
-                  return item.rsdlt_title;
-              })
+                const key = `${item.rsdlt_title}-${item.rsdlt_id}`;
+                if (seen.has(key)) return false;
+                seen.add(key);
+                return item.rsdlt_title;
+            })
             : [];
+
+        let allTags = [];
+        try {
+            const res = await axios.get(API_ENDPOINTS.getResearchlabTag);
+            allTags = res.data?.data || [];
+        } catch (error) {
+            console.error("❌ Failed to fetch all researchlab tags:", error);
+            return;
+        }
+
+        const existingTags = allTags.filter(tag => tag.rsdlt_rsdl === rsdl_id);
 
         for (const item of filteredTags) {
             const payload = {
@@ -133,29 +146,28 @@ const ResearchlabField = () => {
             try {
                 if (item.rsdlt) {
                     const res = await axios.get(`${API_ENDPOINTS.getResearchlabTag}/${item.rsdlt}`);
+                    const existing = res.data?.data;
 
-                    if (res.data && res.data.data) {
-                        if(res.data.data.rsdl.rsdl_id === rsdl_id){
-                            // console.log("Update");
-                            await axios.post(`${API_ENDPOINTS.updateResearchlabTag}/${item.rsdlt}`, {rsdlt_tags: [payload]});
-                        }else {
-                            // console.log("Create1");
-                            await axios.post(API_ENDPOINTS.createResearchlabTag, { rsdl_id, rsdlt_tags: [payload] });
-                        }
+                    if (existing && existing.rsdlt_rsdl == rsdl_id) {
+                        await axios.post(`${API_ENDPOINTS.updateResearchlabTag}/${item.rsdlt}`, { rsdlt_tags: [payload] });
                     } else {
-                            // console.log("Create2");
+                        console.warn("Updating skipped due to mismatched rsdl_id. Creating new tag instead.");
                         await axios.post(API_ENDPOINTS.createResearchlabTag, { rsdl_id, rsdlt_tags: [payload] });
                     }
                 } else {
-                            // console.log("Create3");
-                    await axios.post(API_ENDPOINTS.createResearchlabTag, { rsdl_id, rsdlt_tags: [payload] });
+                    const alreadyExists = existingTags.some(t => t.rsdlt_title === item.rsdlt_title);
+
+                    if (!alreadyExists) {
+                        await axios.post(API_ENDPOINTS.createResearchlabTag, { rsdl_id, rsdlt_tags: [payload] });
+                    } else {
+                        console.log("Duplicate tag skipped:", item.rsdlt_title);
+                    }
                 }
             } catch (error) {
                 if (error.response && error.response.status === 404) {
-                    // console.log("Creat4");
                     await axios.post(API_ENDPOINTS.createResearchlabTag, { rsdl_id, rsdlt_tags: [payload] });
                 } else {
-                    console.error("❌ Error saving faculty info:", error);
+                    console.error("❌ Error saving tag:", error);
                 }
             }
         }
@@ -171,14 +183,22 @@ const ResearchlabField = () => {
                 },
             });
 
-            await saveResearchlab();
-            await saveResearchlabTags();
+            const { rsdl_id } = await saveResearchlab();
+            setFormData(prev => ({ ...prev, rsdl_id }));
+
+            setTimeout(() => {
+                saveResearchlabTags(rsdl_id);
+            }, 0);
+
             Swal.fire({
                 icon: 'success',
                 title: 'Saved!',
                 text: 'Research lab saved successfully!',
-                timer: 2000,
                 showConfirmButton: false,
+                timer: 1500,
+                willClose: () => {
+                    window.location.reload();
+                }
             });
         } catch (err) {
             console.error('Error saving research lab:', err);
