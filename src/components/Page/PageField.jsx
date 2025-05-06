@@ -2046,7 +2046,12 @@ const PageField = () => {
                 title: 'Saved!',
                 text: 'Page saved successfully',
                 timer: 1500,
-                showConfirmButton: false
+                showConfirmButton: false,
+                willClose: () => {
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 500);
+                }
             });
         } catch (err) {
             Swal.fire({
