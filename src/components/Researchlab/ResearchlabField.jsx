@@ -15,7 +15,7 @@ const ResearchlabField = () => {
     const [formData, setFormData] = useState({
         lang: 1,
         rsdl_title: '',
-        rsdl_fav: '0',
+        rsdl_fav: 1,
         rsdl_detail: '',
         rsdl_img: '',
         rsdl_order: '',
@@ -81,7 +81,7 @@ const ResearchlabField = () => {
         const payload = {
             lang: formData.lang,
             rsdl_title: formData.rsdl_title || '',
-            rsdl_fav: formData.rsdl_fav || '0',
+            rsdl_fav: 1,
             rsdl_detail: formData.rsdl_detail || '',
             rsdl_img: isNaN(formData.rsdl_img)
                 ? await getImageIdByUrl(formData.rsdl_img) || null

@@ -325,28 +325,13 @@ const CareerFieldBody = ({ formData, setFormData, subtitleContent, setSubtitleCo
                                             className="mt-2 w-full py-2 border !border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
                                         />
                                     </div>
-
-                                    {/* Favorite Dropdown */}
-                                    <div className="mt-4">
-                                        <label className="block text-xl font-medium text-gray-700">Favorite</label>
-                                        <select
-                                            value={formData.c_fav}
-                                            onChange={(e) => setFormData({ ...formData, c_fav: e.target.value })}
-                                            className="mt-2 block w-full border !border-gray-300 rounded-md py-2 pl-2 text-gray-900 shadow-sm focus:ring-2 focus:ring-indigo-500"
-                                        >
-                                            <option value={true}>Yes</option>
-                                            <option value={false}>No</option>
-                                        </select>
-                                    </div>
                                 </div>
                             </div>
-
                         </div>
                     </div>
                     {/* Third row - Full Width */}
                     <div className='h-full'>
                         <div className="flex-1">
-
                             <div className="grid grid-cols-1 gap-4 py-2">
                                 <div className="w-full">
                                     <label className="block text-xl font-medium leading-6 text-white-900">

@@ -207,26 +207,24 @@ const ImageBody = () => {
                                     src={image.image_url}
                                     alt={image.img}
                                     className="mx-auto my-auto object-contain max-h-40 cursor-pointer"
-                                    onClick={async () => {
+                                    onClick={() => {
                                         Swal.fire({
-                                            title: 'Loading image...',
-                                            allowOutsideClick: false,
+                                            title: image.img,
+                                            imageUrl: image.image_url,
+                                            imageAlt: image.img,
+                                            showCloseButton: true,
                                             showConfirmButton: false,
-                                            backdrop: true,
-                                            didOpen: () => {
-                                                Swal.showLoading();
-                                            },
+                                            width: '80%',
+                                            height: '80%',
+                                            padding: '1em',
+                                            background: '#fff',
                                             customClass: {
-                                                popup: 'bg-white rounded-lg shadow-lg',
+                                                popup: 'rounded-lg shadow-lg',
                                                 title: 'text-lg font-semibold text-gray-700',
                                             }
                                         });
 
-                                        await new Promise(resolve => setTimeout(resolve, 300));
-
                                         setSelectedImageName(image.img);
-
-                                        Swal.close();
                                     }}
                                 />
                                 <button

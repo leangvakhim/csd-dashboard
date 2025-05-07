@@ -161,6 +161,22 @@ const ResearchlabFieldBody = ({
                             </div>
                         </div>
 
+                        <div className="flex-1 w-full">
+                            <label className="block text-xl font-medium text-gray-700">Reference</label>
+                                <select
+                                    value={formData.ref_id || ""}
+                                    onChange={(e) => setFormData({ ...formData, ref_id: parseInt(e.target.value) })}
+                                    className="mt-2 block w-full border !border-gray-300 rounded-md py-2 pl-2 text-gray-900 shadow-sm focus:ring-2 focus:ring-indigo-500"
+                                >
+                                <option value="">-- Select Reference --</option>
+                                {refOptions.map(option => (
+                                <option key={option.value} value={option.value}>
+                                    {option.label}
+                                </option>
+                                ))}
+                            </select>
+                        </div>
+
                         <div className="flex-non mb-2">
                             <label className="block text-xl font-medium leading-6 text-white-900">
                                 Display
@@ -179,49 +195,12 @@ const ResearchlabFieldBody = ({
                             </div>
                         </div>
                     </div>
-
                     {/* Second row */}
-                    <div className="flex flex-col sm:!flex-row gap-4 items-center py-2">
-                        <div className="flex-1 w-full">
-                            <label className="block text-xl font-medium text-gray-700">Reference</label>
-                                <select
-                                    value={formData.ref_id || ""}
-                                    onChange={(e) => setFormData({ ...formData, ref_id: parseInt(e.target.value) })}
-                                    className="mt-2 block w-full border !border-gray-300 rounded-md py-2 pl-2 text-gray-900 shadow-sm focus:ring-2 focus:ring-indigo-500"
-                                >
-                                <option value="">-- Select Reference --</option>
-                                {refOptions.map(option => (
-                                <option key={option.value} value={option.value}>
-                                    {option.label}
-                                </option>
-                                ))}
-                            </select>
-                        </div>
-
-                        <div className="flex-1 w-full">
-                            <label className="block text-xl font-medium leading-6 text-white-900">
-                                Favourite
-                            </label>
-                            <div className="mt-2">
-                                <select
-                                    name="rsdl_fav"
-                                    value={formData.rsdl_fav}
-                                    onChange={(e) => setFormData({ ...formData, rsdl_fav: e.target.value })}
-                                    className="!border-gray-300 block w-full border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6">
-                                    <option value="" disabled>Choose options</option>
-                                    <option value="1">Yes</option>
-                                    <option value="0">No</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Third row */}
                     <ResearchlabTagSection
                         ref={researchlabTagRef}
                         rsdl_id={formData.rsdl_id}
                     />
-                    {/* Fourth row */}
+                    {/* Third row */}
                     <div className="flex-1 mt-2">
                         <label className="block text-xl font-medium leading-6 text-white-900">
                             Image
@@ -305,7 +284,7 @@ const ResearchlabFieldBody = ({
                         />
                     )}
 
-                    {/* Fifth row */}
+                    {/* Fourth row */}
                     <div>
                         <div className="grid grid-cols-1 gap-4 py-2">
                             <div className="w-full">

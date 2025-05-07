@@ -48,7 +48,7 @@ const ScholarshipField = () => {
             sc_img: formData.sc_img,
             scletter_img: formData.scletter_img,
             ref_id: parseInt(formData.ref_id) || null,
-            sc_fav: formData.sc_fav,
+            sc_fav: 1,
             sc_orders: formData.sc_orders,
             active: formData.active ? 1 : 0,
             display: formData.display ? 1 : 0,

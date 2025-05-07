@@ -31,7 +31,7 @@ const CareerField = () => {
             c_title: formData.c_title || '',
             c_shorttitle: formData.c_shorttitle || '',
             c_date: formData.c_date || null,
-            c_fav: formData.c_fav ? 1 : 0,
+            c_fav: 1,
             c_img: formData.c_img || null,
             display: formData.display ? 1 : 0,
             ref_id: parseInt(formData.ref_id) || null,
@@ -76,7 +76,6 @@ const CareerField = () => {
 
             <div class=" w-full page-wrapper overflow-hidden">
                 <CareerFieldHeader onSave={handleSave}/>
-                {/* <CareerFieldBody/> */}
                 <CareerFieldBody
                     formData={formData}
                     setFormData={setFormData}
@@ -84,7 +83,6 @@ const CareerField = () => {
                     setSubtitleContent={setSubtitleContent}
                     onImageSelect={handleImageSelect}
                 />
-
             </div>
         </div>
     )

@@ -221,10 +221,10 @@ const FeedbackDashboard = () => {
                                                         <i className="ti ti-trash text-gray-500 text-xl"></i>
                                                         <span className="text-sm text-gray-700">Delete</span>
                                                     </a>
-                                                    <button onClick={() => duplicateItem(item.fb_id)} className="cursor-pointer flex gap-2 items-center px-4 py-2 hover:bg-blue-100">
+                                                    {/* <button onClick={() => duplicateItem(item.fb_id)} className="cursor-pointer flex gap-2 items-center px-4 py-2 hover:bg-blue-100">
                                                         <i className="ti ti-copy text-gray-500 text-xl"></i>
                                                         <span className="text-sm text-gray-700">Duplicate</span>
-                                                    </button>
+                                                    </button> */}
                                                 </div>
                                             </div>
                                         )}

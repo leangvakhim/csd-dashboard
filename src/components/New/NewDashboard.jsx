@@ -208,10 +208,10 @@ const NewDashboard = () => {
                                                         <i className="ti ti-trash text-gray-500 text-xl"></i>
                                                         <span className="text-sm text-gray-700">Delete</span>
                                                     </a>
-                                                    <a onClick={() => duplicateItem(item.n_id)} className="cursor-pointer flex gap-2 items-center px-4 py-2 hover:bg-blue-100">
+                                                    {/* <a onClick={() => duplicateItem(item.n_id)} className="cursor-pointer flex gap-2 items-center px-4 py-2 hover:bg-blue-100">
                                                         <i className="ti ti-copy text-gray-500 text-xl"></i>
                                                         <span className="text-sm text-gray-700">Duplicate</span>
-                                                    </a>
+                                                    </a> */}
                                                 </div>
                                             </div>
                                         )}

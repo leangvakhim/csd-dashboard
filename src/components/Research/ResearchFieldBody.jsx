@@ -174,21 +174,19 @@ const ResearchFieldBody = forwardRef(({ formData, setFormData, onImageSelect, },
                         </div>
 
                         <div className="flex-1">
-                            <label class="block text-xl font-medium leading-6 text-white-900">
-                                Favourite
-                            </label>
-                            <div className='mt-2'>
-                                <select
-                                    value={formData.rsd_fav ?? ""}
-                                    onChange={(e) => {
-                                        const val = e.target.value;
-                                        setFormData({ ...formData, rsd_fav: val === "1" ? 1 : 0 });
-                                    }}
-                                    className="mt-2 block w-full border !border-gray-300 rounded-md py-2 pl-2 text-gray-900 shadow-sm focus:ring-2 focus:ring-indigo-500"
-                                >
-                                    <option value="">Select options</option>
-                                    <option value="1">Yes</option>
-                                    <option value="0">No</option>
+                            <div className="">
+                                <label className="block text-xl font-medium text-gray-700">Reference</label>
+                                    <select
+                                        value={formData.ref_id || ""}
+                                        onChange={(e) => setFormData({ ...formData, ref_id: parseInt(e.target.value) })}
+                                        className="mt-2 block w-full border !border-gray-300 rounded-md py-2 pl-2 text-gray-900 shadow-sm focus:ring-2 focus:ring-indigo-500"
+                                    >
+                                    <option value="">-- Select Reference --</option>
+                                    {refOptions.map(option => (
+                                    <option key={option.value} value={option.value}>
+                                        {option.label}
+                                    </option>
+                                    ))}
                                 </select>
                             </div>
                         </div>
@@ -202,7 +200,7 @@ const ResearchFieldBody = forwardRef(({ formData, setFormData, onImageSelect, },
                                 </label>
                                 <div className="flex items-center justify-center w-full mt-2 border-1">
                                     <label
-                                        className="flex flex-col items-center justify-center w-full h-84 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100"
+                                        className="flex flex-col items-center justify-center w-full h-60 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100"
                                     >
                                         {selectedImage ? (
                                             <div>
@@ -286,23 +284,9 @@ const ResearchFieldBody = forwardRef(({ formData, setFormData, onImageSelect, },
                             )}
 
                             <div className="flex-1">
-                                <div className="">
-                                    <label className="block text-xl font-medium text-gray-700">Reference</label>
-                                        <select
-                                            value={formData.ref_id || ""}
-                                            onChange={(e) => setFormData({ ...formData, ref_id: parseInt(e.target.value) })}
-                                            className="mt-2 block w-full border !border-gray-300 rounded-md py-2 pl-2 text-gray-900 shadow-sm focus:ring-2 focus:ring-indigo-500"
-                                        >
-                                        <option value="">-- Select Reference --</option>
-                                        {refOptions.map(option => (
-                                        <option key={option.value} value={option.value}>
-                                            {option.label}
-                                        </option>
-                                        ))}
-                                    </select>
-                                </div>
 
-                                <label className="block text-xl font-medium leading-6 text-white-900 mt-4">
+
+                                <label className="block text-xl font-medium leading-6 text-white-900">
                                     Subtitle
                                 </label>
                                 <div className="mt-2">

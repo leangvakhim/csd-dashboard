@@ -55,7 +55,7 @@ const ResearchField = () => {
             rsd_title: formData.rsd_title || '',
             rsd_subtitle: formData.rsd_subtitle || '',
             rsd_lead: formData.rsd_lead || '',
-            rsd_fav: parseInt(formData.rsd_fav),
+            rsd_fav: parseInt(1),
             ref_id: parseInt(formData.ref_id) || null,
             rsd_img: formData.rsd_img || undefined,
             display: formData.display ? 1 : 0,

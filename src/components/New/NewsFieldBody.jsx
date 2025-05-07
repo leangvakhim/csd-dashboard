@@ -211,7 +211,7 @@ const NewsFieldBody = ({ formData, setFormData, subtitleContent, setSubtitleCont
                                 </label>
                                 <div className="flex items-center justify-center w-full mt-2 border-1">
                                     <label
-                                        className="flex flex-col items-center justify-center w-full h-84 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100"
+                                        className="flex flex-col items-center justify-center w-full h-60 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100"
                                     >
                                         {selectedImage ? (
                                             <div>
@@ -336,19 +336,6 @@ const NewsFieldBody = ({ formData, setFormData, subtitleContent, setSubtitleCont
                                                 onChange={(e) => setFormData({ ...formData, n_date: e.target.value })}
                                                 className="mt-2 w-full py-2 border !border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
                                             />
-                                        </div>
-
-                                        {/* Favorite Dropdown */}
-                                        <div className="mt-4">
-                                            <label className="block text-xl font-medium text-gray-700">Favorite</label>
-                                            <select
-                                                value={formData.n_fav}
-                                                onChange={(e) => setFormData({ ...formData, n_fav: e.target.value })}
-                                                className="mt-2 block w-full border !border-gray-300 rounded-md py-2 pl-2 text-gray-900 shadow-sm focus:ring-2 focus:ring-indigo-500"
-                                            >
-                                                <option value={true}>Yes</option>
-                                                <option value={false}>No</option>
-                                            </select>
                                         </div>
                                     </div>
                                 </div>

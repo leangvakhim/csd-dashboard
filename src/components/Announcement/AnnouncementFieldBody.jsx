@@ -302,26 +302,22 @@ const AnnouncementFieldBody = ({
               </div>
             </div>
 
-            <div className="flex-1">
-              <label className="block text-xl font-medium leading-6 text-gray-900">
-                Favorite
-              </label>
-              <div className="mt-2">
-                <select
-                  value={formData.am_fav}
-                  onChange={(e) =>
-                    setFormData((prev) => ({
-                      ...prev,
-                      am_fav: e.target.value === 'true',
-                    }))
-                  }
-                  className="block w-full !border-gray-200 border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
-                >
-                  <option value={true}>Yes</option>
-                  <option value={false}>No</option>
+            <div className="">
+                <label className="block text-xl font-medium text-gray-700">Reference</label>
+                    <select
+                        value={formData.ref_id || ""}
+                        onChange={(e) => setFormData({ ...formData, ref_id: parseInt(e.target.value) })}
+                        className="mt-2 block w-full border !border-gray-300 rounded-md py-2 pl-2 text-gray-900 shadow-sm focus:ring-2 focus:ring-indigo-500"
+                    >
+                    <option value="">-- Select Reference --</option>
+                    {refOptions.map(option => (
+                    <option key={option.value} value={option.value}>
+                        {option.label}
+                    </option>
+                    ))}
                 </select>
               </div>
-            </div>
+
           </div>
 
           {/* Third row */}
@@ -331,7 +327,7 @@ const AnnouncementFieldBody = ({
                 Image
               </label>
               <div className="flex items-center justify-center w-full mt-2 border-1">
-                <label className="flex flex-col items-center justify-center w-full h-84 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+                <label className="flex flex-col items-center justify-center w-full h-60 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
                   {selectedImage ? (
                     <div>
                       <img
@@ -402,23 +398,7 @@ const AnnouncementFieldBody = ({
             </div>
 
             <div className="flex-1">
-              <div className="">
-                <label className="block text-xl font-medium text-gray-700">Reference</label>
-                    <select
-                        value={formData.ref_id || ""}
-                        onChange={(e) => setFormData({ ...formData, ref_id: parseInt(e.target.value) })}
-                        className="mt-2 block w-full border !border-gray-300 rounded-md py-2 pl-2 text-gray-900 shadow-sm focus:ring-2 focus:ring-indigo-500"
-                    >
-                    <option value="">-- Select Reference --</option>
-                    {refOptions.map(option => (
-                    <option key={option.value} value={option.value}>
-                        {option.label}
-                    </option>
-                    ))}
-                </select>
-              </div>
-
-              <label className="block text-xl font-medium leading-6 text-gray-900 mt-4">
+              <label className="block text-xl font-medium leading-6 text-gray-900 ">
                 Detail
               </label>
               <div className="mt-2">

@@ -256,6 +256,7 @@ const ScholarshipFieldBody = ({ formData, setFormData, onImageSelect }) => {
                 <div className="mt-4">
                     {/* First row */}
                     <div className="flex sm:!flex-row flex-col gap-4 items-center py-2">
+
                         <div className="flex-1 w-full">
                             <label className="block text-xl font-medium leading-6 text-white-900">
                                 Title
@@ -269,6 +270,17 @@ const ScholarshipFieldBody = ({ formData, setFormData, onImageSelect }) => {
                                     className="block w-full !border-gray-200 border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
                                 />
                             </div>
+                        </div>
+
+                        <div className="flex-1 w-full">
+                            <label className="text-lg font-semibold text-gray-700">Short Title</label>
+                            <input
+                                type="text"
+                                name="sc_shortdesc"
+                                value={formData.sc_shortdesc}
+                                onChange={handleInputChange}
+                                className="mt-2 w-full bg-gray-200 py-2 px-3 border !border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                            />
                         </div>
 
                         <div className="flex-non mb-2">
@@ -320,18 +332,6 @@ const ScholarshipFieldBody = ({ formData, setFormData, onImageSelect }) => {
                                         />
                                     </div>
                                 </div>
-
-                                {/* Sponsor */}
-                                <div className="flex flex-col w-full">
-                                    <label className="text-lg font-semibold text-gray-700">Sponsor</label>
-                                    <input
-                                        type="text"
-                                        name="sc_sponsor"
-                                        value={formData.sc_sponsor}
-                                        onChange={handleInputChange}
-                                        className="mt-2 w-full bg-gray-200 py-2 px-3 border !border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                                    />
-                                </div>
                             </div>
 
                             <div className="flex flex-col sm:!flex-row gap-6 bg-white shadow-md rounded-lg">
@@ -362,35 +362,6 @@ const ScholarshipFieldBody = ({ formData, setFormData, onImageSelect }) => {
                                         onChange={handleInputChange}
                                         className="mt-2 w-full bg-gray-200 py-2 px-3 border !border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
                                     />
-                                </div>
-                            </div>
-
-                            <div className="flex flex-col sm:!flex-row gap-6 bg-white shadow-md rounded-lg">
-                                {/* Short Title */}
-                                <div className="flex flex-col w-full">
-                                    <label className="text-lg font-semibold text-gray-700">Short Title</label>
-                                    <input
-                                        type="text"
-                                        name="sc_shortdesc"
-                                        value={formData.sc_shortdesc}
-                                        onChange={handleInputChange}
-                                        className="mt-2 w-full bg-gray-200 py-2 px-3 border !border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                                    />
-                                </div>
-
-                                {/* Favourite */}
-                                <div className="flex flex-col w-full">
-                                    <label className="text-lg font-semibold text-gray-700">Favourite</label>
-                                    <select
-                                        name="sc_fav"
-                                        value={formData.sc_fav}
-                                        onChange={handleInputChange}
-                                        className="mt-2 w-full bg-gray-200 border !border-gray-300 rounded-md py-2 px-3 text-gray-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                                    >
-                                        <option value="">Drop down</option>
-                                        <option value="1">Yes</option>
-                                        <option value="0">No</option>
-                                    </select>
                                 </div>
                             </div>
                         </div>

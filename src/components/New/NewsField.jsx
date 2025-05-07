@@ -63,7 +63,7 @@ const NewsField = () => {
             n_shorttitle: formData.n_shorttitle || '',
             n_tags: formData.n_tags || '',
             n_date: formData.n_date || null,
-            n_fav: formData.n_fav ? 1 : 0,
+            n_fav: 1,
             n_img: formData.n_img || null,
             ref_id: parseInt(formData.ref_id) || null,
             display: formData.display ? 1 : 0,
