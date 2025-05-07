@@ -12,6 +12,8 @@ const Setting = () => {
     const [formData, setFormData] = useState({
         set_facultytitle: "",
         set_facultydep: "",
+        set_telegramtoken: "",
+        set_chatid: "",
         set_logo: 0,
         set_amstu: null,
         set_enroll: null,
@@ -62,6 +64,8 @@ const Setting = () => {
                 lang: formData.lang || 1,
                 set_facultytitle: formData.set_facultytitle,
                 set_facultydep: formData.set_facultydep,
+                set_telegramtoken: formData.set_telegramtoken,
+                set_chatid: formData.set_chatid,
                 set_logo: formData.set_logo,
                 set_amstu: parseFloat(formData.set_amstu),
                 set_baseurl: formData.set_baseurl,

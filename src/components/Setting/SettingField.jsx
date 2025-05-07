@@ -131,8 +131,44 @@ const SettingField = forwardRef(({setFormData, formData}, ref) => {
               </div>
             </div>
           </div>
-
           {/* Second row */}
+          <div className="flex sm:!flex-row flex-col gap-4 items-center py-2 ">
+            <div className="flex-1 w-full">
+              <label className="block text-xl font-medium leading-6 text-white-900">
+                Telegram Token
+              </label>
+              <div className="mt-2">
+                <input
+                  type="text"
+                  value={formData.set_telegramtoken}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      set_telegramtoken: e.target.value,
+                    }))
+                  }
+                  className="block w-full !border-gray-200 border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
+                />
+              </div>
+            </div>
+
+            <div className="flex-1 w-full">
+              <label className="block text-xl font-medium leading-6 text-white-900">
+                Telegram ChatId
+              </label>
+              <div className="mt-2">
+                <input
+                  type="text"
+                  value={formData.set_chatid}
+                  onChange={(e) =>
+                    setFormData({ ...formData, set_chatid: e.target.value })
+                  }
+                  className="block w-full !border-gray-200 border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
+                />
+              </div>
+            </div>
+          </div>
+          {/* Third row */}
           <div className="w-full my-0 sm:my-2">
             <div className="grid  grid-cols-1 md:!grid-cols-2 items-center gap-4">
               <div className="">
@@ -292,7 +328,7 @@ const SettingField = forwardRef(({setFormData, formData}, ref) => {
               </div>
             </div>
           </div>
-          {/* Third row */}
+          {/* Fourth row */}
           <div>
             <div className="grid grid-cols-1">
               <SettingFieldSection ref={ref}/>
