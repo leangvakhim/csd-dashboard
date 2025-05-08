@@ -36,6 +36,12 @@ const DeveloperFieldBody = forwardRef(({ formData, setFormData }, ref) => {
         fetchImage();
     }, [formData, selectedImage]);
 
+    useEffect(() => {
+        if (formData?.lang) {
+            setActiveTab(formData.lang);
+        }
+    }, [formData?.lang]);
+
     const openMediaLibrary = () => {
         setMediaLibraryOpen(true);
     };

@@ -6,6 +6,7 @@ import axios from 'axios';
 import { API_ENDPOINTS } from '../../service/APIConfig';
 import { useLocation } from 'react-router-dom';
 import { useLoading } from "../Context/LoadingContext";
+import Swal from 'sweetalert2';
 
 const DeveloperField = () => {
   const location = useLocation();
@@ -39,15 +40,12 @@ const DeveloperField = () => {
     };
 
     try{
-      setLoading(true);
       if (developData?.data?.d_id) {
       fetchDeveloper(developData.data.d_id);
       fetchDeveloperSocials(developData.data.d_id);
     }
     }catch(error){
       console.error(error);
-    }finally{
-      setLoading(false);
     }
   }, [developData]);
 
@@ -154,16 +152,35 @@ const DeveloperField = () => {
         }
     };
 
-  const handleSubmit = async () => {
-    try {
-      setLoading(true);
-      await saveDeveloper();
-    } catch (error) {
-      console.log('Unable to save developer: ', error);
-    }finally{
-      setLoading(false);
-    }
-  };
+const handleSubmit = async () => {
+  try {
+    Swal.fire({
+      title: 'Saving Developer...',
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading();
+      }
+    });
+
+    await saveDeveloper();
+
+    Swal.fire({
+      icon: 'success',
+      title: 'Success!',
+      text: 'Developer saved successfully.',
+      timer: 2000,
+      showConfirmButton: false,
+    });
+
+  } catch (error) {
+    console.log('Unable to save developer: ', error);
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: 'Failed to save developer.',
+    });
+  }
+};
 
   return (
     <div id="main-wrapper" className=" flex">
