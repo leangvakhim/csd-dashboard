@@ -9,7 +9,7 @@ const ResearchlabPiece = forwardRef(({sectionId, pageId}, ref) => {
     const [subtitle, setSubtitle] = useState('');
     const [btnTitle, setBtnTitle] = useState('');
     const [redirectPage, setRedirectPage] = useState('');
-    const [amount, setAmount] = useState(null);
+    const [amount, setAmount] = useState(0);
     const [displayNews, setDisplayNews] = useState(0);
     const [pages, setPages] = useState("");
 
@@ -220,7 +220,7 @@ const ResearchlabPiece = forwardRef(({sectionId, pageId}, ref) => {
                             </select>
                         </div>
 
-                        <div className="mt-4 w-full">
+                        {/* <div className="mt-4 w-full">
                             <label className="block text-xl font-medium text-gray-700">Amount</label>
                             <select
                                 value={amount}
@@ -232,7 +232,7 @@ const ResearchlabPiece = forwardRef(({sectionId, pageId}, ref) => {
                                 <option value="2">Two</option>
                                 <option value="4">Four</option>
                             </select>
-                        </div>
+                        </div> */}
                     </div>
                 </div>
 
