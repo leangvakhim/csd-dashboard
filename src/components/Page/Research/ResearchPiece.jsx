@@ -222,17 +222,14 @@ const ResearchPiece = forwardRef(({sectionId, pageId}, ref) => {
                         </div>
 
                         <div className="mt-4 w-full">
-                            <label className="block text-xl font-medium text-gray-700">Amount</label>
-                            <select
+                            <label className="block text-xl font-medium text-gray-700">Amount Display</label>
+                            <input
+                                type="number"
                                 value={amount}
                                 onChange={(e) => setAmount(e.target.value)}
+                                placeholder="Enter amount"
                                 className="mt-2 block w-full border !border-gray-300 rounded-md py-2 pl-2 text-gray-900 shadow-sm focus:ring-2 focus:ring-indigo-500"
-                            >
-                                <option value="0">Choose amount</option>
-                                <option value="1">One</option>
-                                <option value="2">Two</option>
-                                <option value="4">Four</option>
-                            </select>
+                            />
                         </div>
                     </div>
                 </div>
