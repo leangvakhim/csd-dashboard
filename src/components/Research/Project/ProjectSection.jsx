@@ -61,16 +61,20 @@ const ProjectSection = forwardRef(({sectionId, rsdId}, ref) => {
     useEffect(() => {
         const fetchProjects = async () => {
         try {
-            const response = await axios.get(`${API_ENDPOINTS.getRsdProject}?rsdp_rsdtile=${sectionId}`);
+            const response = await axios.get(`${API_ENDPOINTS.getRsdProject}`);
             const projects = response.data.data || [];
             if (projects.length > 0) {
-                const project = projects.find(item => item?.title?.rsdt_text === rsdId);
+                const project = projects.find(
+                    item => item?.rsdp_rsdtile === sectionId && item?.title?.rsdt_text === rsdId
+                );
                 if (project) {
                     setProjectId(project.rsdp_id || null);
                     setTitle(project.rsdp_title || '');
                     setDetail(project.rsdp_detail || '');
                 }
             }
+
+            console.log("projects is: ",projects);
 
             const sectionRes = await axios.get(`${API_ENDPOINTS.getResearchTitle}/${sectionId}`);
             const sectionData = sectionRes.data.data;

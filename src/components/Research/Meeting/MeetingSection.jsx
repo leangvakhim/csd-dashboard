@@ -94,7 +94,10 @@ const MeetingSection = forwardRef(({sectionId, rsdId}, ref) => {
             const response = await axios.get(`${API_ENDPOINTS.getRsdMeeting}?rsdm_rsdtitle=${sectionId}`);
             const meetings = response.data.data || [];
             if (meetings.length > 0) {
-                const meeting = meetings.find(item => item?.title?.rsdt_text === rsdId);
+                // const meeting = meetings.find(item => item?.title?.rsdt_text === rsdId);
+                const meeting = meetings.find(
+                    item => item?.rsdm_rsdtitle === sectionId && item?.title?.rsdt_text === rsdId
+                );
                 if (meeting) {
                     setMeetingId(meeting.rsdm_id || null);
                     setTitle(meeting.rsdm_title || '');

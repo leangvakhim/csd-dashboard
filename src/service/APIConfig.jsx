@@ -411,7 +411,11 @@ const API_ENDPOINTS = {
     // import announcement
     ImportAnnouncementFile: `${API_BASEURL}/announcement/import`,
     getAnnouncementStudent: `${API_BASEURL}/announcement/student`,
-    DeleteAnnouncementStudentRecord: `${API_BASEURL}/announcement/set-visibility`
+    DeleteAnnouncementStudentRecord: `${API_BASEURL}/announcement/set-visibility`,
+
+    // emails
+    getMail: `${API_BASEURL}/emails`,
+    deleteMail: `${API_BASEURL}/emails/visibility`,
 
 };
 

@@ -66,12 +66,12 @@ const ResearchField = () => {
                 const res = await axios.post(API_ENDPOINTS.createResearch, payload);
                 const createdResearch = res.data.data;
                 await fetchResearchById(createdResearch.rsd_id);
-                await savePageResearch(createdResearch.rsd_id);
+                // await savePageResearch(createdResearch.rsd_id);
                 return createdResearch;
             } else {
                 const res = await axios.post(`${API_ENDPOINTS.updateResearch}/${formData.rsd_id}`, payload);
                 await fetchResearchById(formData.rsd_id);
-                await savePageResearch(formData.rsd_id);
+                // await savePageResearch(formData.rsd_id);
                 return { rsd_id: formData.rsd_id };
             }
 
@@ -88,12 +88,13 @@ const ResearchField = () => {
 
     const saveDescription = async (savedSectionId, savedRsdId) => {
         const descriptions = await researchRef.current?.getDescriptions?.() || [];
+        const filtered = descriptions.filter(desc => parseInt(desc.rsdd_rsdtile) === parseInt(savedSectionId));
 
-        if (descriptions.length > 0 && savedSectionId) {
+        if (filtered.length > 0 && savedSectionId) {
             const existingResponse = await axios.get(`${API_ENDPOINTS.getRsdDescription}?rsdd_rsdtile=${savedSectionId}`);
             const existingItems = existingResponse.data?.data || [];
             const existingIds = existingItems.map(slide => slide.rsdd_id);
-            for (const description of descriptions) {
+            for (const description of filtered) {
 
                 const descriptionPayload = {
                     rsdd_rsdtile: savedSectionId,
@@ -122,12 +123,13 @@ const ResearchField = () => {
 
     const saveProject = async (savedSectionId, savedRsdId) => {
         const projects = await researchRef.current?.getProjects?.() || [];
+        const filtered = projects.filter(desc => parseInt(desc.rsdp_rsdtile) === parseInt(savedSectionId));
 
-        if (projects.length > 0 && savedSectionId) {
+        if (filtered.length > 0 && savedSectionId) {
             const existingResponse = await axios.get(`${API_ENDPOINTS.getRsdProject}?rsdp_rsdtile=${savedSectionId}`);
             const existingItems = existingResponse.data?.data || [];
             const existingIds = existingItems.map(slide => slide.rsdp_id);
-            for (const project of projects) {
+            for (const project of filtered) {
 
                 const projectPayload = {
                     rsdp_rsdtile: savedSectionId,
@@ -154,14 +156,30 @@ const ResearchField = () => {
         }
     };
 
+    const reorderSection = async () => {
+        const researchSection = researchRef.current?.getResearchSections?.() || [];
+
+        const sectionPayload = researchSection.map((section, index) => ({
+            rsdt_id: section.rsdt_id,
+            rsdt_order: index + 1
+        }));
+
+        try {
+            await axios.post(API_ENDPOINTS.updateResearchTitleOrder, sectionPayload);
+        } catch (error) {
+            console.error("❌ Failed to reorder section:", error.response?.data || error.message);
+        }
+    };
+
     const saveMeeting = async (savedSectionId, savedRsdId) => {
         const meetings = await researchRef.current?.getMeetings?.() || [];
+        const filtered = meetings.filter(desc => parseInt(desc.rsdm_rsdtitle) === parseInt(savedSectionId));
 
-        if (meetings.length > 0 && savedSectionId) {
+        if (filtered.length > 0 && savedSectionId) {
             const existingResponse = await axios.get(`${API_ENDPOINTS.getRsdMeeting}?rsdm_rsdtitle=${savedSectionId}`);
             const existingItems = existingResponse.data?.data || [];
             const existingIds = existingItems.map(slide => slide.rsdm_id);
-            for (const meeting of meetings) {
+            for (const meeting of filtered) {
 
                 const meetingtPayload = {
                     rsdm_rsdtitle: savedSectionId,
@@ -209,6 +227,7 @@ const ResearchField = () => {
                 rsdt_text: rsdt_text,
                 rsdt_order: section.rsdt_order,
                 rsdt_type: section.rsdt_type,
+                rsdt_code: section.rsdt_code || `${section.rsdt_type}-${section.rsdt_id || 'new'}`,
                 active: section.active ?? 1,
             }));
 
@@ -217,6 +236,8 @@ const ResearchField = () => {
                     rsdt_text: rsdt_text,
                     research_title: sectionPayload,
                 });
+
+                await reorderSection();
 
                 // Fetch updated section IDs after sync
                 const updatedSectionRes = await axios.get(`${API_ENDPOINTS.getResearchTitle}?rsdt_text=${rsdt_text}`);
@@ -261,7 +282,13 @@ const ResearchField = () => {
                 }
             });
 
-            await saveResearch();
+            // await saveResearch();
+            await saveResearch().then((res) => {
+            const savedId = res?.rsd_id;
+                if (savedId) {
+                    savePageResearch(savedId);
+                }
+            });
 
             Swal.fire({
                 icon: 'success',
