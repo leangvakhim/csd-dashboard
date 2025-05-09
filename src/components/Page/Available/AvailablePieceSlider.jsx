@@ -1,8 +1,21 @@
+<<<<<<< Updated upstream
 import React, { useState } from "react";
+=======
+import React, {
+  useState,
+  forwardRef,
+  useImperativeHandle,
+  useEffect,
+} from "react";
+>>>>>>> Stashed changes
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import MediaLibraryModal from "../../MediaLibraryModal";
 
+<<<<<<< Updated upstream
 const AvailablePieceSlider = () => {
+=======
+const AvailablePieceSlider = forwardRef(({ availableId }, ref) => {
+>>>>>>> Stashed changes
   const [currentSliderId, setCurrentSliderId] = useState(null);
   const [currentField, setCurrentField] = useState("");
   const [isMediaLibraryOpen, setMediaLibraryOpen] = useState(false);
@@ -71,6 +84,156 @@ const AvailablePieceSlider = () => {
     setMediaLibraryOpen(false);
   };
 
+<<<<<<< Updated upstream
+=======
+  const getImageIdByUrl = async (url) => {
+    try {
+      const response = await axios.get(API_ENDPOINTS.getImages);
+      const images = Array.isArray(response.data)
+        ? response.data
+        : response.data.data;
+
+      const matchedImage = images.find((img) => img.image_url === url);
+      return matchedImage?.image_id || null;
+    } catch (error) {
+      console.error("❌ Failed to fetch image ID:", error);
+      return null;
+    }
+  };
+
+  useImperativeHandle(ref, () => ({
+    getSubAvailableSliders: async () => {
+      const updatedSliders = await Promise.all(
+        slider.map(async (slide) => {
+          const imageId = await getImageIdByUrl(slide.image);
+          return {
+            sapd_title: slide.title,
+            sapd_image: imageId,
+            sapd_routepage: slide.routepage,
+            display: slide.display ? 1 : 0,
+            ...(slide.id && !isNaN(Number(slide.id))
+              ? { sapd_id: Number(slide.id) }
+              : {}),
+            sapd_apd: availableId,
+          };
+        })
+      );
+
+      return updatedSliders;
+    },
+  }));
+
+  useEffect(() => {
+    const fetchSliders = async () => {
+      try {
+        const response = await axios.get(API_ENDPOINTS.getSubAvailable);
+        const data = response.data?.data;
+
+        const subservices = Array.isArray(data) ? data : [data];
+
+        if (subservices.length > 0 && availableId) {
+          const validSubservices = subservices.filter(
+            (item) => item.sapd_apd === availableId
+          );
+
+          const formattedData = validSubservices.map((item) => ({
+            id: item.sapd_id.toString(),
+            title: item.sapd_title || "",
+            routepage: item.sapd_routepage || "",
+            image: item.image?.img
+              ? `${API}/storage/uploads/${item.image.img}`
+              : "",
+            display: item.display === 1 || item.display === true,
+          }));
+
+          if (formattedData.length > 0) {
+            setSlider(formattedData);
+          } else {
+            setSlider([
+              {
+                id: "1",
+                title: "available 1",
+                image: "",
+                routepage: "",
+                display: 0,
+              },
+            ]);
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching sliders:", error);
+      }
+    };
+
+    const fetchPages = async () => {
+      try {
+        const response = await axios.get(API_ENDPOINTS.getPage);
+        const page = response.data?.data || [];
+        setPages(page);
+      } catch (error) {
+        console.error("Error fetching sliders:", error);
+      }
+    };
+
+    fetchPages();
+    fetchSliders();
+  }, [availableId]);
+
+  // const handleDeleteSlider = async (sliderId) => {
+  //   if (!window.confirm("Are you sure you want to delete this slider?")) return;
+
+  //   try {
+  //       await axios.put(`${API_ENDPOINTS.deleteSubAvailable}/${sliderId}`);
+  //       setSlider((prevSlider) => prevSlider.filter((item) => item.id !== sliderId));
+  //   } catch (error) {
+  //       console.error('Failed to delete slider:', error);
+  //   }
+  // };
+
+  const handleDeleteSlider = async ({ sliderId }) => {
+    const Swal = (await import("sweetalert2")).default;
+
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "Cancel",
+      customClass: {
+        popup: "text-sm rounded-md",
+        confirmButton:
+          "!bg-red-600 text-white px-4 py-2 rounded hover:!bg-red-700 !mr-2",
+        cancelButton:
+          "!bg-blue-600 text-white px-4 py-2 rounded hover:!bg-blue-700",
+      },
+      buttonsStyling: false,
+    });
+
+    if (result.isConfirmed) {
+      try {
+        await axios.put(`${API_ENDPOINTS.deleteSlider}/${sliderId}`);
+
+        await Swal.fire({
+          icon: "success",
+          title: "Deleted!",
+          text: "The slider has been deleted.",
+          timer: 1000,
+          showConfirmButton: false,
+        });
+        window.location.reload();
+      } catch (error) {
+        console.error("Error toggling visibility:", error);
+        await Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "Something went wrong!",
+        });
+      }
+    }
+  };
+
+>>>>>>> Stashed changes
   return (
     <DragDropContext onDragEnd={onDragEnd}>
       <Droppable droppableId="droppable">
@@ -176,12 +339,32 @@ const AvailablePieceSlider = () => {
                             <label className="block text-xl font-medium leading-6 text-white-900">
                               Route page
                             </label>
+<<<<<<< Updated upstream
                             <div className="mt-2">
                               <input
                                 type="text"
                                 className="block w-full !border-gray-200 border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
                               />
                             </div>
+=======
+                            <select
+                              value={sliders.routepage}
+                              onChange={(e) => {
+                                const updatedSlider = [...slider];
+                                updatedSlider[index].routepage = e.target.value;
+                                setSlider(updatedSlider);
+                              }}
+                              className="mt-2 block w-full border !border-gray-300 rounded-md py-2 pl-2 text-gray-900 shadow-sm focus:ring-2 focus:ring-indigo-500"
+                            >
+                              <option value="">Choose redirect page</option>
+                              {Array.isArray(pages) &&
+                                pages.map((page) => (
+                                  <option key={page.p_id} value={page.p_title}>
+                                    {page.p_title}
+                                  </option>
+                                ))}
+                            </select>
+>>>>>>> Stashed changes
                           </div>
 
                           <div className="flex-non">
@@ -190,7 +373,25 @@ const AvailablePieceSlider = () => {
                             </label>
                             <div className="mt-2">
                               <label class="toggle-switch mt-2">
+<<<<<<< Updated upstream
                                 <input type="checkbox" />
+=======
+                                <input
+                                  checked={
+                                    sliders.display === 1 ||
+                                    sliders.display === true
+                                  }
+                                  onChange={(e) => {
+                                    const updatedSlider = [...slider];
+                                    updatedSlider[index].display = e.target
+                                      .checked
+                                      ? 1
+                                      : 0;
+                                    setSlider(updatedSlider);
+                                  }}
+                                  type="checkbox"
+                                />
+>>>>>>> Stashed changes
                                 <span class="slider"></span>
                               </label>
                             </div>

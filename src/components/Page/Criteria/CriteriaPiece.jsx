@@ -1,7 +1,32 @@
+<<<<<<< Updated upstream
 import React, { useState } from "react";
 import MediaLibraryModal from "../../MediaLibraryModal";
 
 const CriteriaPiece = () => {
+=======
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  forwardRef,
+  useImperativeHandle,
+} from "react";
+import MediaLibraryModal from "../../MediaLibraryModal";
+import JoditEditor from "jodit-react";
+import "jodit/es5/jodit.css";
+import axios from "axios";
+import { API_ENDPOINTS, API } from "../../../service/APIConfig";
+
+const config = {
+  readonly: false, // Set to true for read-only mode
+  height: 400,
+  uploader: {
+    insertImageAsBase64URI: true, // Enable base64 image upload
+  },
+};
+
+const CriteriaPiece = forwardRef(({ sectionId, pageId }, ref) => {
+>>>>>>> Stashed changes
   const [isRotatedButton, setIsRotatedButton] = useState(false);
   const [isMediaLibraryOpen, setMediaLibraryOpen] = useState(false);
   const [selectedImage1, setSelectedImage1] = useState("");
@@ -15,13 +40,163 @@ const CriteriaPiece = () => {
 
   const handleImageSelect = (imageUrl, field) => {
     if (field === "image1") {
-        setSelectedImage1(imageUrl);
+      setSelectedImage1(imageUrl);
     } else if (field === "image2") {
-        setSelectedImage2(imageUrl);
+      setSelectedImage2(imageUrl);
     }
     setMediaLibraryOpen(false);
   };
 
+<<<<<<< Updated upstream
+=======
+  const getImageIdByUrl = async (url) => {
+    try {
+      const response = await axios.get(API_ENDPOINTS.getImages);
+      const images = Array.isArray(response.data)
+        ? response.data
+        : response.data.data;
+
+      const matchedImage = images.find((img) => img.image_url === url);
+      return matchedImage?.image_id || null;
+    } catch (error) {
+      console.error("❌ Failed to fetch image ID:", error);
+      return null;
+    }
+  };
+
+  useImperativeHandle(ref, () => ({
+    getCriterias: async () => {
+      const img1Id = await getImageIdByUrl(selectedImage1);
+      const img2Id = await getImageIdByUrl(selectedImage2);
+
+      return [
+        {
+          gc_id: criteriaId,
+          gc_title: criteriaTitle,
+          gc_tag: criteriaTag,
+          gc_type: criteriaType,
+          gc_img1: img1Id,
+          gc_img2: img2Id,
+          gc_detail: detail,
+          gc_sec: sectionId,
+          page_id: pageId,
+        },
+      ];
+    },
+  }));
+
+  const handleToggleDisplay = async () => {
+    try {
+      const newDisplay = displayCriteria === 1 ? 0 : 1;
+      await axios.post(`${API_ENDPOINTS.updateSection}/${sectionId}`, {
+        sec_id: sectionId,
+        display: newDisplay,
+      });
+      setDisplayCriteria(newDisplay);
+    } catch (error) {
+      console.error("Failed to update display:", error);
+    }
+  };
+
+  useEffect(() => {
+    const fetchCriterias = async () => {
+      try {
+        const response = await axios.get(
+          `${API_ENDPOINTS.getCriteria}?gc_sec=${sectionId}`
+        );
+        const criterias = response.data.data || [];
+        if (criterias.length > 0) {
+          const criteria = criterias.find(
+            (item) => item?.section?.sec_page === pageId
+          );
+          if (criteria) {
+            setCriteriaId(criteria.gc_id || null);
+            setCriteriaTitle(criteria.gc_title || "");
+            setCriteriaTag(criteria.gc_tag || "");
+            setCriteriaType(criteria.gc_type || "");
+            setDetail(criteria.gc_detail || "");
+            setSelectedImage1(
+              criteria.gc_img1
+                ? `${API}/storage/uploads/${criteria.image1.img}`
+                : ""
+            );
+            setSelectedImage2(
+              criteria.gc_img2
+                ? `${API}/storage/uploads/${criteria.image2.img}`
+                : ""
+            );
+          }
+        }
+
+        const sectionRes = await axios.get(
+          `${API_ENDPOINTS.getSection}/${sectionId}`
+        );
+        const sectionData = sectionRes.data.data;
+        setDisplayCriteria(sectionData.display || 0);
+      } catch (error) {
+        console.error("Failed to fetch criterias:", error);
+      }
+    };
+
+    if (sectionId && pageId) {
+      fetchCriterias();
+    }
+  }, [sectionId]);
+
+  // const handleDeleteSection = async () => {
+  //   if (!window.confirm("Are you sure you want to delete this section?")) return;
+
+  //   try {
+  //       await axios.put(`${API_ENDPOINTS.deleteSection}/${sectionId}`);
+  //       window.location.reload();
+  //   } catch (error) {
+  //       console.error('Failed to delete section:', error);
+  //   }
+  // };
+
+  const handleDeleteSection = async () => {
+    const Swal = (await import("sweetalert2")).default;
+
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "Cancel",
+      customClass: {
+        popup: "text-sm rounded-md",
+        confirmButton:
+          "!bg-red-600 text-white px-4 py-2 rounded hover:!bg-red-700 !mr-2",
+        cancelButton:
+          "!bg-blue-600 text-white px-4 py-2 rounded hover:!bg-blue-700",
+      },
+      buttonsStyling: false,
+    });
+
+    if (result.isConfirmed) {
+      try {
+        await axios.put(`${API_ENDPOINTS.deleteSection}/${sectionId}`);
+
+        await Swal.fire({
+          icon: "success",
+          title: "Deleted!",
+          text: "The section has been deleted.",
+          timer: 1000,
+          showConfirmButton: false,
+        });
+        window.location.reload();
+      } catch (error) {
+        console.error("Error toggling visibility:", error);
+        await Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "Something went wrong!",
+        });
+      }
+    }
+  };
+>>>>>>> Stashed changes
   return (
     <div className="grid grid-cols-1 gap-4 ">
       <details className="group [&_summary::-webkit-details-marker]:hidden rounded-lg">
@@ -97,7 +272,15 @@ const CriteriaPiece = () => {
             </label>
             <div className="mt-2">
               <label class="toggle-switch mt-2">
+<<<<<<< Updated upstream
                 <input type="checkbox" />
+=======
+                <input
+                  checked={displayCriteria === 1}
+                  onChange={handleToggleDisplay}
+                  type="checkbox"
+                />
+>>>>>>> Stashed changes
                 <span class="slider"></span>
               </label>
             </div>
@@ -113,6 +296,27 @@ const CriteriaPiece = () => {
               <textarea className="!border-gray-300 h-60 block w-full rounded-md border-0 py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-2xl sm:leading-6"></textarea>
             </div>
           </div>
+<<<<<<< Updated upstream
+=======
+
+          <div className="flex-1">
+            <label
+              for="countries"
+              class="block text-xl font-medium leading-6 text-white-900"
+            >
+              Type
+            </label>
+            <select
+              value={criteriaType}
+              onChange={(e) => setCriteriaType(e.target.value)}
+              class="mt-2 !border-gray-300 block w-full border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
+            >
+              <option value="">Choose side display</option>
+              <option value="1">left images</option>
+              <option value="2">right images</option>
+            </select>
+          </div>
+>>>>>>> Stashed changes
         </div>
         <div className="grid grid-cols-2 gap-4 px-4 py-2 mb-1">
           <div className="flex-1">
@@ -192,10 +396,10 @@ const CriteriaPiece = () => {
             </div>
           </div>
           {isMediaLibraryOpen && currentField === "image1" && (
-              <MediaLibraryModal
-                  onSelect={(url) => handleImageSelect(url, "image1")}
-                  onClose={() => setMediaLibraryOpen(false)}
-              />
+            <MediaLibraryModal
+              onSelect={(url) => handleImageSelect(url, "image1")}
+              onClose={() => setMediaLibraryOpen(false)}
+            />
           )}
           <div className="flex-1">
             <label className="block text-xl font-medium leading-6 text-white-900">
@@ -274,10 +478,10 @@ const CriteriaPiece = () => {
             </div>
           </div>
           {isMediaLibraryOpen && currentField === "image2" && (
-              <MediaLibraryModal
-                  onSelect={(url) => handleImageSelect(url, "image2")}
-                  onClose={() => setMediaLibraryOpen(false)}
-              />
+            <MediaLibraryModal
+              onSelect={(url) => handleImageSelect(url, "image2")}
+              onClose={() => setMediaLibraryOpen(false)}
+            />
           )}
         </div>
       </details>

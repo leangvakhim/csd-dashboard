@@ -1,14 +1,38 @@
+<<<<<<< Updated upstream
 import React, { useState } from "react";
 import CsdPieceOne from "./CsdPieceOne";
+=======
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  forwardRef,
+  useImperativeHandle,
+} from "react";
+import CsdPieceSlider from "./CsdPieceSlider";
+>>>>>>> Stashed changes
 import AddOn from "./AddOn";
 import MediaLibraryModal from "../../MediaLibraryModal";
 
+<<<<<<< Updated upstream
 const CsdPiece = () => {
+=======
+const CsdPiece = forwardRef(({ sectionId, pageId }, ref) => {
+>>>>>>> Stashed changes
   const [isRotatedButton1, setIsRotatedButton1] = useState(false);
   const [isMediaLibraryOpen, setMediaLibraryOpen] = useState(false);
   const [selectedImage1, setSelectedImage1] = useState("");
   const [selectedImage2, setSelectedImage2] = useState("");
   const [currentField, setCurrentField] = useState("");
+<<<<<<< Updated upstream
+=======
+  const [csdId, setCsdId] = useState(0);
+  const [csdTitle, setCsdTitle] = useState("");
+  const [csdSubTitle, setCsdSubTitle] = useState("");
+  const [displayCSD, setDisplayCSD] = useState(0);
+  const subserviceRef = useRef();
+  const addOnRef = useRef();
+>>>>>>> Stashed changes
 
   const openMediaLibrary = (field) => {
     setCurrentField(field);
@@ -17,13 +41,206 @@ const CsdPiece = () => {
 
   const handleImageSelect = (imageUrl, field) => {
     if (field === "image1") {
-        setSelectedImage1(imageUrl);
+      setSelectedImage1(imageUrl);
     } else if (field === "image2") {
-        setSelectedImage2(imageUrl);
+      setSelectedImage2(imageUrl);
     }
     setMediaLibraryOpen(false);
   };
 
+<<<<<<< Updated upstream
+=======
+  const getImageIdByUrl = async (url) => {
+    try {
+      const response = await axios.get(API_ENDPOINTS.getImages);
+      const images = Array.isArray(response.data)
+        ? response.data
+        : response.data.data;
+
+      const matchedImage = images.find((img) => img.image_url === url);
+      return matchedImage?.image_id || null;
+    } catch (error) {
+      console.error("❌ Failed to fetch image ID:", error);
+      return null;
+    }
+  };
+
+  useImperativeHandle(ref, () => ({
+    getCSDs: async () => {
+      let textId;
+
+      try {
+        const response = await axios.get(
+          `${API_ENDPOINTS.getSpecialization}?ras_sec=${sectionId}`
+        );
+        const csd = response.data.data || [];
+        const currentCSD = csd.find(
+          (f) =>
+            f.section.sec_page === pageId &&
+            f.ras_sec === sectionId &&
+            f.text?.text_type === 7
+        );
+        if (currentCSD?.text?.text_id) {
+          textId = currentCSD.text.text_id;
+        }
+      } catch (error) {
+        console.error("Failed to check existing facility:", error);
+      }
+
+      if (textId) {
+        const updatePayload = {
+          text_id: textId,
+          title: csdTitle,
+          desc: csdSubTitle,
+          text_type: 7,
+          text_sec: sectionId,
+        };
+        const textRes = await axios.post(
+          `${API_ENDPOINTS.updateText}/${textId}`,
+          { texts: updatePayload }
+        );
+        textId = textRes.data.data?.text_id;
+      } else {
+        const textPayload = {
+          title: csdTitle,
+          desc: csdSubTitle,
+          text_type: 7,
+          text_sec: sectionId,
+        };
+        const textRes = await axios.post(`${API_ENDPOINTS.createText}`, {
+          texts: [textPayload],
+        });
+        textId = textRes.data.data?.text_id;
+      }
+
+      const imageId1 = await getImageIdByUrl(selectedImage1);
+      const imageId2 = await getImageIdByUrl(selectedImage2);
+
+      const data = {
+        ras_id: csdId,
+        ras_sec: sectionId,
+        ras_text: textId,
+        ras_img1: imageId1,
+        ras_img2: imageId2,
+        page_id: pageId,
+        subservices: await subserviceRef.current?.getSubserviceSlidersCSD(),
+        rasons: await addOnRef.current?.getAddOnCSD(),
+      };
+
+      return [data];
+    },
+  }));
+
+  const handleToggleDisplay = async () => {
+    try {
+      const newDisplay = displayCSD === 1 ? 0 : 1;
+      await axios.post(`${API_ENDPOINTS.updateSection}/${sectionId}`, {
+        sec_id: sectionId,
+        display: newDisplay,
+      });
+      setDisplayCSD(newDisplay);
+    } catch (error) {
+      console.error("Failed to update display:", error);
+    }
+  };
+
+  // const handleDeleteSection = async () => {
+  //   if (!window.confirm("Are you sure you want to delete this section?")) return;
+
+  //   try {
+  //       await axios.put(`${API_ENDPOINTS.deleteSection}/${sectionId}`);
+  //       window.location.reload();
+  //   } catch (error) {
+  //       console.error('Failed to delete section:', error);
+  //   }
+  // };
+  const handleDeleteSection = async () => {
+    const Swal = (await import("sweetalert2")).default;
+
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "Cancel",
+      customClass: {
+        popup: "text-sm rounded-md",
+        confirmButton:
+          "!bg-red-600 text-white px-4 py-2 rounded hover:!bg-red-700 !mr-2",
+        cancelButton:
+          "!bg-blue-600 text-white px-4 py-2 rounded hover:!bg-blue-700",
+      },
+      buttonsStyling: false,
+    });
+
+    if (result.isConfirmed) {
+      try {
+        await axios.put(`${API_ENDPOINTS.deleteSection}/${sectionId}`);
+
+        await Swal.fire({
+          icon: "success",
+          title: "Deleted!",
+          text: "The section has been deleted.",
+          timer: 1000,
+          showConfirmButton: false,
+        });
+        window.location.reload();
+      } catch (error) {
+        console.error("Error toggling visibility:", error);
+        await Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "Something went wrong!",
+        });
+      }
+    }
+  };
+
+  useEffect(() => {
+    const fetchCSDs = async () => {
+      try {
+        const response = await axios.get(
+          `${API_ENDPOINTS.getSpecialization}?ras_sec=${sectionId}`
+        );
+        const csds = response.data.data || [];
+        if (csds.length > 0) {
+          const csd = csds.find(
+            (item) =>
+              item.section.sec_page === pageId &&
+              item.ras_sec === sectionId &&
+              item.text?.text_type === 7
+          );
+
+          if (csd) {
+            setCsdId(csd.ras_id || null);
+            setCsdTitle(csd.text?.title || "");
+            setCsdSubTitle(csd.text?.desc || "");
+            setSelectedImage1(
+              csd.ras_img1 ? `${API}/storage/uploads/${csd.image1.img}` : ""
+            );
+            setSelectedImage2(
+              csd.ras_img2 ? `${API}/storage/uploads/${csd.image2.img}` : ""
+            );
+          }
+        }
+
+        const sectionRes = await axios.get(
+          `${API_ENDPOINTS.getSection}/${sectionId}`
+        );
+        const sectionData = sectionRes.data.data;
+        setDisplayCSD(sectionData.display || 0);
+      } catch (error) {
+        console.error("Failed to fetch facilities:", error);
+      }
+    };
+
+    if (sectionId && pageId) {
+      fetchCSDs();
+    }
+  }, [sectionId]);
+
+>>>>>>> Stashed changes
   return (
     <div className="grid grid-cols-1 gap-4 ">
       <details className="group [&_summary::-webkit-details-marker]:hidden rounded-lg">
@@ -99,7 +316,15 @@ const CsdPiece = () => {
             </label>
             <div className="mt-2">
               <label class="toggle-switch mt-2">
+<<<<<<< Updated upstream
                 <input type="checkbox" />
+=======
+                <input
+                  checked={displayCSD === 1}
+                  onChange={handleToggleDisplay}
+                  type="checkbox"
+                />
+>>>>>>> Stashed changes
                 <span class="slider"></span>
               </label>
             </div>
@@ -112,11 +337,23 @@ const CsdPiece = () => {
               Subtitle
             </label>
             <div className="mt-2">
+<<<<<<< Updated upstream
               <textarea className="!border-gray-300 h-60 block w-full rounded-md border-0 py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-2xl sm:leading-6"></textarea>
             </div>
           </div>
           <div className="flex-1 mt-8">
             <AddOn />
+=======
+              <textarea
+                value={csdSubTitle}
+                onChange={(e) => setCsdSubTitle(e.target.value)}
+                className="!border-gray-300 h-60 block w-full rounded-md border-0 py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-2xl sm:leading-6"
+              ></textarea>
+            </div>
+          </div>
+          <div className="flex-1 mt-8">
+            <AddOn ref={addOnRef} csdId={csdId} />
+>>>>>>> Stashed changes
           </div>
         </div>
 
@@ -199,10 +436,10 @@ const CsdPiece = () => {
             </div>
           </div>
           {isMediaLibraryOpen && currentField === "image1" && (
-              <MediaLibraryModal
-                  onSelect={(url) => handleImageSelect(url, "image1")}
-                  onClose={() => setMediaLibraryOpen(false)}
-              />
+            <MediaLibraryModal
+              onSelect={(url) => handleImageSelect(url, "image1")}
+              onClose={() => setMediaLibraryOpen(false)}
+            />
           )}
           <div className="flex-1">
             <label className="block text-xl font-medium leading-6 text-white-900">
@@ -281,14 +518,18 @@ const CsdPiece = () => {
             </div>
           </div>
           {isMediaLibraryOpen && currentField === "image2" && (
-              <MediaLibraryModal
-                  onSelect={(url) => handleImageSelect(url, "image2")}
-                  onClose={() => setMediaLibraryOpen(false)}
-              />
+            <MediaLibraryModal
+              onSelect={(url) => handleImageSelect(url, "image2")}
+              onClose={() => setMediaLibraryOpen(false)}
+            />
           )}
         </div>
         <div className="mb-4">
+<<<<<<< Updated upstream
           <CsdPieceOne />
+=======
+          <CsdPieceSlider ref={subserviceRef} csdId={csdId} />
+>>>>>>> Stashed changes
         </div>
       </details>
     </div>

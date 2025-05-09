@@ -1,8 +1,142 @@
+<<<<<<< Updated upstream
 import React, { useState } from "react";
+=======
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  forwardRef,
+  useImperativeHandle,
+} from "react";
+>>>>>>> Stashed changes
 import AvailablePieceSlider from "../Available/AvailablePieceSlider";
 
+<<<<<<< Updated upstream
 const AvailablePiece = () => {
   const [isRotatedButton1, setIsRotatedButton1] = useState(false);
+=======
+const AvailablePiece = forwardRef(({ sectionId, pageId }, ref) => {
+  const [isRotatedButton1, setIsRotatedButton1] = useState(false);
+  const [availabletitle, setAvailableTitle] = useState("");
+  const [availableId, setAvailableId] = useState(0);
+  const [displayAvailable, setDisplayAvailable] = useState(0);
+  const subAvailableRef = useRef();
+
+  useImperativeHandle(ref, () => ({
+    getAvailables: async () => {
+      const data = {
+        apd_id: availableId,
+        apd_sec: sectionId,
+        apd_title: availabletitle,
+        page_id: pageId,
+        subavailables: await subAvailableRef.current?.getSubAvailableSliders(),
+      };
+
+      return [data];
+    },
+  }));
+
+  const handleToggleDisplay = async () => {
+    try {
+      const newDisplay = displayAvailable === 1 ? 0 : 1;
+      await axios.post(`${API_ENDPOINTS.updateSection}/${sectionId}`, {
+        sec_id: sectionId,
+        display: newDisplay,
+      });
+      setDisplayAvailable(newDisplay);
+    } catch (error) {
+      console.error("Failed to update display:", error);
+    }
+  };
+
+  // const handleDeleteSection = async () => {
+  //   if (!window.confirm("Are you sure you want to delete this section?")) return;
+
+  //   try {
+  //       await axios.put(`${API_ENDPOINTS.deleteSection}/${sectionId}`);
+  //       window.location.reload();
+  //   } catch (error) {
+  //       console.error('Failed to delete section:', error);
+  //   }
+  // };
+
+  useEffect(() => {
+    const fetchAvailables = async () => {
+      try {
+        const response = await axios.get(
+          `${API_ENDPOINTS.getAvailable}?apd_sec=${sectionId}`
+        );
+        const availables = response.data.data || [];
+        if (availables.length > 0) {
+          const available = availables.find(
+            (item) =>
+              item.section.sec_page === pageId && item.apd_sec === sectionId
+          );
+
+          if (available) {
+            setAvailableId(available.apd_id || null);
+            setAvailableTitle(available.apd_title || "");
+          }
+        }
+
+        const sectionRes = await axios.get(
+          `${API_ENDPOINTS.getSection}/${sectionId}`
+        );
+        const sectionData = sectionRes.data.data;
+        setDisplayAvailable(sectionData.display || 0);
+      } catch (error) {
+        console.error("Failed to fetch facilities:", error);
+      }
+    };
+
+    if (sectionId && pageId) {
+      fetchAvailables();
+    }
+  }, [sectionId]);
+>>>>>>> Stashed changes
+
+  const handleDeleteSection = async () => {
+    const Swal = (await import("sweetalert2")).default;
+
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "Cancel",
+      customClass: {
+        popup: "text-sm rounded-md",
+        confirmButton:
+          "!bg-red-600 text-white px-4 py-2 rounded hover:!bg-red-700 !mr-2",
+        cancelButton:
+          "!bg-blue-600 text-white px-4 py-2 rounded hover:!bg-blue-700",
+      },
+      buttonsStyling: false,
+    });
+
+    if (result.isConfirmed) {
+      try {
+        await axios.put(`${API_ENDPOINTS.deleteSection}/${sectionId}`);
+
+        await Swal.fire({
+          icon: "success",
+          title: "Deleted!",
+          text: "The section has been deleted.",
+          timer: 1000,
+          showConfirmButton: false,
+        });
+        window.location.reload();
+      } catch (error) {
+        console.error("Error toggling visibility:", error);
+        await Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "Something went wrong!",
+        });
+      }
+    }
+  };
 
   return (
     <div className="grid grid-cols-1 gap-4 ">
@@ -80,14 +214,31 @@ const AvailablePiece = () => {
             </label>
             <div className="mt-2">
               <label class="toggle-switch mt-2">
+<<<<<<< Updated upstream
                 <input type="checkbox" />
+=======
+                <input
+                  checked={displayAvailable === 1}
+                  onChange={handleToggleDisplay}
+                  type="checkbox"
+                />
+>>>>>>> Stashed changes
                 <span class="slider"></span>
               </label>
             </div>
           </div>
         </div>
+<<<<<<< Updated upstream
 
         <AvailablePieceSlider></AvailablePieceSlider>
+=======
+        <div className="mb-3">
+          <AvailablePieceSlider
+            ref={subAvailableRef}
+            availableId={availableId}
+          />
+        </div>
+>>>>>>> Stashed changes
       </details>
     </div>
   );

@@ -50,6 +50,125 @@ const ImportantPieceSlider = () => {
     setSlider(newSlider);
   };
 
+<<<<<<< Updated upstream
+=======
+  useImperativeHandle(ref, () => ({
+    getSubImportantSliders: async () => {
+      const updatedSliders = await Promise.all(
+          slider.map(async (slide) => {
+            return {
+                sidd_title: slide.title,
+                sidd_subtitle: slide.subtitle,
+                sidd_tag: slide.tag,
+                sidd_date: slide.date,
+                display: slide.display ? 1 : 0,
+                ...(slide.id && !isNaN(Number(slide.id)) ? { sidd_id: Number(slide.id) } : {}),
+                sidd_idd: importantId,
+            };
+          })
+        );
+
+        return updatedSliders;
+      },
+  }));
+
+  useEffect(() => {
+      const fetchSliders = async () => {
+      try {
+          const response = await axios.get(API_ENDPOINTS?.getSubImportant);
+          const data = response.data?.data;
+
+          const subservices = Array.isArray(data) ? data : [data];
+
+          if (subservices.length > 0 && importantId) {
+          const validSubservices = subservices.filter(item => item.sidd_idd === importantId);
+
+
+          const formattedData = validSubservices.map(item => ({
+            id: item.sidd_id.toString(),
+            title: item.sidd_title || '',
+            subtitle: item.sidd_subtitle || '',
+            tag: item.sidd_tag || '',
+            date: item.sidd_date ? item.sidd_date.slice(0, 10) : null,
+            display: item.display === 1
+          }));
+
+          if (formattedData.length > 0) {
+              setSlider(formattedData);
+          } else {
+              setSlider([{
+                id: "1",
+                title: "important 1",
+                subtitle: "",
+                tag: "",
+                date: null,
+                display: 0
+              }]);
+          }
+          }
+      } catch (error) {
+          console.error('Error fetching sliders:', error);
+      }
+      };
+
+      fetchSliders();
+  }, [importantId]);
+
+  // const handleDeleteSlider = async (sliderId) => {
+  //     if (!window.confirm("Are you sure you want to delete this slider?")) return;
+
+  //     try {
+  //         await axios.put(`${API_ENDPOINTS.deleteSubImportant}/${sliderId}`);
+  //         setSlider((prevSlider) => prevSlider.filter((item) => item.id !== sliderId));
+  //     } catch (error) {
+  //         console.error('Failed to delete slider:', error);
+  //     }
+  // };
+
+   const handleDeleteSlider = async ({ sliderId }) => {
+      const Swal = (await import("sweetalert2")).default;
+  
+      const result = await Swal.fire({
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Yes, delete it!",
+        cancelButtonText: "Cancel",
+        customClass: {
+          popup: "text-sm rounded-md",
+          confirmButton:
+            "!bg-red-600 text-white px-4 py-2 rounded hover:!bg-red-700 !mr-2",
+          cancelButton:
+            "!bg-blue-600 text-white px-4 py-2 rounded hover:!bg-blue-700",
+        },
+        buttonsStyling: false,
+      });
+  
+      if (result.isConfirmed) {
+        try {
+          await axios.put(`${API_ENDPOINTS.deleteSlider}/${sliderId}`);
+  
+          await Swal.fire({
+            icon: "success",
+            title: "Deleted!",
+            text: "The slider has been deleted.",
+            timer: 1000,
+            showConfirmButton: false,
+          });
+          window.location.reload();
+        } catch (error) {
+          console.error("Error toggling visibility:", error);
+          await Swal.fire({
+            icon: "error",
+            title: "Oops...",
+            text: "Something went wrong!",
+          });
+        }
+      }
+    };
+
+>>>>>>> Stashed changes
   return (
     <DragDropContext onDragEnd={onDragEnd}>
       <Droppable droppableId="droppable">

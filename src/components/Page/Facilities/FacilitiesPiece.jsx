@@ -1,11 +1,33 @@
+<<<<<<< Updated upstream
 import React, { useState } from "react";
+=======
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  forwardRef,
+  useImperativeHandle,
+} from "react";
+>>>>>>> Stashed changes
 import MediaLibraryModal from "../../MediaLibraryModal";
 import FacilitiesPieceSlider from "../Facilities/FacilitiesPieceSlider";
 
+<<<<<<< Updated upstream
 const FacilitiesPiece = () => {
   const [isRotatedButton1, setIsRotatedButton1] = useState(false);
   const [isMediaLibraryOpen, setMediaLibraryOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState("");
+=======
+const FacilitiesPiece = forwardRef(({ sectionId, pageId }, ref) => {
+  const [isRotatedButton1, setIsRotatedButton1] = useState(false);
+  const [isMediaLibraryOpen, setMediaLibraryOpen] = useState(false);
+  const [selectedImage, setSelectedImage] = useState("");
+  const [afId, setAfId] = useState(0);
+  const [afTitle, setAfTitle] = useState("");
+  const [afSubTitle, setAfSubTitle] = useState("");
+  const [displayFacilities, setDisplayFacilities] = useState(0);
+  const subserviceRef = useRef();
+>>>>>>> Stashed changes
 
   const openMediaLibrary = () => {
     setMediaLibraryOpen(true);
@@ -18,6 +40,195 @@ const FacilitiesPiece = () => {
     setMediaLibraryOpen(false);
   };
 
+<<<<<<< Updated upstream
+=======
+  const getImageIdByUrl = async (url) => {
+    try {
+      const response = await axios.get(API_ENDPOINTS.getImages);
+      const images = Array.isArray(response.data)
+        ? response.data
+        : response.data.data;
+
+      const matchedImage = images.find((img) => img.image_url === url);
+      return matchedImage?.image_id || null;
+    } catch (error) {
+      console.error("❌ Failed to fetch image ID:", error);
+      return null;
+    }
+  };
+
+  useImperativeHandle(ref, () => ({
+    getFacilities: async () => {
+      let textId;
+
+      try {
+        const response = await axios.get(
+          `${API_ENDPOINTS.getAcadFacilities}?af_sec=${sectionId}`
+        );
+        const facilities = response.data.data || [];
+        const currentFacility = facilities.find(
+          (f) =>
+            f.section.sec_page === pageId &&
+            f.af_sec === sectionId &&
+            f.text?.text_type === 3
+        );
+        if (currentFacility?.text?.text_id) {
+          textId = currentFacility.text.text_id;
+        }
+      } catch (error) {
+        console.error("Failed to check existing facility:", error);
+      }
+
+      if (textId) {
+        const updatePayload = {
+          text_id: textId,
+          title: afTitle,
+          desc: afSubTitle,
+          text_type: 3,
+          text_sec: sectionId,
+        };
+        const textRes = await axios.post(
+          `${API_ENDPOINTS.updateText}/${textId}`,
+          { texts: updatePayload }
+        );
+        textId = textRes.data.data?.text_id;
+      } else {
+        const textPayload = {
+          title: afTitle,
+          desc: afSubTitle,
+          text_type: 3,
+          text_sec: sectionId,
+        };
+        const textRes = await axios.post(`${API_ENDPOINTS.createText}`, {
+          texts: [textPayload],
+        });
+        textId = textRes.data.data?.text_id;
+      }
+
+      const imageId = await getImageIdByUrl(selectedImage);
+
+      const data = {
+        af_id: afId,
+        af_sec: sectionId,
+        af_text: textId,
+        af_img: imageId,
+        page_id: pageId,
+        subservices: await subserviceRef.current?.getSubserviceSliders(),
+      };
+
+      return [data];
+    },
+  }));
+
+  const handleToggleDisplay = async () => {
+    try {
+      const newDisplay = displayFacilities === 1 ? 0 : 1;
+      await axios.post(`${API_ENDPOINTS.updateSection}/${sectionId}`, {
+        sec_id: sectionId,
+        display: newDisplay,
+      });
+      setDisplayFacilities(newDisplay);
+    } catch (error) {
+      console.error("Failed to update display:", error);
+    }
+  };
+
+  // const handleDeleteSection = async () => {
+  //   if (!window.confirm("Are you sure you want to delete this section?")) return;
+
+  //   try {
+  //       await axios.put(`${API_ENDPOINTS.deleteSection}/${sectionId}`);
+  //       window.location.reload();
+  //   } catch (error) {
+  //       console.error('Failed to delete section:', error);
+  //   }
+  // };
+
+  useEffect(() => {
+    const fetchFacitlies = async () => {
+      try {
+        const response = await axios.get(
+          `${API_ENDPOINTS.getAcadFacilities}?af_sec=${sectionId}`
+        );
+        const acadfacilities = response.data.data || [];
+        if (acadfacilities.length > 0) {
+          const acadfacility = acadfacilities.find(
+            (item) =>
+              item.section.sec_page === pageId &&
+              item.af_sec === sectionId &&
+              item.text?.text_type === 3
+          );
+
+          if (acadfacility) {
+            setAfId(acadfacility.af_id || null);
+            setAfTitle(acadfacility.text?.title || "");
+            setAfSubTitle(acadfacility.text?.desc || "");
+            setSelectedImage(
+              acadfacility.af_img
+                ? `${API}/storage/uploads/${acadfacility.image.img}`
+                : ""
+            );
+          }
+        }
+
+        const sectionRes = await axios.get(
+          `${API_ENDPOINTS.getSection}/${sectionId}`
+        );
+        const sectionData = sectionRes.data.data;
+        setDisplayFacilities(sectionData.display || 0);
+      } catch (error) {
+        console.error("Failed to fetch facilities:", error);
+      }
+    };
+
+    if (sectionId && pageId) {
+      fetchFacitlies();
+    }
+  }, [sectionId]);
+  const handleDeleteSection = async () => {
+    const Swal = (await import("sweetalert2")).default;
+
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "Cancel",
+      customClass: {
+        popup: "text-sm rounded-md",
+        confirmButton:
+          "!bg-red-600 text-white px-4 py-2 rounded hover:!bg-red-700 !mr-2",
+        cancelButton:
+          "!bg-blue-600 text-white px-4 py-2 rounded hover:!bg-blue-700",
+      },
+      buttonsStyling: false,
+    });
+
+    if (result.isConfirmed) {
+      try {
+        await axios.put(`${API_ENDPOINTS.deleteSection}/${sectionId}`);
+
+        await Swal.fire({
+          icon: "success",
+          title: "Deleted!",
+          text: "The section has been deleted.",
+          timer: 1000,
+          showConfirmButton: false,
+        });
+        window.location.reload();
+      } catch (error) {
+        console.error("Error toggling visibility:", error);
+        await Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "Something went wrong!",
+        });
+      }
+    }
+  };
+
+>>>>>>> Stashed changes
   return (
     <div className="grid grid-cols-1 gap-4 ">
       <details className="group [&_summary::-webkit-details-marker]:hidden rounded-lg">
@@ -107,7 +318,15 @@ const FacilitiesPiece = () => {
               Subtitle
             </label>
             <div className="mt-2">
+<<<<<<< Updated upstream
               <textarea className="!border-gray-300 h-60 block w-full rounded-md border-0 py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-2xl sm:leading-6"></textarea>
+=======
+              <textarea
+                value={afSubTitle}
+                onChange={(e) => setAfSubTitle(e.target.value)}
+                className="!border-gray-300 h-60 block w-full rounded-md border-0 py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-2xl sm:leading-6"
+              ></textarea>
+>>>>>>> Stashed changes
             </div>
           </div>
           <div className="flex-1">
@@ -193,7 +412,13 @@ const FacilitiesPiece = () => {
             />
           )}
         </div>
+<<<<<<< Updated upstream
         <FacilitiesPieceSlider></FacilitiesPieceSlider>
+=======
+        <div className="mb-3">
+          <FacilitiesPieceSlider ref={subserviceRef} facilityId={afId} />
+        </div>
+>>>>>>> Stashed changes
       </details>
     </div>
   );

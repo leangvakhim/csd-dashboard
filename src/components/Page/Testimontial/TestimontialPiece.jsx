@@ -1,7 +1,136 @@
+<<<<<<< Updated upstream
 import React, { useState } from "react";
 
 const TestimonialPiece = () => {
   const [isRotatedButton1, setIsRotatedButton1] = useState(false);
+=======
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  forwardRef,
+  useImperativeHandle,
+} from "react";
+import axios from "axios";
+import { API_ENDPOINTS } from "../../../service/APIConfig";
+
+const TestimonialPiece = forwardRef(({ sectionId, pageId }, ref) => {
+  const [isRotatedButton1, setIsRotatedButton1] = useState(false);
+  const [tId, setTId] = useState("");
+  const [title, setTitle] = useState("");
+  const [displayTestimonial, setDisplayTestimonial] = useState(0);
+
+  useEffect(() => {
+    const fetchTestimonials = async () => {
+      try {
+        const response = await axios.get(
+          `${API_ENDPOINTS.getTestimonial}?t_sec=${sectionId}`
+        );
+        const testimonials = response.data.data || [];
+        if (testimonials.length > 0) {
+          const testimonial = testimonials.find(
+            (item) => item?.section?.sec_page === pageId
+          );
+          if (testimonial) {
+            setTId(testimonial.t_id || null);
+            setTitle(testimonial.t_title || "");
+          }
+        }
+
+        const sectionRes = await axios.get(
+          `${API_ENDPOINTS.getSection}/${sectionId}`
+        );
+        const sectionData = sectionRes.data.data;
+        setDisplayTestimonial(sectionData.display || 0);
+      } catch (error) {
+        console.error("Failed to fetch informtaion:", error);
+      }
+    };
+
+    if (sectionId && pageId) {
+      fetchTestimonials();
+    }
+  }, [sectionId]);
+
+  useImperativeHandle(ref, () => ({
+    getTestimonials: async () => {
+      return [
+        {
+          t_id: tId,
+          t_title: title,
+          t_sec: sectionId,
+          page_id: pageId,
+        },
+      ];
+    },
+  }));
+
+  const handleToggleDisplay = async () => {
+    try {
+      const newDisplay = displayTestimonial === 1 ? 0 : 1;
+      await axios.post(`${API_ENDPOINTS.updateSection}/${sectionId}`, {
+        sec_id: sectionId,
+        display: newDisplay,
+      });
+      setDisplayTestimonial(newDisplay);
+    } catch (error) {
+      console.error("Failed to update display:", error);
+    }
+  };
+
+  // const handleDeleteSection = async () => {
+  //   if (!window.confirm("Are you sure you want to delete this section?")) return;
+
+  //   try {
+  //       await axios.put(`${API_ENDPOINTS.deleteSection}/${sectionId}`);
+  //       window.location.reload();
+  //   } catch (error) {
+  //       console.error('Failed to delete section:', error);
+  //   }
+  // };
+  const handleDeleteSection = async () => {
+    const Swal = (await import("sweetalert2")).default;
+
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "Cancel",
+      customClass: {
+        popup: "text-sm rounded-md",
+        confirmButton:
+          "!bg-red-600 text-white px-4 py-2 rounded hover:!bg-red-700 !mr-2",
+        cancelButton:
+          "!bg-blue-600 text-white px-4 py-2 rounded hover:!bg-blue-700",
+      },
+      buttonsStyling: false,
+    });
+
+    if (result.isConfirmed) {
+      try {
+        await axios.put(`${API_ENDPOINTS.deleteSection}/${sectionId}`);
+
+        await Swal.fire({
+          icon: "success",
+          title: "Deleted!",
+          text: "The section has been deleted.",
+          timer: 1000,
+          showConfirmButton: false,
+        });
+        window.location.reload();
+      } catch (error) {
+        console.error("Error toggling visibility:", error);
+        await Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "Something went wrong!",
+        });
+      }
+    }
+  };
+>>>>>>> Stashed changes
 
   return (
     <div className="grid grid-cols-1 gap-4 ">
@@ -79,7 +208,15 @@ const TestimonialPiece = () => {
             </label>
             <div className="mt-2">
               <label class="toggle-switch mt-2">
+<<<<<<< Updated upstream
                 <input type="checkbox" />
+=======
+                <input
+                  type="checkbox"
+                  checked={displayTestimonial === 1}
+                  onChange={handleToggleDisplay}
+                />
+>>>>>>> Stashed changes
                 <span class="slider"></span>
               </label>
             </div>

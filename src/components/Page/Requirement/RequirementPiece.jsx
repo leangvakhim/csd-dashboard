@@ -1,7 +1,32 @@
+<<<<<<< Updated upstream
 import React, { useState } from "react";
 import MediaLibraryModal from "../../MediaLibraryModal";
 
 const RequirementPiece = () => {
+=======
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  forwardRef,
+  useImperativeHandle,
+} from "react";
+import MediaLibraryModal from "../../MediaLibraryModal";
+import JoditEditor from "jodit-react";
+import "jodit/es5/jodit.css";
+import axios from "axios";
+import { API_ENDPOINTS, API } from "../../../service/APIConfig";
+
+const config = {
+  readonly: false, // Set to true for read-only mode
+  height: 400,
+  uploader: {
+    insertImageAsBase64URI: true, // Enable base64 image upload
+  },
+};
+
+const RequirementPiece = forwardRef(({ sectionId, pageId }, ref) => {
+>>>>>>> Stashed changes
   const [isRotatedButton1, setIsRotatedButton1] = useState(false);
   const [isMediaLibraryOpen, setMediaLibraryOpen] = useState(false);
   const [selectedImage1, setSelectedImage1] = useState("");
@@ -22,6 +47,200 @@ const RequirementPiece = () => {
     setMediaLibraryOpen(false);
   };
 
+<<<<<<< Updated upstream
+=======
+  const getImageIdByUrl = async (url) => {
+    try {
+      const response = await axios.get(API_ENDPOINTS.getImages);
+      const images = Array.isArray(response.data)
+        ? response.data
+        : response.data.data;
+
+      const matchedImage = images.find((img) => img.image_url === url);
+      return matchedImage?.image_id || null;
+    } catch (error) {
+      console.error("❌ Failed to fetch image ID:", error);
+      return null;
+    }
+  };
+
+  useImperativeHandle(ref, () => ({
+    getRequirements: async () => {
+      const img1Id = await getImageIdByUrl(selectedImage1);
+      const img2Id = await getImageIdByUrl(selectedImage2);
+
+      return [
+        {
+          gc_id: requirementId,
+          gc_title: requirementTitle,
+          gc_tag: requirementTag,
+          gc_type: requirementType,
+          gc_img1: img1Id,
+          gc_img2: img2Id,
+          gc_detail: detail,
+          gc_sec: sectionId,
+          page_id: pageId,
+          subrequirements: [
+            {
+              gca_id: btnId,
+              gca_tag: btnTag,
+              gca_btnlink: btnLink,
+              gca_btntitle: btnTitle,
+              gca_gc: requirementId,
+            },
+          ],
+        },
+      ];
+    },
+  }));
+
+  const handleToggleDisplay = async () => {
+    try {
+      const newDisplay = displayRequirement === 1 ? 0 : 1;
+      await axios.post(`${API_ENDPOINTS.updateSection}/${sectionId}`, {
+        sec_id: sectionId,
+        display: newDisplay,
+      });
+      setDisplayRequirement(newDisplay);
+    } catch (error) {
+      console.error("Failed to update display:", error);
+    }
+  };
+
+  useEffect(() => {
+    const fetchRequirements = async () => {
+      try {
+        const response = await axios.get(
+          `${API_ENDPOINTS.getCriteria}?gc_sec=${sectionId}`
+        );
+        const requirements = response.data.data || [];
+        if (requirements.length > 0) {
+          const requirement = requirements.find(
+            (item) => item?.section?.sec_page === pageId
+          );
+          if (requirement) {
+            setRequirementId(requirement.gc_id || null);
+            setRequirementTitle(requirement.gc_title || "");
+            setRequirementTag(requirement.gc_tag || "");
+            setRequirementType(requirement.gc_type || "");
+            setDetail(requirement.gc_detail || "");
+            setSelectedImage1(
+              requirement.gc_img1
+                ? `${API}/storage/uploads/${requirement.image1.img}`
+                : ""
+            );
+            setSelectedImage2(
+              requirement.gc_img2
+                ? `${API}/storage/uploads/${requirement.image2.img}`
+                : ""
+            );
+
+            fetchSubRequirements(requirement.gc_id);
+          }
+        }
+
+        const sectionRes = await axios.get(
+          `${API_ENDPOINTS.getSection}/${sectionId}`
+        );
+        const sectionData = sectionRes.data.data;
+        setDisplayRequirement(sectionData.display || 0);
+      } catch (error) {
+        console.error("Failed to fetch criterias:", error);
+      }
+    };
+
+    const fetchSubRequirements = async (reqId) => {
+      try {
+        const response = await axios.get(
+          `${API_ENDPOINTS.getSubRequirement}?gca_gc=${reqId}`
+        );
+        const subrequirements = response.data.data || [];
+
+        if (subrequirements.length > 0) {
+          const sectionResponse = await axios.get(
+            `${API_ENDPOINTS.getSection}/${sectionId}`
+          );
+          const sectionPageId = sectionResponse?.data?.data?.sec_page;
+
+          const subrequirement = subrequirements.find(
+            (item) =>
+              item?.gc?.gc_id === reqId &&
+              item?.gc?.gc_sec === sectionId &&
+              sectionPageId === pageId
+          );
+
+          if (subrequirement) {
+            setBtnId(subrequirement.gca_id || null);
+            setBtnTag(subrequirement.gca_tag || "");
+            setBtnTitle(subrequirement.gca_btntitle || "");
+            setBtnLink(subrequirement.gca_btnlink || "");
+          }
+        }
+      } catch (error) {
+        console.error("Failed to fetch subrequirements:", error);
+      }
+    };
+
+    if (sectionId && pageId) {
+      fetchRequirements();
+    }
+  }, [sectionId]);
+
+  // const handleDeleteSection = async () => {
+  //   if (!window.confirm("Are you sure you want to delete this section?")) return;
+
+  //   try {
+  //       await axios.put(`${API_ENDPOINTS.deleteSection}/${sectionId}`);
+  //       window.location.reload();
+  //   } catch (error) {
+  //       console.error('Failed to delete section:', error);
+  //   }
+  // };
+
+  const handleDeleteSection = async () => {
+    const Swal = (await import("sweetalert2")).default;
+
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "Cancel",
+      customClass: {
+        popup: "text-sm rounded-md",
+        confirmButton:
+          "!bg-red-600 text-white px-4 py-2 rounded hover:!bg-red-700 !mr-2",
+        cancelButton:
+          "!bg-blue-600 text-white px-4 py-2 rounded hover:!bg-blue-700",
+      },
+      buttonsStyling: false,
+    });
+
+    if (result.isConfirmed) {
+      try {
+        await axios.put(`${API_ENDPOINTS.deleteSection}/${sectionId}`);
+
+        await Swal.fire({
+          icon: "success",
+          title: "Deleted!",
+          text: "The section has been deleted.",
+          timer: 1000,
+          showConfirmButton: false,
+        });
+        window.location.reload();
+      } catch (error) {
+        console.error("Error toggling visibility:", error);
+        await Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "Something went wrong!",
+        });
+      }
+    }
+  };
+
+>>>>>>> Stashed changes
   return (
     <div className="grid grid-cols-1 gap-4 ">
       <details className="group [&_summary::-webkit-details-marker]:hidden rounded-lg">
@@ -109,7 +328,15 @@ const RequirementPiece = () => {
             </label>
             <div className="mt-2">
               <label class="toggle-switch mt-2">
+<<<<<<< Updated upstream
                 <input type="checkbox" />
+=======
+                <input
+                  checked={displayRequirement === 1}
+                  onChange={handleToggleDisplay}
+                  type="checkbox"
+                />
+>>>>>>> Stashed changes
                 <span class="slider"></span>
               </label>
             </div>

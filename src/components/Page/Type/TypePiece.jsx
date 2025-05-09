@@ -3,6 +3,162 @@ import TypePieceSlider from "../Type/TypePieceSlider";
 
 const TypePiece = () => {
   const [isRotatedButton1, setIsRotatedButton1] = useState(false);
+<<<<<<< Updated upstream
+=======
+  const [typeId, setTypeId] = useState(0);
+  const [typeTitle, setTypeTitle] = useState('');
+  const [typeType, setTypeType] = useState('');
+  const [typeSubTitle, setTypeSubTitle] = useState('');
+  const [displayTypes, setDisplayTypes] = useState(0);
+  const subtypeRef = useRef();
+
+  useImperativeHandle(ref, () => ({
+    getTypes: async () => {
+      let textId;
+
+      try {
+        const response = await axios.get(`${API_ENDPOINTS.getType}?tse_sec=${sectionId}`);
+        const types = response.data.data || [];
+        const currentType = types.find(f => f.section.sec_page === pageId && f.tse_sec === sectionId && f.text?.text_type === 6);
+        if (currentType?.text?.text_id) {
+          textId = currentType.text.text_id;
+        }
+      } catch (error) {
+        console.error("Failed to check existing type:", error);
+      }
+
+      if (textId) {
+        const updatePayload = {
+          text_id: textId,
+          title: typeTitle,
+          desc: typeSubTitle,
+          text_type: 6,
+          text_sec: sectionId,
+        };
+        const textRes = await axios.post(`${API_ENDPOINTS.updateText}/${textId}`, { texts: updatePayload });
+        textId = textRes.data.data?.text_id;
+      } else {
+        const textPayload = {
+          title: typeTitle,
+          desc: typeSubTitle,
+          text_type: 6,
+          text_sec: sectionId,
+        };
+        const textRes = await axios.post(`${API_ENDPOINTS.createText}`, { texts: [textPayload] });
+        textId = textRes.data.data?.text_id;
+      }
+
+
+      const data = {
+        tse_id: typeId,
+        tse_sec: sectionId,
+        tse_type: parseInt(typeType),
+        tse_text: textId,
+        page_id: pageId,
+        subtypes: await subtypeRef.current?.getSubTypeSliders(),
+      };
+
+      return [data];
+    }
+  }));
+
+  const handleToggleDisplay = async () => {
+    try {
+        const newDisplay = displayTypes === 1 ? 0 : 1;
+        await axios.post(`${API_ENDPOINTS.updateSection}/${sectionId}`, {
+            sec_id: sectionId,
+            display: newDisplay,
+        });
+        setDisplayTypes(newDisplay);
+    } catch (error) {
+        console.error("Failed to update display:", error);
+    }
+  };
+
+  // const handleDeleteSection = async () => {
+  //   if (!window.confirm("Are you sure you want to delete this section?")) return;
+
+  //   try {
+  //       await axios.put(`${API_ENDPOINTS.deleteSection}/${sectionId}`);
+  //       window.location.reload();
+  //   } catch (error) {
+  //       console.error('Failed to delete section:', error);
+  //   }
+  // };
+
+  useEffect(() => {
+    const fetchTypes = async () => {
+      try {
+        const response = await axios.get(`${API_ENDPOINTS.getType}?tse_sec=${sectionId}`);
+        const types = response.data.data || [];
+        if (types.length > 0) {
+          const type = types.find(item =>
+            item.section.sec_page === pageId &&
+            item.tse_sec === sectionId &&
+            item.text?.text_type === 6
+          );
+
+          if (type) {
+            setTypeId(type.tse_id || null);
+            setTypeType(type.tse_type || null);
+            setTypeTitle(type.text?.title || '');
+            setTypeSubTitle(type.text?.desc || '');
+          }
+        }
+
+        const sectionRes = await axios.get(`${API_ENDPOINTS.getSection}/${sectionId}`);
+        const sectionData = sectionRes.data.data;
+        setDisplayTypes(sectionData.display || 0);
+      } catch (error) {
+        console.error("Failed to fetch facilities:", error);
+      }
+    };
+
+    if(sectionId && pageId){
+      fetchTypes();
+    }
+  }, [sectionId]);
+  const handleDeleteSection = async () => {
+          const Swal = (await import('sweetalert2')).default;
+  
+          const result = await Swal.fire({
+              title: "Are you sure?",
+              text: "You won't be able to revert this!",
+              icon: "warning",
+              showCancelButton: true,
+              confirmButtonText: "Yes, delete it!",
+              cancelButtonText: "Cancel",
+              customClass: {
+                  popup: 'text-sm rounded-md',
+                  confirmButton: '!bg-red-600 text-white px-4 py-2 rounded hover:!bg-red-700 !mr-2',
+                  cancelButton: '!bg-blue-600 text-white px-4 py-2 rounded hover:!bg-blue-700',
+              },
+              buttonsStyling: false,
+          });
+  
+          if (result.isConfirmed) {
+              try {
+                  await axios.put(`${API_ENDPOINTS.deleteSection}/${sectionId}`);
+  
+                  await Swal.fire({
+                      icon: 'success',
+                      title: 'Deleted!',
+                      text: 'The section has been deleted.',
+                      timer: 1000,
+                      showConfirmButton: false,
+                  });
+                  window.location.reload();
+              } catch (error) {
+                  console.error("Error toggling visibility:", error);
+                  await Swal.fire({
+                      icon: 'error',
+                      title: 'Oops...',
+                      text: 'Something went wrong!',
+                  });
+              }
+          }
+      };
+>>>>>>> Stashed changes
 
   return (
     <div className="grid grid-cols-1 gap-4 ">

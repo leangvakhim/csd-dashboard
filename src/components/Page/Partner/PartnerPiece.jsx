@@ -1,8 +1,149 @@
+<<<<<<< Updated upstream
 import React, { useState } from "react";
 
 const PartnerPiece = () => {
   const [isRotatedButton1, setIsRotatedButton1] = useState(false);
 
+=======
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  forwardRef,
+  useImperativeHandle,
+} from "react";
+import axios from "axios";
+import { API_ENDPOINTS } from "../../../service/APIConfig";
+
+const PartnerPiece = forwardRef(({ sectionId, pageId }, ref) => {
+  const [isRotatedButton1, setIsRotatedButton1] = useState(false);
+  const [newId, setNewId] = useState(0);
+  const [title, setTitle] = useState(null);
+  const [subtitle, setSubtitle] = useState(null);
+  const [btnTitle, setBtnTitle] = useState(null);
+  const [redirectPage, setRedirectPage] = useState(null);
+  const [amount, setAmount] = useState(null);
+  const [displayNews, setDisplayNews] = useState(0);
+
+  useImperativeHandle(ref, () => ({
+    getPartners: async () => {
+      const data = {
+        hsec_id: newId,
+        hsec_sec: sectionId,
+        hsec_title: title,
+        hsec_subtitle: subtitle,
+        hsec_btntitle: btnTitle,
+        hsec_amount: parseInt(amount),
+        hsec_routepage: redirectPage,
+        page_id: pageId,
+      };
+      return [data];
+    },
+  }));
+
+  const handleToggleDisplay = async () => {
+    try {
+      const newDisplay = displayNews === 1 ? 0 : 1;
+      await axios.post(`${API_ENDPOINTS.updateSection}/${sectionId}`, {
+        sec_id: sectionId,
+        display: newDisplay,
+      });
+      setDisplayNews(newDisplay);
+    } catch (error) {
+      console.error("Failed to update display:", error);
+    }
+  };
+
+  // const handleDeleteSection = async () => {
+  //     if (!window.confirm("Are you sure you want to delete this section?")) return;
+
+  //     try {
+  //         await axios.put(`${API_ENDPOINTS.deleteSection}/${sectionId}`);
+  //         window.location.reload();
+  //     } catch (error) {
+  //         console.error('Failed to delete section:', error);
+  //     }
+  // };
+
+  useEffect(() => {
+    const fetchPartners = async () => {
+      try {
+        const response = await axios.get(
+          `${API_ENDPOINTS.getHeaderSection}?hsec_sec=${sectionId}`
+        );
+        const hsecs = response.data.data || [];
+        if (hsecs.length > 0) {
+          const hsec = hsecs.find(
+            (item) =>
+              item?.section?.sec_page === pageId && item?.hsec_sec === sectionId
+          );
+
+          if (hsec) {
+            setNewId(hsec.hsec_id || null);
+            setTitle(hsec.hsec_title || null);
+            setAmount(hsec.hsec_amount || null);
+          }
+        }
+
+        const sectionRes = await axios.get(
+          `${API_ENDPOINTS.getSection}/${sectionId}`
+        );
+        const sectionData = sectionRes.data.data;
+        setDisplayNews(sectionData.display || 0);
+      } catch (error) {
+        console.error("Failed to fetch facilities:", error);
+      }
+    };
+
+    if (sectionId && pageId) {
+      fetchPartners();
+    }
+  }, [sectionId]);
+
+  const handleDeleteSection = async () => {
+    const Swal = (await import("sweetalert2")).default;
+
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "Cancel",
+      customClass: {
+        popup: "text-sm rounded-md",
+        confirmButton:
+          "!bg-red-600 text-white px-4 py-2 rounded hover:!bg-red-700 !mr-2",
+        cancelButton:
+          "!bg-blue-600 text-white px-4 py-2 rounded hover:!bg-blue-700",
+      },
+      buttonsStyling: false,
+    });
+
+    if (result.isConfirmed) {
+      try {
+        await axios.put(`${API_ENDPOINTS.deleteSection}/${sectionId}`);
+
+        await Swal.fire({
+          icon: "success",
+          title: "Deleted!",
+          text: "The section has been deleted.",
+          timer: 1000,
+          showConfirmButton: false,
+        });
+        window.location.reload();
+      } catch (error) {
+        console.error("Error toggling visibility:", error);
+        await Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "Something went wrong!",
+        });
+      }
+    }
+  };
+
+>>>>>>> Stashed changes
   return (
     <div className="grid grid-cols-1 gap-4 ">
       <details className="group [&_summary::-webkit-details-marker]:hidden rounded-lg">
@@ -23,6 +164,10 @@ const PartnerPiece = () => {
             </div>
             <div className="flex gap-1">
               <svg
+<<<<<<< Updated upstream
+=======
+                onClick={() => handleDeleteSection()}
+>>>>>>> Stashed changes
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
@@ -67,12 +212,18 @@ const PartnerPiece = () => {
             </label>
             <div className="mt-2">
               <input
+<<<<<<< Updated upstream
+=======
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+>>>>>>> Stashed changes
                 type="text"
                 className="block w-full !border-gray-200 border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
               />
             </div>
           </div>
           <div className="flex-1">
+<<<<<<< Updated upstream
             <label className="block text-xl font-medium leading-6 text-white-900">
               Image tag
             </label>
@@ -84,13 +235,38 @@ const PartnerPiece = () => {
             </div>
           </div>
 
+=======
+            <div className="w-full">
+              <label className="block text-xl font-medium text-gray-700">
+                Amount
+              </label>
+              <select
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+                className="mt-2 block w-full border !border-gray-300 rounded-md py-2 pl-2 text-gray-900 shadow-sm focus:ring-2 focus:ring-indigo-500"
+              >
+                <option value="0">Choose amount</option>
+                <option value="1">Partnership</option>
+                <option value="2">University</option>
+              </select>
+            </div>
+          </div>
+>>>>>>> Stashed changes
           <div className="flex-non">
             <label className="block text-xl font-medium leading-6 text-white-900">
               Display
             </label>
             <div className="mt-2">
               <label class="toggle-switch mt-2">
+<<<<<<< Updated upstream
                 <input type="checkbox" />
+=======
+                <input
+                  checked={displayNews === 1}
+                  onChange={handleToggleDisplay}
+                  type="checkbox"
+                />
+>>>>>>> Stashed changes
                 <span class="slider"></span>
               </label>
             </div>
@@ -98,6 +274,7 @@ const PartnerPiece = () => {
         </div>
 
         {/* Row 2 */}
+<<<<<<< Updated upstream
         <div className="grid grid-cols-1  gap-4 px-4 py-2 mb-1">
           <div className="grid grid-cols-2  gap-4 px-4 py-2 mb-1">
             <div className="flex-1">
@@ -135,12 +312,20 @@ const PartnerPiece = () => {
         {/* Row 3 */}
         <div className="w-full flex justify-center items-center bg-gray-50 border p-6">
           <div className="px-4 py-2 mb-1">
+=======
+        <div className="w-full flex justify-center items-center bg-gray-50 !border-t-1 p-6">
+          <div className="px-4 mb-1">
+>>>>>>> Stashed changes
             <span>partner's Element</span>
           </div>
         </div>
       </details>
     </div>
   );
+<<<<<<< Updated upstream
 };
+=======
+});
+>>>>>>> Stashed changes
 
 export default PartnerPiece;

@@ -1,9 +1,15 @@
-import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } from "react";
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  forwardRef,
+  useImperativeHandle,
+} from "react";
 import MediaLibraryModal from "../../MediaLibraryModal";
 import { API_ENDPOINTS, API } from "../../../service/APIConfig";
 import axios from "axios";
 
-const AcademicPiece = forwardRef(({sectionId, pageId}, ref) => {
+const AcademicPiece = forwardRef(({ sectionId, pageId }, ref) => {
   const [isRotatedButton1, setIsRotatedButton1] = useState(false);
   const [isMediaLibraryOpen, setMediaLibraryOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState("");
@@ -22,7 +28,7 @@ const AcademicPiece = forwardRef(({sectionId, pageId}, ref) => {
   };
 
   useImperativeHandle(ref, () => ({
-     getAcademics: async () => {
+    getAcademics: async () => {
       const imgId = await getImageIdByUrl(selectedImage);
 
       return [
@@ -35,31 +41,39 @@ const AcademicPiece = forwardRef(({sectionId, pageId}, ref) => {
           acad_btntext2: btntext2,
           acad_routepage: routepage,
           acad_routetext: routetext,
+<<<<<<< Updated upstream
         }
+=======
+          acad_sec: sectionId,
+          page_id: pageId,
+        },
+>>>>>>> Stashed changes
       ];
-    }
+    },
   }));
 
-  const handleDeleteSection = async () => {
-    if (!window.confirm("Are you sure you want to delete this section?")) return;
+  // const handleDeleteSection = async () => {
+  //   if (!window.confirm("Are you sure you want to delete this section?")) return;
 
-    try {
-        await axios.put(`${API_ENDPOINTS.deleteSection}/${sectionId}`);
-        window.location.reload();
-    } catch (error) {
-        console.error('Failed to delete section:', error);
-    }
-  };
+  //   try {
+  //       await axios.put(`${API_ENDPOINTS.deleteSection}/${sectionId}`);
+  //       window.location.reload();
+  //   } catch (error) {
+  //       console.error('Failed to delete section:', error);
+  //   }
+  // };
 
   const getImageIdByUrl = async (url) => {
     try {
       const response = await axios.get(API_ENDPOINTS.getImages);
-      const images = Array.isArray(response.data) ? response.data : response.data.data;
+      const images = Array.isArray(response.data)
+        ? response.data
+        : response.data.data;
 
       const matchedImage = images.find((img) => img.image_url === url);
       return matchedImage?.image_id || null;
     } catch (error) {
-      console.error('❌ Failed to fetch image ID:', error);
+      console.error("❌ Failed to fetch image ID:", error);
       return null;
     }
   };
@@ -73,58 +87,121 @@ const AcademicPiece = forwardRef(({sectionId, pageId}, ref) => {
 
   const handleToggleDisplay = async () => {
     try {
-        const newDisplay = displayAcademic === 1 ? 0 : 1;
-        await axios.post(`${API_ENDPOINTS.updateSection}/${sectionId}`, {
-            sec_id: sectionId,
-            display: newDisplay,
-        });
-        setDisplayAcademic(newDisplay);
+      const newDisplay = displayAcademic === 1 ? 0 : 1;
+      await axios.post(`${API_ENDPOINTS.updateSection}/${sectionId}`, {
+        sec_id: sectionId,
+        display: newDisplay,
+      });
+      setDisplayAcademic(newDisplay);
     } catch (error) {
-        console.error("Failed to update display:", error);
+      console.error("Failed to update display:", error);
     }
   };
 
   useEffect(() => {
     const fetchAcademics = async () => {
       try {
-        const response = await axios.get(`${API_ENDPOINTS.getAcademic}?ban_sec=${sectionId}`);
+        const response = await axios.get(
+          `${API_ENDPOINTS.getAcademic}?ban_sec=${sectionId}`
+        );
         const academics = response.data.data || [];
         if (academics.length > 0) {
+<<<<<<< Updated upstream
           const academic = academics.find(item => item.section.sec_page === pageId);
+=======
+          const academic = academics.find(
+            (item) => item?.section?.sec_page === pageId
+          );
+>>>>>>> Stashed changes
           if (academic) {
             setAcadId(academic.acad_id || null);
-            setTitle(academic.acad_title || '');
-            setDetail(academic.acad_detail || '');
-            setBtnText1(academic.acad_btntext1 || '');
-            setBtnText2(academic.acad_btntext2 || '');
-            setRoutePage(academic.acad_routepage || '');
-            setRouteText(academic.acad_routetext || '');
-            setSelectedImage(academic.acad_img ? `${API}/storage/uploads/${academic.image.img}` : '');
+            setTitle(academic.acad_title || "");
+            setDetail(academic.acad_detail || "");
+            setBtnText1(academic.acad_btntext1 || "");
+            setBtnText2(academic.acad_btntext2 || "");
+            setRoutePage(academic.acad_routepage || "");
+            setRouteText(academic.acad_routetext || "");
+            setSelectedImage(
+              academic.acad_img
+                ? `${API}/storage/uploads/${academic.image.img}`
+                : ""
+            );
           }
         }
 
-        const sectionRes = await axios.get(`${API_ENDPOINTS.getSection}/${sectionId}`);
+        const sectionRes = await axios.get(
+          `${API_ENDPOINTS.getSection}/${sectionId}`
+        );
         const sectionData = sectionRes.data.data;
         setDisplayAcademic(sectionData.display || 0);
-
       } catch (error) {
-          console.error("Failed to fetch academics:", error);
+        console.error("Failed to fetch academics:", error);
       }
     };
 
     const fetchPages = async () => {
-      try{
+      try {
         const response = await axios.get(API_ENDPOINTS.getPage);
         const page = response.data?.data || [];
         setPages(page);
       } catch (error) {
-        console.error('Error fetching sliders:', error);
+        console.error("Error fetching sliders:", error);
       }
-    }
+    };
 
+<<<<<<< Updated upstream
     fetchPages();
     fetchAcademics();
   },[sectionId]);
+=======
+    if (sectionId && pageId) {
+      fetchAcademics();
+      fetchPages();
+    }
+  }, [sectionId]);
+  const handleDeleteSection = async () => {
+    const Swal = (await import("sweetalert2")).default;
+
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "Cancel",
+      customClass: {
+        popup: "text-sm rounded-md",
+        confirmButton:
+          "!bg-red-600 text-white px-4 py-2 rounded hover:!bg-red-700 !mr-2",
+        cancelButton:
+          "!bg-blue-600 text-white px-4 py-2 rounded hover:!bg-blue-700",
+      },
+      buttonsStyling: false,
+    });
+
+    if (result.isConfirmed) {
+      try {
+        await axios.put(`${API_ENDPOINTS.deleteSection}/${sectionId}`);
+
+        await Swal.fire({
+          icon: "success",
+          title: "Deleted!",
+          text: "The section has been deleted.",
+          timer: 1000,
+          showConfirmButton: false,
+        });
+        window.location.reload();
+      } catch (error) {
+        console.error("Error toggling visibility:", error);
+        await Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "Something went wrong!",
+        });
+      }
+    }
+  };
+>>>>>>> Stashed changes
 
   return (
     <div className="grid grid-cols-1 gap-4 ">
@@ -351,12 +428,14 @@ const AcademicPiece = forwardRef(({sectionId, pageId}, ref) => {
               <select
                 value={routepage}
                 onChange={(e) => setRoutePage(e.target.value)}
-                class="mt-2 !border-gray-300 block w-full border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6">
+                class="mt-2 !border-gray-300 block w-full border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
+              >
                 <option value="">Choose a page</option>
-                  {Array.isArray(pages) && pages.map((page) => (
-                      <option key={page.p_id} value={page.p_title}>
-                          {page.p_title}
-                      </option>
+                {Array.isArray(pages) &&
+                  pages.map((page) => (
+                    <option key={page.p_id} value={page.p_title}>
+                      {page.p_title}
+                    </option>
                   ))}
               </select>
             </div>
@@ -372,7 +451,8 @@ const AcademicPiece = forwardRef(({sectionId, pageId}, ref) => {
               <textarea
                 value={detail}
                 onChange={(e) => setDetail(e.target.value)}
-                className="!border-gray-300 h-60 block w-full rounded-md border-0 py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-2xl sm:leading-6"></textarea>
+                className="!border-gray-300 h-60 block w-full rounded-md border-0 py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-2xl sm:leading-6"
+              ></textarea>
             </div>
           </div>
         </div>

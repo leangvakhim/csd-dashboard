@@ -1,20 +1,26 @@
-import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } from "react";
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  forwardRef,
+  useImperativeHandle,
+} from "react";
 import MediaLibraryModal from "../../MediaLibraryModal";
-import JoditEditor from 'jodit-react';
-import 'jodit/es5/jodit.css';
+import JoditEditor from "jodit-react";
+import "jodit/es5/jodit.css";
 import { API, API_ENDPOINTS } from "../../../service/APIConfig";
 import axios from "axios";
 import { placeholder } from "jodit/esm/plugins/placeholder/placeholder";
 
 const config = {
-  readonly: false,  // Set to true for read-only mode
+  readonly: false, // Set to true for read-only mode
   height: 400,
   uploader: {
-    insertImageAsBase64URI: true,  // Enable base64 image upload
+    insertImageAsBase64URI: true, // Enable base64 image upload
   },
 };
 
-const ProgramPiece = forwardRef(({sectionId, pageId}, ref) => {
+const ProgramPiece = forwardRef(({ sectionId, pageId }, ref) => {
   const [isRotatedButton1, setIsRotatedButton1] = useState(false);
   const [isMediaLibraryOpen, setMediaLibraryOpen] = useState(false);
   const [selectedImage1, setSelectedImage1] = useState("");
@@ -32,9 +38,9 @@ const ProgramPiece = forwardRef(({sectionId, pageId}, ref) => {
 
   const handleImageSelect = (imageUrl, field) => {
     if (field === "image1") {
-        setSelectedImage1(imageUrl);
+      setSelectedImage1(imageUrl);
     } else if (field === "image2") {
-        setSelectedImage2(imageUrl);
+      setSelectedImage2(imageUrl);
     }
     setMediaLibraryOpen(false);
   };
@@ -42,21 +48,24 @@ const ProgramPiece = forwardRef(({sectionId, pageId}, ref) => {
   const getImageIdByUrl = async (url) => {
     try {
       const response = await axios.get(API_ENDPOINTS.getImages);
-      const images = Array.isArray(response.data) ? response.data : response.data.data;
+      const images = Array.isArray(response.data)
+        ? response.data
+        : response.data.data;
 
       const matchedImage = images.find((img) => img.image_url === url);
       return matchedImage?.image_id || null;
     } catch (error) {
-      console.error('❌ Failed to fetch image ID:', error);
+      console.error("❌ Failed to fetch image ID:", error);
       return null;
     }
   };
 
   useImperativeHandle(ref, () => ({
-     getPrograms: async () => {
+    getPrograms: async () => {
       const img1Id = await getImageIdByUrl(selectedImage1);
       const img2Id = await getImageIdByUrl(selectedImage2);
 
+<<<<<<< Updated upstream
       return [
         {
           dep_id: depId,
@@ -67,18 +76,32 @@ const ProgramPiece = forwardRef(({sectionId, pageId}, ref) => {
         }
       ];
     }
+=======
+      const data = {
+        dep_id: depId,
+        dep_title: title,
+        dep_img1: img1Id,
+        dep_img2: img2Id,
+        dep_detail: detail,
+        dep_sec: sectionId,
+        page_id: pageId,
+      };
+
+      return [data];
+    },
+>>>>>>> Stashed changes
   }));
 
   const handleToggleDisplay = async () => {
     try {
-        const newDisplay = displayDepartment === 1 ? 0 : 1;
-        await axios.post(`${API_ENDPOINTS.updateSection}/${sectionId}`, {
-            sec_id: sectionId,
-            display: newDisplay,
-        });
-        setDisplayDepartment(newDisplay);
+      const newDisplay = displayDepartment === 1 ? 0 : 1;
+      await axios.post(`${API_ENDPOINTS.updateSection}/${sectionId}`, {
+        sec_id: sectionId,
+        display: newDisplay,
+      });
+      setDisplayDepartment(newDisplay);
     } catch (error) {
-        console.error("Failed to update display:", error);
+      console.error("Failed to update display:", error);
     }
   };
 
@@ -88,39 +111,103 @@ const ProgramPiece = forwardRef(({sectionId, pageId}, ref) => {
         const response = await axios.get(`${API_ENDPOINTS.getDepartment}?ban_sec=${sectionId}`);
         const departments = response.data.data || [];
         if (departments.length > 0) {
+<<<<<<< Updated upstream
           const department = departments.find(item => item.section.sec_page === pageId);
+=======
+          const department = departments.find(
+            (item) =>
+              item.dep_sec === sectionId && item.section?.sec_page === pageId
+          );
+>>>>>>> Stashed changes
           if (department) {
             setDepId(department.dep_id || null);
-            setTitle(department.dep_title || '');
-            setDetail(department.dep_detail || '');
-            setSelectedImage1(department.image1 ? `${API}/storage/uploads/${department.image1.img}` : '');
-            setSelectedImage2(department.image2 ? `${API}/storage/uploads/${department.image2.img}` : '');
+            setTitle(department.dep_title || "");
+            setDetail(department.dep_detail || "");
+            setSelectedImage1(
+              department.image1
+                ? `${API}/storage/uploads/${department.image1.img}`
+                : ""
+            );
+            setSelectedImage2(
+              department.image2
+                ? `${API}/storage/uploads/${department.image2.img}`
+                : ""
+            );
           }
         }
 
-        const sectionRes = await axios.get(`${API_ENDPOINTS.getSection}/${sectionId}`);
+        const sectionRes = await axios.get(
+          `${API_ENDPOINTS.getSection}/${sectionId}`
+        );
         const sectionData = sectionRes.data.data;
         setDisplayDepartment(sectionData.display || 0);
-
       } catch (error) {
-          console.error("Failed to fetch banners:", error);
+        console.error("Failed to fetch banners:", error);
       }
     };
 
+<<<<<<< Updated upstream
     fetchDepartments();
   },[sectionId]);
+=======
+    if (sectionId && pageId) {
+      fetchDepartments();
+    }
+  }, [sectionId]);
+>>>>>>> Stashed changes
 
+  // const handleDeleteSection = async () => {
+  //   if (!window.confirm("Are you sure you want to delete this section?")) return;
+
+  //   try {
+  //       await axios.put(`${API_ENDPOINTS.deleteSection}/${sectionId}`);
+  //       window.location.reload();
+  //   } catch (error) {
+  //       console.error('Failed to delete section:', error);
+  //   }
+  // };
   const handleDeleteSection = async () => {
-    if (!window.confirm("Are you sure you want to delete this section?")) return;
+    const Swal = (await import("sweetalert2")).default;
 
-    try {
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "Cancel",
+      customClass: {
+        popup: "text-sm rounded-md",
+        confirmButton:
+          "!bg-red-600 text-white px-4 py-2 rounded hover:!bg-red-700 !mr-2",
+        cancelButton:
+          "!bg-blue-600 text-white px-4 py-2 rounded hover:!bg-blue-700",
+      },
+      buttonsStyling: false,
+    });
+
+    if (result.isConfirmed) {
+      try {
         await axios.put(`${API_ENDPOINTS.deleteSection}/${sectionId}`);
+
+        await Swal.fire({
+          icon: "success",
+          title: "Deleted!",
+          text: "The section has been deleted.",
+          timer: 1000,
+          showConfirmButton: false,
+        });
         window.location.reload();
-    } catch (error) {
-        console.error('Failed to delete section:', error);
+      } catch (error) {
+        console.error("Error toggling visibility:", error);
+        await Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "Something went wrong!",
+        });
+      }
     }
   };
-
   return (
     <div className="grid grid-cols-1 gap-4 ">
       <details className="group [&_summary::-webkit-details-marker]:hidden rounded-lg">
@@ -200,7 +287,8 @@ const ProgramPiece = forwardRef(({sectionId, pageId}, ref) => {
             </label>
             <div className="mt-2">
               <label class="toggle-switch mt-2">
-                <input type="checkbox"
+                <input
+                  type="checkbox"
                   checked={displayDepartment === 1}
                   onChange={handleToggleDisplay}
                 />
@@ -289,10 +377,10 @@ const ProgramPiece = forwardRef(({sectionId, pageId}, ref) => {
             </div>
           </div>
           {isMediaLibraryOpen && currentField === "image1" && (
-              <MediaLibraryModal
-                  onSelect={(url) => handleImageSelect(url, "image1")}
-                  onClose={() => setMediaLibraryOpen(false)}
-              />
+            <MediaLibraryModal
+              onSelect={(url) => handleImageSelect(url, "image1")}
+              onClose={() => setMediaLibraryOpen(false)}
+            />
           )}
 
           <div className="flex-1">
@@ -372,10 +460,10 @@ const ProgramPiece = forwardRef(({sectionId, pageId}, ref) => {
             </div>
           </div>
           {isMediaLibraryOpen && currentField === "image2" && (
-              <MediaLibraryModal
-                  onSelect={(url) => handleImageSelect(url, "image2")}
-                  onClose={() => setMediaLibraryOpen(false)}
-              />
+            <MediaLibraryModal
+              onSelect={(url) => handleImageSelect(url, "image2")}
+              onClose={() => setMediaLibraryOpen(false)}
+            />
           )}
         </div>
 

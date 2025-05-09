@@ -1,8 +1,145 @@
+<<<<<<< Updated upstream
 import React, { useState } from "react";
 
 const ProgramPiece = () => {
   const [isRotatedButton1, setIsRotatedButton1] = useState(false);
 
+=======
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  forwardRef,
+  useImperativeHandle,
+} from "react";
+import axios from "axios";
+import { API_ENDPOINTS } from "../../../service/APIConfig";
+
+const ProgramPiece = forwardRef(({ sectionId, pageId }, ref) => {
+  const [isRotatedButton1, setIsRotatedButton1] = useState(false);
+  const [textId, setTextId] = useState("");
+  const [title, setTitle] = useState("");
+  const [desc, setDesc] = useState("");
+  const [type, setType] = useState(0);
+  const [displayInformation, setDisplayInformation] = useState(0);
+
+  useEffect(() => {
+    const fetchInformations = async () => {
+      try {
+        const response = await axios.get(
+          `${API_ENDPOINTS.getText}?text_sec=${sectionId}`
+        );
+        const informations = response.data.data || [];
+        if (informations.length > 0) {
+          const information = informations.find(
+            (item) => item?.text_sec?.sec_page === pageId
+          );
+          // console.log("Information: ",information);
+          if (information) {
+            setTextId(information.text_id || null);
+            setTitle(information.title || "");
+            setDesc(information.desc || "");
+            setType(information.text_type || null);
+          }
+        }
+
+        const sectionRes = await axios.get(
+          `${API_ENDPOINTS.getSection}/${sectionId}`
+        );
+        const sectionData = sectionRes.data.data;
+        setDisplayInformation(sectionData.display || 0);
+      } catch (error) {
+        console.error("Failed to fetch informtaion:", error);
+      }
+    };
+
+    if (sectionId && pageId) {
+      fetchInformations();
+    }
+  }, [sectionId]);
+
+  useImperativeHandle(ref, () => ({
+    getInformations: async () => {
+      return [
+        {
+          text_id: textId,
+          title: title,
+          desc: desc,
+          text_type: parseInt(type),
+          text_sec: sectionId,
+          page_id: pageId,
+        },
+      ];
+    },
+  }));
+
+  const handleToggleDisplay = async () => {
+    try {
+      const newDisplay = displayInformation === 1 ? 0 : 1;
+      await axios.post(`${API_ENDPOINTS.updateSection}/${sectionId}`, {
+        sec_id: sectionId,
+        display: newDisplay,
+      });
+      setDisplayInformation(newDisplay);
+    } catch (error) {
+      console.error("Failed to update display:", error);
+    }
+  };
+
+  // const handleDeleteSection = async () => {
+  //   if (!window.confirm("Are you sure you want to delete this section?")) return;
+
+  //   try {
+  //       await axios.put(`${API_ENDPOINTS.deleteSection}/${sectionId}`);
+  //       window.location.reload();
+  //   } catch (error) {
+  //       console.error('Failed to delete section:', error);
+  //   }
+  // };
+
+  const handleDeleteSection = async () => {
+    const Swal = (await import("sweetalert2")).default;
+
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "Cancel",
+      customClass: {
+        popup: "text-sm rounded-md",
+        confirmButton:
+          "!bg-red-600 text-white px-4 py-2 rounded hover:!bg-red-700 !mr-2",
+        cancelButton:
+          "!bg-blue-600 text-white px-4 py-2 rounded hover:!bg-blue-700",
+      },
+      buttonsStyling: false,
+    });
+
+    if (result.isConfirmed) {
+      try {
+        await axios.put(`${API_ENDPOINTS.deleteSection}/${sectionId}`);
+
+        await Swal.fire({
+          icon: "success",
+          title: "Deleted!",
+          text: "The section has been deleted.",
+          timer: 1000,
+          showConfirmButton: false,
+        });
+        window.location.reload();
+      } catch (error) {
+        console.error("Error toggling visibility:", error);
+        await Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "Something went wrong!",
+        });
+      }
+    }
+  };
+>>>>>>> Stashed changes
   return (
     <div className="grid grid-cols-1 gap-4 ">
       <details className="group [&_summary::-webkit-details-marker]:hidden rounded-lg">
@@ -79,10 +216,21 @@ const ProgramPiece = () => {
             >
               Type
             </label>
+<<<<<<< Updated upstream
             <select class="mt-2 !border-gray-300 block w-full border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6">
               <option selected>Choose an option</option>
               <option value="Home">Option A </option>
               <option value="About">Option B</option>
+=======
+            <select
+              value={type}
+              onChange={(e) => setType(e.target.value)}
+              class="mt-2 !border-gray-300 block w-full border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
+            >
+              <option value="0">Select Information Type</option>
+              <option value="1">1 columns</option>
+              <option value="2">2 columns</option>
+>>>>>>> Stashed changes
             </select>
           </div>
 
@@ -92,7 +240,15 @@ const ProgramPiece = () => {
             </label>
             <div className="mt-2">
               <label class="toggle-switch mt-2">
+<<<<<<< Updated upstream
                 <input type="checkbox" />
+=======
+                <input
+                  type="checkbox"
+                  checked={displayInformation === 1}
+                  onChange={handleToggleDisplay}
+                />
+>>>>>>> Stashed changes
                 <span class="slider"></span>
               </label>
             </div>
@@ -106,7 +262,15 @@ const ProgramPiece = () => {
               Subtitle
             </label>
             <div className="mt-2">
+<<<<<<< Updated upstream
               <textarea className="!border-gray-300 h-60 block w-full rounded-md border-0 py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-2xl sm:leading-6"></textarea>
+=======
+              <textarea
+                value={desc}
+                onChange={(e) => setDesc(e.target.value)}
+                className="!border-gray-300 h-60 block w-full rounded-md border-0 py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-2xl sm:leading-6"
+              ></textarea>
+>>>>>>> Stashed changes
             </div>
           </div>
         </div>

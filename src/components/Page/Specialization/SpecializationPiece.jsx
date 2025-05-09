@@ -1,13 +1,35 @@
+<<<<<<< Updated upstream
 import React, { useState } from "react";
+=======
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  forwardRef,
+  useImperativeHandle,
+} from "react";
+>>>>>>> Stashed changes
 import SpecializationPieceSLider from "../Specialization/SpecializationPieceSlider";
 import MediaLibraryModal from "../../MediaLibraryModal";
 
+<<<<<<< Updated upstream
 const SpecializationPiece = () => {
+=======
+const SpecializationPiece = forwardRef(({ sectionId, pageId }, ref) => {
+>>>>>>> Stashed changes
   const [isRotatedButton, setIsRotatedButton] = useState(false);
   const [isMediaLibraryOpen, setMediaLibraryOpen] = useState(false);
   const [selectedImage1, setSelectedImage1] = useState("");
   const [selectedImage2, setSelectedImage2] = useState("");
   const [currentField, setCurrentField] = useState("");
+<<<<<<< Updated upstream
+=======
+  const [rasId, setRasId] = useState(0);
+  const [rasTitle, setRasTitle] = useState("");
+  const [rasSubTitle, setRasSubTitle] = useState("");
+  const [displaySpecialization, setDisplaySpecialization] = useState(0);
+  const subserviceRef = useRef();
+>>>>>>> Stashed changes
 
   const openMediaLibrary = (field) => {
     setCurrentField(field);
@@ -16,13 +38,209 @@ const SpecializationPiece = () => {
 
   const handleImageSelect = (imageUrl, field) => {
     if (field === "image1") {
-        setSelectedImage1(imageUrl);
+      setSelectedImage1(imageUrl);
     } else if (field === "image2") {
-        setSelectedImage2(imageUrl);
+      setSelectedImage2(imageUrl);
     }
     setMediaLibraryOpen(false);
   };
 
+<<<<<<< Updated upstream
+=======
+  const getImageIdByUrl = async (url) => {
+    try {
+      const response = await axios.get(API_ENDPOINTS.getImages);
+      const images = Array.isArray(response.data)
+        ? response.data
+        : response.data.data;
+
+      const matchedImage = images.find((img) => img.image_url === url);
+      return matchedImage?.image_id || null;
+    } catch (error) {
+      console.error("❌ Failed to fetch image ID:", error);
+      return null;
+    }
+  };
+
+  useImperativeHandle(ref, () => ({
+    getSpecializations: async () => {
+      let textId;
+
+      try {
+        const response = await axios.get(
+          `${API_ENDPOINTS.getSpecialization}?ras_sec=${sectionId}`
+        );
+        const specialization = response.data.data || [];
+        const currentSpecialization = specialization.find(
+          (f) =>
+            f.section.sec_page === pageId &&
+            f.ras_sec === sectionId &&
+            f.text?.text_type === 5
+        );
+        if (currentSpecialization?.text?.text_id) {
+          textId = currentSpecialization.text.text_id;
+        }
+      } catch (error) {
+        console.error("Failed to check existing facility:", error);
+      }
+
+      if (textId) {
+        const updatePayload = {
+          text_id: textId,
+          title: rasTitle,
+          desc: rasSubTitle,
+          text_type: 5,
+          text_sec: sectionId,
+        };
+        const textRes = await axios.post(
+          `${API_ENDPOINTS.updateText}/${textId}`,
+          { texts: updatePayload }
+        );
+        textId = textRes.data.data?.text_id;
+      } else {
+        const textPayload = {
+          title: rasTitle,
+          desc: rasSubTitle,
+          text_type: 5,
+          text_sec: sectionId,
+        };
+        const textRes = await axios.post(`${API_ENDPOINTS.createText}`, {
+          texts: [textPayload],
+        });
+        textId = textRes.data.data?.text_id;
+      }
+
+      const imageId1 = await getImageIdByUrl(selectedImage1);
+      const imageId2 = await getImageIdByUrl(selectedImage2);
+
+      const data = {
+        ras_id: rasId,
+        ras_sec: sectionId,
+        ras_text: textId,
+        ras_img1: imageId1,
+        ras_img2: imageId2,
+        page_id: pageId,
+        subservices: await subserviceRef.current?.getSubserviceSlidersRAS(),
+      };
+
+      return [data];
+    },
+  }));
+
+  const handleToggleDisplay = async () => {
+    try {
+      const newDisplay = displaySpecialization === 1 ? 0 : 1;
+      await axios.post(`${API_ENDPOINTS.updateSection}/${sectionId}`, {
+        sec_id: sectionId,
+        display: newDisplay,
+      });
+      setDisplaySpecialization(newDisplay);
+    } catch (error) {
+      console.error("Failed to update display:", error);
+    }
+  };
+
+  // const handleDeleteSection = async () => {
+  //   if (!window.confirm("Are you sure you want to delete this section?")) return;
+
+  //   try {
+  //       await axios.put(`${API_ENDPOINTS.deleteSection}/${sectionId}`);
+  //       window.location.reload();
+  //   } catch (error) {
+  //       console.error('Failed to delete section:', error);
+  //   }
+  // };
+
+  useEffect(() => {
+    const fetchSpecializations = async () => {
+      try {
+        const response = await axios.get(
+          `${API_ENDPOINTS.getSpecialization}?ras_sec=${sectionId}`
+        );
+        const specializations = response.data.data || [];
+        if (specializations.length > 0) {
+          const specialization = specializations.find(
+            (item) =>
+              item.section.sec_page === pageId &&
+              item.ras_sec === sectionId &&
+              item.text?.text_type === 5
+          );
+
+          if (specialization) {
+            setRasId(specialization.ras_id || null);
+            setRasTitle(specialization.text?.title || "");
+            setRasSubTitle(specialization.text?.desc || "");
+            setSelectedImage1(
+              specialization.ras_img1
+                ? `${API}/storage/uploads/${specialization.image1.img}`
+                : ""
+            );
+            setSelectedImage2(
+              specialization.ras_img2
+                ? `${API}/storage/uploads/${specialization.image2.img}`
+                : ""
+            );
+          }
+        }
+
+        const sectionRes = await axios.get(
+          `${API_ENDPOINTS.getSection}/${sectionId}`
+        );
+        const sectionData = sectionRes.data.data;
+        setDisplaySpecialization(sectionData.display || 0);
+      } catch (error) {
+        console.error("Failed to fetch facilities:", error);
+      }
+    };
+
+    if (sectionId && pageId) {
+      fetchSpecializations();
+    }
+  }, [sectionId]);
+  const handleDeleteSection = async () => {
+    const Swal = (await import("sweetalert2")).default;
+
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "Cancel",
+      customClass: {
+        popup: "text-sm rounded-md",
+        confirmButton:
+          "!bg-red-600 text-white px-4 py-2 rounded hover:!bg-red-700 !mr-2",
+        cancelButton:
+          "!bg-blue-600 text-white px-4 py-2 rounded hover:!bg-blue-700",
+      },
+      buttonsStyling: false,
+    });
+
+    if (result.isConfirmed) {
+      try {
+        await axios.put(`${API_ENDPOINTS.deleteSection}/${sectionId}`);
+
+        await Swal.fire({
+          icon: "success",
+          title: "Deleted!",
+          text: "The section has been deleted.",
+          timer: 1000,
+          showConfirmButton: false,
+        });
+        window.location.reload();
+      } catch (error) {
+        console.error("Error toggling visibility:", error);
+        await Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "Something went wrong!",
+        });
+      }
+    }
+  };
+
+>>>>>>> Stashed changes
   return (
     <div className="grid grid-cols-1 gap-4 ">
       <details className="group [&_summary::-webkit-details-marker]:hidden rounded-lg">
@@ -98,7 +316,15 @@ const SpecializationPiece = () => {
             </label>
             <div className="mt-2">
               <label class="toggle-switch mt-2">
+<<<<<<< Updated upstream
                 <input type="checkbox" />
+=======
+                <input
+                  type="checkbox"
+                  checked={displaySpecialization === 1}
+                  onChange={handleToggleDisplay}
+                />
+>>>>>>> Stashed changes
                 <span class="slider"></span>
               </label>
             </div>
@@ -111,7 +337,15 @@ const SpecializationPiece = () => {
               Subtitle
             </label>
             <div className="mt-2">
+<<<<<<< Updated upstream
               <textarea className="!border-gray-300 h-60 block w-full rounded-md border-0 py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-2xl sm:leading-6"></textarea>
+=======
+              <textarea
+                value={rasSubTitle}
+                onChange={(e) => setRasSubTitle(e.target.value)}
+                className="!border-gray-300 h-60 block w-full rounded-md border-0 py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-2xl sm:leading-6"
+              ></textarea>
+>>>>>>> Stashed changes
             </div>
           </div>
         </div>
@@ -193,10 +427,10 @@ const SpecializationPiece = () => {
             </div>
           </div>
           {isMediaLibraryOpen && currentField === "image1" && (
-              <MediaLibraryModal
-                  onSelect={(url) => handleImageSelect(url, "image1")}
-                  onClose={() => setMediaLibraryOpen(false)}
-              />
+            <MediaLibraryModal
+              onSelect={(url) => handleImageSelect(url, "image1")}
+              onClose={() => setMediaLibraryOpen(false)}
+            />
           )}
           <div className="flex-1">
             <label className="block text-xl font-medium leading-6 text-white-900">
@@ -275,14 +509,21 @@ const SpecializationPiece = () => {
             </div>
           </div>
           {isMediaLibraryOpen && currentField === "image2" && (
-              <MediaLibraryModal
-                  onSelect={(url) => handleImageSelect(url, "image2")}
-                  onClose={() => setMediaLibraryOpen(false)}
-              />
+            <MediaLibraryModal
+              onSelect={(url) => handleImageSelect(url, "image2")}
+              onClose={() => setMediaLibraryOpen(false)}
+            />
           )}
         </div>
         <div className="mb-4">
+<<<<<<< Updated upstream
           <SpecializationPieceSLider/>
+=======
+          <SpecializationPieceSLider
+            ref={subserviceRef}
+            specializationId={rasId}
+          />
+>>>>>>> Stashed changes
         </div>
       </details>
     </div>

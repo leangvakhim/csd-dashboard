@@ -1,9 +1,143 @@
+<<<<<<< Updated upstream
 import React, { useState } from "react";
 import FaqPieceOne from "./FaqPieceOne";
 
 
 const FaqPiece = () => {
   const [isRotatedButton1, setIsRotatedButton1] = useState(false);
+=======
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  forwardRef,
+  useImperativeHandle,
+} from "react";
+import FaqPieceSlider from "./FaqPieceSlider";
+import axios from "axios";
+import { API_ENDPOINTS } from "../../../service/APIConfig";
+
+const FaqPiece = forwardRef(({ sectionId, pageId }, ref) => {
+  const [isRotatedButton1, setIsRotatedButton1] = useState(false);
+  const [detail, setDetail] = useState("");
+  const [title, setTitle] = useState("");
+  const [faqId, setFAQId] = useState(null);
+  const [displayFAQ, setDisplayFAQ] = useState(0);
+  const subserviceRef = useRef();
+
+  useImperativeHandle(ref, () => ({
+    getFAQs: async () => {
+      return [
+        {
+          faq_id: faqId,
+          faq_title: title,
+          faq_subtitle: detail,
+          page_id: pageId,
+          faq_sec: sectionId,
+          subfaqs: await subserviceRef.current?.getSubserviceSlidersFAQ(),
+        },
+      ];
+    },
+  }));
+
+  const handleToggleDisplay = async () => {
+    try {
+      const newDisplay = displayFAQ === 1 ? 0 : 1;
+      await axios.post(`${API_ENDPOINTS.updateSection}/${sectionId}`, {
+        sec_id: sectionId,
+        display: newDisplay,
+      });
+      setDisplayFAQ(newDisplay);
+    } catch (error) {
+      console.error("Failed to update display:", error);
+    }
+  };
+
+  useEffect(() => {
+    const fetchFAQs = async () => {
+      try {
+        const response = await axios.get(
+          `${API_ENDPOINTS.getFAQ}?faq_sec=${sectionId}`
+        );
+        const faqs = response.data.data || [];
+        if (faqs.length > 0) {
+          const faq = faqs.find((item) => item?.section?.sec_page === pageId);
+          if (faq) {
+            setFAQId(faq.faq_id || null);
+            setTitle(faq.faq_title || "");
+            setDetail(faq.faq_subtitle || "");
+          }
+        }
+
+        const sectionRes = await axios.get(
+          `${API_ENDPOINTS.getSection}/${sectionId}`
+        );
+        const sectionData = sectionRes.data.data;
+        setDisplayFAQ(sectionData.display || 0);
+      } catch (error) {
+        console.error("Failed to fetch banners:", error);
+      }
+    };
+
+    if (sectionId && pageId) {
+      fetchFAQs();
+    }
+  }, [sectionId]);
+
+  // const handleDeleteSection = async () => {
+  //   if (!window.confirm("Are you sure you want to delete this section?")) return;
+
+  //   try {
+  //       await axios.put(`${API_ENDPOINTS.deleteSection}/${sectionId}`);
+  //       window.location.reload();
+  //   } catch (error) {
+  //       console.error('Failed to delete section:', error);
+  //   }
+  // };
+
+  const handleDeleteSection = async () => {
+    const Swal = (await import("sweetalert2")).default;
+
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "Cancel",
+      customClass: {
+        popup: "text-sm rounded-md",
+        confirmButton:
+          "!bg-red-600 text-white px-4 py-2 rounded hover:!bg-red-700 !mr-2",
+        cancelButton:
+          "!bg-blue-600 text-white px-4 py-2 rounded hover:!bg-blue-700",
+      },
+      buttonsStyling: false,
+    });
+
+    if (result.isConfirmed) {
+      try {
+        await axios.put(`${API_ENDPOINTS.deleteSection}/${sectionId}`);
+
+        await Swal.fire({
+          icon: "success",
+          title: "Deleted!",
+          text: "The section has been deleted.",
+          timer: 1000,
+          showConfirmButton: false,
+        });
+        window.location.reload();
+      } catch (error) {
+        console.error("Error toggling visibility:", error);
+        await Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "Something went wrong!",
+        });
+      }
+    }
+  };
+>>>>>>> Stashed changes
 
   return (
     <div className="grid grid-cols-1 gap-4 ">
@@ -80,7 +214,15 @@ const FaqPiece = () => {
             </label>
             <div className="mt-2">
               <label class="toggle-switch mt-2">
+<<<<<<< Updated upstream
                 <input type="checkbox" />
+=======
+                <input
+                  checked={displayFAQ === 1}
+                  onChange={handleToggleDisplay}
+                  type="checkbox"
+                />
+>>>>>>> Stashed changes
                 <span class="slider"></span>
               </label>
             </div>
@@ -93,13 +235,24 @@ const FaqPiece = () => {
               Subtitle
             </label>
             <div className="mt-2">
+<<<<<<< Updated upstream
               <textarea className="!border-gray-300 h-60 block w-full rounded-md border-0 py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-2xl sm:leading-6"></textarea>
+=======
+              <textarea
+                value={detail}
+                onChange={(e) => setDetail(e.target.value)}
+                className="!border-gray-300 h-60 block w-full rounded-md border-0 py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-2xl sm:leading-6"
+              ></textarea>
+>>>>>>> Stashed changes
             </div>
           </div>
-
         </div>
         <div className="mb-4">
+<<<<<<< Updated upstream
           <FaqPieceOne />
+=======
+          <FaqPieceSlider ref={subserviceRef} faqId={faqId} />
+>>>>>>> Stashed changes
         </div>
       </details>
     </div>

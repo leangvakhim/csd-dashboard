@@ -1,8 +1,21 @@
+<<<<<<< Updated upstream
 import React, { useState } from "react";
+=======
+import React, {
+  useState,
+  forwardRef,
+  useImperativeHandle,
+  useEffect,
+} from "react";
+>>>>>>> Stashed changes
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import MediaLibraryModal from "../../MediaLibraryModal";
 
+<<<<<<< Updated upstream
 const SpecializationPieceSlider = () => {
+=======
+const SpecializationPieceSlider = forwardRef(({ specializationId }, ref) => {
+>>>>>>> Stashed changes
   const [currentSliderId, setCurrentSliderId] = useState(null);
   const [currentField, setCurrentField] = useState("");
   const [isMediaLibraryOpen, setMediaLibraryOpen] = useState(false);
@@ -14,6 +27,7 @@ const SpecializationPieceSlider = () => {
       subtitle: "",
       logo: "",
       image: "",
+<<<<<<< Updated upstream
       firstbtntitle: "",
       firstbtnselect: "",
       secondbtntitle: "",
@@ -21,6 +35,49 @@ const SpecializationPieceSlider = () => {
     },
   ]);
 
+=======
+      display: 0,
+    },
+  ]);
+
+  const getImageIdByUrl = async (url) => {
+    try {
+      const response = await axios.get(API_ENDPOINTS.getImages);
+      const images = Array.isArray(response.data)
+        ? response.data
+        : response.data.data;
+
+      const matchedImage = images.find((img) => img.image_url === url);
+      return matchedImage?.image_id || null;
+    } catch (error) {
+      console.error("❌ Failed to fetch image ID:", error);
+      return null;
+    }
+  };
+
+  useImperativeHandle(ref, () => ({
+    getSubserviceSlidersRAS: async () => {
+      const updatedSliders = await Promise.all(
+        slider.map(async (slide) => {
+          const imageId = await getImageIdByUrl(slide.image);
+          return {
+            title: slide.title,
+            subtitle: slide.subtitle,
+            image: imageId,
+            display: slide.display,
+            ...(slide.id && !isNaN(Number(slide.id))
+              ? { ss_id: Number(slide.id) }
+              : {}),
+            ss_ras: specializationId,
+          };
+        })
+      );
+
+      return updatedSliders;
+    },
+  }));
+
+>>>>>>> Stashed changes
   const handleAddSlider = () => {
     const newSlider = {
       id: `${Date.now()}`,
@@ -28,10 +85,14 @@ const SpecializationPieceSlider = () => {
       subtitle: "",
       logo: "",
       image: "",
+<<<<<<< Updated upstream
       firstbtntitle: "",
       firstbtnselect: "",
       secondbtntitle: "",
       secondbtnselect: "",
+=======
+      display: 0,
+>>>>>>> Stashed changes
     };
 
     setSlider([...slider, newSlider]);
@@ -71,6 +132,106 @@ const SpecializationPieceSlider = () => {
     setMediaLibraryOpen(false);
   };
 
+<<<<<<< Updated upstream
+=======
+  useEffect(() => {
+    const fetchSliders = async () => {
+      try {
+        const response = await axios.get(API_ENDPOINTS.getSubserviceAF);
+        const data = response.data?.data;
+
+        const subservices = Array.isArray(data) ? data : [data];
+
+        if (subservices.length > 0 && specializationId) {
+          const validSubservices = subservices.filter(
+            (item) => item.ss_ras === specializationId
+          );
+
+          const formattedData = validSubservices.map((item) => ({
+            id: item.ss_id.toString(),
+            title: item.ss_title || "",
+            subtitle: item.ss_subtitle || "",
+            image: item.image?.img
+              ? `${API}/storage/uploads/${item.image.img}`
+              : "",
+            display: item.display === 1,
+          }));
+
+          if (formattedData.length > 0) {
+            setSlider(formattedData);
+          } else {
+            setSlider([
+              {
+                id: "1",
+                title: "specialization 1",
+                subtitle: "",
+                image: "",
+                display: 0,
+              },
+            ]);
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching sliders:", error);
+      }
+    };
+
+    fetchSliders();
+  }, [specializationId]);
+
+  // const handleDeleteSlider = async (sliderId) => {
+  //   if (!window.confirm("Are you sure you want to delete this slider?")) return;
+
+  //   try {
+  //       await axios.put(`${API_ENDPOINTS.deleteSubserviceRAS}/${sliderId}`);
+  //       setSlider((prevSlider) => prevSlider.filter((item) => item.id !== sliderId));
+  //   } catch (error) {
+  //       console.error('Failed to delete slider:', error);
+  //   }
+  // };
+  const handleDeleteSlider = async ({ sliderId }) => {
+    const Swal = (await import("sweetalert2")).default;
+
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "Cancel",
+      customClass: {
+        popup: "text-sm rounded-md",
+        confirmButton:
+          "!bg-red-600 text-white px-4 py-2 rounded hover:!bg-red-700 !mr-2",
+        cancelButton:
+          "!bg-blue-600 text-white px-4 py-2 rounded hover:!bg-blue-700",
+      },
+      buttonsStyling: false,
+    });
+
+    if (result.isConfirmed) {
+      try {
+        await axios.put(`${API_ENDPOINTS.deleteSlider}/${sliderId}`);
+
+        await Swal.fire({
+          icon: "success",
+          title: "Deleted!",
+          text: "The slider has been deleted.",
+          timer: 1000,
+          showConfirmButton: false,
+        });
+        window.location.reload();
+      } catch (error) {
+        console.error("Error toggling visibility:", error);
+        await Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "Something went wrong!",
+        });
+      }
+    }
+  };
+>>>>>>> Stashed changes
   return (
     <DragDropContext onDragEnd={onDragEnd}>
       <Droppable droppableId="droppable">
@@ -171,6 +332,35 @@ const SpecializationPieceSlider = () => {
                               />
                             </div>
                           </div>
+<<<<<<< Updated upstream
+=======
+
+                          <div className="flex-non">
+                            <label className="block text-xl font-medium leading-6 text-white-900">
+                              Display
+                            </label>
+                            <div className="mt-2">
+                              <label class="toggle-switch mt-2">
+                                <input
+                                  type="checkbox"
+                                  checked={
+                                    sliders.display === 1 ||
+                                    sliders.display === true
+                                  }
+                                  onChange={(e) => {
+                                    const updatedSlider = [...slider];
+                                    updatedSlider[index].display = e.target
+                                      .checked
+                                      ? 1
+                                      : 0;
+                                    setSlider(updatedSlider);
+                                  }}
+                                />
+                                <span class="slider"></span>
+                              </label>
+                            </div>
+                          </div>
+>>>>>>> Stashed changes
                         </div>
                         {/* Subtitle */}
                         <div className="grid grid-cols-2 gap-4 px-4 py-2">
@@ -179,7 +369,20 @@ const SpecializationPieceSlider = () => {
                               Subtitle
                             </label>
                             <div className="mt-2">
+<<<<<<< Updated upstream
                               <textarea className="!border-gray-300 h-60 block w-full rounded-md border-0 py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-2xl sm:leading-6"></textarea>
+=======
+                              <textarea
+                                value={sliders.subtitle}
+                                onChange={(e) => {
+                                  const updatedSlider = [...slider];
+                                  updatedSlider[index].subtitle =
+                                    e.target.value;
+                                  setSlider(updatedSlider);
+                                }}
+                                className="!border-gray-300 h-60 block w-full rounded-md border-0 py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-2xl sm:leading-6"
+                              ></textarea>
+>>>>>>> Stashed changes
                             </div>
                           </div>
 

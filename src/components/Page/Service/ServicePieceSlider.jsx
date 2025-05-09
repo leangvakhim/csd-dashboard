@@ -4,7 +4,7 @@ import MediaLibraryModal from "../../MediaLibraryModal";
 import { API_ENDPOINTS, API } from "../../../service/APIConfig";
 import axios from "axios";
 
-const ServicePieceSlider = forwardRef(({sectionId, pageId}, ref) => {
+const ServicePieceSlider = forwardRef(({ sectionId, pageId }, ref) => {
   const [currentSliderId, setCurrentSliderId] = useState(null);
   const [currentField, setCurrentField] = useState("");
   const [isMediaLibraryOpen, setMediaLibraryOpen] = useState(false);
@@ -66,67 +66,83 @@ const ServicePieceSlider = forwardRef(({sectionId, pageId}, ref) => {
   const getImageIdByUrl = async (url) => {
     try {
       const response = await axios.get(API_ENDPOINTS.getImages);
-      const images = Array.isArray(response.data) ? response.data : response.data.data;
+      const images = Array.isArray(response.data)
+        ? response.data
+        : response.data.data;
 
       const matchedImage = images.find((img) => img.image_url === url);
       return matchedImage?.image_id || null;
-      } catch (error) {
-      console.error('❌ Failed to fetch image ID:', error);
+    } catch (error) {
+      console.error("❌ Failed to fetch image ID:", error);
       return null;
     }
   };
 
   useImperativeHandle(ref, () => ({
     getSliders: async () => {
-      return await Promise.all(slider.map(async item => {
-        return {
-          s_id: item.id,
-          s_title: item.title || '',
-          s_subtitle: item.subtitle || '',
-          s_img: item.image ? await getImageIdByUrl(item.image) : 0,
-          display: item.display ? 1 : 0,
-          active: 1,
-        }
-      }))
-    }
-  }))
+      return await Promise.all(
+        slider.map(async (item) => {
+          return {
+            s_id: item.id,
+            s_title: item.title || "",
+            s_subtitle: item.subtitle || "",
+            s_img: item.image ? await getImageIdByUrl(item.image) : 0,
+            display: item.display ? 1 : 0,
+            active: 1,
+          };
+        })
+      );
+    },
+  }));
 
   const handleInputChange = (id, field, value) => {
-      setSlider((prevSlider) =>
-          prevSlider.map((item) =>
-              item.id === id ? { ...item, [field]: value } : item
-          )
-      );
+    setSlider((prevSlider) =>
+      prevSlider.map((item) =>
+        item.id === id ? { ...item, [field]: value } : item
+      )
+    );
   };
 
-  const handleDeleteSlider = async (sliderId) => {
-    if (!window.confirm("Are you sure you want to delete this slider?")) return;
+  // const handleDeleteSlider = async (sliderId) => {
+  //   if (!window.confirm("Are you sure you want to delete this slider?")) return;
 
-    try {
-        await axios.put(`${API_ENDPOINTS.deleteService}/${sliderId}`);
-        setSlider((prevSlider) => prevSlider.filter((item) => item.id !== sliderId));
-    } catch (error) {
-        console.error('Failed to delete slider:', error);
-    }
-  };
+  //   try {
+  //       await axios.put(`${API_ENDPOINTS.deleteService}/${sliderId}`);
+  //       setSlider((prevSlider) => prevSlider.filter((item) => item.id !== sliderId));
+  //   } catch (error) {
+  //       console.error('Failed to delete slider:', error);
+  //   }
+  // };
 
   useEffect(() => {
     const fetchSliders = async () => {
-        try {
-            const response = await axios.get(`${API_ENDPOINTS.getService}?ban_sec=${sectionId}`);
-            const services = response.data?.data || [];
+      try {
+        const response = await axios.get(
+          `${API_ENDPOINTS.getService}?ban_sec=${sectionId}`
+        );
+        const services = response.data?.data || [];
 
+<<<<<<< Updated upstream
             if (services.length > 0) {
             const validServices = services.filter(item => item.section.sec_page === pageId);
+=======
+        if (services.length > 0) {
+          const validServices = services.filter(
+            (item) => item?.section?.sec_page === pageId
+          );
+>>>>>>> Stashed changes
 
-            const formattedData = validServices.map(item => ({
-              id: item.s_id.toString(),
-              title: item.s_title || '',
-              subtitle: item.s_subtitle || '',
-              image: item.image?.img ? `${API}/storage/uploads/${item.image.img}` : '',
-              display: item.display || null,
-            }));
+          const formattedData = validServices.map((item) => ({
+            id: item.s_id.toString(),
+            title: item.s_title || "",
+            subtitle: item.s_subtitle || "",
+            image: item.image?.img
+              ? `${API}/storage/uploads/${item.image.img}`
+              : "",
+            display: item.display || null,
+          }));
 
+<<<<<<< Updated upstream
             if (formattedData.length > 0) {
                 setSlider(formattedData);
             } else {
@@ -141,12 +157,71 @@ const ServicePieceSlider = forwardRef(({sectionId, pageId}, ref) => {
         }
         } catch (error) {
             console.error('Error fetching sliders:', error);
+=======
+          if (formattedData.length > 0) {
+            setSlider(formattedData);
+          } else {
+            setSlider([
+              {
+                id: "1",
+                title: "Service 1",
+                subtitle: "",
+                image: "",
+                display: 0,
+              },
+            ]);
+          }
+>>>>>>> Stashed changes
         }
+      } catch (error) {
+        console.error("Error fetching sliders:", error);
+      }
     };
 
       fetchSliders();
   }, []);
+  const handleDeleteSlider = async () => {
+    const Swal = (await import("sweetalert2")).default;
 
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "Cancel",
+      customClass: {
+        popup: "text-sm rounded-md",
+        confirmButton:
+          "!bg-red-600 text-white px-4 py-2 rounded hover:!bg-red-700 !mr-2",
+        cancelButton:
+          "!bg-blue-600 text-white px-4 py-2 rounded hover:!bg-blue-700",
+      },
+      buttonsStyling: false,
+    });
+
+    if (result.isConfirmed) {
+      try {
+        await axios.put(`${API_ENDPOINTS.deleteSection}/${sectionId}`);
+
+        await Swal.fire({
+          icon: "success",
+          title: "Deleted!",
+          text: "The slider has been deleted.",
+          timer: 1000,
+          showConfirmButton: false,
+        });
+        window.location.reload();
+      } catch (error) {
+        console.error("Error toggling visibility:", error);
+        await Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "Something went wrong!",
+        }); 
+      }
+    }
+  };
   return (
     <DragDropContext onDragEnd={onDragEnd}>
       <Droppable droppableId="droppable">
@@ -238,33 +313,45 @@ const ServicePieceSlider = forwardRef(({sectionId, pageId}, ref) => {
                         {/* title */}
                         <div className="flex flex-row gap-4 px-4 py-2">
                           <div className="flex-1">
-                              <label className="block text-xl font-medium leading-6 text-white-900">
+                            <label className="block text-xl font-medium leading-6 text-white-900">
                               Title
-                              </label>
-                              <div className="mt-2">
+                            </label>
+                            <div className="mt-2">
                               <input
-                                  type="text"
-                                  value={sliders.title}
-                                  onChange={(e) => handleInputChange(sliders.id, 'title', e.target.value)}
-                                  className="block w-full !border-gray-200 border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
+                                type="text"
+                                value={sliders.title}
+                                onChange={(e) =>
+                                  handleInputChange(
+                                    sliders.id,
+                                    "title",
+                                    e.target.value
+                                  )
+                                }
+                                className="block w-full !border-gray-200 border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
                               />
-                              </div>
+                            </div>
                           </div>
 
-                            <div className="flex-non">
-                              <label className="block text-xl font-medium leading-6 text-white-900">
+                          <div className="flex-non">
+                            <label className="block text-xl font-medium leading-6 text-white-900">
                               Display
+                            </label>
+                            <div className="mt-2">
+                              <label className="toggle-switch mt-2">
+                                <input
+                                  type="checkbox"
+                                  checked={sliders.display || false}
+                                  onChange={(e) =>
+                                    handleInputChange(
+                                      sliders.id,
+                                      "display",
+                                      e.target.checked
+                                    )
+                                  }
+                                />
+                                <span className="slider"></span>
                               </label>
-                              <div className="mt-2">
-                                  <label className="toggle-switch mt-2">
-                                      <input
-                                          type="checkbox"
-                                          checked={sliders.display || false}
-                                          onChange={(e) => handleInputChange(sliders.id, 'display', e.target.checked)}
-                                      />
-                                      <span className="slider"></span>
-                                  </label>
-                              </div>
+                            </div>
                           </div>
                         </div>
                         {/* Image */}
@@ -365,8 +452,15 @@ const ServicePieceSlider = forwardRef(({sectionId, pageId}, ref) => {
                             <div className="mt-2">
                               <textarea
                                 value={sliders.subtitle}
-                                onChange={(e) => handleInputChange(sliders.id, 'subtitle', e.target.value)}
-                                className="!border-gray-300 h-60 block w-full rounded-md border-0 py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-2xl sm:leading-6"></textarea>
+                                onChange={(e) =>
+                                  handleInputChange(
+                                    sliders.id,
+                                    "subtitle",
+                                    e.target.value
+                                  )
+                                }
+                                className="!border-gray-300 h-60 block w-full rounded-md border-0 py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-2xl sm:leading-6"
+                              ></textarea>
                             </div>
                           </div>
                         </div>
