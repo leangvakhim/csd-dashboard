@@ -98,13 +98,43 @@ const BannerPiece = forwardRef(({sectionId, pageId}, ref) => {
     };
 
     const handleDeleteSection = async () => {
-        if (!window.confirm("Are you sure you want to delete this section?")) return;
+        const Swal = (await import('sweetalert2')).default;
 
-        try {
-            await axios.put(`${API_ENDPOINTS.deleteSection}/${sectionId}`);
-            window.location.reload();
-        } catch (error) {
-            console.error('Failed to delete section:', error);
+        const result = await Swal.fire({
+            title: "Are you sure?",
+            text: "You won't be able to revert this!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Yes, delete it!",
+            cancelButtonText: "Cancel",
+            customClass: {
+                popup: 'text-sm rounded-md',
+                confirmButton: '!bg-red-600 text-white px-4 py-2 rounded hover:!bg-red-700 !mr-2',
+                cancelButton: '!bg-blue-600 text-white px-4 py-2 rounded hover:!bg-blue-700',
+            },
+            buttonsStyling: false,
+        });
+
+        if (result.isConfirmed) {
+            try {
+                await axios.put(`${API_ENDPOINTS.deleteSection}/${sectionId}`);
+
+                await Swal.fire({
+                    icon: 'success',
+                    title: 'Deleted!',
+                    text: 'The section has been deleted.',
+                    timer: 1000,
+                    showConfirmButton: false,
+                });
+                window.location.reload();
+            } catch (error) {
+                console.error("Error toggling visibility:", error);
+                await Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'Something went wrong!',
+                });
+            }
         }
     };
 
