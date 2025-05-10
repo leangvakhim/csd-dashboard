@@ -74,8 +74,6 @@ const ProjectSection = forwardRef(({sectionId, rsdId}, ref) => {
                 }
             }
 
-            console.log("projects is: ",projects);
-
             const sectionRes = await axios.get(`${API_ENDPOINTS.getResearchTitle}/${sectionId}`);
             const sectionData = sectionRes.data.data;
             setDisplayProject(sectionData.display || 0);

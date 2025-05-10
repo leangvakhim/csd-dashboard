@@ -23,6 +23,7 @@ const ProgramPiece = forwardRef(({sectionId, pageId}, ref) => {
   const [detail, setDetail] = useState("");
   const [title, setTitle] = useState("");
   const [depId, setDepId] = useState(null);
+  // const [isLoaded, setIsLoaded] = useState(false);
 
   const openMediaLibrary = (field) => {
     setCurrentField(field);
@@ -52,19 +53,22 @@ const ProgramPiece = forwardRef(({sectionId, pageId}, ref) => {
   };
 
   useImperativeHandle(ref, () => ({
-     getPrograms: async () => {
-      const img1Id = await getImageIdByUrl(selectedImage1);
-      const img2Id = await getImageIdByUrl(selectedImage2);
+    getPrograms: async () => {
+      const currentSelectedImage1 = selectedImage1;
+      const currentSelectedImage2 = selectedImage2;
+
+      const img1Id = await getImageIdByUrl(currentSelectedImage1);
+      const img2Id = await getImageIdByUrl(currentSelectedImage2);
 
       const data = {
-          dep_id: depId,
-          dep_title: title,
-          dep_img1: img1Id,
-          dep_img2: img2Id,
-          dep_detail: detail,
-          dep_sec: sectionId,
-          page_id: pageId,
-        }
+        dep_id: depId,
+        dep_title: title,
+        dep_img1: img1Id,
+        dep_img2: img2Id,
+        dep_detail: detail,
+        dep_sec: sectionId,
+        page_id: pageId,
+      };
 
       return [data];
     }
@@ -94,6 +98,7 @@ const ProgramPiece = forwardRef(({sectionId, pageId}, ref) => {
             item.section?.sec_page === pageId
           );
           if (department) {
+          // if (department && isFirstLoad.current) {
             setDepId(department.dep_id || null);
             setTitle(department.dep_title || '');
             setDetail(department.dep_detail || '');
