@@ -89,10 +89,10 @@ const AcademicPiece = forwardRef(({sectionId, pageId}, ref) => {
   useEffect(() => {
     const fetchAcademics = async () => {
       try {
-        const response = await axios.get(`${API_ENDPOINTS.getAcademic}?ban_sec=${sectionId}`);
+        const response = await axios.get(`${API_ENDPOINTS.getAcademic}`);
         const academics = response.data.data || [];
         if (academics.length > 0) {
-          const academic = academics.find(item => item?.section?.sec_page === pageId);
+          const academic = academics.find(item => item?.section?.sec_id === sectionId && item?.section?.sec_page === pageId);
           if (academic) {
             setAcadId(academic.acad_id || null);
             setTitle(academic.acad_title || '');

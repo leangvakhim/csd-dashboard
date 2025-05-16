@@ -14,10 +14,10 @@ const ProgramPiece = forwardRef(({sectionId, pageId}, ref) => {
     const fetchInformations = async () => {
       try {
 
-        const response = await axios.get(`${API_ENDPOINTS.getText}?text_sec=${sectionId}`);
+        const response = await axios.get(`${API_ENDPOINTS.getText}`);
         const informations = response.data.data || [];
         if (informations.length > 0) {
-          const information = informations.find(item => item?.text_sec?.sec_page === pageId);
+          const information = informations.find(item =>  item?.text_sec?.sec_id === sectionId && item?.text_sec?.sec_page === pageId);
           // console.log("Information: ",information);
           if (information) {
             setTextId(information.text_id || null);

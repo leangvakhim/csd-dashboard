@@ -23,6 +23,7 @@ const ProgramPiece = forwardRef(({sectionId, pageId}, ref) => {
   const [detail, setDetail] = useState("");
   const [title, setTitle] = useState("");
   const [depId, setDepId] = useState(null);
+  const [programSections, setProgramSections] = useState([]);
   // const [isLoaded, setIsLoaded] = useState(false);
 
   const openMediaLibrary = (field) => {

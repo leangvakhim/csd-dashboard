@@ -312,43 +312,43 @@ const sectionOptions = [
 ];
 
 const PageSection = forwardRef(({ formData = {}, setFormData = {}, page_id }, ref) => {
-  const programPieceRef = useRef();
-  const bannerPieceRef = useRef();
-  const slideshowPieceRef = useRef();
-  const servicePieceRef = useRef();
-  const academicPieceRef = useRef();
-  const informationPieceRef = useRef();
-  const facilitiesPieceRef = useRef();
-  const galleryPieceRef = useRef();
-  const specializationPieceRef = useRef();
-  const testimonialPieceRef = useRef();
-  const criteriaPieceRef = useRef();
-  const typePieceRef = useRef();
-  const csdPieceRef = useRef();
-  const unlockPieceRef = useRef();
-  const studyPieceRef = useRef();
-  const availablePieceRef = useRef();
-  const feePieceRef = useRef();
-  const requirementPieceRef = useRef();
-  const futurePieceRef = useRef();
-  const potentialPieceRef = useRef();
-  const introductionPieceRef = useRef();
-  const innovationPieceRef = useRef();
-  const faqPieceRef = useRef();
-  const applyPieceRef = useRef();
-  const importantPieceRef = useRef();
-  const contactPieceRef = useRef();
-  const questionPieceRef = useRef();
-  const newPieceRef = useRef();
-  const eventPieceRef = useRef();
-  const announcementPieceRef = useRef();
-  const researchPieceRef = useRef();
-  const facultyPieceRef = useRef();
-  const labPieceRef = useRef();
-  const scholarshipPieceRef = useRef();
-  const careerPieceRef = useRef();
-  const partnerPieceRef = useRef();
-  const feedbackPieceRef = useRef();
+  const programPieceRef = useRef([]);
+  const bannerPieceRef = useRef([]);
+  const slideshowPieceRef = useRef([]);
+  const servicePieceRef = useRef([]);
+  const academicPieceRef = useRef([]);
+  const informationPieceRef = useRef([]);
+  const facilitiesPieceRef = useRef([]);
+  const galleryPieceRef = useRef([]);
+  const specializationPieceRef = useRef([]);
+  const testimonialPieceRef = useRef([]);
+  const criteriaPieceRef = useRef([]);
+  const typePieceRef = useRef([]);
+  const csdPieceRef = useRef([]);
+  const unlockPieceRef = useRef([]);
+  const studyPieceRef = useRef([]);
+  const availablePieceRef = useRef([]);
+  const feePieceRef = useRef([]);
+  const requirementPieceRef = useRef([]);
+  const futurePieceRef = useRef([]);
+  const potentialPieceRef = useRef([]);
+  const introductionPieceRef = useRef([]);
+  const innovationPieceRef = useRef([]);
+  const faqPieceRef = useRef([]);
+  const applyPieceRef = useRef([]);
+  const importantPieceRef = useRef([]);
+  const contactPieceRef = useRef([]);
+  const questionPieceRef = useRef([]);
+  const newPieceRef = useRef([]);
+  const eventPieceRef = useRef([]);
+  const announcementPieceRef = useRef([]);
+  const researchPieceRef = useRef([]);
+  const facultyPieceRef = useRef([]);
+  const labPieceRef = useRef([]);
+  const scholarshipPieceRef = useRef([]);
+  const careerPieceRef = useRef([]);
+  const partnerPieceRef = useRef([]);
+  const feedbackPieceRef = useRef([]);
   const [showSection, setShowSection] = useState(false);
   const [selectedSections, setSelectedSections] = useState([]);
   const {setLoading} = useLoading();
@@ -378,6 +378,65 @@ const PageSection = forwardRef(({ formData = {}, setFormData = {}, page_id }, re
 
     fetchSections();
   }, [page_id]);
+
+  // --- Dynamic ref map and getter for generalization ---
+  const refMap = {
+    Programs: programPieceRef,
+    Banner: bannerPieceRef,
+    Slideshow: slideshowPieceRef,
+    Service: servicePieceRef,
+    Academic: academicPieceRef,
+    Information: informationPieceRef,
+    Facilities: facilitiesPieceRef,
+    Gallery: galleryPieceRef,
+    Specialization: specializationPieceRef,
+    Testimonial: testimonialPieceRef,
+    Type: typePieceRef,
+    Criteria: criteriaPieceRef,
+    CSD: csdPieceRef,
+    Unlock: unlockPieceRef,
+    Study: studyPieceRef,
+    Avaialable: availablePieceRef,
+    Fee: feePieceRef,
+    Requirement: requirementPieceRef,
+    Future: futurePieceRef,
+    Potential: potentialPieceRef,
+    Introduction: introductionPieceRef,
+    Innovation: innovationPieceRef,
+    FAQ: faqPieceRef,
+    Apply: applyPieceRef,
+    Important: importantPieceRef,
+    Contact: contactPieceRef,
+    Question: questionPieceRef,
+    New: newPieceRef,
+    Event: eventPieceRef,
+    Announcement: announcementPieceRef,
+    Research: researchPieceRef,
+    Faculty: facultyPieceRef,
+    Lab: labPieceRef,
+    Scholarship: scholarshipPieceRef,
+    Career: careerPieceRef,
+    Partner: partnerPieceRef,
+    Feedback: feedbackPieceRef,
+  };
+
+  const getDynamicData = async (type, method) => {
+    const results = [];
+    const refs = refMap[type]?.current || [];
+    for (const ref of refs) {
+      if (ref?.[method]) {
+        const data = await ref[method]();
+        if (Array.isArray(data)) {
+          results.push(...data);
+        } else if (data) {
+          results.push(data);
+        } else {
+          console.warn("⚠️ Skipped pushing non-iterable data in getDynamicData:", data);
+        }
+      }
+    }
+    return results;
+  };
 
   useImperativeHandle(ref, () => ({
     getSections: () => {
@@ -419,43 +478,44 @@ const PageSection = forwardRef(({ formData = {}, setFormData = {}, page_id }, re
       );
     },
 
-    getPrograms: () => programPieceRef.current?.getPrograms?.() || [],
-    getBanners: () => bannerPieceRef.current?.getBanners?.() || [],
-    getSlideshows: () => slideshowPieceRef.current?.getSlideshows?.() || [],
-    getServices: () => servicePieceRef.current?.getServices?.() || [],
-    getAcademics: () => academicPieceRef.current?.getAcademics?.() || [],
-    getInformations: () => informationPieceRef.current?.getInformations?.() || [],
-    getFacilities: () => facilitiesPieceRef.current?.getFacilities?.() || [],
-    getGallery: () => galleryPieceRef.current?.getGallery?.() || [],
-    getSpecializations: () => specializationPieceRef.current?.getSpecializations?.() || [],
-    getTestimonials: () => testimonialPieceRef.current?.getTestimonials?.() || [],
-    getTypes: () => typePieceRef.current?.getTypes?.() || [],
-    getCriterias: () => criteriaPieceRef.current?.getCriterias?.() || [],
-    getCSDs: () => csdPieceRef.current?.getCSDs?.() || [],
-    getUnlocks: () => unlockPieceRef.current?.getUnlocks?.() || [],
-    getStudys: () => studyPieceRef.current?.getStudys?.() || [],
-    getAvailables: () => availablePieceRef.current?.getAvailables?.() || [],
-    getFees: () => feePieceRef.current?.getFees?.() || [],
-    getRequirements: () => requirementPieceRef.current?.getRequirements?.() || [],
-    getFutures: () => futurePieceRef.current?.getFutures?.() || [],
-    getPotentials: () => potentialPieceRef.current?.getPotentials?.() || [],
-    getIntroductions: () => introductionPieceRef.current?.getIntroductions?.() || [],
-    getInnovations: () => innovationPieceRef.current?.getInnovations?.() || [],
-    getFAQs: () => faqPieceRef.current?.getFAQs?.() || [],
-    getApplys: () => applyPieceRef.current?.getApplys?.() || [],
-    getImportants: () => importantPieceRef.current?.getImportants?.() || [],
-    getContacts: () => contactPieceRef.current?.getContacts?.() || [],
-    getQuestions: () => questionPieceRef.current?.getQuestions?.() || [],
-    getNews: () => newPieceRef.current?.getNews?.() || [],
-    getEvents: () => eventPieceRef.current?.getEvents?.() || [],
-    getAnnouncements: () => announcementPieceRef.current?.getAnnouncements?.() || [],
-    getResearchs: () => researchPieceRef.current?.getResearchs?.() || [],
-    getFacultys: () => facultyPieceRef.current?.getFacultys?.() || [],
-    getLabs: () => labPieceRef.current?.getLabs?.() || [],
-    getScholarships: () => scholarshipPieceRef.current?.getScholarships?.() || [],
-    getCareers: () => careerPieceRef.current?.getCareers?.() || [],
-    getPartners: () => partnerPieceRef.current?.getPartners?.() || [],
-    getFeedbacks: () => feedbackPieceRef.current?.getFeedbacks?.() || [],
+    getPrograms: async () => { return await getDynamicData("Programs", "getPrograms"); },
+    getBanners: async () => { return await getDynamicData("Banner", "getBanners"); },
+    getSlideshows: async () => { return await getDynamicData("Slideshow", "getSlideshows"); },
+    getServices: async () => { return await getDynamicData("Service", "getServices"); },
+    getAcademics: async () => { return await getDynamicData("Academic", "getAcademics"); },
+    getInformations: async () => { return await getDynamicData("Information", "getInformations"); },
+    getFacilities: async () => { return await getDynamicData("Facilities", "getFacilities"); },
+    getGallery: async () => { return await getDynamicData("Gallery", "getGallery"); },
+    getSpecializations: async () => { return await getDynamicData("Specialization", "getSpecializations"); },
+    getTestimonials: async () => { return await getDynamicData("Testimonial", "getTestimonials"); },
+    getTypes: async () => { return await getDynamicData("Type", "getTypes"); },
+    getCriterias: async () => { return await getDynamicData("Criteria", "getCriterias"); },
+    getCSDs: async () => { return await getDynamicData("CSD", "getCSDs"); },
+    getUnlocks: async () => { return await getDynamicData("Unlock", "getUnlocks"); },
+    getStudys: async () => { return await getDynamicData("Study", "getStudys"); },
+    getAvailables: async () => { return await getDynamicData("Avaialable", "getAvailables"); },
+    getFees: async () => { return await getDynamicData("Fee", "getFees"); },
+    getRequirements: async () => { return await getDynamicData("Requirement", "getRequirements"); },
+    getFutures: async () => { return await getDynamicData("Future", "getFutures"); },
+    getPotentials: async () => { return await getDynamicData("Potential", "getPotentials"); },
+    getIntroductions: async () => { return await getDynamicData("Introduction", "getIntroductions"); },
+    getContacts: async () => { return await getDynamicData("Contact", "getContacts"); },
+    getInnovations: async () => { return await getDynamicData("Innovation", "getInnovations"); },
+    getFAQs: async () => { return await getDynamicData("FAQ", "getFAQs"); },
+    getApplys: async () => { return await getDynamicData("Apply", "getApplys"); },
+    getImportants: async () => { return await getDynamicData("Important", "getImportants"); },
+    getContacts: async () => { return await getDynamicData("Contact", "getContacts"); },
+    getQuestions: async () => { return await getDynamicData("Question", "getQuestions"); },
+    getNews: async () => { return await getDynamicData("New", "getNews"); },
+    getEvents: async () => { return await getDynamicData("Event", "getEvents"); },
+    getAnnouncements: async () => { return await getDynamicData("Announcement", "getAnnouncements"); },
+    getResearchs: async () => { return await getDynamicData("Research", "getResearchs"); },
+    getFacultys: async () => { return await getDynamicData("Faculty", "getFacultys"); },
+    getLabs: async () => { return await getDynamicData("Lab", "getLabs"); },
+    getScholarships: async () => { return await getDynamicData("Scholarship", "getScholarships"); },
+    getCareers: async () => { return await getDynamicData("Career", "getCareers"); },
+    getPartners: async () => { return await getDynamicData("Partner", "getPartners"); },
+    getFeedbacks: async () => { return await getDynamicData("Feedback", "getFeedbacks"); },
   }));
 
   const handleAddPage = () => {
@@ -537,42 +597,42 @@ const PageSection = forwardRef(({ formData = {}, setFormData = {}, page_id }, re
               >
                 <SectionComponent
                   ref={
-                        section.type === "Programs" ? programPieceRef
-                      : section.type === "Banner" ? bannerPieceRef
-                      : section.type === "Slideshow" ? slideshowPieceRef
-                      : section.type === "Service" ? servicePieceRef
-                      : section.type === "Academic" ? academicPieceRef
-                      : section.type === "Information" ? informationPieceRef
-                      : section.type === "Facilities" ? facilitiesPieceRef
-                      : section.type === "Gallery" ? galleryPieceRef
-                      : section.type === "Specialization" ? specializationPieceRef
-                      : section.type === "Testimonial" ? testimonialPieceRef
-                      : section.type === "Type" ? typePieceRef
-                      : section.type === "Criteria" ? criteriaPieceRef
-                      : section.type === "CSD" ? csdPieceRef
-                      : section.type === "Unlock" ? unlockPieceRef
-                      : section.type === "Study" ? studyPieceRef
-                      : section.type === "Avaialable" ? availablePieceRef
-                      : section.type === "Fee" ? feePieceRef
-                      : section.type === "Requirement" ? requirementPieceRef
-                      : section.type === "Future" ? futurePieceRef
-                      : section.type === "Potential" ? potentialPieceRef
-                      : section.type === "Introduction" ? introductionPieceRef
-                      : section.type === "Innovation" ? innovationPieceRef
-                      : section.type === "FAQ" ? faqPieceRef
-                      : section.type === "Apply" ? applyPieceRef
-                      : section.type === "Important" ? importantPieceRef
-                      : section.type === "Contact" ? contactPieceRef
-                      : section.type === "Question" ? questionPieceRef
-                      : section.type === "New" ? newPieceRef
-                      : section.type === "Event" ? eventPieceRef
-                      : section.type === "Announcement" ? announcementPieceRef
-                      : section.type === "Research" ? researchPieceRef
-                      : section.type === "Faculty" ? facultyPieceRef
-                      : section.type === "Lab" ? labPieceRef
-                      : section.type === "Scholarship" ? scholarshipPieceRef
-                      : section.type === "Career" ? careerPieceRef
-                      : section.type === "Partner" ? partnerPieceRef
+                        section.type === "Programs" ? el => programPieceRef.current[index] = el
+                      : section.type === "Banner" ? el => bannerPieceRef.current[index] = el
+                      : section.type === "Slideshow" ? el => slideshowPieceRef.current[index] = el
+                      : section.type === "Service" ? el => servicePieceRef.current[index] = el
+                      : section.type === "Academic" ? el => academicPieceRef.current[index] = el
+                      : section.type === "Information" ? el => informationPieceRef.current[index] = el
+                      : section.type === "Facilities" ? el => facilitiesPieceRef.current[index] = el
+                      : section.type === "Gallery" ? el => galleryPieceRef.current[index] = el
+                      : section.type === "Specialization" ? el => specializationPieceRef.current[index] = el
+                      : section.type === "Testimonial" ? el => testimonialPieceRef.current[index] = el
+                      : section.type === "Type" ? el => typePieceRef.current[index] = el
+                      : section.type === "Criteria" ? el => criteriaPieceRef.current[index] = el
+                      : section.type === "CSD" ? el => csdPieceRef.current[index] = el
+                      : section.type === "Unlock" ? el => unlockPieceRef.current[index] = el
+                      : section.type === "Study" ? el => studyPieceRef.current[index] = el
+                      : section.type === "Avaialable" ? el => availablePieceRef.current[index] = el
+                      : section.type === "Fee" ? el => feePieceRef.current[index] = el
+                      : section.type === "Requirement" ? el => requirementPieceRef.current[index] = el
+                      : section.type === "Future" ? el => futurePieceRef.current[index] = el
+                      : section.type === "Potential" ? el => potentialPieceRef.current[index] = el
+                      : section.type === "Introduction" ? el => introductionPieceRef.current[index] = el
+                      : section.type === "Innovation" ? el => innovationPieceRef.current[index] = el
+                      : section.type === "FAQ" ? el => faqPieceRef.current[index] = el
+                      : section.type === "Apply" ? el => applyPieceRef.current[index] = el
+                      : section.type === "Important" ? el => importantPieceRef.current[index] = el
+                      : section.type === "Contact" ? el => contactPieceRef.current[index] = el
+                      : section.type === "Question" ? el => questionPieceRef.current[index] = el
+                      : section.type === "New" ? el => newPieceRef.current[index] = el
+                      : section.type === "Event" ? el => eventPieceRef.current[index] = el
+                      : section.type === "Announcement" ? el => announcementPieceRef.current[index] = el
+                      : section.type === "Research" ? el => researchPieceRef.current[index] = el
+                      : section.type === "Faculty" ? el => facultyPieceRef.current[index] = el
+                      : section.type === "Lab" ? el => labPieceRef.current[index] = el
+                      : section.type === "Scholarship" ? el => scholarshipPieceRef.current[index] = el
+                      : section.type === "Career" ? el => careerPieceRef.current[index] = el
+                      : section.type === "Partner" ? el => partnerPieceRef.current[index] = el
                       : null
                     }
                   data={section.data}

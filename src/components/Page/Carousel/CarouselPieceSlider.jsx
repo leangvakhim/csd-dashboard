@@ -29,11 +29,11 @@ const CarouselPieceSlider = forwardRef(({displaySlideshow, sectionId, pageId}, r
     useEffect(() => {
         const fetchSliders = async () => {
             try {
-                const response = await axios.get(`${API_ENDPOINTS.getSlideshow}?ban_sec=${sectionId}`);
+                const response = await axios.get(`${API_ENDPOINTS.getSlideshow}`);
                 const slideshows = response.data?.data || [];
 
                 if (slideshows.length > 0) {
-                const validSlideshows = slideshows.filter(item => item.slider_sec.sec_page === pageId);
+                const validSlideshows = slideshows.filter(item => item.slider_sec.sec_id === sectionId && item.slider_sec.sec_page === pageId);
 
                 const formattedData = validSlideshows.map(item => ({
                     id: item.slider_id.toString(),

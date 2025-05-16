@@ -43,9 +43,9 @@ const FacilitiesPiece = forwardRef(({sectionId, pageId}, ref) => {
       let textId;
 
       try {
-        const response = await axios.get(`${API_ENDPOINTS.getAcadFacilities}?af_sec=${sectionId}`);
+        const response = await axios.get(`${API_ENDPOINTS.getAcadFacilities}`);
         const facilities = response.data.data || [];
-        const currentFacility = facilities.find(f => f.section.sec_page === pageId && f.af_sec === sectionId && f.text?.text_type === 3);
+        const currentFacility = facilities.find(f => f?.section.sec_page === pageId && f?.af_sec === sectionId && f.text?.text_type === 3);
         if (currentFacility?.text?.text_id) {
           textId = currentFacility.text.text_id;
         }
@@ -71,7 +71,20 @@ const FacilitiesPiece = forwardRef(({sectionId, pageId}, ref) => {
           text_sec: sectionId,
         };
         const textRes = await axios.post(`${API_ENDPOINTS.createText}`, { texts: [textPayload] });
-        textId = textRes.data.data?.text_id;
+        const createdTextRaw = textRes.data.data;
+        let createdText;
+        if (Array.isArray(createdTextRaw)) {
+          createdText = createdTextRaw.find(
+            t => parseInt(t.text_sec) === parseInt(sectionId)
+          );
+        } else if (
+          createdTextRaw &&
+          parseInt(createdTextRaw.text_sec) === parseInt(sectionId)
+        ) {
+          createdText = createdTextRaw;
+        }
+
+        textId = createdText.text_id;
       }
 
       const imageId = await getImageIdByUrl(selectedImage);
@@ -116,13 +129,13 @@ const FacilitiesPiece = forwardRef(({sectionId, pageId}, ref) => {
   useEffect(() => {
     const fetchFacitlies = async () => {
       try {
-        const response = await axios.get(`${API_ENDPOINTS.getAcadFacilities}?af_sec=${sectionId}`);
+        const response = await axios.get(`${API_ENDPOINTS.getAcadFacilities}`);
         const acadfacilities = response.data.data || [];
         if (acadfacilities.length > 0) {
           const acadfacility = acadfacilities.find(item =>
-            item.section.sec_page === pageId &&
-            item.af_sec === sectionId &&
-            item.text?.text_type === 3
+            item?.section?.sec_page === pageId &&
+            item?.af_sec === sectionId &&
+            item?.text?.text_type === 3
           );
 
           if (acadfacility) {

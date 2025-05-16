@@ -83,7 +83,7 @@ const ServicePieceSlider = forwardRef(({sectionId, pageId}, ref) => {
           s_id: item.id,
           s_title: item.title || '',
           s_subtitle: item.subtitle || '',
-          s_img: item.image ? await getImageIdByUrl(item.image) : 0,
+          s_img: item.image ? await getImageIdByUrl(item.image) : null,
           display: item.display ? 1 : 0,
           active: 1,
         }
@@ -113,11 +113,11 @@ const ServicePieceSlider = forwardRef(({sectionId, pageId}, ref) => {
   useEffect(() => {
     const fetchSliders = async () => {
         try {
-            const response = await axios.get(`${API_ENDPOINTS.getService}?ban_sec=${sectionId}`);
+            const response = await axios.get(`${API_ENDPOINTS.getService}`);
             const services = response.data?.data || [];
 
             if (services.length > 0) {
-            const validServices = services.filter(item => item?.section?.sec_page === pageId);
+            const validServices = services.filter(item => item?.section?.sec_id === sectionId && item?.section?.sec_page === pageId);
 
             const formattedData = validServices.map(item => ({
               id: item.s_id.toString(),

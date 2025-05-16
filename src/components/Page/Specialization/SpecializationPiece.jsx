@@ -50,7 +50,7 @@ const SpecializationPiece = forwardRef(({sectionId, pageId}, ref) => {
       try {
         const response = await axios.get(`${API_ENDPOINTS.getSpecialization}?ras_sec=${sectionId}`);
         const specialization = response.data.data || [];
-        const currentSpecialization = specialization.find(f => f.section.sec_page === pageId && f.ras_sec === sectionId && f.text?.text_type === 5);
+        const currentSpecialization = specialization.find(f => f?.section?.sec_page === pageId && f?.ras_sec === sectionId && f.text?.text_type === 5);
         if (currentSpecialization?.text?.text_id) {
           textId = currentSpecialization.text.text_id;
         }
@@ -127,9 +127,9 @@ const SpecializationPiece = forwardRef(({sectionId, pageId}, ref) => {
         const specializations = response.data.data || [];
         if (specializations.length > 0) {
           const specialization = specializations.find(item =>
-            item.section.sec_page === pageId &&
-            item.ras_sec === sectionId &&
-            item.text?.text_type === 5
+            item?.section?.sec_page === pageId &&
+            item?.ras_sec === sectionId &&
+            item?.text?.text_type === 5
           );
 
           if (specialization) {
