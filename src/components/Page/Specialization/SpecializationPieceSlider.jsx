@@ -4,7 +4,7 @@ import MediaLibraryModal from "../../MediaLibraryModal";
 import axios from "axios";
 import { API_ENDPOINTS, API } from "../../../service/APIConfig";
 
-const SpecializationPieceSlider = forwardRef(({specializationId}, ref) => {
+const SpecializationPieceSlider = forwardRef(({specializationId, sectionId, pageId}, ref) => {
   const [currentSliderId, setCurrentSliderId] = useState(null);
   const [currentField, setCurrentField] = useState("");
   const [isMediaLibraryOpen, setMediaLibraryOpen] = useState(false);
@@ -108,8 +108,6 @@ const SpecializationPieceSlider = forwardRef(({specializationId}, ref) => {
 
         if (subservices.length > 0 && specializationId) {
           const validSubservices = subservices.filter(item => item.ss_ras === specializationId);
-
-
           const formattedData = validSubservices.map(item => ({
             id: item.ss_id.toString(),
             title: item.ss_title || '',

@@ -633,7 +633,7 @@ const PageField = () => {
                 ss_title: ss.title,
                 ss_subtitle: ss.subtitle,
                 ss_img: ss.image,
-                display: ss.display,
+                display: parseInt(ss.display) || parseInt(0),
             };
             const ssId = ss.id || ss.ss_id;
             const ssRasId = ss.ss_ras;

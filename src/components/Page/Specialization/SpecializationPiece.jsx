@@ -423,7 +423,12 @@ const SpecializationPiece = forwardRef(({sectionId, pageId}, ref) => {
           )}
         </div>
         <div className="mb-4">
-          <SpecializationPieceSLider ref={subserviceRef} specializationId={rasId}/>
+          <SpecializationPieceSLider
+            ref={subserviceRef}
+            specializationId={rasId}
+            pageId={pageId}
+            sectionId={sectionId}
+            />
         </div>
       </details>
     </div>
