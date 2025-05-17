@@ -130,9 +130,11 @@ const BannerPiece = forwardRef(({sectionId, pageId}, ref) => {
             } catch (error) {
                 console.error("Error toggling visibility:", error);
                 await Swal.fire({
-                    icon: 'error',
-                    title: 'Oops...',
-                    text: 'Something went wrong!',
+                icon: 'error',
+                title: 'Error!',
+                text: 'Something went wrong while deleting.',
+                timer: 1000,
+                showConfirmButton: false,
                 });
             }
         }
