@@ -3,6 +3,7 @@ import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import MediaLibraryModal from "../MediaLibraryModal";
 import axios from "axios";
 import { API_ENDPOINTS, API } from "../../service/APIConfig";
+import Swal from "sweetalert2";
 
 const DeveloperFieldSocial = forwardRef(({ formData, setFormData }, ref) => {
   const [currentSliderId, setCurrentSliderId] = useState(null);
@@ -64,45 +65,6 @@ const DeveloperFieldSocial = forwardRef(({ formData, setFormData }, ref) => {
     setMediaLibraryOpen(true);
   };
 
-  // const handleImageSelect = (imageUrl) => {
-  //   const finalUrl = typeof imageUrl === "object" && imageUrl?.url ? imageUrl.url : imageUrl;
-
-  //   setSlider((prevSlider) => {
-  //     const updated = prevSlider.map((item) =>
-  //       item.id === currentSliderId
-  //         ? {
-  //             ...item,
-  //             [currentField]: finalUrl || "",
-  //             // ...(finalUrl === "" && { img: { img: "" } })
-  //             img: { img: finalUrl ? finalUrl.split('/').pop() : "" }
-  //           }
-  //         : item
-  //     );
-  //     return updated;
-  //   });
-
-  //   setFormData((prevForm) => {
-  //     const updated = Array.isArray(prevForm.socialSlider)
-  //       ? prevForm.socialSlider.map((item) =>
-  //           item.id === currentSliderId || item.ds_id?.toString() === currentSliderId?.toString()
-  //             ? {
-  //                 ...item,
-  //                 image: finalUrl || "",
-  //                 img: { img: finalUrl ? finalUrl.split('/').pop() : "" }
-  //               }
-  //             : item
-  //         )
-  //       : prevForm.socialSlider;
-
-  //     return {
-  //       ...prevForm,
-  //       socialSlider: updated,
-  //     };
-  //   });
-
-  //   setMediaLibraryOpen(false);
-  // };
-
   const handleImageSelect = (imageUrl, field) => {
     setSlider((prevSlider) =>
       prevSlider.map((item) => {
@@ -132,13 +94,41 @@ const DeveloperFieldSocial = forwardRef(({ formData, setFormData }, ref) => {
   };
 
   const handleDeleteSlider = async (sliderId) => {
-    if (!window.confirm("Are you sure you want to delete this social slider?")) return;
+    const result = await Swal.fire({
+        title: 'Are you sure ?',
+        text: 'This action will delete the section permanently.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, delete it!',
+        cancelButtonText: 'Cancel',
+        customClass: {
+            confirmButton: 'bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-blue-400 !mr-2',
+            cancelButton: '!bg-red-600 hover:!bg-red-700 text-white py-2 px-4 rounded focus:outline-none focus:ring-2 focus:!ring-red-400'
+        },
+    });
 
-    try {
-        await axios.put(`${API_ENDPOINTS.deleteSocialDeveloper}/${sliderId}`);
-        setSlider((prevSlider) => prevSlider.filter((item) => item.id !== sliderId));
-    } catch (error) {
-        console.error('Failed to delete slider:', error);
+    if (result.isConfirmed) {
+        try {
+            await axios.put(`${API_ENDPOINTS.deleteSocialDeveloper}/${sliderId}`);
+            setSlider((prevSlider) => prevSlider.filter((item) => item.id !== sliderId));
+            await Swal.fire({
+                icon: 'success',
+                title: 'Deleted!',
+                text: 'The section has been deleted.',
+                timer: 1000,
+                showConfirmButton: false,
+            });
+            window.location.reload();
+        } catch (error) {
+            console.error('Failed to delete section:', error);
+            await Swal.fire({
+              icon: 'error',
+              title: 'Error!',
+              text: 'Something went wrong while deleting.',
+              timer: 1000,
+              showConfirmButton: false,
+            });
+        }
     }
   };
 

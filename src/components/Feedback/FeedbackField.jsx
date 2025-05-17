@@ -79,8 +79,13 @@ const FeedBackField = () => {
                 icon: 'success',
                 title: 'Feedback Saved',
                 text: 'Your feedback has been successfully saved!',
-                timer: 2000,
-                showConfirmButton: false
+                timer: 1500,
+                showConfirmButton: false,
+                willClose: () => {
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 500);
+                }
             });
         } catch (err) {
             console.error("Error saving feedback:", err);

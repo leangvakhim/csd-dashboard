@@ -64,8 +64,13 @@ const EventsField = () => {
                 icon: 'success',
                 title: 'Saved!',
                 text: 'Event saved successfully!',
-                timer: 2000,
+                timer: 1500,
                 showConfirmButton: false,
+                willClose: () => {
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 500);
+                }
             });
         } catch (error) {
             console.error("Error saving:", error);

@@ -300,6 +300,11 @@ const ResearchField = () => {
                 customClass: {
                     popup: 'bg-white rounded-lg shadow-lg',
                     title: 'text-lg font-semibold text-green-600'
+                },
+                willClose: () => {
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 500);
                 }
             });
         } catch (err) {

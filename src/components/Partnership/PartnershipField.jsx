@@ -57,8 +57,13 @@ const PartnershipField = () => {
                 icon: 'success',
                 title: 'Success',
                 text: 'Partnership saved successfully!',
-                timer: 2000,
-                showConfirmButton: false
+                timer: 1500,
+                showConfirmButton: false,
+                willClose: () => {
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 500);
+                }
             });
         } catch (err) {
             Swal.close();

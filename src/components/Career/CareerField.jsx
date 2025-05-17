@@ -7,6 +7,7 @@ import { API_ENDPOINTS } from '../../service/APIConfig'
 import axios from 'axios';
 import { useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
+import Swal from 'sweetalert2'
 
 
 const CareerField = () => {
@@ -25,6 +26,41 @@ const CareerField = () => {
     });
 
     const handleSave = async () => {
+        try {
+            Swal.fire({
+                title: 'Saving Career...',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            await saveCareer();
+
+            Swal.fire({
+                icon: 'success',
+                title: 'Success!',
+                text: 'Career saved successfully.',
+                timer: 1500,
+                showConfirmButton: false,
+                willClose: () => {
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 500);
+                }
+            });
+
+        } catch (error) {
+            console.log('Unable to save career: ', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Failed to save career.',
+            });
+        }
+    };
+
+    const saveCareer = async () => {
         let res;
         const payload = {
             lang: formData.lang,
@@ -48,14 +84,13 @@ const CareerField = () => {
                 const { c_order, ...createPayload } = payload;
                 res = await axios.post(API_ENDPOINTS.createCareer, createPayload);
             }
-            alert("Career saved successfully!");
         } catch (err) {
             console.error("Error saving:", err);
             if (err.response?.data?.errors) {
                 console.error("Validation failed:", err.response.data.errors);
             }
         }
-    };
+    }
 
     useEffect(() => {
         if (eventData && eventData.data) {

@@ -163,7 +163,12 @@ const Setting = () => {
                 title: 'Saved!',
                 text: 'Settings saved successfully',
                 timer: 1500,
-                showConfirmButton: false
+                showConfirmButton: false,
+                willClose: () => {
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 500);
+                }
             });
         } catch (error) {
             Swal.fire({

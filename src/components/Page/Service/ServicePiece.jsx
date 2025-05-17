@@ -4,7 +4,7 @@ import axios from "axios";
 import { API_ENDPOINTS, API } from "../../../service/APIConfig";
 import Swal from "sweetalert2";
 
-const ServicePiece = forwardRef(({sectionId, pageId}, ref) => {
+const ServicePiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref) => {
   const [isRotatedButton, setIsRotatedButton] = useState(false);
   const [displayService, setDisplayService] = useState(0);
   const serviceSliderRef = useRef();

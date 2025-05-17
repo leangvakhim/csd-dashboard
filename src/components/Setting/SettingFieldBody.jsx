@@ -38,8 +38,13 @@ const SettingFieldBody = () => {
                 icon: 'success',
                 title: 'Success',
                 text: 'Setting contact saved successfully.',
-                timer: 2000,
-                showConfirmButton: false
+                timer: 1500,
+                showConfirmButton: false,
+                willClose: () => {
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 500);
+                }
             });
         } catch (error) {
             Swal.close();

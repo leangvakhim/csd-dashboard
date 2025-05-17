@@ -42,8 +42,13 @@ const NewsField = () => {
                 icon: 'success',
                 title: 'Saved!',
                 text: 'News saved successfully!',
-                timer: 2000,
+                timer: 1500,
                 showConfirmButton: false,
+                willClose: () => {
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 500);
+                }
             });
         } catch (error) {
             console.error("Error saving:", error);

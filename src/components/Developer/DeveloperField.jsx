@@ -84,6 +84,7 @@ const DeveloperField = () => {
       }
 
       if (developerId) {
+        setFormData(prev => ({ ...prev, d_id: developerId }));
         await saveDeveloperSocials(developerId);
       }
 
@@ -168,8 +169,13 @@ const handleSubmit = async () => {
       icon: 'success',
       title: 'Success!',
       text: 'Developer saved successfully.',
-      timer: 2000,
+      timer: 1500,
       showConfirmButton: false,
+      willClose: () => {
+          setTimeout(() => {
+              window.location.reload();
+          }, 500);
+      }
     });
 
   } catch (error) {
