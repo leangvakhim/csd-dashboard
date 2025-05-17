@@ -62,7 +62,7 @@ const FacultyFieldBackground = forwardRef(({ formData = {}, setFormData = {}, f_
   const handleAddBackground = async () => {
 
     const newBackground = {
-      id: `${Date.now()}`,
+      id: (background.length + 1).toString(),
       f_id: f_id,
       title: `University ${background.length + 1}`,
       fbg_name: null,
@@ -172,8 +172,18 @@ const FacultyFieldBackground = forwardRef(({ formData = {}, setFormData = {}, f_
                 active: Boolean(item.active ?? 1),
               };
             });
-
-            setBackground(formatted);
+            if (formatted.length > 0) {
+              setBackground(formatted);
+            } else {
+              setBackground([{
+                  id: "1",
+                  f_id: f_id,
+                  title: `University 1`,
+                  fbg_name: `University 1`,
+                  fbg_img: null,
+                  display: 0,
+              }]);
+            }
           }
         })
         .catch(err => console.error("❌ Error fetching faculty background data:", err));

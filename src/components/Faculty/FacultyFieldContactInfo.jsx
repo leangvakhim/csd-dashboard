@@ -111,7 +111,18 @@ const FacultyFieldContactInfo = forwardRef(({ f_id }, ref) => {
                             display: item.display ?? 1,
                             active: item.active ?? 1
                         }));
-                        setContactinfo(formatted);
+                        if (formatted.length > 0) {
+                            setContactinfo(formatted);
+                        } else {
+                            setContactinfo([{
+                                id: "1",
+                                f_id: f_id,
+                                title: `Contact info 1`,
+                                fc_name: `Contact info 1`,
+                                display: 0,
+                                active: 1,
+                            }]);
+                        }
                     }
                 })
                 .catch(err => console.error("❌ Error fetching faculty contact info:", err));

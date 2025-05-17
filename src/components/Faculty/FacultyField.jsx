@@ -292,7 +292,7 @@ const FacultyField = () => {
                     const res = await axios.get(`${API_ENDPOINTS.getFacultyInfo}/${info.finfo_id}`);
 
                     if (res.data && res.data.data) {
-                        if(res.data.data.faculty.f_id === f_id){
+                        if(res?.data?.data?.faculty?.f_id === f_id){
                             await axios.post(`${API_ENDPOINTS.updateFacultyInfo}/${info.finfo_id}`, payload);
                         }else {
                             await axios.post(API_ENDPOINTS.createFacultyInfo, { f_id, finfo_f: [payload] });

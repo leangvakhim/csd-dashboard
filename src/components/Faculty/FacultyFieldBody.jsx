@@ -296,16 +296,21 @@ const FacultyFieldBody = ({
                     </div>
                     {/* Third row */}
                     <div>
-                        <div className="grid grid-cols-1 md:!grid-cols-3 gap-4 py-2">
+                        <div className="grid grid-cols-1 md:!grid-cols-2 gap-4 py-2">
                             {/* Social */}
                             <FacultyFieldSocial ref={socialRef} f_id={formData.f_id} />
                             {/* Contact Info */}
                             <FacultyFieldContactInfo ref={contactRef} f_id={formData.f_id}/>
+                        </div>
+                    </div>
+                    {/* fourth row */}
+                    <div>
+                        <div className="grid grid-cols-1 gap-4 py-2">
                             {/* Faculty Backgorund */}
                             <FacultyFieldBackground ref={backgroundRef} f_id={formData.f_id}/>
                         </div>
                     </div>
-                    {/* Fourth row */}
+                    {/* fifth row */}
                     <div>
                         <div className="grid grid-cols-1 gap-4 py-2">
                             {/* Faculty Information */}

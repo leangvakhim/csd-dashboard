@@ -157,7 +157,7 @@ const FacultyDashboard = () => {
                         </tr>
                         ) : (
                         facultyItems.map((item, index) => (
-                            <tr key={item.f_id} className="odd:bg-white even:bg-gray-50 border">
+                            <tr key={item.f_id} className="odd:bg-white even:bg-gray-50 border ">
                                 <td
                                     scope="row"
                                     className="px-6 py-4"
@@ -177,8 +177,8 @@ const FacultyDashboard = () => {
                                         {item.display ? 'Enable' : 'Disable'}
                                     </span>
                                 </td>
-                                <td className="px-2 py-6 flex gap-2 items-center relative">
-                                    <a onClick={() => moveItem(index, 'up')} className="cursor-pointer font-medium text-gray-900 hover:text-blue-500 hover:underline">
+                                <td className="px-2 py-10 flex gap-2 items-center relative">
+                                    <a onClick={() => moveItem(index, 'up')} className=" cursor-pointer font-medium text-gray-900 hover:text-blue-500 hover:underline">
                                         <i className="ti ti-chevron-up text-xl"></i>
                                     </a> |
                                     <a onClick={() => moveItem(index, 'down')} className="cursor-pointer font-medium text-gray-900 hover:text-blue-500 hover:underline">
