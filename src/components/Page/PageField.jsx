@@ -915,7 +915,6 @@ const PageField = () => {
                 }
             }
         }
-        // setLoading(false);
     };
     const saveSubStudyDegreeSliders = async (studyId, sliders) => {
         if (!studyId || !Array.isArray(sliders)) return;
