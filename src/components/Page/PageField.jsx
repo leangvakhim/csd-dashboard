@@ -164,13 +164,14 @@ const PageField = () => {
     };
     const saveTestimonial = async (savedSectionId, savedPageId) => {
         const testimonials = await pageRef.current?.getTestimonials?.() || [];
+        const filtered = testimonials.filter(desc => parseInt(desc.t_sec) === parseInt(savedSectionId));
 
-        if (testimonials.length > 0 && savedSectionId) {
+        if (filtered.length > 0 && savedSectionId) {
             const existingResponse = await axios.get(API_ENDPOINTS.getTestimonial);
             const existingItems = (existingResponse.data?.data || []).filter(item => parseInt(item.t_sec) === parseInt(savedSectionId));
             const existingIds = existingItems.map(slide => slide.t_id);
             const existingTestimonials = existingItems.map(slide => slide.t_sec);
-            for (const testimonial of testimonials) {
+            for (const testimonial of filtered) {
 
                 const testimonialPayload = {
                     t_sec: savedSectionId,
