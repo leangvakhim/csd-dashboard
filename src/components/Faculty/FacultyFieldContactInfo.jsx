@@ -115,10 +115,10 @@ const FacultyFieldContactInfo = forwardRef(({ f_id }, ref) => {
                             setContactinfo(formatted);
                         } else {
                             setContactinfo([{
-                                id: "1",
+                                id: (contactinfo.length + 1).toString(),
                                 f_id: f_id,
-                                title: `Contact info 1`,
-                                fc_name: `Contact info 1`,
+                                title: `Contact info ${contactinfo.length + 1}`,
+                                fc_name: null,
                                 display: 0,
                                 active: 1,
                             }]);

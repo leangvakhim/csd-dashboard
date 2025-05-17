@@ -41,7 +41,7 @@ const FacultyFieldInfo = forwardRef(({ f_id }, ref) => {
                     finfo_side: item.finfo_side,
                     display: item.display,
                     active: item.active,
-                    finfo_id: parseInt(item.id),
+                    ...(typeof item.finfo_id === 'number' ? { finfo_id: item.finfo_id } : {}),
                 };
 
                 if (typeof item.id === 'number') {
@@ -104,8 +104,9 @@ const FacultyFieldInfo = forwardRef(({ f_id }, ref) => {
 
     const handleAddInfo = () => {
         const newInfo = {
-            id: (info.length + 1).toString(),
+            id: `temp-${Date.now()}`,
             f_id: f_id,
+            finfo_id: null,
             finfo_title: `Information ${info.length + 1}`,
             finfo_detail: '',
             finfo_side: null,

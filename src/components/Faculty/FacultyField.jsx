@@ -262,6 +262,7 @@ const FacultyField = () => {
             console.warn("Cannot save info: missing faculty ID.");
             return;
         }
+
         const infoData = infoRef.current?.getData?.() || [];
 
         const seen = new Set();
@@ -276,7 +277,7 @@ const FacultyField = () => {
 
         if (!Array.isArray(infoData)) return;
 
-        for (const info of infoData) {
+        for (const info of filteredInfos) {
             const payload = {
                 finfo_order: info.finfo_order,
                 finfo_title: info.finfo_title,
@@ -284,34 +285,41 @@ const FacultyField = () => {
                 finfo_side: info.finfo_side,
                 finfo_f: f_id,
                 display: info.display ?? 1,
-                active: info.active ?? 1
+                active: info.active ?? 1,
+                finfo_id: null,
             };
 
             try {
-                if (info.finfo_id) {
-                    const res = await axios.get(`${API_ENDPOINTS.getFacultyInfo}/${info.finfo_id}`);
-
-                    if (res.data && res.data.data) {
-                        if(res?.data?.data?.faculty?.f_id === f_id){
+                if (
+                    typeof info.finfo_id === 'number' &&
+                    info.finfo_id > 0 &&
+                    !String(info.finfo_id).startsWith("temp")
+                ) {
+                    try {
+                        const res = await axios.get(`${API_ENDPOINTS.getFacultyInfo}/${info.finfo_id}`);
+                        if (res?.data?.data?.faculty?.f_id === f_id) {
                             await axios.post(`${API_ENDPOINTS.updateFacultyInfo}/${info.finfo_id}`, payload);
-                        }else {
+                        } else {
                             await axios.post(API_ENDPOINTS.createFacultyInfo, { f_id, finfo_f: [payload] });
                         }
-                    } else {
-                        await axios.post(API_ENDPOINTS.createFacultyInfo, { f_id, finfo_f: [payload] });
+                    } catch (error) {
+                        if (error.response?.status === 404) {
+                            await axios.post(API_ENDPOINTS.createFacultyInfo, { f_id, finfo_f: [payload] });
+                        } else {
+                            console.error("❌ Error validating finfo_id:", error);
+                        }
                     }
                 } else {
                     await axios.post(API_ENDPOINTS.createFacultyInfo, { f_id, finfo_f: [payload] });
                 }
             } catch (error) {
-                if (error.response && error.response.status === 404) {
-                    await axios.post(API_ENDPOINTS.createFacultyInfo, { f_id, finfo_f: [payload] });
-                } else {
-                    console.error("❌ Error saving faculty info:", error);
-                }
+                console.error("❌ Error saving faculty info:", error);
             }
         }
-        if (infoData.length > 0) {reorderFacultyInfo();}
+
+        if (infoData.length > 0) {
+            reorderFacultyInfo();
+        }
     };
 
     const reorderFacultyInfo = async () => {
