@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react'
+import React, {useEffect, useState} from 'react'
 import { useLoading } from '../components/Context/LoadingContext'
 import Aside from '../components/Aside'
 import ResearchHeader from '../components/Research/ResearchHeader'
@@ -6,20 +6,18 @@ import ResearchDashboard from '../components/Research/ResearchDashboard'
 
 const Research = () => {
 
-    const { loading, setLoading } = useLoading();
+    const [username, setUsername] = useState('');
 
     useEffect(() => {
-        if (loading) {
-        const timer = setTimeout(() => {
-            setLoading(false);
-        }, 200);
-        return () => clearTimeout(timer);
+        const storedUsername = localStorage.getItem("username");
+        if (storedUsername) {
+        setUsername(storedUsername);
         }
-    }, [loading]);
+    }, []);
 
     return (
         <div id="main-wrapper" className=" flex">
-            <Aside/>
+            <Aside username={username}/>
 
             <div className=" w-full page-wrapper overflow-hidden">
                 <ResearchHeader/>

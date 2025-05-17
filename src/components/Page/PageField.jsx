@@ -2158,9 +2158,18 @@ const PageField = () => {
         }
     };
 
+    const [username, setUsername] = useState('');
+
+    useEffect(() => {
+        const storedUsername = localStorage.getItem("username");
+        if (storedUsername) {
+        setUsername(storedUsername);
+        }
+    }, []);
+
     return (
         <div id="main-wrapper" className=" flex">
-            <Aside/>
+        <Aside username={username}/>
             <div className=" w-full page-wrapper overflow-hidden">
                 <PageFieldHeader onSave={handleSave}/>
                 <PageFieldBody

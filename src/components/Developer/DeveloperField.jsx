@@ -153,44 +153,53 @@ const DeveloperField = () => {
         }
     };
 
-const handleSubmit = async () => {
-  try {
-    Swal.fire({
-      title: 'Saving Developer...',
-      allowOutsideClick: false,
-      didOpen: () => {
-        Swal.showLoading();
+  const handleSubmit = async () => {
+    try {
+      Swal.fire({
+        title: 'Saving Developer...',
+        allowOutsideClick: false,
+        didOpen: () => {
+          Swal.showLoading();
+        }
+      });
+
+      await saveDeveloper();
+
+      Swal.fire({
+        icon: 'success',
+        title: 'Success!',
+        text: 'Developer saved successfully.',
+        timer: 1500,
+        showConfirmButton: false,
+        willClose: () => {
+            setTimeout(() => {
+                window.location.reload();
+            }, 500);
+        }
+      });
+
+    } catch (error) {
+      console.log('Unable to save developer: ', error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Failed to save developer.',
+      });
+    }
+  };
+
+    const [username, setUsername] = useState('');
+
+    useEffect(() => {
+      const storedUsername = localStorage.getItem("username");
+      if (storedUsername) {
+        setUsername(storedUsername);
       }
-    });
+    }, []);
 
-    await saveDeveloper();
-
-    Swal.fire({
-      icon: 'success',
-      title: 'Success!',
-      text: 'Developer saved successfully.',
-      timer: 1500,
-      showConfirmButton: false,
-      willClose: () => {
-          setTimeout(() => {
-              window.location.reload();
-          }, 500);
-      }
-    });
-
-  } catch (error) {
-    console.log('Unable to save developer: ', error);
-    Swal.fire({
-      icon: 'error',
-      title: 'Error',
-      text: 'Failed to save developer.',
-    });
-  }
-};
-
-  return (
-    <div id="main-wrapper" className=" flex">
-      <Aside />
+    return (
+      <div id="main-wrapper" className=" flex">
+          <Aside username={username}/>
 
       <div className=" w-full page-wrapper overflow-hidden">
         <DeveloperFieldHeader handleSubmit={handleSubmit} />

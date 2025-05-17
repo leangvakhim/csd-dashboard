@@ -1,13 +1,18 @@
 import React from 'react'
+import axios from 'axios';
 import logo from '../img/rupp.png';
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect, useRef } from 'react';
+import { API_ENDPOINTS } from '../service/APIConfig';
+import Swal from 'sweetalert2';
 
 const Login = () => {
     const navigate = useNavigate();
     const canvasRef = useRef(null);
     const [captchaAnswer, setCaptchaAnswer] = useState(null);
     const [userInput, setUserInput] = useState("");
+    const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
 
     useEffect(() => {
         generateCaptcha();
@@ -44,15 +49,57 @@ const Login = () => {
         }
     };
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        if (userInput === captchaAnswer) {
+const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (userInput !== captchaAnswer) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Incorrect verification code.',
+            customClass: {
+                confirmButton: '!bg-red-600 hover:!bg-red-700 text-white font-semibold py-2 px-4 rounded'
+            },
+            buttonsStyling: false
+        });
+        generateCaptcha();
+        return;
+    }
+
+    try {
+        const response = await axios.post(API_ENDPOINTS.login, {
+            username,
+            password,
+        });
+
+        const token = response.data?.data?.token;
+        if (token) {
+            localStorage.setItem("token", token);
+            localStorage.setItem("username", response.data.data.user.username);
             navigate('/menu');
-        }else{
-            alert("Incorrect verification code.")
-            generateCaptcha();
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Login Failed',
+                text: 'Invalid credentials.',
+                customClass: {
+                    confirmButton: '!bg-red-600 hover:!bg-red-700 text-white font-semibold py-2 px-4 rounded'
+                },
+                buttonsStyling: false
+            });
         }
-    };
+    } catch (error) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Login Error',
+            text: error.response?.data?.message || 'Something went wrong.',
+            customClass: {
+                confirmButton: '!bg-red-600 hover:!bg-red-700 text-white font-semibold py-2 px-4 rounded'
+            },
+            buttonsStyling: false
+        });
+    }
+};
 
   return (
     <div class="flex flex-col w-full  overflow-hidden relative min-h-screen radial-gradient items-center justify-center g-0 px-4">
@@ -65,6 +112,8 @@ const Login = () => {
                         <label for="forUsername"
                         class="block text-sm font-semibold mb-2 text-gray-600">Username</label>
                     <input type="text" id="forUsername"
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
                         class="py-3 px-4 block w-full border-gray-200 rounded-md text-sm focus:border-blue-600 focus:ring-0 " aria-describedby="hs-input-helper-text"/>
                     </div>
 
@@ -72,6 +121,8 @@ const Login = () => {
                         <label for="forPassword"
                         class="block text-sm font-semibold mb-2 text-gray-600">Password</label>
                         <input type="password" id="forPassword"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
                         class="py-3 px-4 block w-full border-gray-200 rounded-md text-sm focus:border-blue-600 focus:ring-0 " aria-describedby="hs-input-helper-text"/>
                     </div>
 

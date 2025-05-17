@@ -105,9 +105,18 @@ const CareerField = () => {
             c_img: imageId,
         }));
     };
+    const [username, setUsername] = useState('');
+
+    useEffect(() => {
+        const storedUsername = localStorage.getItem("username");
+        if (storedUsername) {
+        setUsername(storedUsername);
+        }
+    }, []);
+
     return (
-        <div id="main-wrapper" class=" flex">
-            <Aside />
+        <div id="main-wrapper" className=" flex">
+            <Aside username={username}/>
 
             <div class=" w-full page-wrapper overflow-hidden">
                 <CareerFieldHeader onSave={handleSave}/>

@@ -1,15 +1,31 @@
 import React from 'react'
 import Swal from 'sweetalert2';
+import axios from 'axios';
 import logo from '../img/rupp.png';
 import profile from '../img/profile.svg';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { API_ENDPOINTS } from '../service/APIConfig';
 
-const Aside = () => {
+const Aside = ({ username }) => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const handleLogout = () => {
-    navigate('/login');
+  const handleLogout = async () => {
+    const token = localStorage.getItem('token');
+    try {
+      await axios.post(API_ENDPOINTS.logout, {}, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+      });
+    } catch (error) {
+      console.error('Logout failed:', error);
+    } finally {
+      localStorage.removeItem('token');
+      navigate('/login');
+    }
   };
 
   return (
@@ -99,7 +115,7 @@ const Aside = () => {
             <div class="bg-blue-500 p-5 rounded-md ">
                 <div className='flex items-center gap-2'>
                     <img src={profile} class="size-10" alt="profile" />
-                    <h5 class="text-sm font-light text-gray-700 ">leang vakhim</h5>
+                    <h5 className="text-sm font-light text-gray-700 ">{username}</h5>
                 </div>
                 <button
                   onClick={handleLogout}

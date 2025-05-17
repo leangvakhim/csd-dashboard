@@ -32,6 +32,7 @@ import DeveloperField from './components/Developer/DeveloperField';
 import GlobalLoading from './components/GlobalLoading';
 import { LoadingProvider } from './components/Context/LoadingContext';
 import Email from './pages/Email';
+import PrivateRoute from './components/PrivateRoute';
 
 function App() {
 
@@ -40,78 +41,41 @@ function App() {
       <Router>
         <GlobalLoading />
         <Routes>
+          <Route path="/login" element={<Login />} />
           <Route path='/' element={<Navigate to="/menu"/>}/>
-          <Route path='/menu' element={<Menu/>} />
-          <Route path='/page' element={<Page/>} />
-          <Route path='/page/page-detail' element={<PageField/>} />
-          <Route path='/faculty' element={<Faculty/>} />
-          <Route path='/faculty/faculty-detail' element={<FacultyField/>} />
-          <Route path='/event' element={<Event/>} />
-          <Route path='/event/event-detail' element={<EventsField/>} />
-          <Route path='/news' element={<New/>} />
-          <Route path='/news/news-details' element={<NewsField />} />
-          <Route path='/announcement' element={<Announcement/>} />
-          <Route path='/announcement/announcement-details' element={<AnnouncementField/>} />
-          <Route path='/career' element={<Career/>} />
-          <Route path='/career/career-details' element={<CareerField />} />
-          <Route path='/scholarship' element={<Scholarship/>} />
-          <Route path='/scholarship/scholarship-details' element={<ScholarshipField />} />
-          <Route path='/research' element={<Research/>} />
-          <Route path='/research/research-detail' element={<ResearchField/>} />
-          <Route path='/lab' element={<Researchlab/>} />
-          <Route path='/lab/researchlab-details' element={<ResearchlabField/>} />
-          <Route path='/feedback' element={<Feedback/>} />
-          <Route path='/feedback/feedback-details' element={<FeedBackField/>} />
-          <Route path='/partnership' element={<Partnership/>} />
-          <Route path='/partnership/partnership-details' element={<PartnershipField />} />
-          <Route path='/image' element={<Image/>} />
-          <Route path='/email' element={<Email/>} />
-          <Route path='/developer' element={<Developer/>} />
-          <Route path='/developer/developer-details' element={<DeveloperField/>} />
-          <Route path='/setting' element={<Setting/>} />
-          <Route path='/setting/setting-details' element={<SettingFieldBody/>} />
-          <Route path='/login' element={<Login/>} />
+          <Route path='/menu' element={<PrivateRoute><Menu username={localStorage.getItem("username")} /></PrivateRoute>} />
+          <Route path='/page' element={<PrivateRoute><Page username={localStorage.getItem("username")} /></PrivateRoute>} />
+          <Route path='/page/page-detail' element={<PrivateRoute><PageField username={localStorage.getItem("username")} /></PrivateRoute>} />
+          <Route path='/faculty' element={<PrivateRoute><Faculty username={localStorage.getItem("username")} /></PrivateRoute>} />
+          <Route path='/faculty/faculty-detail' element={<PrivateRoute><FacultyField username={localStorage.getItem("username")} /></PrivateRoute>} />
+          <Route path='/event' element={<PrivateRoute><Event username={localStorage.getItem("username")} /></PrivateRoute>} />
+          <Route path='/event/event-detail' element={<PrivateRoute><EventsField username={localStorage.getItem("username")} /></PrivateRoute>} />
+          <Route path='/news' element={<PrivateRoute><New username={localStorage.getItem("username")} /></PrivateRoute>} />
+          <Route path='/news/news-details' element={<PrivateRoute><NewsField username={localStorage.getItem("username")} /></PrivateRoute>} />
+          <Route path='/announcement' element={<PrivateRoute><Announcement username={localStorage.getItem("username")} /></PrivateRoute>} />
+          <Route path='/announcement/announcement-details' element={<PrivateRoute><AnnouncementField username={localStorage.getItem("username")} /></PrivateRoute>} />
+          <Route path='/career' element={<PrivateRoute><Career username={localStorage.getItem("username")} /></PrivateRoute>} />
+          <Route path='/career/career-details' element={<PrivateRoute><CareerField username={localStorage.getItem("username")} /></PrivateRoute>} />
+          <Route path='/scholarship' element={<PrivateRoute><Scholarship username={localStorage.getItem("username")} /></PrivateRoute>} />
+          <Route path='/scholarship/scholarship-details' element={<PrivateRoute><ScholarshipField username={localStorage.getItem("username")} /></PrivateRoute>} />
+          <Route path='/research' element={<PrivateRoute><Research username={localStorage.getItem("username")} /></PrivateRoute>} />
+          <Route path='/research/research-detail' element={<PrivateRoute><ResearchField username={localStorage.getItem("username")} /></PrivateRoute>} />
+          <Route path='/lab' element={<PrivateRoute><Researchlab username={localStorage.getItem("username")} /></PrivateRoute>} />
+          <Route path='/lab/researchlab-details' element={<PrivateRoute><ResearchlabField username={localStorage.getItem("username")} /></PrivateRoute>} />
+          <Route path='/feedback' element={<PrivateRoute><Feedback username={localStorage.getItem("username")} /></PrivateRoute>} />
+          <Route path='/feedback/feedback-details' element={<PrivateRoute><FeedBackField username={localStorage.getItem("username")} /></PrivateRoute>} />
+          <Route path='/partnership' element={<PrivateRoute><Partnership username={localStorage.getItem("username")} /></PrivateRoute>} />
+          <Route path='/partnership/partnership-details' element={<PrivateRoute><PartnershipField username={localStorage.getItem("username")} /></PrivateRoute>} />
+          <Route path='/image' element={<PrivateRoute><Image username={localStorage.getItem("username")} /></PrivateRoute>} />
+          <Route path='/email' element={<PrivateRoute><Email username={localStorage.getItem("username")} /></PrivateRoute>} />
+          <Route path='/developer' element={<PrivateRoute><Developer username={localStorage.getItem("username")} /></PrivateRoute>} />
+          <Route path='/developer/developer-details' element={<PrivateRoute><DeveloperField username={localStorage.getItem("username")} /></PrivateRoute>} />
+          <Route path='/setting' element={<PrivateRoute><Setting username={localStorage.getItem("username")} /></PrivateRoute>} />
+          <Route path='/setting/setting-details' element={<PrivateRoute><SettingFieldBody username={localStorage.getItem("username")} /></PrivateRoute>} />
         </Routes>
       </Router>
     </LoadingProvider>
   );
-
-  // return (
-  //   <Router>
-  //     <Routes>
-        // <Route path='/' element={<Navigate to="/menu"/>}/>
-        // <Route path='/menu' element={<Menu/>} />
-        // <Route path='/page' element={<Page/>} />
-        // <Route path='/page/page-detail' element={<PageField/>} />
-        // <Route path='/faculty' element={<Faculty/>} />
-        // <Route path='/faculty/faculty-detail' element={<FacultyField/>} />
-        // <Route path='/event' element={<Event/>} />
-        // <Route path='/event/event-detail' element={<EventsField/>} />
-        // <Route path='/news' element={<New/>} />
-        // <Route path='/news/news-details' element={<NewsField />} />
-        // <Route path='/announcement' element={<Announcement/>} />
-        // <Route path='/announcement/announcement-details' element={<AnnouncementField/>} />
-        // <Route path='/career' element={<Career/>} />
-        // <Route path='/career/career-details' element={<CareerField />} />
-        // <Route path='/scholarship' element={<Scholarship/>} />
-        // <Route path='/scholarship/scholarship-details' element={<ScholarshipField />} />
-        // <Route path='/research' element={<Research/>} />
-        // <Route path='/research/research-detail' element={<ResearchField/>} />
-        // <Route path='/lab' element={<Researchlab/>} />
-        // <Route path='/lab/researchlab-details' element={<ResearchlabField/>} />
-        // <Route path='/feedback' element={<Feedback/>} />
-        // <Route path='/feedback/feedback-details' element={<FeedBackField/>} />
-        // <Route path='/partnership' element={<Partnership/>} />
-        // <Route path='/partnership/partnership-details' element={<PartnershipField />} />
-        // <Route path='/image' element={<Image/>} />
-        // <Route path='/developer' element={<Developer/>} />
-        // <Route path='/developer/developer-details' element={<DeveloperField/>} />
-        // <Route path='/setting' element={<Setting/>} />
-        // <Route path='/setting/setting-details' element={<SettingFieldBody/>} />
-        // <Route path='/login' element={<Login/>} />
-  //     </Routes>
-  //   </Router>
-  // )
 }
 
 export default App

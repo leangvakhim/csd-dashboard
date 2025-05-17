@@ -136,9 +136,18 @@ const ScholarshipField = () => {
         }));
     };
 
+    const [username, setUsername] = useState('');
+
+    useEffect(() => {
+        const storedUsername = localStorage.getItem("username");
+        if (storedUsername) {
+        setUsername(storedUsername);
+        }
+    }, []);
+
     return (
-        <div id="main-wrapper" className="flex">
-            <Aside />
+        <div id="main-wrapper" className=" flex">
+            <Aside username={username}/>
             <div className="w-full page-wrapper overflow-hidden">
                 <ScholarshipFieldHeader onSave={handleSave} loading={loading} />
                 <ScholarshipFieldBody
