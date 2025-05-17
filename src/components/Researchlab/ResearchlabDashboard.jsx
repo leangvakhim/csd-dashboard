@@ -14,7 +14,11 @@ const ResearchlabDashboard = () => {
         const fetchEvents = async () => {
             try {
                 const response = await axios.get(API_ENDPOINTS.getResearchlab);
-                setResearchlabItems(Array.isArray(response.data.data) ? response.data.data : []);
+                const result = (response.data.data || []);
+                const normalized = Array.isArray(result) ? result : result ? [result] : [];
+                const sortedResearchlabs = normalized.sort((a, b) => b.rsdl_order - a.rsdl_order);
+                setResearchlabItems(sortedResearchlabs);
+
             } catch (error) {
                 console.error('Failed to fetch researchlab:', error);
             }
@@ -83,10 +87,10 @@ const handleDelete = async (id) => {
         // Swap items locally
         [newItems[index], newItems[targetIndex]] = [newItems[targetIndex], newItems[index]];
 
-        // Update f_order values in ascending order
+        // Update e_order values
         const updatedItems = newItems.map((item, i) => ({
             ...item,
-            rsdl_order: i + 1
+            rsdl_order: newItems.length - i
         }));
 
         setResearchlabItems(updatedItems);
@@ -104,7 +108,7 @@ const handleDelete = async (id) => {
             rsdl_order: item.rsdl_order
         }));
 
-        await axios.put(`${API_ENDPOINTS.updateResearchlab}`, payload);
+        await axios.put(`${API_ENDPOINTS.updateResearchlabOrder}`, payload);
     };
 
     const duplicateItem = async (id) => {

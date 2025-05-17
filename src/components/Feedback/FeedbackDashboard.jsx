@@ -14,16 +14,10 @@ const FeedbackDashboard = () => {
         const fetchNews = async () => {
             try {
                 const response = await axios.get(API_ENDPOINTS.getFeedback);
-                let newsArray = response.data.data;
-
-                if (newsArray && !Array.isArray(newsArray)) {
-                    newsArray = [newsArray];
-                } else if (!newsArray) {
-                    newsArray = [];
-                }
-
-                const sortedCareer = newsArray.sort((a, b) => b.fb_order - a.fb_order);
-                setEventItems(sortedCareer);
+                const result = (response.data.data || []);
+                const normalized = Array.isArray(result) ? result : result ? [result] : [];
+                const sortedFeedback = normalized.sort((a, b) => b.fb_order - a.fb_order);
+                setEventItems(sortedFeedback);
             } catch (error) {
                 console.error('Failed to fetch career:', error);
             }
@@ -69,7 +63,7 @@ const FeedbackDashboard = () => {
             fb_order: item.fb_order
         }));
 
-        await axios.put(`${API_ENDPOINTS.updateFeedback}`, payload);
+        await axios.put(`${API_ENDPOINTS.updateFeedbackOrder}`, payload);
     };
 
     const duplicateItem = async (id) => {
