@@ -1,6 +1,5 @@
 import React from 'react'
-// import logo from '../Component/image/rupplogo.png';
-import logo from '../img/samplelogo.svg';
+import logo from '../img/rupp.png';
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect, useRef } from 'react';
 
