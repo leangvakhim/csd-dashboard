@@ -1,6 +1,6 @@
 import React from 'react'
 import Swal from 'sweetalert2';
-import logo from '../img/samplelogo.svg';
+import logo from '../img/rupp.png';
 import profile from '../img/profile.svg';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 
