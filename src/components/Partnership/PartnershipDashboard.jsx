@@ -135,7 +135,7 @@ const PartnershipDashboard = () => {
 
     return (
         <div className="relative overflow-x-auto shadow-md px-8">
-            <table className="w-full text-sm text-left border border-gray-200 text-gray-500 ">
+            <table className="w-full text-sm text-left border border-gray-200 text-gray-500 mb-24">
                 <thead className="text-xs text-gray-700  uppercase bg-gray-50 ">
                     <tr>
                         <th scope="col" className="px-6 py-3">

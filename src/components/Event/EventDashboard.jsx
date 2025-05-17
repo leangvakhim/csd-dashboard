@@ -135,8 +135,8 @@ const EventDashboard = () => {
 
 
     return (
-        <div className="relative overflow-x-auto shadow-md px-8">
-            <table className="w-full text-sm text-left border border-gray-200 text-gray-500 ">
+        <div className="relative overflow-x-auto shadow-md px-8 ">
+            <table className="w-full text-sm text-left border border-gray-200 text-gray-500 mb-24">
                 <thead className="text-xs text-gray-700  uppercase bg-gray-50 ">
                     <tr>
                         <th scope="col" className="px-6 py-3">
@@ -201,13 +201,13 @@ const EventDashboard = () => {
                                     <div className="relative">
                                         <button
                                             onClick={(e) => {
-                                            const button = e.currentTarget;
-                                            const parent = button.offsetParent;
-                                            const rect = button.getBoundingClientRect();
-                                            const parentRect = parent.getBoundingClientRect();
-                                            setDropdownPosition({ top: rect.bottom - parentRect.top, left: rect.left - parentRect.left });
-                                            setActiveDropdown(activeDropdown === item.e_id ? null : item.e_id);
-                                        }}
+                                                const button = e.currentTarget;
+                                                const parent = button.offsetParent;
+                                                const rect = button.getBoundingClientRect();
+                                                const parentRect = parent.getBoundingClientRect();
+                                                setDropdownPosition({ top: rect.bottom - parentRect.top, left: rect.left - parentRect.left });
+                                                setActiveDropdown(activeDropdown === item.e_id ? null : item.e_id);
+                                            }}
                                             className="font-medium text-gray-900 hover:text-blue-500"
                                         >
                                             <i className="ti ti-dots-vertical text-xl"></i>
