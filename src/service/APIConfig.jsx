@@ -417,6 +417,9 @@ const API_ENDPOINTS = {
     getMail: `${API_BASEURL}/emails`,
     deleteMail: `${API_BASEURL}/emails/visibility`,
 
+    // user
+    login: `${API_BASEURL}/login`,
+    logout: `${API_BASEURL}/logout`,
 };
 
 export { API_BASEURL, API_ENDPOINTS, API };
