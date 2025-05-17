@@ -89,10 +89,10 @@ const handleDelete = async (id) => {
         // Swap items locally
         [newItems[index], newItems[targetIndex]] = [newItems[targetIndex], newItems[index]];
 
-        // Update a_order values in ascending order
+        // Update e_order values
         const updatedItems = newItems.map((item, i) => ({
             ...item,
-            a_order: i + 1, // Assuming a_order field for ordering
+            am_orders: newItems.length - i
         }));
 
         setAnnouncementItems(updatedItems);
@@ -100,17 +100,17 @@ const handleDelete = async (id) => {
         try {
             await updateOrderOnServer(updatedItems);
         } catch (error) {
-            console.error('Failed to update order on server:', error);
+            console.error("Failed to update order on server:", error);
         }
     };
 
     const updateOrderOnServer = async (items) => {
         const payload = items.map((item) => ({
-            a_id: item.a_id,
-            a_order: item.a_order,
+            am_id: item.am_id,
+            am_orders: item.am_orders,
         }));
 
-        await axios.put(API_ENDPOINTS.updateAnnouncementOrder, payload); // Adjust endpoint
+        await axios.post(API_ENDPOINTS.updateAnnouncementOrder, payload); // Adjust endpoint
     };
 
     const duplicateItem = async (id) => {

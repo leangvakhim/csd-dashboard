@@ -12,15 +12,10 @@ const ScholarshipDashboard = () => {
         const fetchScholarships = async () => {
             try {
                 const response = await axios.get(API_ENDPOINTS.getScholarship);
-                let scholarships = response.data.data;
+                const result = (response.data.data || []);
+                const normalized = Array.isArray(result) ? result : result ? [result] : [];
+                const sortedScholarships = normalized.sort((a, b) => b.sc_orders - a.sc_orders);
 
-                if (scholarships && !Array.isArray(scholarships)) {
-                    scholarships = [scholarships];
-                } else if (!scholarships) {
-                    scholarships = [];
-                }
-
-                const sortedScholarships = scholarships.sort((a, b) => b.fb_order - a.fb_order);
                 setEventItems(sortedScholarships);
             } catch (error) {
                 console.error('Failed to fetch scholarships:', error);
@@ -48,7 +43,7 @@ const ScholarshipDashboard = () => {
         // Update fb_order values
         const updatedItems = newItems.map((item, i) => ({
             ...item,
-            fb_order: newItems.length - i
+            sc_orders: newItems.length - i
         }));
 
         setEventItems(updatedItems);
@@ -62,11 +57,11 @@ const ScholarshipDashboard = () => {
 
     const updateOrderOnServer = async (items) => {
         const payload = items.map(item => ({
-            fb_id: item.fb_id,
-            fb_order: item.fb_order
+            sc_id: item.sc_id,
+            sc_orders: item.sc_orders
         }));
 
-        await axios.put(`${API_ENDPOINTS.updateScholarship}`, payload);
+        await axios.post(`${API_ENDPOINTS.updateScholarshipOrder}`, payload);
     };
 
     const duplicateItem = async (id) => {

@@ -15,7 +15,8 @@ const NewDashboard = () => {
                 const response = await axios.get(API_ENDPOINTS.getNews);
                 const result = (response.data.data || []);
                 const normalized = Array.isArray(result) ? result : result ? [result] : [];
-                setEventItems(normalized);
+                const sortedMenus = normalized.sort((a, b) => b.n_order - a.n_order);
+                setEventItems(sortedMenus);
             } catch (error) {
                 console.error('Failed to fetch news:', error);
             }
