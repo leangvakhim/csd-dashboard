@@ -83,12 +83,12 @@ const FuturePiece = forwardRef(({sectionId, pageId}, ref) => {
   useEffect(() => {
     const fetchFutures = async () => {
       try {
-        const response = await axios.get(`${API_ENDPOINTS.getFuture}?uf_sec=${sectionId}`);
+        const response = await axios.get(`${API_ENDPOINTS.getFuture}`);
         const futures = response.data.data || [];
         if (futures.length > 0) {
           const future = futures.find(item =>
-            item.section.sec_page === pageId &&
-            item.uf_sec === sectionId
+            item?.section?.sec_page === pageId &&
+            item?.uf_sec === sectionId
           );
 
           if (future) {

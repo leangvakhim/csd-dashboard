@@ -56,12 +56,12 @@ const StudyPiece = forwardRef(({sectionId, pageId}, ref) => {
   useEffect(() => {
     const fetchFacitlies = async () => {
       try {
-        const response = await axios.get(`${API_ENDPOINTS.getStudy}?std_sec=${sectionId}`);
+        const response = await axios.get(`${API_ENDPOINTS.getStudy}`);
         const studys = response?.data?.data || [];
         if (studys.length > 0) {
           const study = studys.find(item =>
             item?.section?.sec_page === pageId &&
-            item.std_sec === sectionId
+            item?.std_sec === sectionId
           );
 
           if (study) {

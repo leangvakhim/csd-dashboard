@@ -90,10 +90,10 @@ const CriteriaPiece = forwardRef(({sectionId, pageId}, ref) => {
   useEffect(() => {
     const fetchCriterias = async () => {
       try {
-        const response = await axios.get(`${API_ENDPOINTS.getCriteria}?gc_sec=${sectionId}`);
+        const response = await axios.get(`${API_ENDPOINTS.getCriteria}`);
         const criterias = response.data.data || [];
         if (criterias.length > 0) {
-          const criteria = criterias.find(item => item?.section?.sec_page === pageId);
+          const criteria = criterias.find(item => item?.section?.sec_page === pageId && item?.gc_sec === sectionId);
           if (criteria) {
             setCriteriaId(criteria.gc_id || null);
             setCriteriaTitle(criteria.gc_title || '');

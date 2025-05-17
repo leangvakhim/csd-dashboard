@@ -73,10 +73,10 @@ const IntroductionPiece = forwardRef(({sectionId, pageId}, ref) => {
     useEffect(() => {
         const fetchIntroductions = async () => {
         try {
-            const response = await axios.get(`${API_ENDPOINTS.getIntroduction}?in_sec=${sectionId}`);
+            const response = await axios.get(`${API_ENDPOINTS.getIntroduction}`);
             const introductions = response.data.data || [];
             if (introductions.length > 0) {
-            const introduction = introductions.find(item => item?.section?.sec_page === pageId);
+            const introduction = introductions.find(item => item?.section?.sec_page === pageId && item?.in_sec === sectionId);
             if (introduction) {
                 setIntroId(introduction.in_id || null);
                 setTitle(introduction.in_title || '');

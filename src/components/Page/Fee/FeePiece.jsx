@@ -71,10 +71,10 @@ const FeePiece = forwardRef(({sectionId, pageId}, ref) => {
     useEffect(() => {
         const fetchFees = async () => {
         try {
-            const response = await axios.get(`${API_ENDPOINTS.getFee}?fe_sec=${sectionId}`);
+            const response = await axios.get(`${API_ENDPOINTS.getFee}`);
             const fees = response.data.data || [];
             if (fees.length > 0) {
-            const fee = fees.find(item => item?.section?.sec_page === pageId);
+            const fee = fees.find(item => item?.section?.sec_page === pageId && item?.fe_sec === sectionId);
             if (fee) {
                 setFeeId(fee.fe_id || null);
                 setTitle(fee.fe_title || '');

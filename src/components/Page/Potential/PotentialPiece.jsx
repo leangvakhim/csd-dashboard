@@ -43,7 +43,7 @@ const PotentialPiece = forwardRef(({sectionId, pageId}, ref) => {
       let textId;
 
       try {
-        const response = await axios.get(`${API_ENDPOINTS.getSpecialization}?ras_sec=${sectionId}`);
+        const response = await axios.get(`${API_ENDPOINTS.getSpecialization}`);
         const potential = response.data.data || [];
         const currentPotential = potential.find(f => f.section.sec_page === pageId && f.ras_sec === sectionId && f.text?.text_type === 8);
         if (currentPotential?.text?.text_id) {

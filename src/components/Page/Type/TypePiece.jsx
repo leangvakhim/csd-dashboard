@@ -17,7 +17,7 @@ const TypePiece = forwardRef(({sectionId, pageId}, ref) => {
       let textId;
 
       try {
-        const response = await axios.get(`${API_ENDPOINTS.getType}?tse_sec=${sectionId}`);
+        const response = await axios.get(`${API_ENDPOINTS.getType}`);
         const types = response.data.data || [];
         const currentType = types.find(f => f.section.sec_page === pageId && f.tse_sec === sectionId && f.text?.text_type === 6);
         if (currentType?.text?.text_id) {

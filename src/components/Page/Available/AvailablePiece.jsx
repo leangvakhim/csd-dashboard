@@ -52,12 +52,12 @@ const AvailablePiece = forwardRef(({sectionId, pageId}, ref) => {
   useEffect(() => {
     const fetchAvailables = async () => {
       try {
-        const response = await axios.get(`${API_ENDPOINTS.getAvailable}?apd_sec=${sectionId}`);
+        const response = await axios.get(`${API_ENDPOINTS.getAvailable}`);
         const availables = response.data.data || [];
         if (availables.length > 0) {
           const available = availables.find(item =>
-            item.section.sec_page === pageId &&
-            item.apd_sec === sectionId
+            item?.section?.sec_page === pageId &&
+            item?.apd_sec === sectionId
           );
 
           if (available) {

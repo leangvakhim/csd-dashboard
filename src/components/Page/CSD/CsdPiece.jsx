@@ -50,7 +50,7 @@ const CsdPiece = forwardRef(({sectionId, pageId}, ref) => {
       let textId;
 
       try {
-        const response = await axios.get(`${API_ENDPOINTS.getSpecialization}?ras_sec=${sectionId}`);
+        const response = await axios.get(`${API_ENDPOINTS.getSpecialization}`);
         const csd = response.data.data || [];
         const currentCSD = csd.find(f => f.section.sec_page === pageId && f.ras_sec === sectionId && f.text?.text_type === 7);
         if (currentCSD?.text?.text_id) {

@@ -54,7 +54,7 @@ const InnovationPiece = forwardRef(({sectionId, pageId}, ref) => {
         let textId;
 
         try {
-            const response = await axios.get(`${API_ENDPOINTS.getSpecialization}?ras_sec=${sectionId}`);
+            const response = await axios.get(`${API_ENDPOINTS.getSpecialization}`);
             const innovation = response.data.data || [];
             const currentInnovation = innovation.find(f => f.section.sec_page === pageId && f.ras_sec === sectionId && f.text?.text_type === 9);
             if (currentInnovation?.text?.text_id) {

@@ -87,12 +87,12 @@ const ApplyPiece = forwardRef(({sectionId, pageId}, ref) => {
     useEffect(() => {
         const fetchApplys = async () => {
             try {
-                const response = await axios.get(`${API_ENDPOINTS.getApply}?ha_sec=${sectionId}`);
+                const response = await axios.get(`${API_ENDPOINTS.getApply}`);
                 const applys = response.data.data || [];
                 if (applys.length > 0) {
                 const apply = applys.find(item =>
-                    item.section.sec_page === pageId &&
-                    item.ha_sec === sectionId
+                    item?.section?.sec_page === pageId &&
+                    item?.ha_sec === sectionId
                 );
 
                 if (apply) {

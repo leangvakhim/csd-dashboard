@@ -43,10 +43,10 @@ const FaqPiece = forwardRef(({sectionId, pageId}, ref) => {
   useEffect(() => {
     const fetchFAQs = async () => {
       try {
-        const response = await axios.get(`${API_ENDPOINTS.getFAQ}?faq_sec=${sectionId}`);
+        const response = await axios.get(`${API_ENDPOINTS.getFAQ}`);
         const faqs = response.data.data || [];
         if (faqs.length > 0) {
-          const faq = faqs.find(item => item?.section?.sec_page === pageId);
+          const faq = faqs.find(item => item?.section?.sec_page === pageId && item?.faq_sec === sectionId);
           if (faq) {
             setFAQId(faq.faq_id || null);
             setTitle(faq.faq_title || '');

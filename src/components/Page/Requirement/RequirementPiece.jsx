@@ -101,10 +101,10 @@ const RequirementPiece = forwardRef(({sectionId, pageId}, ref) => {
   useEffect(() => {
     const fetchRequirements = async () => {
       try {
-        const response = await axios.get(`${API_ENDPOINTS.getCriteria}?gc_sec=${sectionId}`);
+        const response = await axios.get(`${API_ENDPOINTS.getCriteria}`);
         const requirements = response.data.data || [];
         if (requirements.length > 0) {
-          const requirement = requirements.find(item => item?.section?.sec_page === pageId);
+          const requirement = requirements.find(item => item?.section?.sec_page === pageId && item?.gc_sec === sectionId);
           if (requirement) {
             setRequirementId(requirement.gc_id || null);
             setRequirementTitle(requirement.gc_title || '');

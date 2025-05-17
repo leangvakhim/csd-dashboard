@@ -74,10 +74,10 @@ const UnlockPiece = forwardRef(({sectionId, pageId}, ref) => {
     useEffect(() => {
         const fetchUnlocks = async () => {
         try {
-            const response = await axios.get(`${API_ENDPOINTS.getUnlock}?umd_sec=${sectionId}`);
+            const response = await axios.get(`${API_ENDPOINTS.getUnlock}`);
             const unlocks = response.data.data || [];
             if (unlocks.length > 0) {
-            const unlock = unlocks.find(item => item?.section?.sec_page === pageId);
+            const unlock = unlocks.find(item => item?.section?.sec_page === pageId && item?.umd_sec === sectionId);
             if (unlock) {
                 setUmdId(unlock.umd_id || null);
                 setTitle(unlock.umd_title || '');

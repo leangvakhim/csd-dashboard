@@ -53,12 +53,12 @@ const ImportantPiece = forwardRef(({sectionId, pageId}, ref) => {
   useEffect(() => {
     const fetchImportants = async () => {
         try {
-            const response = await axios.get(`${API_ENDPOINTS.getImportant}?idd_sec=${sectionId}`);
+            const response = await axios.get(`${API_ENDPOINTS.getImportant}`);
             const importants = response.data.data || [];
             if (importants.length > 0) {
             const important = importants.find(item =>
-                item.section.sec_page === pageId &&
-                item.idd_sec === sectionId
+                item?.section?.sec_page === pageId &&
+                item?.idd_sec === sectionId
             );
 
             if (important) {

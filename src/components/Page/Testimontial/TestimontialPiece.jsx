@@ -12,10 +12,10 @@ const TestimonialPiece = forwardRef(({sectionId, pageId}, ref) => {
     const fetchTestimonials = async () => {
       try {
 
-        const response = await axios.get(`${API_ENDPOINTS.getTestimonial}?t_sec=${sectionId}`);
+        const response = await axios.get(`${API_ENDPOINTS.getTestimonial}`);
         const testimonials = response.data.data || [];
         if (testimonials.length > 0) {
-          const testimonial = testimonials.find(item => item?.section?.sec_page === pageId);
+          const testimonial = testimonials.find(item => item?.section?.sec_page === pageId && item?.t_sec === sectionId);
           if (testimonial) {
             setTId(testimonial.t_id || null);
             setTitle(testimonial.t_title || '');
