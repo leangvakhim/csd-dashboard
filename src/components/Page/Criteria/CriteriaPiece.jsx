@@ -24,7 +24,7 @@ const CriteriaPiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref) =>
   const [currentField, setCurrentField] = useState("");
   const [criteriaTitle, setCriteriaTitle] = useState("");
   const [criteriaTag, setCriteriaTag] = useState("");
-  const [criteriaType, setCriteriaType] = useState("");
+  const [criteriaType, setCriteriaType] = useState(1);
   const [criteriaId, setCriteriaId] = useState(null);
 
   const openMediaLibrary = (field) => {
@@ -64,7 +64,7 @@ const CriteriaPiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref) =>
           gc_id: criteriaId,
           gc_title: criteriaTitle,
           gc_tag: criteriaTag,
-          gc_type: criteriaType,
+          gc_type: criteriaType || 1,
           gc_img1: img1Id,
           gc_img2: img2Id,
           gc_detail: detail,
@@ -261,7 +261,7 @@ const CriteriaPiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref) =>
             </div>
           </div>
 
-          <div className="flex-1">
+          {/* <div className="flex-1">
             <label
               for="countries"
               class="block text-xl font-medium leading-6 text-white-900"
@@ -276,7 +276,7 @@ const CriteriaPiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref) =>
               <option value="1">left images</option>
               <option value="2">right images</option>
             </select>
-          </div>
+          </div> */}
         </div>
         {/* row 3 */}
         <div className="grid grid-cols-2 gap-4 px-4 py-2 mb-1">
