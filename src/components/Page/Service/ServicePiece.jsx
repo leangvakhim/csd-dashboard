@@ -95,7 +95,7 @@ const ServicePiece = forwardRef(({sectionId, pageId}, ref) => {
             className="cursor-pointer flex items-center justify-between w-full px-4"
             onClick={() => setIsRotatedButton(!isRotatedButton)}
           >
-            <div className="flex gap-1 items-center">
+            <div className="flex gap-1 items-center" ref={handleSectionRef}>
               <svg
                 class="cursor-grab size-5 my-auto"
                 viewBox="0 0 320 512"

@@ -4,7 +4,7 @@ import axios from "axios";
 import { API_ENDPOINTS } from "../../../service/APIConfig";
 import Swal from "sweetalert2";
 
-const StudyPiece = forwardRef(({sectionId, pageId}, ref) => {
+const StudyPiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref) => {
   const [isRotatedButton1, setIsRotatedButton1] = useState(false);
   const [studytype, setStudyType] = useState(0);
   const [studyId, setStudyId] = useState(0);
@@ -121,7 +121,7 @@ const StudyPiece = forwardRef(({sectionId, pageId}, ref) => {
             className="cursor-pointer flex items-center justify-between w-full px-4"
             onClick={() => setIsRotatedButton1(!isRotatedButton1)}
           >
-            <div className="flex gap-1 items-center">
+            <div className="flex gap-1 items-center" ref={handleSectionRef}>
               <svg
                 class="cursor-grab size-5 my-auto"
                 viewBox="0 0 320 512"

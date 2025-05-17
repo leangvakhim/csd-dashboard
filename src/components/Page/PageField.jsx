@@ -2142,11 +2142,11 @@ const PageField = () => {
                 text: 'Page saved successfully',
                 timer: 1500,
                 showConfirmButton: false,
-                // willClose: () => {
-                //     setTimeout(() => {
-                //         window.location.reload();
-                //     }, 500);
-                // }
+                willClose: () => {
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 500);
+                }
             });
         } catch (err) {
             Swal.fire({

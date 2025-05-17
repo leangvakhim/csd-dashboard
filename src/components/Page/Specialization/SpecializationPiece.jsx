@@ -5,7 +5,7 @@ import axios from "axios";
 import { API_ENDPOINTS, API } from "../../../service/APIConfig";
 import Swal from "sweetalert2";
 
-const SpecializationPiece = forwardRef(({sectionId, pageId}, ref) => {
+const SpecializationPiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref) => {
   const [isRotatedButton, setIsRotatedButton] = useState(false);
   const [isMediaLibraryOpen, setMediaLibraryOpen] = useState(false);
   const [selectedImage1, setSelectedImage1] = useState("");
@@ -190,7 +190,7 @@ const SpecializationPiece = forwardRef(({sectionId, pageId}, ref) => {
             className="cursor-pointer flex items-center justify-between w-full px-4"
             onClick={() => setIsRotatedButton(!isRotatedButton)}
           >
-            <div className="flex gap-1 items-center">
+            <div className="flex gap-1 items-center" ref={handleSectionRef}>
               <svg
                 class="cursor-grab size-5 my-auto"
                 viewBox="0 0 320 512"

@@ -4,7 +4,7 @@ import axios from "axios";
 import { API_ENDPOINTS } from "../../../service/APIConfig";
 import Swal from 'sweetalert2';
 
-const CarouselPiece = forwardRef(({sectionId, pageId}, ref) => {
+const CarouselPiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref) => {
     const [isRotatedButton, setIsRotatedButton] = useState(false);
     const [displaySlideshow, setDisplaySlideshow] = useState(0);
     const carouselSliderRef = useRef();
@@ -97,7 +97,7 @@ const CarouselPiece = forwardRef(({sectionId, pageId}, ref) => {
                     <div className="cursor-pointer flex items-center justify-between w-full px-4"
                         onClick={() => setIsRotatedButton(!isRotatedButton)}
                         >
-                        <div className="flex gap-1 items-center">
+                        <div className="flex gap-1 items-center" ref={handleSectionRef}>
                             <svg class="cursor-grab size-5 my-auto" viewBox="0 0 320 512" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M40 352l48 0c22.1 0 40 17.9 40 40l0 48c0 22.1-17.9 40-40 40l-48 0c-22.1 0-40-17.9-40-40l0-48c0-22.1 17.9-40 40-40zm192 0l48 0c22.1 0 40 17.9 40 40l0 48c0 22.1-17.9 40-40 40l-48 0c-22.1 0-40-17.9-40-40l0-48c0-22.1 17.9-40 40-40zM40 320c-22.1 0-40-17.9-40-40l0-48c0-22.1 17.9-40 40-40l48 0c22.1 0 40 17.9 40 40l0 48c0 22.1-17.9 40-40 40l-48 0zM232 192l48 0c22.1 0 40 17.9 40 40l0 48c0 22.1-17.9 40-40 40l-48 0c-22.1 0-40-17.9-40-40l0-48c0-22.1 17.9-40 40-40zM40 160c-22.1 0-40-17.9-40-40L0 72C0 49.9 17.9 32 40 32l48 0c22.1 0 40 17.9 40 40l0 48c0 22.1-17.9 40-40 40l-48 0zM232 32l48 0c22.1 0 40 17.9 40 40l0 48c0 22.1-17.9 40-40 40l-48 0c-22.1 0-40-17.9-40-40l0-48c0-22.1 17.9-40 40-40z"></path>
                             </svg>

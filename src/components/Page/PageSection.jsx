@@ -568,6 +568,7 @@ const PageSection = forwardRef(({ formData = {}, setFormData = {}, page_id }, re
 
           const SectionItem = ({ section, index }) => {
             const ref = React.useRef(null);
+            const handleRef = React.useRef(null);
             const [, drop] = useDrop({
               accept: "SECTION",
               hover(item) {
@@ -586,7 +587,9 @@ const PageSection = forwardRef(({ formData = {}, setFormData = {}, page_id }, re
               }),
             });
 
-            drag(drop(ref));
+            // Only allow drag from the handle
+            drop(ref);
+            drag(handleRef);
 
             return (
               <div
@@ -639,6 +642,7 @@ const PageSection = forwardRef(({ formData = {}, setFormData = {}, page_id }, re
                   sectionId={section.data?.sec_id || section.id}
                   pageId={page_id}
                   onDataChange={(newData) => handleDataChange(newData, index)}
+                  handleSectionRef={handleRef}
                 />
               </div>
             );
