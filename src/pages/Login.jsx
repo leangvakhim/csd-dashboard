@@ -13,6 +13,7 @@ const Login = () => {
     const [userInput, setUserInput] = useState("");
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
 
     useEffect(() => {
         generateCaptcha();
@@ -118,12 +119,29 @@ const handleSubmit = async (e) => {
                     </div>
 
                     <div class="mb-4">
-                        <label for="forPassword"
-                        class="block text-sm font-semibold mb-2 text-gray-600">Password</label>
-                        <input type="password" id="forPassword"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        class="py-3 px-4 block w-full border-gray-200 rounded-md text-sm focus:border-blue-600 focus:ring-0 " aria-describedby="hs-input-helper-text"/>
+                        <label htmlFor="forPassword"
+                        className="block text-sm font-semibold mb-2 text-gray-600">Password</label>
+                        <div className="relative">
+                            <input
+                              type={showPassword ? "text" : "password"}
+                              id="forPassword"
+                              value={password}
+                              onChange={(e) => setPassword(e.target.value)}
+                              className="py-3 px-4 block w-full border-gray-200 rounded-md text-sm focus:border-blue-600 focus:ring-0"
+                              aria-describedby="hs-input-helper-text"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => setShowPassword(!showPassword)}
+                              className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5 mr-4"
+                            >
+                              {!showPassword ? (
+                                <svg xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-eye-closed"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M21 9c-2.4 2.667 -5.4 4 -9 4c-3.6 0 -6.6 -1.333 -9 -4" /><path d="M3 15l2.5 -3.8" /><path d="M21 14.976l-2.492 -3.776" /><path d="M9 17l.5 -4" /><path d="M15 17l-.5 -4" /></svg>
+                              ) : (
+                                <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-eye"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" /><path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6" /></svg>
+                              )}
+                            </button>
+                        </div>
                     </div>
 
                     {/* CAPTCHA Section */}
