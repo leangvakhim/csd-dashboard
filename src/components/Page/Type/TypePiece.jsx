@@ -20,7 +20,7 @@ const TypePiece = forwardRef(({sectionId, pageId}, ref) => {
       try {
         const response = await axios.get(`${API_ENDPOINTS.getType}`);
         const types = response.data.data || [];
-        const currentType = types.find(f => f.section.sec_page === pageId && f.tse_sec === sectionId && f.text?.text_type === 6);
+        const currentType = types.find(f => f?.section?.sec_page === pageId && f?.tse_sec === sectionId && f.text?.text_type === 6);
         if (currentType?.text?.text_id) {
           textId = currentType.text.text_id;
         }
@@ -121,9 +121,9 @@ const TypePiece = forwardRef(({sectionId, pageId}, ref) => {
         const types = response.data.data || [];
         if (types.length > 0) {
           const type = types.find(item =>
-            item.section.sec_page === pageId &&
-            item.tse_sec === sectionId &&
-            item.text?.text_type === 6
+            item?.section?.sec_page === pageId &&
+            item?.tse_sec === sectionId &&
+            item?.text?.text_type === 6
           );
 
           if (type) {
