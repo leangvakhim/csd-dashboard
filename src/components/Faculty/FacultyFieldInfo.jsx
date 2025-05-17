@@ -76,7 +76,7 @@ const FacultyFieldInfo = forwardRef(({ f_id }, ref) => {
         if (!result.isConfirmed) return;
 
         try {
-            await axios.put(`${API_ENDPOINTS.deleteFacultyInfo}/${id}/`);
+            await axios.put(`${API_ENDPOINTS.deleteFacultyInfo}/${id}`);
             setInfo(prevInfo =>
                 prevInfo.map(item =>
                     item.id === id

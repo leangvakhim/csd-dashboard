@@ -40,16 +40,28 @@ const FacultyFieldContactInfo = forwardRef(({ f_id }, ref) => {
         }
     }));
 
-
-
     const handleDeleteContactinfo = async (id) => {
-        const confirmDelete = window.confirm("Are you sure you want to delete this contact?");
-        if (!confirmDelete) return;
+        const Swal = (await import('sweetalert2')).default;
+
+        const result = await Swal.fire({
+            title: 'Are you sure?',
+            text: 'Do you want to delete this contact?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, delete it!',
+            cancelButtonText: 'Cancel',
+            customClass: {
+                confirmButton: '!bg-red-600 hover:!bg-red-700 text-white py-2 px-4 rounded !mr-2',
+                cancelButton: 'bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded',
+                popup: 'rounded-lg shadow-lg',
+            },
+            buttonsStyling: false
+        });
+
+        if (!result.isConfirmed) return;
 
         try {
             await axios.put(`${API_ENDPOINTS.deleteFacultyContact}/${id}`);
-
-            // Update contact state without reloading the page
             setContactinfo(prevContactinfo =>
                 prevContactinfo.map(contact =>
                     contact.id === id
@@ -57,13 +69,23 @@ const FacultyFieldContactInfo = forwardRef(({ f_id }, ref) => {
                         : contact
                 )
             );
-
-            window.location.reload();
+            Swal.fire({
+                title: 'Deleted!',
+                text: 'The information has been deleted.',
+                icon: 'success',
+                timer: 1500,
+                showConfirmButton: false
+            });
+            setTimeout(() => window.location.reload(), 1600);
         } catch (error) {
-            console.error("❌ Error deleting contact info:", error);
+            console.error("❌ Error deleting contact:", error);
+            Swal.fire({
+                title: 'Error!',
+                text: 'Something went wrong while deleting.',
+                icon: 'error'
+            });
         }
     };
-
 
     const handleAddContactinfo = async () => {
         const newContactinfo = {
@@ -117,8 +139,8 @@ const FacultyFieldContactInfo = forwardRef(({ f_id }, ref) => {
                             setContactinfo([{
                                 id: (contactinfo.length + 1).toString(),
                                 f_id: f_id,
-                                title: `Contact info ${contactinfo.length + 1}`,
-                                fc_name: null,
+                                title: `Contact info 1`,
+                                fc_name: `Contact info 1`,
                                 display: 0,
                                 active: 1,
                             }]);

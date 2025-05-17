@@ -41,7 +41,24 @@ const FacultyFieldSocial = forwardRef(({ formData = {}, setFormData = {}, f_id }
     }));
 
     const handleDeleteSocial = async (id) => {
-        if (!window.confirm("Are you sure you want to delete of this social?")) return;
+        const Swal = (await import('sweetalert2')).default;
+
+        const result = await Swal.fire({
+            title: 'Are you sure?',
+            text: 'Do you want to delete this social?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, delete it!',
+            cancelButtonText: 'Cancel',
+            customClass: {
+                confirmButton: '!bg-red-600 hover:!bg-red-700 text-white py-2 px-4 rounded !mr-2',
+                cancelButton: 'bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded',
+                popup: 'rounded-lg shadow-lg',
+            },
+            buttonsStyling: false
+        });
+
+        if (!result.isConfirmed) return;
 
         try {
             await axios.put(`${API_ENDPOINTS.deleteSocial}/${id}`);
@@ -50,10 +67,21 @@ const FacultyFieldSocial = forwardRef(({ formData = {}, setFormData = {}, f_id }
                     item.id === id ? { ...item, active: item.active ? 0 : 1 } : item
                 )
             );
-            console.log("Social deleted successfully");
-            window.location.reload();
+            Swal.fire({
+                title: 'Deleted!',
+                text: 'The information has been deleted.',
+                icon: 'success',
+                timer: 1500,
+                showConfirmButton: false
+            });
+            setTimeout(() => window.location.reload(), 1600);
         } catch (error) {
-            console.error("Error toggling visibility:", error);
+            console.error("❌ Error deleting social:", error);
+            Swal.fire({
+                title: 'Error!',
+                text: 'Something went wrong while deleting.',
+                icon: 'error'
+            });
         }
     };
 
@@ -123,8 +151,21 @@ const FacultyFieldSocial = forwardRef(({ formData = {}, setFormData = {}, f_id }
                                 social_id: item.social_id
                             };
                         });
-
-                        setSocial(formatted);
+                        if(formatted.length > 0){
+                            setSocial(formatted);
+                        }else{
+                            setSocial([{
+                                id: Date.now().toString(),
+                                title: `Social 1`,
+                                social_link: '',
+                                social_img: null,
+                                social_img_id: null,
+                                display: 0,
+                                active: 1,
+                                f_id: f_id,
+                                social_order: social.length + 1,
+                            }])
+                        }
                     }
                 })
                 .catch(err => console.error("❌ Error fetching social data:", err));

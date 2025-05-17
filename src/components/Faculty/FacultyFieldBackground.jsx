@@ -41,22 +41,49 @@ const FacultyFieldBackground = forwardRef(({ formData = {}, setFormData = {}, f_
     }
   }));
 
-
-
   const handleDeleteBackground = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this background?"));
+      const Swal = (await import('sweetalert2')).default;
 
-    try {
-      await axios.put(`${API_ENDPOINTS.deleteFacultyBG}/${id}`);
-      setBackground((prevItems) =>
-        prevItems.map((item) =>
-          item.id === id ? { ...item, active: item.active ? 0 : 1 } : item
-        )
-      );
-      window.location.reload();
-    } catch (error) {
-      console.error("Error deleting background:", error);
-    }
+      const result = await Swal.fire({
+          title: 'Are you sure?',
+          text: 'Do you want to delete this background?',
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonText: 'Yes, delete it!',
+          cancelButtonText: 'Cancel',
+          customClass: {
+              confirmButton: '!bg-red-600 hover:!bg-red-700 text-white py-2 px-4 rounded !mr-2',
+              cancelButton: 'bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded',
+              popup: 'rounded-lg shadow-lg',
+          },
+          buttonsStyling: false
+      });
+
+      if (!result.isConfirmed) return;
+
+      try {
+          await axios.put(`${API_ENDPOINTS.deleteFacultyBG}/${id}`);
+          setBackground((prevItems) =>
+            prevItems.map((item) =>
+              item.id === id ? { ...item, active: item.active ? 0 : 1 } : item
+            )
+          );
+          Swal.fire({
+              title: 'Deleted!',
+              text: 'The information has been deleted.',
+              icon: 'success',
+              timer: 1500,
+              showConfirmButton: false
+          });
+          setTimeout(() => window.location.reload(), 1600);
+      } catch (error) {
+          console.error("❌ Error deleting information:", error);
+          Swal.fire({
+              title: 'Error!',
+              text: 'Something went wrong while deleting.',
+              icon: 'error'
+          });
+      }
   };
 
   const handleAddBackground = async () => {
