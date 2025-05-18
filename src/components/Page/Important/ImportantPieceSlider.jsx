@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } from "react";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
-import axios from "axios";
-import { API_ENDPOINTS } from "../../../service/APIConfig";
+import { API_ENDPOINTS, axiosInstance } from "../../../service/APIConfig";
 import Swal from "sweetalert2";
 
 const ImportantPieceSlider = forwardRef(({importantId}, ref) => {
@@ -70,7 +69,7 @@ const ImportantPieceSlider = forwardRef(({importantId}, ref) => {
   useEffect(() => {
       const fetchSliders = async () => {
       try {
-          const response = await axios.get(API_ENDPOINTS?.getSubImportant);
+          const response = await axiosInstance.get(API_ENDPOINTS?.getSubImportant);
           const data = response.data?.data;
 
           const subservices = Array.isArray(data) ? data : [data];
@@ -125,7 +124,7 @@ const ImportantPieceSlider = forwardRef(({importantId}, ref) => {
 
       if (result.isConfirmed) {
       try {
-          await axios.put(`${API_ENDPOINTS.deleteSubImportant}/${sliderId}`);
+          await axiosInstance.put(`${API_ENDPOINTS.deleteSubImportant}/${sliderId}`);
           setSlider((prevSlider) => prevSlider.filter((item) => item.id !== sliderId));
           await Swal.fire({
               icon: 'success',

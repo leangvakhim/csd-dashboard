@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } from "react";
-import axios from "axios";
-import { API_ENDPOINTS } from "../../../service/APIConfig";
+import { API_ENDPOINTS, axiosInstance } from "../../../service/APIConfig";
 
 const AddOn = forwardRef(({csdId}, ref) => {
     const [rotatedStates, setRotatedStates] = useState({});
@@ -27,7 +26,7 @@ const AddOn = forwardRef(({csdId}, ref) => {
     useEffect(() => {
         const fetchAddOnCSD = async () => {
             try {
-                const response = await axios.get(API_ENDPOINTS.getAddOnCSD);
+                const response = await axiosInstance.get(API_ENDPOINTS.getAddOnCSD);
                 const data = response.data?.data;
 
                 if (Array.isArray(data) && csdId) {

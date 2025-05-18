@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } from "react";
 import MediaLibraryModal from "../../MediaLibraryModal";
-import { API_ENDPOINTS, API } from "../../../service/APIConfig";
-import axios from "axios";
+import { API_ENDPOINTS, API, axiosInstance } from "../../../service/APIConfig";
 import Swal from "sweetalert2";
 
 const AcademicPiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref) => {
@@ -59,7 +58,7 @@ const AcademicPiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref) =>
 
     if (result.isConfirmed) {
         try {
-            await axios.put(`${API_ENDPOINTS.deleteSection}/${sectionId}`);
+            await axiosInstance.put(`${API_ENDPOINTS.deleteSection}/${sectionId}`);
             await Swal.fire({
                 icon: 'success',
                 title: 'Deleted!',
@@ -83,7 +82,7 @@ const AcademicPiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref) =>
 
   const getImageIdByUrl = async (url) => {
     try {
-      const response = await axios.get(API_ENDPOINTS.getImages);
+      const response = await axiosInstance.get(API_ENDPOINTS.getImages);
       const images = Array.isArray(response.data) ? response.data : response.data.data;
 
       const matchedImage = images.find((img) => img.image_url === url);
@@ -104,7 +103,7 @@ const AcademicPiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref) =>
   const handleToggleDisplay = async () => {
     try {
         const newDisplay = displayAcademic === 1 ? 0 : 1;
-        await axios.post(`${API_ENDPOINTS.updateSection}/${sectionId}`, {
+        await axiosInstance.post(`${API_ENDPOINTS.updateSection}/${sectionId}`, {
             sec_id: sectionId,
             display: newDisplay,
         });
@@ -117,7 +116,7 @@ const AcademicPiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref) =>
   useEffect(() => {
     const fetchAcademics = async () => {
       try {
-        const response = await axios.get(`${API_ENDPOINTS.getAcademic}`);
+        const response = await axiosInstance.get(`${API_ENDPOINTS.getAcademic}`);
         const academics = response.data.data || [];
         if (academics.length > 0) {
           const academic = academics.find(item => item?.section?.sec_id === sectionId && item?.section?.sec_page === pageId);
@@ -133,7 +132,7 @@ const AcademicPiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref) =>
           }
         }
 
-        const sectionRes = await axios.get(`${API_ENDPOINTS.getSection}/${sectionId}`);
+        const sectionRes = await axiosInstance.get(`${API_ENDPOINTS.getSection}/${sectionId}`);
         const sectionData = sectionRes.data.data;
         setDisplayAcademic(sectionData.display || 0);
 
@@ -144,7 +143,7 @@ const AcademicPiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref) =>
 
     const fetchPages = async () => {
       try{
-        const response = await axios.get(API_ENDPOINTS.getPage);
+        const response = await axiosInstance.get(API_ENDPOINTS.getPage);
         const page = response.data?.data || [];
         setPages(page);
       } catch (error) {

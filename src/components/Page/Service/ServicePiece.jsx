@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } from "react";
 import ServicePieceSlider from "./ServicePieceSlider";
-import axios from "axios";
-import { API_ENDPOINTS, API } from "../../../service/APIConfig";
+import { API_ENDPOINTS, API, axiosInstance } from "../../../service/APIConfig";
 import Swal from "sweetalert2";
 
 const ServicePiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref) => {
@@ -23,7 +22,7 @@ const ServicePiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref) => 
   useEffect(() => {
     const fetchServiceDisplay = async () => {
       try {
-          const sectionRes = await axios.get(`${API_ENDPOINTS.getSection}/${sectionId}`);
+          const sectionRes = await axiosInstance.get(`${API_ENDPOINTS.getSection}/${sectionId}`);
           const sectionData = sectionRes.data.data;
           setDisplayService(sectionData.display || 0);
       } catch (error) {
@@ -39,7 +38,7 @@ const ServicePiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref) => 
   const handleToggleDisplay = async () => {
     try {
         const newDisplay = displayService === 1 ? 0 : 1;
-        await axios.post(`${API_ENDPOINTS.updateSection}/${sectionId}`, {
+        await axiosInstance.post(`${API_ENDPOINTS.updateSection}/${sectionId}`, {
             sec_id: sectionId,
             display: newDisplay,
         });
@@ -65,7 +64,7 @@ const ServicePiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref) => 
 
     if (result.isConfirmed) {
       try {
-          await axios.put(`${API_ENDPOINTS.deleteSection}/${sectionId}`);
+          await axiosInstance.put(`${API_ENDPOINTS.deleteSection}/${sectionId}`);
           await Swal.fire({
             icon: 'success',
             title: 'Deleted!',

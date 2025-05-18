@@ -1,8 +1,7 @@
 import { forwardRef, useImperativeHandle, useState, useEffect } from "react";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import MediaLibraryModal from '../../MediaLibraryModal';
-import axios from "axios";
-import { API, API_ENDPOINTS } from "../../../service/APIConfig";
+import { API, API_ENDPOINTS, axiosInstance } from "../../../service/APIConfig";
 import Swal from "sweetalert2";
 
 const CarouselPieceSlider = forwardRef(({displaySlideshow, sectionId, pageId}, ref) => {
@@ -30,7 +29,7 @@ const CarouselPieceSlider = forwardRef(({displaySlideshow, sectionId, pageId}, r
     useEffect(() => {
         const fetchSliders = async () => {
             try {
-                const response = await axios.get(`${API_ENDPOINTS.getSlideshow}`);
+                const response = await axiosInstance.get(`${API_ENDPOINTS.getSlideshow}`);
                 const slideshows = response.data?.data || [];
 
                 if (slideshows.length > 0) {
@@ -76,7 +75,7 @@ const CarouselPieceSlider = forwardRef(({displaySlideshow, sectionId, pageId}, r
 
         const fetchPages = async () => {
             try{
-                const response = await axios.get(API_ENDPOINTS.getPage);
+                const response = await axiosInstance.get(API_ENDPOINTS.getPage);
                 const page = response.data?.data || [];
                 setPages(page);
             } catch (error) {
@@ -99,13 +98,13 @@ const CarouselPieceSlider = forwardRef(({displaySlideshow, sectionId, pageId}, r
                 // btn1
                 try {
                     if (btn1Id) {
-                        await axios.post(`${API_ENDPOINTS.updateBtnss}/${btn1Id}`, {
+                        await axiosInstance.post(`${API_ENDPOINTS.updateBtnss}/${btn1Id}`, {
                             bss_title: item.firstbtntitle || '',
                             bss_routepage: item.firstbtnselect || '',
                             display: item.firstbtndisplay ? 1 : 0,
                         });
                     } else {
-                        const res1 = await axios.post(API_ENDPOINTS.createBtnss, {
+                        const res1 = await axiosInstance.post(API_ENDPOINTS.createBtnss, {
                             bss_title: item.firstbtntitle,
                             bss_routepage: item.firstbtnselect,
                             display: item.firstbtndisplay ? 1 : 0,
@@ -120,13 +119,13 @@ const CarouselPieceSlider = forwardRef(({displaySlideshow, sectionId, pageId}, r
                 // btn2
                 try {
                     if (btn2Id) {
-                        await axios.post(`${API_ENDPOINTS.updateBtnss}/${btn2Id}`, {
+                        await axiosInstance.post(`${API_ENDPOINTS.updateBtnss}/${btn2Id}`, {
                             bss_title: item.secondbtntitle || '',
                             bss_routepage: item.secondbtnselect || '',
                             display: item.secondbtndisplay ? 1 : 0,
                         });
                     } else {
-                        const res2 = await axios.post(API_ENDPOINTS.createBtnss, {
+                        const res2 = await axiosInstance.post(API_ENDPOINTS.createBtnss, {
                             bss_title: item.secondbtntitle,
                             bss_routepage: item.secondbtnselect,
                             display: item.secondbtndisplay ? 1 : 0,
@@ -218,7 +217,7 @@ const CarouselPieceSlider = forwardRef(({displaySlideshow, sectionId, pageId}, r
 
     const getImageIdByUrl = async (url) => {
         try {
-            const response = await axios.get(API_ENDPOINTS.getImages);
+            const response = await axiosInstance.get(API_ENDPOINTS.getImages);
             const images = Array.isArray(response.data) ? response.data : response.data.data;
 
             const matchedImage = images.find((img) => img.image_url === url);
@@ -245,7 +244,7 @@ const CarouselPieceSlider = forwardRef(({displaySlideshow, sectionId, pageId}, r
 
         if (result.isConfirmed) {
             try {
-                await axios.put(`${API_ENDPOINTS.deleteSlideshow}/${sliderId}`);
+                await axiosInstance.put(`${API_ENDPOINTS.deleteSlideshow}/${sliderId}`);
                 setSlider((prevSlider) => prevSlider.filter((item) => item.id !== sliderId));
                 await Swal.fire({
                     icon: 'success',

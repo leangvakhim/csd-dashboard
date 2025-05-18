@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } from "react";
 import FuturePieceSlider from "./FuturePieceSlider";
 import MediaLibraryModal from "../../MediaLibraryModal";
-import axios from "axios";
-import { API_ENDPOINTS, API } from "../../../service/APIConfig";
+import { API_ENDPOINTS, API, axiosInstance } from "../../../service/APIConfig";
 import Swal from "sweetalert2";
 
 const FuturePiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref) => {
@@ -28,7 +27,7 @@ const FuturePiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref) => {
 
   const getImageIdByUrl = async (url) => {
     try {
-      const response = await axios.get(API_ENDPOINTS.getImages);
+      const response = await axiosInstance.get(API_ENDPOINTS.getImages);
       const images = Array.isArray(response.data) ? response.data : response.data.data;
 
       const matchedImage = images.find((img) => img.image_url === url);
@@ -60,7 +59,7 @@ const FuturePiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref) => {
   const handleToggleDisplay = async () => {
     try {
         const newDisplay = displayFuture === 1 ? 0 : 1;
-        await axios.post(`${API_ENDPOINTS.updateSection}/${sectionId}`, {
+        await axiosInstance.post(`${API_ENDPOINTS.updateSection}/${sectionId}`, {
             sec_id: sectionId,
             display: newDisplay,
         });
@@ -86,7 +85,7 @@ const FuturePiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref) => {
 
       if (result.isConfirmed) {
       try {
-          await axios.put(`${API_ENDPOINTS.deleteSection}/${sectionId}`);
+          await axiosInstance.put(`${API_ENDPOINTS.deleteSection}/${sectionId}`);
           await Swal.fire({
               icon: 'success',
               title: 'Deleted!',
@@ -111,7 +110,7 @@ const FuturePiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref) => {
   useEffect(() => {
     const fetchFutures = async () => {
       try {
-        const response = await axios.get(`${API_ENDPOINTS.getFuture}`);
+        const response = await axiosInstance.get(`${API_ENDPOINTS.getFuture}`);
         const futures = response.data.data || [];
         if (futures.length > 0) {
           const future = futures.find(item =>
@@ -127,7 +126,7 @@ const FuturePiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref) => {
           }
         }
 
-        const sectionRes = await axios.get(`${API_ENDPOINTS.getSection}/${sectionId}`);
+        const sectionRes = await axiosInstance.get(`${API_ENDPOINTS.getSection}/${sectionId}`);
         const sectionData = sectionRes.data.data;
         setDisplayFuture(sectionData.display || 0);
       } catch (error) {

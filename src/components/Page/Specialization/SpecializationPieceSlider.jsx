@@ -1,8 +1,7 @@
 import React, { useState, forwardRef, useImperativeHandle, useEffect } from "react";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import MediaLibraryModal from "../../MediaLibraryModal";
-import axios from "axios";
-import { API_ENDPOINTS, API } from "../../../service/APIConfig";
+import { API_ENDPOINTS, API, axiosInstance } from "../../../service/APIConfig";
 import Swal from "sweetalert2";
 
 const SpecializationPieceSlider = forwardRef(({specializationId, sectionId, pageId}, ref) => {
@@ -22,7 +21,7 @@ const SpecializationPieceSlider = forwardRef(({specializationId, sectionId, page
 
   const getImageIdByUrl = async (url) => {
     try {
-      const response = await axios.get(API_ENDPOINTS.getImages);
+      const response = await axiosInstance.get(API_ENDPOINTS.getImages);
       const images = Array.isArray(response.data) ? response.data : response.data.data;
 
       const matchedImage = images.find((img) => img.image_url === url);
@@ -102,7 +101,7 @@ const SpecializationPieceSlider = forwardRef(({specializationId, sectionId, page
   useEffect(() => {
     const fetchSliders = async () => {
       try {
-        const response = await axios.get(API_ENDPOINTS.getSubserviceAF);
+        const response = await axiosInstance.get(API_ENDPOINTS.getSubserviceAF);
         const data = response.data?.data;
 
         const subservices = Array.isArray(data) ? data : [data];
@@ -153,7 +152,7 @@ const SpecializationPieceSlider = forwardRef(({specializationId, sectionId, page
 
     if (result.isConfirmed) {
       try {
-          await axios.put(`${API_ENDPOINTS.deleteSubserviceRAS}/${sliderId}`);
+          await axiosInstance.put(`${API_ENDPOINTS.deleteSubserviceRAS}/${sliderId}`);
           setSlider((prevSlider) => prevSlider.filter((item) => item.id !== sliderId));
           await Swal.fire({
               icon: 'success',

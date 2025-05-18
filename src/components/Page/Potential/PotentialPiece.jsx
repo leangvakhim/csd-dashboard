@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } from "react";
 import PotentialPieceSlider from "./PotentialPieceSlider";
 import MediaLibraryModal from "../../MediaLibraryModal";
-import axios from "axios";
-import { API_ENDPOINTS, API } from "../../../service/APIConfig";
+import { API_ENDPOINTS, API, axiosInstance } from "../../../service/APIConfig";
 import Swal from "sweetalert2";
 
 const PotentialPiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref) => {
@@ -28,7 +27,7 @@ const PotentialPiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref) =
 
   const getImageIdByUrl = async (url) => {
     try {
-      const response = await axios.get(API_ENDPOINTS.getImages);
+      const response = await axiosInstance.get(API_ENDPOINTS.getImages);
       const images = Array.isArray(response.data) ? response.data : response.data.data;
 
       const matchedImage = images.find((img) => img.image_url === url);
@@ -44,7 +43,7 @@ const PotentialPiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref) =
       let textId;
 
       try {
-        const response = await axios.get(`${API_ENDPOINTS.getSpecialization}`);
+        const response = await axiosInstance.get(`${API_ENDPOINTS.getSpecialization}`);
         const potential = response.data.data || [];
         const currentPotential = potential.find(f => f.section.sec_page === pageId && f.ras_sec === sectionId && f.text?.text_type === 8);
         if (currentPotential?.text?.text_id) {
@@ -62,7 +61,7 @@ const PotentialPiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref) =
           text_type: 8,
           text_sec: sectionId,
         };
-        const textRes = await axios.post(`${API_ENDPOINTS.updateText}/${textId}`, { texts: updatePayload });
+        const textRes = await axiosInstance.post(`${API_ENDPOINTS.updateText}/${textId}`, { texts: updatePayload });
         textId = textRes.data.data?.text_id;
       } else {
         const textPayload = {
@@ -71,7 +70,7 @@ const PotentialPiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref) =
           text_type: 8,
           text_sec: sectionId,
         };
-        const textRes = await axios.post(`${API_ENDPOINTS.createText}`, { texts: [textPayload] });
+        const textRes = await axiosInstance.post(`${API_ENDPOINTS.createText}`, { texts: [textPayload] });
         textId = textRes.data.data?.text_id;
       }
 
@@ -94,7 +93,7 @@ const PotentialPiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref) =
   const handleToggleDisplay = async () => {
     try {
         const newDisplay = displayPotential === 1 ? 0 : 1;
-        await axios.post(`${API_ENDPOINTS.updateSection}/${sectionId}`, {
+        await axiosInstance.post(`${API_ENDPOINTS.updateSection}/${sectionId}`, {
             sec_id: sectionId,
             display: newDisplay,
         });
@@ -120,7 +119,7 @@ const PotentialPiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref) =
 
       if (result.isConfirmed) {
       try {
-          await axios.put(`${API_ENDPOINTS.deleteSection}/${sectionId}`);
+          await axiosInstance.put(`${API_ENDPOINTS.deleteSection}/${sectionId}`);
           await Swal.fire({
               icon: 'success',
               title: 'Deleted!',
@@ -145,7 +144,7 @@ const PotentialPiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref) =
   useEffect(() => {
     const fetchPotentials = async () => {
       try {
-        const response = await axios.get(`${API_ENDPOINTS.getSpecialization}?ras_sec=${sectionId}`);
+        const response = await axiosInstance.get(`${API_ENDPOINTS.getSpecialization}?ras_sec=${sectionId}`);
         const potentials = response.data.data || [];
         if (potentials.length > 0) {
           const potential = potentials.find(item =>
@@ -162,7 +161,7 @@ const PotentialPiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref) =
           }
         }
 
-        const sectionRes = await axios.get(`${API_ENDPOINTS.getSection}/${sectionId}`);
+        const sectionRes = await axiosInstance.get(`${API_ENDPOINTS.getSection}/${sectionId}`);
         const sectionData = sectionRes.data.data;
         setDisplayPotential(sectionData.display || 0);
       } catch (error) {

@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } from "react";
 import AvailablePieceSlider from "../Available/AvailablePieceSlider";
-import axios from "axios";
-import { API_ENDPOINTS } from "../../../service/APIConfig";
+import { API_ENDPOINTS, axiosInstance } from "../../../service/APIConfig";
 import Swal from "sweetalert2";
 
 const AvailablePiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref) => {
@@ -29,7 +28,7 @@ const AvailablePiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref) =
   const handleToggleDisplay = async () => {
     try {
         const newDisplay = displayAvailable === 1 ? 0 : 1;
-        await axios.post(`${API_ENDPOINTS.updateSection}/${sectionId}`, {
+        await axiosInstance.post(`${API_ENDPOINTS.updateSection}/${sectionId}`, {
             sec_id: sectionId,
             display: newDisplay,
         });
@@ -55,7 +54,7 @@ const AvailablePiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref) =
 
       if (result.isConfirmed) {
       try {
-          await axios.put(`${API_ENDPOINTS.deleteSection}/${sectionId}`);
+          await axiosInstance.put(`${API_ENDPOINTS.deleteSection}/${sectionId}`);
           await Swal.fire({
               icon: 'success',
               title: 'Deleted!',
@@ -80,7 +79,7 @@ const AvailablePiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref) =
   useEffect(() => {
     const fetchAvailables = async () => {
       try {
-        const response = await axios.get(`${API_ENDPOINTS.getAvailable}`);
+        const response = await axiosInstance.get(`${API_ENDPOINTS.getAvailable}`);
         const availables = response.data.data || [];
         if (availables.length > 0) {
           const available = availables.find(item =>
@@ -94,7 +93,7 @@ const AvailablePiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref) =
           }
         }
 
-        const sectionRes = await axios.get(`${API_ENDPOINTS.getSection}/${sectionId}`);
+        const sectionRes = await axiosInstance.get(`${API_ENDPOINTS.getSection}/${sectionId}`);
         const sectionData = sectionRes.data.data;
         setDisplayAvailable(sectionData.display || 0);
       } catch (error) {

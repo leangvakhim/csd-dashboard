@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } from "react";
 import MediaLibraryModal from "../../MediaLibraryModal";
-import axios from "axios";
-import { API_ENDPOINTS, API } from "../../../service/APIConfig";
+import { API_ENDPOINTS, API, axiosInstance } from "../../../service/APIConfig";
 import Swal from "sweetalert2";
 
 const IntroductionPiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref) => {
@@ -29,7 +28,7 @@ const IntroductionPiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref
 
     const getImageIdByUrl = async (url) => {
         try {
-        const response = await axios.get(API_ENDPOINTS.getImages);
+        const response = await axiosInstance.get(API_ENDPOINTS.getImages);
         const images = Array.isArray(response.data) ? response.data : response.data.data;
 
         const matchedImage = images.find((img) => img.image_url === url);
@@ -61,7 +60,7 @@ const IntroductionPiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref
     const handleToggleDisplay = async () => {
         try {
             const newDisplay = displayIntroduction === 1 ? 0 : 1;
-            await axios.post(`${API_ENDPOINTS.updateSection}/${sectionId}`, {
+            await axiosInstance.post(`${API_ENDPOINTS.updateSection}/${sectionId}`, {
                 sec_id: sectionId,
                 display: newDisplay,
             });
@@ -74,7 +73,7 @@ const IntroductionPiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref
     useEffect(() => {
         const fetchIntroductions = async () => {
         try {
-            const response = await axios.get(`${API_ENDPOINTS.getIntroduction}`);
+            const response = await axiosInstance.get(`${API_ENDPOINTS.getIntroduction}`);
             const introductions = response.data.data || [];
             if (introductions.length > 0) {
             const introduction = introductions.find(item => item?.section?.sec_page === pageId && item?.in_sec === sectionId);
@@ -88,7 +87,7 @@ const IntroductionPiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref
             }
             }
 
-            const sectionRes = await axios.get(`${API_ENDPOINTS.getSection}/${sectionId}`);
+            const sectionRes = await axiosInstance.get(`${API_ENDPOINTS.getSection}/${sectionId}`);
             const sectionData = sectionRes.data.data;
             setDisplayIntroduction(sectionData.display || 0);
 
@@ -118,7 +117,7 @@ const IntroductionPiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref
 
         if (result.isConfirmed) {
         try {
-            await axios.put(`${API_ENDPOINTS.deleteSection}/${sectionId}`);
+            await axiosInstance.put(`${API_ENDPOINTS.deleteSection}/${sectionId}`);
             await Swal.fire({
                 icon: 'success',
                 title: 'Deleted!',

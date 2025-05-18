@@ -2,8 +2,7 @@ import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } f
 import CsdPieceSlider from "./CsdPieceSlider";
 import AddOn from "./AddOn";
 import MediaLibraryModal from "../../MediaLibraryModal";
-import axios from "axios";
-import { API_ENDPOINTS, API } from "../../../service/APIConfig";
+import { API_ENDPOINTS, API, axiosInstance } from "../../../service/APIConfig";
 import Swal from "sweetalert2";
 
 const CsdPiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref) => {
@@ -35,7 +34,7 @@ const CsdPiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref) => {
 
   const getImageIdByUrl = async (url) => {
     try {
-      const response = await axios.get(API_ENDPOINTS.getImages);
+      const response = await axiosInstance.get(API_ENDPOINTS.getImages);
       const images = Array.isArray(response.data) ? response.data : response.data.data;
 
       const matchedImage = images.find((img) => img.image_url === url);
@@ -51,7 +50,7 @@ const CsdPiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref) => {
       let textId;
 
       try {
-        const response = await axios.get(`${API_ENDPOINTS.getSpecialization}`);
+        const response = await axiosInstance.get(`${API_ENDPOINTS.getSpecialization}`);
         const csd = response.data.data || [];
         const currentCSD = csd.find(f => f.section.sec_page === pageId && f.ras_sec === sectionId && f.text?.text_type === 7);
         if (currentCSD?.text?.text_id) {
@@ -69,7 +68,7 @@ const CsdPiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref) => {
           text_type: 7,
           text_sec: sectionId,
         };
-        const textRes = await axios.post(`${API_ENDPOINTS.updateText}/${textId}`, { texts: updatePayload });
+        const textRes = await axiosInstance.post(`${API_ENDPOINTS.updateText}/${textId}`, { texts: updatePayload });
         textId = textRes.data.data?.text_id;
       } else {
         const textPayload = {
@@ -78,7 +77,7 @@ const CsdPiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref) => {
           text_type: 7,
           text_sec: sectionId,
         };
-        const textRes = await axios.post(`${API_ENDPOINTS.createText}`, { texts: [textPayload] });
+        const textRes = await axiosInstance.post(`${API_ENDPOINTS.createText}`, { texts: [textPayload] });
         textId = textRes.data.data?.text_id;
       }
 
@@ -103,7 +102,7 @@ const CsdPiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref) => {
   const handleToggleDisplay = async () => {
     try {
         const newDisplay = displayCSD === 1 ? 0 : 1;
-        await axios.post(`${API_ENDPOINTS.updateSection}/${sectionId}`, {
+        await axiosInstance.post(`${API_ENDPOINTS.updateSection}/${sectionId}`, {
             sec_id: sectionId,
             display: newDisplay,
         });
@@ -129,7 +128,7 @@ const CsdPiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref) => {
 
     if (result.isConfirmed) {
       try {
-          await axios.put(`${API_ENDPOINTS.deleteSection}/${sectionId}`);
+          await axiosInstance.put(`${API_ENDPOINTS.deleteSection}/${sectionId}`);
           await Swal.fire({
               icon: 'success',
               title: 'Deleted!',
@@ -154,7 +153,7 @@ const CsdPiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref) => {
   useEffect(() => {
     const fetchCSDs = async () => {
       try {
-        const response = await axios.get(`${API_ENDPOINTS.getSpecialization}?ras_sec=${sectionId}`);
+        const response = await axiosInstance.get(`${API_ENDPOINTS.getSpecialization}?ras_sec=${sectionId}`);
         const csds = response.data.data || [];
         if (csds.length > 0) {
           const csd = csds.find(item =>
@@ -172,7 +171,7 @@ const CsdPiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref) => {
           }
         }
 
-        const sectionRes = await axios.get(`${API_ENDPOINTS.getSection}/${sectionId}`);
+        const sectionRes = await axiosInstance.get(`${API_ENDPOINTS.getSection}/${sectionId}`);
         const sectionData = sectionRes.data.data;
         setDisplayCSD(sectionData.display || 0);
       } catch (error) {

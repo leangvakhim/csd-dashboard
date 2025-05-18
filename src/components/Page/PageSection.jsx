@@ -1,5 +1,4 @@
 import React, { useState, forwardRef, useEffect, useRef, useCallback, useImperativeHandle } from "react";
-import axios from "axios";
 import { DndProvider, useDrag, useDrop } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { TbCarouselHorizontal, TbCodeDots } from "react-icons/tb";
@@ -73,7 +72,7 @@ import RequirementPiece from "./Requirement/RequirementPiece";
 import ImportantPiece from "./Important/ImportantPiece";
 import PartnerPiece from "./Partner/PartnerPiece";
 import FeedbackPiece from "./Feedback/FeedbackPiece";
-import { API_ENDPOINTS } from "../../service/APIConfig";
+import { API_ENDPOINTS, axiosInstance } from "../../service/APIConfig";
 import AnnouncementPiece from "./Announcement/AnnouncementPiece";
 import ContactPiece from "./Contact/ContactPiece";
 import QuestionPiece from "./Question/QuestionPiece";
@@ -359,7 +358,7 @@ const PageSection = forwardRef(({ formData = {}, setFormData = {}, page_id }, re
 
       try {
         setLoading(true);
-        const response = await axios.get(`${API_ENDPOINTS.getSectionByPage}/${page_id}`);
+        const response = await axiosInstance.get(`${API_ENDPOINTS.getSectionByPage}/${page_id}`);
         const fetchedSections = response.data?.data || [];
 
         const mapped = fetchedSections.map((section) => ({

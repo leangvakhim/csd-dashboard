@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } from "react";
 import ImportantPieceSlider from "../Important/ImportantPieceSlider";
-import axios from "axios";
-import { API_ENDPOINTS } from "../../../service/APIConfig";
+import { API_ENDPOINTS, axiosInstance } from "../../../service/APIConfig";
 import Swal from "sweetalert2";
 
 const ImportantPiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref) => {
@@ -30,7 +29,7 @@ const ImportantPiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref) =
   const handleToggleDisplay = async () => {
     try {
         const newDisplay = displayImportant === 1 ? 0 : 1;
-        await axios.post(`${API_ENDPOINTS.updateSection}/${sectionId}`, {
+        await axiosInstance.post(`${API_ENDPOINTS.updateSection}/${sectionId}`, {
             sec_id: sectionId,
             display: newDisplay,
         });
@@ -56,7 +55,7 @@ const ImportantPiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref) =
 
       if (result.isConfirmed) {
       try {
-          await axios.put(`${API_ENDPOINTS.deleteSection}/${sectionId}`);
+          await axiosInstance.put(`${API_ENDPOINTS.deleteSection}/${sectionId}`);
           await Swal.fire({
               icon: 'success',
               title: 'Deleted!',
@@ -81,7 +80,7 @@ const ImportantPiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref) =
   useEffect(() => {
     const fetchImportants = async () => {
         try {
-            const response = await axios.get(`${API_ENDPOINTS.getImportant}`);
+            const response = await axiosInstance.get(`${API_ENDPOINTS.getImportant}`);
             const importants = response.data.data || [];
             if (importants.length > 0) {
             const important = importants.find(item =>
@@ -96,7 +95,7 @@ const ImportantPiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref) =
               }
             }
 
-            const sectionRes = await axios.get(`${API_ENDPOINTS.getSection}/${sectionId}`);
+            const sectionRes = await axiosInstance.get(`${API_ENDPOINTS.getSection}/${sectionId}`);
             const sectionData = sectionRes.data.data;
             setDisplayImportant(sectionData.display || 0);
         } catch (error) {

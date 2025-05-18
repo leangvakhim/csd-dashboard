@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } from "react";
 import StudyPieceSlider from "./StudyPieceSlider";
-import axios from "axios";
-import { API_ENDPOINTS } from "../../../service/APIConfig";
+import { API_ENDPOINTS, axiosInstance } from "../../../service/APIConfig";
 import Swal from "sweetalert2";
 
 const StudyPiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref) => {
@@ -33,7 +32,7 @@ const StudyPiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref) => {
   const handleToggleDisplay = async () => {
     try {
         const newDisplay = displayStudy === 1 ? 0 : 1;
-        await axios.post(`${API_ENDPOINTS.updateSection}/${sectionId}`, {
+        await axiosInstance.post(`${API_ENDPOINTS.updateSection}/${sectionId}`, {
             sec_id: sectionId,
             display: newDisplay,
         });
@@ -59,7 +58,7 @@ const StudyPiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref) => {
 
       if (result.isConfirmed) {
       try {
-          await axios.put(`${API_ENDPOINTS.deleteSection}/${sectionId}`);
+          await axiosInstance.put(`${API_ENDPOINTS.deleteSection}/${sectionId}`);
           await Swal.fire({
               icon: 'success',
               title: 'Deleted!',
@@ -84,7 +83,7 @@ const StudyPiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref) => {
   useEffect(() => {
     const fetchFacitlies = async () => {
       try {
-        const response = await axios.get(`${API_ENDPOINTS.getStudy}`);
+        const response = await axiosInstance.get(`${API_ENDPOINTS.getStudy}`);
         const studys = response?.data?.data || [];
         if (studys.length > 0) {
           const study = studys.find(item =>
@@ -100,7 +99,7 @@ const StudyPiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref) => {
           }
         }
 
-        const sectionRes = await axios.get(`${API_ENDPOINTS.getSection}/${sectionId}`);
+        const sectionRes = await axiosInstance.get(`${API_ENDPOINTS.getSection}/${sectionId}`);
         const sectionData = sectionRes.data.data;
         setDisplayStudy(sectionData.display || 0);
       } catch (error) {

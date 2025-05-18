@@ -2,8 +2,7 @@ import React, { useState, forwardRef, useImperativeHandle, useEffect } from "rea
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import JoditEditor from 'jodit-react';
 import 'jodit/es5/jodit.css';
-import axios from "axios";
-import { API_ENDPOINTS, API } from "../../../service/APIConfig";
+import { API_ENDPOINTS, API, axiosInstance } from "../../../service/APIConfig";
 import Swal from "sweetalert2";
 
 const config = {
@@ -74,7 +73,7 @@ const TypePieceSlider = forwardRef(({typeId}, ref) => {
   useEffect(() => {
     const fetchSliders = async () => {
       try {
-        const response = await axios.get(API_ENDPOINTS.getSubType);
+        const response = await axiosInstance.get(API_ENDPOINTS.getSubType);
         const data = response.data?.data;
 
         const subservices = Array.isArray(data) ? data : [data];
@@ -124,7 +123,7 @@ const TypePieceSlider = forwardRef(({typeId}, ref) => {
 
     if (result.isConfirmed) {
       try {
-          await axios.put(`${API_ENDPOINTS.deleteSubType}/${typeId}`);
+          await axiosInstance.put(`${API_ENDPOINTS.deleteSubType}/${typeId}`);
           setSlider((prevSlider) => prevSlider.filter((item) => item.id !== typeId));
           await Swal.fire({
               icon: 'success',

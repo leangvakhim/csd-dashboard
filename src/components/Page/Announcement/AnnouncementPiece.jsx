@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } from "react";
-import axios from "axios";
-import { API_ENDPOINTS } from "../../../service/APIConfig";
+import { API_ENDPOINTS, axiosInstance } from "../../../service/APIConfig";
 import Swal from "sweetalert2";
 
 const AnnouncementPiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref) => {
@@ -33,7 +32,7 @@ const AnnouncementPiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref
     const handleToggleDisplay = async () => {
         try {
             const newDisplay = displayNews === 1 ? 0 : 1;
-            await axios.post(`${API_ENDPOINTS.updateSection}/${sectionId}`, {
+            await axiosInstance.post(`${API_ENDPOINTS.updateSection}/${sectionId}`, {
                 sec_id: sectionId,
                 display: newDisplay,
             });
@@ -59,7 +58,7 @@ const AnnouncementPiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref
 
         if (result.isConfirmed) {
         try {
-            await axios.put(`${API_ENDPOINTS.deleteSection}/${sectionId}`);
+            await axiosInstance.put(`${API_ENDPOINTS.deleteSection}/${sectionId}`);
             await Swal.fire({
                 icon: 'success',
                 title: 'Deleted!',
@@ -84,7 +83,7 @@ const AnnouncementPiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref
     useEffect(() => {
         const fetchAnnouncements = async () => {
             try {
-                const response = await axios.get(`${API_ENDPOINTS.getHeaderSection}?hsec_sec=${sectionId}`);
+                const response = await axiosInstance.get(`${API_ENDPOINTS.getHeaderSection}?hsec_sec=${sectionId}`);
                 const hsecs = response.data.data || [];
                 if (hsecs.length > 0) {
                 const hsec = hsecs.find(item =>
@@ -102,7 +101,7 @@ const AnnouncementPiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref
                     }
                 }
 
-                const sectionRes = await axios.get(`${API_ENDPOINTS.getSection}/${sectionId}`);
+                const sectionRes = await axiosInstance.get(`${API_ENDPOINTS.getSection}/${sectionId}`);
                 const sectionData = sectionRes.data.data;
                 setDisplayNews(sectionData.display || 0);
             } catch (error) {
@@ -112,7 +111,7 @@ const AnnouncementPiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref
 
         const fetchPages = async () => {
             try{
-                const response = await axios.get(API_ENDPOINTS.getPage);
+                const response = await axiosInstance.get(API_ENDPOINTS.getPage);
                 const page = response.data?.data || [];
                 setPages(page);
             } catch (error) {

@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } from "react";
 import MediaLibraryModal from "../../MediaLibraryModal";
-import axios from "axios";
-import { API, API_ENDPOINTS } from "../../../service/APIConfig";
+import { API, API_ENDPOINTS, axiosInstance } from "../../../service/APIConfig";
 
 const BannerPiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref) => {
     const [isRotatedButton1, setIsRotatedButton1] = useState(false);
@@ -27,7 +26,7 @@ const BannerPiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref) => {
 
     const getImageIdByUrl = async (url) => {
         try {
-            const response = await axios.get(API_ENDPOINTS.getImages);
+            const response = await axiosInstance.get(API_ENDPOINTS.getImages);
             const images = Array.isArray(response.data) ? response.data : response.data.data;
 
             const matchedImage = images.find((img) => img.image_url === url);
@@ -42,7 +41,7 @@ const BannerPiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref) => {
         const fetchBanners = async () => {
             try {
 
-                const response = await axios.get(`${API_ENDPOINTS.getBanner}`);
+                const response = await axiosInstance.get(`${API_ENDPOINTS.getBanner}`);
                 const banners = response.data.data || [];
                 if (banners.length > 0) {
                     const banner = banners.find(item => item.ban_sec === sectionId && item.section.sec_page === pageId);
@@ -54,7 +53,7 @@ const BannerPiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref) => {
                     }
                 }
 
-                const sectionRes = await axios.get(`${API_ENDPOINTS.getSection}/${sectionId}`);
+                const sectionRes = await axiosInstance.get(`${API_ENDPOINTS.getSection}/${sectionId}`);
                 const sectionData = sectionRes.data.data;
                 setDisplayBanner(sectionData.display || 0);
 
@@ -87,7 +86,7 @@ const BannerPiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref) => {
     const handleToggleDisplay = async () => {
         try {
             const newDisplay = displayBanner === 1 ? 0 : 1;
-            await axios.post(`${API_ENDPOINTS.updateSection}/${sectionId}`, {
+            await axiosInstance.post(`${API_ENDPOINTS.updateSection}/${sectionId}`, {
                 sec_id: sectionId,
                 display: newDisplay,
             });
@@ -117,7 +116,7 @@ const BannerPiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref) => {
 
         if (result.isConfirmed) {
             try {
-                await axios.put(`${API_ENDPOINTS.deleteSection}/${sectionId}`);
+                await axiosInstance.put(`${API_ENDPOINTS.deleteSection}/${sectionId}`);
 
                 await Swal.fire({
                     icon: 'success',

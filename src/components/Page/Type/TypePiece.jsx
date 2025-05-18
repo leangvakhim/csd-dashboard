@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } from "react";
 import TypePieceSlider from "../Type/TypePieceSlider";
-import axios from "axios";
-import { API_ENDPOINTS, API } from "../../../service/APIConfig";
+import { API_ENDPOINTS, API, axiosInstance } from "../../../service/APIConfig";
 import Swal from "sweetalert2";
 
 const TypePiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref) => {
@@ -18,7 +17,7 @@ const TypePiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref) => {
       let textId;
 
       try {
-        const response = await axios.get(`${API_ENDPOINTS.getType}`);
+        const response = await axiosInstance.get(`${API_ENDPOINTS.getType}`);
         const types = response.data.data || [];
         const currentType = types.find(f => f?.section?.sec_page === pageId && f?.tse_sec === sectionId && f.text?.text_type === 6);
         if (currentType?.text?.text_id) {
@@ -36,7 +35,7 @@ const TypePiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref) => {
           text_type: 6,
           text_sec: sectionId,
         };
-        const textRes = await axios.post(`${API_ENDPOINTS.updateText}/${textId}`, { texts: updatePayload });
+        const textRes = await axiosInstance.post(`${API_ENDPOINTS.updateText}/${textId}`, { texts: updatePayload });
         textId = textRes.data.data?.text_id;
       } else {
         const textPayload = {
@@ -45,7 +44,7 @@ const TypePiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref) => {
           text_type: 6,
           text_sec: sectionId,
         };
-        const textRes = await axios.post(`${API_ENDPOINTS.createText}`, { texts: [textPayload] });
+        const textRes = await axiosInstance.post(`${API_ENDPOINTS.createText}`, { texts: [textPayload] });
         textId = textRes.data.data?.text_id;
       }
 
@@ -66,7 +65,7 @@ const TypePiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref) => {
   const handleToggleDisplay = async () => {
     try {
         const newDisplay = displayTypes === 1 ? 0 : 1;
-        await axios.post(`${API_ENDPOINTS.updateSection}/${sectionId}`, {
+        await axiosInstance.post(`${API_ENDPOINTS.updateSection}/${sectionId}`, {
             sec_id: sectionId,
             display: newDisplay,
         });
@@ -92,7 +91,7 @@ const TypePiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref) => {
 
     if (result.isConfirmed) {
       try {
-          await axios.put(`${API_ENDPOINTS.deleteSection}/${sectionId}`);
+          await axiosInstance.put(`${API_ENDPOINTS.deleteSection}/${sectionId}`);
           await Swal.fire({
               icon: 'success',
               title: 'Deleted!',
@@ -117,7 +116,7 @@ const TypePiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref) => {
   useEffect(() => {
     const fetchTypes = async () => {
       try {
-        const response = await axios.get(`${API_ENDPOINTS.getType}?tse_sec=${sectionId}`);
+        const response = await axiosInstance.get(`${API_ENDPOINTS.getType}?tse_sec=${sectionId}`);
         const types = response.data.data || [];
         if (types.length > 0) {
           const type = types.find(item =>
@@ -134,7 +133,7 @@ const TypePiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref) => {
           }
         }
 
-        const sectionRes = await axios.get(`${API_ENDPOINTS.getSection}/${sectionId}`);
+        const sectionRes = await axiosInstance.get(`${API_ENDPOINTS.getSection}/${sectionId}`);
         const sectionData = sectionRes.data.data;
         setDisplayTypes(sectionData.display || 0);
       } catch (error) {

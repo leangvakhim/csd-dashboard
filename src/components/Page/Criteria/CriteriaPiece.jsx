@@ -2,8 +2,7 @@ import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } f
 import MediaLibraryModal from "../../MediaLibraryModal";
 import JoditEditor from 'jodit-react';
 import 'jodit/es5/jodit.css';
-import axios from "axios";
-import { API_ENDPOINTS, API } from "../../../service/APIConfig";
+import { API_ENDPOINTS, API, axiosInstance } from "../../../service/APIConfig";
 import Swal from "sweetalert2";
 
 const config = {
@@ -43,7 +42,7 @@ const CriteriaPiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref) =>
 
   const getImageIdByUrl = async (url) => {
     try {
-      const response = await axios.get(API_ENDPOINTS.getImages);
+      const response = await axiosInstance.get(API_ENDPOINTS.getImages);
       const images = Array.isArray(response.data) ? response.data : response.data.data;
 
       const matchedImage = images.find((img) => img.image_url === url);
@@ -78,7 +77,7 @@ const CriteriaPiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref) =>
   const handleToggleDisplay = async () => {
     try {
         const newDisplay = displayCriteria === 1 ? 0 : 1;
-        await axios.post(`${API_ENDPOINTS.updateSection}/${sectionId}`, {
+        await axiosInstance.post(`${API_ENDPOINTS.updateSection}/${sectionId}`, {
             sec_id: sectionId,
             display: newDisplay,
         });
@@ -91,7 +90,7 @@ const CriteriaPiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref) =>
   useEffect(() => {
     const fetchCriterias = async () => {
       try {
-        const response = await axios.get(`${API_ENDPOINTS.getCriteria}`);
+        const response = await axiosInstance.get(`${API_ENDPOINTS.getCriteria}`);
         const criterias = response.data.data || [];
         if (criterias.length > 0) {
           const criteria = criterias.find(item => item?.section?.sec_page === pageId && item?.gc_sec === sectionId);
@@ -106,7 +105,7 @@ const CriteriaPiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref) =>
           }
         }
 
-        const sectionRes = await axios.get(`${API_ENDPOINTS.getSection}/${sectionId}`);
+        const sectionRes = await axiosInstance.get(`${API_ENDPOINTS.getSection}/${sectionId}`);
         const sectionData = sectionRes.data.data;
         setDisplayCriteria(sectionData.display || 0);
 
@@ -136,7 +135,7 @@ const CriteriaPiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref) =>
 
     if (result.isConfirmed) {
       try {
-          await axios.put(`${API_ENDPOINTS.deleteSection}/${sectionId}`);
+          await axiosInstance.put(`${API_ENDPOINTS.deleteSection}/${sectionId}`);
           await Swal.fire({
               icon: 'success',
               title: 'Deleted!',

@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } from "react";
 import MediaLibraryModal from "../../MediaLibraryModal";
 import FacilitiesPieceSlider from "../Facilities/FacilitiesPieceSlider";
-import axios from "axios";
-import { API_ENDPOINTS, API } from "../../../service/APIConfig";
+import { API_ENDPOINTS, API, axiosInstance } from "../../../service/APIConfig";
 import Swal from "sweetalert2";
 
 const FacilitiesPiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref) => {
@@ -28,7 +27,7 @@ const FacilitiesPiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref) 
 
   const getImageIdByUrl = async (url) => {
     try {
-      const response = await axios.get(API_ENDPOINTS.getImages);
+      const response = await axiosInstance.get(API_ENDPOINTS.getImages);
       const images = Array.isArray(response.data) ? response.data : response.data.data;
 
       const matchedImage = images.find((img) => img.image_url === url);
@@ -44,7 +43,7 @@ const FacilitiesPiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref) 
       let textId;
 
       try {
-        const response = await axios.get(`${API_ENDPOINTS.getAcadFacilities}`);
+        const response = await axiosInstance.get(`${API_ENDPOINTS.getAcadFacilities}`);
         const facilities = response.data.data || [];
         const currentFacility = facilities.find(f => f?.section.sec_page === pageId && f?.af_sec === sectionId && f.text?.text_type === 3);
         if (currentFacility?.text?.text_id) {
@@ -62,7 +61,7 @@ const FacilitiesPiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref) 
           text_type: 3,
           text_sec: sectionId,
         };
-        const textRes = await axios.post(`${API_ENDPOINTS.updateText}/${textId}`, { texts: updatePayload });
+        const textRes = await axiosInstance.post(`${API_ENDPOINTS.updateText}/${textId}`, { texts: updatePayload });
         textId = textRes.data.data?.text_id;
       } else {
         const textPayload = {
@@ -71,7 +70,7 @@ const FacilitiesPiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref) 
           text_type: 3,
           text_sec: sectionId,
         };
-        const textRes = await axios.post(`${API_ENDPOINTS.createText}`, { texts: [textPayload] });
+        const textRes = await axiosInstance.post(`${API_ENDPOINTS.createText}`, { texts: [textPayload] });
         const createdTextRaw = textRes.data.data;
         let createdText;
         if (Array.isArray(createdTextRaw)) {
@@ -106,7 +105,7 @@ const FacilitiesPiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref) 
   const handleToggleDisplay = async () => {
     try {
         const newDisplay = displayFacilities === 1 ? 0 : 1;
-        await axios.post(`${API_ENDPOINTS.updateSection}/${sectionId}`, {
+        await axiosInstance.post(`${API_ENDPOINTS.updateSection}/${sectionId}`, {
             sec_id: sectionId,
             display: newDisplay,
         });
@@ -132,7 +131,7 @@ const FacilitiesPiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref) 
 
       if (result.isConfirmed) {
           try {
-              await axios.put(`${API_ENDPOINTS.deleteSection}/${sectionId}`);
+              await axiosInstance.put(`${API_ENDPOINTS.deleteSection}/${sectionId}`);
               await Swal.fire({
                   icon: 'success',
                   title: 'Deleted!',
@@ -157,7 +156,7 @@ const FacilitiesPiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref) 
   useEffect(() => {
     const fetchFacitlies = async () => {
       try {
-        const response = await axios.get(`${API_ENDPOINTS.getAcadFacilities}`);
+        const response = await axiosInstance.get(`${API_ENDPOINTS.getAcadFacilities}`);
         const acadfacilities = response.data.data || [];
         if (acadfacilities.length > 0) {
           const acadfacility = acadfacilities.find(item =>
@@ -174,7 +173,7 @@ const FacilitiesPiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref) 
           }
         }
 
-        const sectionRes = await axios.get(`${API_ENDPOINTS.getSection}/${sectionId}`);
+        const sectionRes = await axiosInstance.get(`${API_ENDPOINTS.getSection}/${sectionId}`);
         const sectionData = sectionRes.data.data;
         setDisplayFacilities(sectionData.display || 0);
       } catch (error) {

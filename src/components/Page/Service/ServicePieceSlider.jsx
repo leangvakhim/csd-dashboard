@@ -1,8 +1,7 @@
 import { forwardRef, useImperativeHandle, useState, useEffect } from "react";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import MediaLibraryModal from "../../MediaLibraryModal";
-import { API_ENDPOINTS, API } from "../../../service/APIConfig";
-import axios from "axios";
+import { API_ENDPOINTS, API, axiosInstance } from "../../../service/APIConfig";
 import Swal from "sweetalert2";
 
 const ServicePieceSlider = forwardRef(({sectionId, pageId}, ref) => {
@@ -66,7 +65,7 @@ const ServicePieceSlider = forwardRef(({sectionId, pageId}, ref) => {
 
   const getImageIdByUrl = async (url) => {
     try {
-      const response = await axios.get(API_ENDPOINTS.getImages);
+      const response = await axiosInstance.get(API_ENDPOINTS.getImages);
       const images = Array.isArray(response.data) ? response.data : response.data.data;
 
       const matchedImage = images.find((img) => img.image_url === url);
@@ -100,17 +99,6 @@ const ServicePieceSlider = forwardRef(({sectionId, pageId}, ref) => {
       );
   };
 
-  // const handleDeleteSlider = async (sliderId) => {
-  //   if (!window.confirm("Are you sure you want to delete this slider?")) return;
-
-  //   try {
-  //       await axios.put(`${API_ENDPOINTS.deleteService}/${sliderId}`);
-  //       setSlider((prevSlider) => prevSlider.filter((item) => item.id !== sliderId));
-  //   } catch (error) {
-  //       console.error('Failed to delete slider:', error);
-  //   }
-  // };
-
   const handleDeleteSlider = async (sliderId) => {
     const result = await Swal.fire({
       title: 'Are you sure ?',
@@ -127,7 +115,7 @@ const ServicePieceSlider = forwardRef(({sectionId, pageId}, ref) => {
 
     if (result.isConfirmed) {
       try {
-          await axios.put(`${API_ENDPOINTS.deleteService}/${sliderId}`);
+          await axiosInstance.put(`${API_ENDPOINTS.deleteService}/${sliderId}`);
           setSlider((prevSlider) => prevSlider.filter((item) => item.id !== sliderId));
           await Swal.fire({
             icon: 'success',
@@ -153,7 +141,7 @@ const ServicePieceSlider = forwardRef(({sectionId, pageId}, ref) => {
   useEffect(() => {
     const fetchSliders = async () => {
         try {
-            const response = await axios.get(`${API_ENDPOINTS.getService}`);
+            const response = await axiosInstance.get(`${API_ENDPOINTS.getService}`);
             const services = response.data?.data || [];
 
             if (services.length > 0) {

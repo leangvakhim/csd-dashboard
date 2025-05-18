@@ -2,8 +2,7 @@ import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } f
 import MediaLibraryModal from "../../MediaLibraryModal";
 import JoditEditor from 'jodit-react';
 import 'jodit/es5/jodit.css';
-import { API, API_ENDPOINTS } from "../../../service/APIConfig";
-import axios from "axios";
+import { API, API_ENDPOINTS, axiosInstance } from "../../../service/APIConfig";
 
 const config = {
   readonly: false,  // Set to true for read-only mode
@@ -42,7 +41,7 @@ const ProgramPiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref) => 
 
   const getImageIdByUrl = async (url) => {
     try {
-      const response = await axios.get(API_ENDPOINTS.getImages);
+      const response = await axiosInstance.get(API_ENDPOINTS.getImages);
       const images = Array.isArray(response.data) ? response.data : response.data.data;
 
       const matchedImage = images.find((img) => img.image_url === url);
@@ -78,7 +77,7 @@ const ProgramPiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref) => 
   const handleToggleDisplay = async () => {
     try {
         const newDisplay = displayDepartment === 1 ? 0 : 1;
-        await axios.post(`${API_ENDPOINTS.updateSection}/${sectionId}`, {
+        await axiosInstance.post(`${API_ENDPOINTS.updateSection}/${sectionId}`, {
             sec_id: sectionId,
             display: newDisplay,
         });
@@ -91,7 +90,7 @@ const ProgramPiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref) => 
   useEffect(() => {
     const fetchDepartments = async () => {
       try {
-        const response = await axios.get(`${API_ENDPOINTS.getDepartment}`);
+        const response = await axiosInstance.get(`${API_ENDPOINTS.getDepartment}`);
         const departments = response.data.data || [];
         if (departments.length > 0) {
           const department = departments.find(item =>
@@ -108,7 +107,7 @@ const ProgramPiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref) => 
           }
         }
 
-        const sectionRes = await axios.get(`${API_ENDPOINTS.getSection}/${sectionId}`);
+        const sectionRes = await axiosInstance.get(`${API_ENDPOINTS.getSection}/${sectionId}`);
         const sectionData = sectionRes.data.data;
         setDisplayDepartment(sectionData.display || 0);
 
@@ -142,7 +141,7 @@ const ProgramPiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref) => 
 
     if (result.isConfirmed) {
         try {
-            await axios.put(`${API_ENDPOINTS.deleteSection}/${sectionId}`);
+            await axiosInstance.put(`${API_ENDPOINTS.deleteSection}/${sectionId}`);
 
             await Swal.fire({
                 icon: 'success',

@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } from "react";
 import SpecializationPieceSLider from "../Specialization/SpecializationPieceSlider";
 import MediaLibraryModal from "../../MediaLibraryModal";
-import axios from "axios";
-import { API_ENDPOINTS, API } from "../../../service/APIConfig";
+import { API_ENDPOINTS, API, axiosInstance } from "../../../service/APIConfig";
 import Swal from "sweetalert2";
 
 const SpecializationPiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref) => {
@@ -33,7 +32,7 @@ const SpecializationPiece = forwardRef(({sectionId, pageId, handleSectionRef}, r
 
   const getImageIdByUrl = async (url) => {
     try {
-      const response = await axios.get(API_ENDPOINTS.getImages);
+      const response = await axiosInstance.get(API_ENDPOINTS.getImages);
       const images = Array.isArray(response.data) ? response.data : response.data.data;
 
       const matchedImage = images.find((img) => img.image_url === url);
@@ -49,7 +48,7 @@ const SpecializationPiece = forwardRef(({sectionId, pageId, handleSectionRef}, r
       let textId;
 
       try {
-        const response = await axios.get(`${API_ENDPOINTS.getSpecialization}?ras_sec=${sectionId}`);
+        const response = await axiosInstance.get(`${API_ENDPOINTS.getSpecialization}?ras_sec=${sectionId}`);
         const specialization = response.data.data || [];
         const currentSpecialization = specialization.find(f => f?.section?.sec_page === pageId && f?.ras_sec === sectionId && f.text?.text_type === 5);
         if (currentSpecialization?.text?.text_id) {
@@ -67,7 +66,7 @@ const SpecializationPiece = forwardRef(({sectionId, pageId, handleSectionRef}, r
           text_type: 5,
           text_sec: sectionId,
         };
-        const textRes = await axios.post(`${API_ENDPOINTS.updateText}/${textId}`, { texts: updatePayload });
+        const textRes = await axiosInstance.post(`${API_ENDPOINTS.updateText}/${textId}`, { texts: updatePayload });
         textId = textRes.data.data?.text_id;
       } else {
         const textPayload = {
@@ -76,7 +75,7 @@ const SpecializationPiece = forwardRef(({sectionId, pageId, handleSectionRef}, r
           text_type: 5,
           text_sec: sectionId,
         };
-        const textRes = await axios.post(`${API_ENDPOINTS.createText}`, { texts: [textPayload] });
+        const textRes = await axiosInstance.post(`${API_ENDPOINTS.createText}`, { texts: [textPayload] });
         textId = textRes.data.data?.text_id;
       }
 
@@ -100,7 +99,7 @@ const SpecializationPiece = forwardRef(({sectionId, pageId, handleSectionRef}, r
   const handleToggleDisplay = async () => {
     try {
         const newDisplay = displaySpecialization === 1 ? 0 : 1;
-        await axios.post(`${API_ENDPOINTS.updateSection}/${sectionId}`, {
+        await axiosInstance.post(`${API_ENDPOINTS.updateSection}/${sectionId}`, {
             sec_id: sectionId,
             display: newDisplay,
         });
@@ -126,7 +125,7 @@ const SpecializationPiece = forwardRef(({sectionId, pageId, handleSectionRef}, r
 
     if (result.isConfirmed) {
       try {
-          await axios.put(`${API_ENDPOINTS.deleteSection}/${sectionId}`);
+          await axiosInstance.put(`${API_ENDPOINTS.deleteSection}/${sectionId}`);
           await Swal.fire({
               icon: 'success',
               title: 'Deleted!',
@@ -151,7 +150,7 @@ const SpecializationPiece = forwardRef(({sectionId, pageId, handleSectionRef}, r
   useEffect(() => {
     const fetchSpecializations = async () => {
       try {
-        const response = await axios.get(`${API_ENDPOINTS.getSpecialization}?ras_sec=${sectionId}`);
+        const response = await axiosInstance.get(`${API_ENDPOINTS.getSpecialization}?ras_sec=${sectionId}`);
         const specializations = response.data.data || [];
         if (specializations.length > 0) {
           const specialization = specializations.find(item =>
@@ -169,7 +168,7 @@ const SpecializationPiece = forwardRef(({sectionId, pageId, handleSectionRef}, r
           }
         }
 
-        const sectionRes = await axios.get(`${API_ENDPOINTS.getSection}/${sectionId}`);
+        const sectionRes = await axiosInstance.get(`${API_ENDPOINTS.getSection}/${sectionId}`);
         const sectionData = sectionRes.data.data;
         setDisplaySpecialization(sectionData.display || 0);
       } catch (error) {

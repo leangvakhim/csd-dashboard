@@ -2,8 +2,7 @@ import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } f
 import MediaLibraryModal from "../../MediaLibraryModal";
 import JoditEditor from 'jodit-react';
 import 'jodit/es5/jodit.css';
-import axios from "axios";
-import { API_ENDPOINTS, API } from "../../../service/APIConfig";
+import { API_ENDPOINTS, API, axiosInstance } from "../../../service/APIConfig";
 import Swal from "sweetalert2";
 
 const config = {
@@ -47,7 +46,7 @@ const RequirementPiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref)
 
   const getImageIdByUrl = async (url) => {
     try {
-      const response = await axios.get(API_ENDPOINTS.getImages);
+      const response = await axiosInstance.get(API_ENDPOINTS.getImages);
       const images = Array.isArray(response.data) ? response.data : response.data.data;
 
       const matchedImage = images.find((img) => img.image_url === url);
@@ -89,7 +88,7 @@ const RequirementPiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref)
   const handleToggleDisplay = async () => {
     try {
         const newDisplay = displayRequirement === 1 ? 0 : 1;
-        await axios.post(`${API_ENDPOINTS.updateSection}/${sectionId}`, {
+        await axiosInstance.post(`${API_ENDPOINTS.updateSection}/${sectionId}`, {
             sec_id: sectionId,
             display: newDisplay,
         });
@@ -102,7 +101,7 @@ const RequirementPiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref)
   useEffect(() => {
     const fetchRequirements = async () => {
       try {
-        const response = await axios.get(`${API_ENDPOINTS.getCriteria}`);
+        const response = await axiosInstance.get(`${API_ENDPOINTS.getCriteria}`);
         const requirements = response.data.data || [];
         if (requirements.length > 0) {
           const requirement = requirements.find(item => item?.section?.sec_page === pageId && item?.gc_sec === sectionId);
@@ -119,7 +118,7 @@ const RequirementPiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref)
           }
         }
 
-        const sectionRes = await axios.get(`${API_ENDPOINTS.getSection}/${sectionId}`);
+        const sectionRes = await axiosInstance.get(`${API_ENDPOINTS.getSection}/${sectionId}`);
         const sectionData = sectionRes.data.data;
         setDisplayRequirement(sectionData.display || 0);
 
@@ -130,11 +129,11 @@ const RequirementPiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref)
 
     const fetchSubRequirements = async (reqId) => {
       try {
-        const response = await axios.get(`${API_ENDPOINTS.getSubRequirement}?gca_gc=${reqId}`);
+        const response = await axiosInstance.get(`${API_ENDPOINTS.getSubRequirement}?gca_gc=${reqId}`);
         const subrequirements = response.data.data || [];
 
         if (subrequirements.length > 0) {
-          const sectionResponse = await axios.get(`${API_ENDPOINTS.getSection}/${sectionId}`);
+          const sectionResponse = await axiosInstance.get(`${API_ENDPOINTS.getSection}/${sectionId}`);
           const sectionPageId = sectionResponse?.data?.data?.sec_page;
 
           const subrequirement = subrequirements.find(item =>
@@ -176,7 +175,7 @@ const RequirementPiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref)
 
       if (result.isConfirmed) {
       try {
-          await axios.put(`${API_ENDPOINTS.deleteSection}/${sectionId}`);
+          await axiosInstance.put(`${API_ENDPOINTS.deleteSection}/${sectionId}`);
           await Swal.fire({
               icon: 'success',
               title: 'Deleted!',

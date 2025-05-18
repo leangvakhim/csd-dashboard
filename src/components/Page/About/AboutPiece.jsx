@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } from "react";
-import axios from "axios";
-import { API_ENDPOINTS } from "../../../service/APIConfig";
+import { API_ENDPOINTS, axiosInstance } from "../../../service/APIConfig";
 import Swal from "sweetalert2";
 
 const AboutPiece = forwardRef(({sectionId, pageId}) => {
@@ -10,7 +9,7 @@ const AboutPiece = forwardRef(({sectionId, pageId}) => {
     const handleToggleDisplay = async () => {
         try {
             const newDisplay = displayAbout === 1 ? 0 : 1;
-            await axios.post(`${API_ENDPOINTS.updateSection}/${sectionId}`, {
+            await axiosInstance.post(`${API_ENDPOINTS.updateSection}/${sectionId}`, {
                 sec_id: sectionId,
                 display: newDisplay,
             });
@@ -36,7 +35,7 @@ const AboutPiece = forwardRef(({sectionId, pageId}) => {
 
         if (result.isConfirmed) {
         try {
-            await axios.put(`${API_ENDPOINTS.deleteSection}/${sectionId}`);
+            await axiosInstance.put(`${API_ENDPOINTS.deleteSection}/${sectionId}`);
             await Swal.fire({
                 icon: 'success',
                 title: 'Deleted!',
@@ -61,7 +60,7 @@ const AboutPiece = forwardRef(({sectionId, pageId}) => {
     useEffect(() => {
         const fetchAbouts = async () => {
             try {
-                const sectionRes = await axios.get(`${API_ENDPOINTS.getSection}/${sectionId}`);
+                const sectionRes = await axiosInstance.get(`${API_ENDPOINTS.getSection}/${sectionId}`);
                 const sectionData = sectionRes.data.data;
                 setDisplayAbout(sectionData.display || 0);
             } catch (error) {

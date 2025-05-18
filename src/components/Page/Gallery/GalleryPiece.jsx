@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } from "react";
 import MediaLibraryModal from "../../MediaLibraryModal";
-import axios from "axios";
-import { API_ENDPOINTS, API } from "../../../service/APIConfig";
+import { API_ENDPOINTS, API, axiosInstance } from "../../../service/APIConfig";
 import Swal from "sweetalert2";
 
 const GalleyPiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref) => {
@@ -33,7 +32,7 @@ const GalleyPiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref) => {
 
   const getImageIdByUrl = async (url) => {
     try {
-      const response = await axios.get(API_ENDPOINTS.getImages);
+      const response = await axiosInstance.get(API_ENDPOINTS.getImages);
       const images = Array.isArray(response.data) ? response.data : response.data.data;
 
       const matchedImage = images.find((img) => img.image_url === url);
@@ -49,7 +48,7 @@ const GalleyPiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref) => {
       let textId;
 
       try {
-        const response = await axios.get(`${API_ENDPOINTS.getGallery}?gal_sec=${sectionId}`);
+        const response = await axiosInstance.get(`${API_ENDPOINTS.getGallery}?gal_sec=${sectionId}`);
         const galleries = response.data.data || [];
         const currentGallery = galleries.find(item =>
           item.section &&
@@ -87,7 +86,7 @@ const GalleyPiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref) => {
           text_type: 4,
           text_sec: sectionId,
         };
-        const textRes = await axios.post(`${API_ENDPOINTS.updateText}/${textId}`, { texts: updatePayload });
+        const textRes = await axiosInstance.post(`${API_ENDPOINTS.updateText}/${textId}`, { texts: updatePayload });
         textId = textRes.data.data?.text_id;
       } else {
         const textPayload = {
@@ -96,7 +95,7 @@ const GalleyPiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref) => {
           text_type: 4,
           text_sec: sectionId,
         };
-        const textRes = await axios.post(`${API_ENDPOINTS.createText}`, { texts: [textPayload] });
+        const textRes = await axiosInstance.post(`${API_ENDPOINTS.createText}`, { texts: [textPayload] });
         textId = textRes.data.data?.text_id;
       }
 
@@ -125,7 +124,7 @@ const GalleyPiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref) => {
   const handleToggleDisplay = async () => {
     try {
         const newDisplay = displayGallery === 1 ? 0 : 1;
-        await axios.post(`${API_ENDPOINTS.updateSection}/${sectionId}`, {
+        await axiosInstance.post(`${API_ENDPOINTS.updateSection}/${sectionId}`, {
             sec_id: sectionId,
             display: newDisplay,
         });
@@ -151,7 +150,7 @@ const GalleyPiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref) => {
 
     if (result.isConfirmed) {
       try {
-          await axios.put(`${API_ENDPOINTS.deleteSection}/${sectionId}`);
+          await axiosInstance.put(`${API_ENDPOINTS.deleteSection}/${sectionId}`);
           await Swal.fire({
               icon: 'success',
               title: 'Deleted!',
@@ -176,7 +175,7 @@ const GalleyPiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref) => {
   useEffect(() => {
     const fetchFacitlies = async () => {
       try {
-        const response = await axios.get(`${API_ENDPOINTS.getGallery}?gal_sec=${sectionId}`);
+        const response = await axiosInstance.get(`${API_ENDPOINTS.getGallery}?gal_sec=${sectionId}`);
         const galleries = response.data.data || [];
         if (galleries.length > 0) {
           const gallery = galleries.find(item =>
@@ -199,7 +198,7 @@ const GalleyPiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref) => {
           }
         }
 
-        const sectionRes = await axios.get(`${API_ENDPOINTS.getSection}/${sectionId}`);
+        const sectionRes = await axiosInstance.get(`${API_ENDPOINTS.getSection}/${sectionId}`);
         const sectionData = sectionRes.data.data;
         setDisplayGallery(sectionData.display || 0);
       } catch (error) {
