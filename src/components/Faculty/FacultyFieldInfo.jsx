@@ -133,40 +133,46 @@ const FacultyFieldInfo = forwardRef(({ f_id }, ref) => {
     };
 
     useEffect(() => {
-        if (f_id) {
-            fetch(`${API_ENDPOINTS.getFacultyInfoByFaculty}/${f_id}`)
-                .then(res => res.json())
-                .then(result => {
-                    if (Array.isArray(result.data)) {
-                        const sortedData = [...result.data].sort((a, b) => (a.finfo_order || 0) - (b.finfo_order || 0));
-                        const formatted = sortedData.map((item, index) => ({
-                            finfo_id: item.finfo_id,
-                            f_id: item.f_id,
-                            id: item.finfo_id?.toString(),
-                            title: `Information ${index + 1}`,
-                            finfo_title: item.finfo_title,
-                            finfo_detail: item.finfo_detail,
-                            finfo_side: item.finfo_side,
-                            finfo_order: item.finfo_order || 0,
-                            display: Boolean(item.display ?? 0),
-                            active: Boolean(item.active ?? 1),
-                        }));
-                        if (formatted.length > 0) {
-                            setInfo(formatted);
-                        } else {
-                            setInfo([{
-                                id: "1",
-                                f_id: f_id,
-                                finfo_title: "Information 1",
-                                finfo_detail: '',
-                                finfo_side: null,
-                                display: 0,
-                                active: 1,
-                            }]);
-                        }
+        const fetchData = async () => {
+            try {
+                const res = await axiosInstance.get(`${API_ENDPOINTS.getFacultyInfoByFaculty}/${f_id}`);
+                const result = res.data;
+
+                if (Array.isArray(result.data)) {
+                    const sortedData = [...result.data].sort((a, b) => (a.finfo_order || 0) - (b.finfo_order || 0));
+                    const formatted = sortedData.map((item, index) => ({
+                        finfo_id: item.finfo_id,
+                        f_id: item.f_id,
+                        id: item.finfo_id?.toString(),
+                        title: `Information ${index + 1}`,
+                        finfo_title: item.finfo_title,
+                        finfo_detail: item.finfo_detail,
+                        finfo_side: item.finfo_side,
+                        finfo_order: item.finfo_order || 0,
+                        display: Boolean(item.display ?? 0),
+                        active: Boolean(item.active ?? 1),
+                    }));
+                    if (formatted.length > 0) {
+                        setInfo(formatted);
+                    } else {
+                        setInfo([{
+                            id: "1",
+                            f_id: f_id,
+                            finfo_title: "Information 1",
+                            finfo_detail: '',
+                            finfo_side: null,
+                            display: 0,
+                            active: 1,
+                        }]);
                     }
-                })
-                .catch(err => console.error("❌ Error fetching faculty info:", err));
+                }
+            } catch (err) {
+                console.error("❌ Error fetching faculty info:", err);
+            }
+        };
+
+        if (f_id) {
+            fetchData();
         }
     }, [f_id]);
 

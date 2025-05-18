@@ -54,15 +54,15 @@ const FacultyFieldBody = ({
 
     useEffect(() => {
       if (formData.f_img) {
-          fetch(`${API_ENDPOINTS.getImages}`)
-              .then(res => res.json())
-              .then(result => {
-                  const matched = result.data.find(img => img.image_id === formData.f_img);
-                  if (matched) {
-                      setSelectedImage(matched.image_url);
-                  }
-              })
-              .catch(err => console.error("Error fetching image:", err));
+          axiosInstance.get(`${API_ENDPOINTS.getImages}`)
+            .then(response => {
+              const result = response.data;
+              const matched = result.data.find(img => img.image_id === formData.f_img);
+              if (matched) {
+                setSelectedImage(matched.image_url);
+              }
+            })
+            .catch(err => console.error("Error fetching image:", err));
       }
     }, [formData.f_img]);
 
@@ -84,7 +84,7 @@ const FacultyFieldBody = ({
       if (field === "image") {
         setSelectedImage(imageUrl ? `${imageUrl}` : "");
         try {
-          const response = await fetch(`${API_ENDPOINTS.getImages}`);
+          const response = await axiosInstance.get(`${API_ENDPOINTS.getImages}`);
           const result = await response.json();
           if (result.status_code === "success" && Array.isArray(result.data)) {
             const matchedImage = result.data.find(image => image.image_url === imageUrl);

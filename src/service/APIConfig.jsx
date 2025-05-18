@@ -23,6 +23,19 @@ axiosInstance.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
+// Add a response interceptor to handle expired/invalid JWT tokens
+axiosInstance.interceptors.response.use(
+  response => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      console.warn('🔒 Unauthorized request, redirecting to login.');
+      localStorage.removeItem('token');
+      window.location.href = '/login';
+    }
+    return Promise.reject(error);
+  }
+);
+
 const API_ENDPOINTS = {
 
     // images

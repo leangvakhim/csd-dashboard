@@ -158,15 +158,16 @@ const handleDeleteTag = async (id) => {
   useEffect(() => {
     if (!rsdl_id) return;
 
-    axiosInstance.get(`${API_ENDPOINTS.getResearchlabTag}`)
-      .then(async (res) => {
+    const fetchTags = async () => {
+      try {
+        const res = await axiosInstance.get(`${API_ENDPOINTS.getResearchlabTag}`);
         const allTags = res.data?.data || [];
         const filteredTags = allTags.filter(
           (item) => String(item.rsdlt_rsdl) === String(rsdl_id)
         );
 
-        const imgRes = await fetch(`${API_ENDPOINTS.getImages}`);
-        const imgData = await imgRes.json();
+        const imgRes = await axiosInstance.get(`${API_ENDPOINTS.getImages}`);
+        const imgData = imgRes.data;
 
         const formattedTags = filteredTags.map((item, index) => {
           const matchedImage = Array.isArray(imgData?.data)
@@ -198,8 +199,12 @@ const handleDeleteTag = async (id) => {
                 rsdlt_order: 1,
               }]
         );
-      })
-      .catch((err) => console.error("Error fetching tag data:", err));
+      } catch (err) {
+        console.error("Error fetching tag data:", err);
+      }
+    };
+
+    fetchTags();
   }, [rsdl_id]);
 
   return (

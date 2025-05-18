@@ -17,8 +17,8 @@ const FeedbackFieldBody = ({ formData, setFormData, onImageSelect }) => {
     useEffect(() => {
         if (formData.fb_img) {
             axiosInstance.get(`${API_ENDPOINTS.getImages}`)
-                .then(res => res.json())
-                .then(result => {
+                .then((res) => {
+                const result = res.data;
                     const matched = result.data.find(img => img.image_id === formData.fb_img);
                     if (matched) {
                         setSelectedImage(matched.image_url);

@@ -54,12 +54,13 @@ const NewsFieldBody = ({ formData, setFormData, subtitleContent, setSubtitleCont
 
     useEffect(() => {
         if (formData.n_img) {
-            fetch(`${API_ENDPOINTS.getImages}`)
-                .then(res => res.json())
+            axiosInstance.get(`${API_ENDPOINTS.getImages}`)
                 .then(result => {
-                    const matched = result.data.find(img => img.image_id === formData.n_img);
-                    if (matched) {
-                        setSelectedImage(matched.image_url);
+                    if (result.data.status_code === "success" && Array.isArray(result.data.data)) {
+                        const matched = result.data.data.find(img => img.image_id === formData.n_img);
+                        if (matched) {
+                            setSelectedImage(matched.image_url);
+                        }
                     }
                 })
                 .catch(err => console.error("Error fetching image:", err));
@@ -100,8 +101,8 @@ const NewsFieldBody = ({ formData, setFormData, subtitleContent, setSubtitleCont
         if (field === "image") {
             setSelectedImage(imageUrl ? `${imageUrl}` : "");
             try {
-                const response = await fetch(`${API_ENDPOINTS.getImages}`);
-                const result = await response.json();
+                const response = await axiosInstance.get(`${API_ENDPOINTS.getImages}`);
+                const result = response.data;
 
                 if (result.status_code === "success" && Array.isArray(result.data)) {
                     const matchedImage = result.data.find(image => image.image_url === imageUrl);

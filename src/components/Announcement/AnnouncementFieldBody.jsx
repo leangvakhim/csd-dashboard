@@ -82,9 +82,9 @@ const AnnouncementFieldBody = ({
 
   useEffect(() => {
     if (formData.am_img) {
-      fetch(`${API_ENDPOINTS.getImages}`)
-        .then((res) => res.json())
-        .then((result) => {
+      axiosInstance.get(`${API_ENDPOINTS.getImages}`)
+        .then((res) => {
+          const result = res.data;
           const matched = result.data.find((img) => img.image_id === formData.am_img);
           if (matched) {
             setSelectedImage(matched.image_url);
@@ -129,7 +129,7 @@ const AnnouncementFieldBody = ({
       setSelectedImage(imageUrl ? `${imageUrl}` : '');
       try {
         const response = await fetch(`${API_ENDPOINTS.getImages}`);
-        const result = await response.json();
+        const result = response.data;
 
         if (result.status_code === 'success' && Array.isArray(result.data)) {
           const matchedImage = result.data.find((image) => image.image_url === imageUrl);

@@ -171,14 +171,15 @@ const FacultyFieldBackground = forwardRef(({ formData = {}, setFormData = {}, f_
   };
 
   useEffect(() => {
-    if (f_id) {
-      // Fetch background records first
-      fetch(`${API_ENDPOINTS.getFacultyBGByFaculty}/${f_id}`)
-        .then(res => res.json())
-        .then(async result => {
+    const fetchBackground = async () => {
+      try {
+        if (f_id) {
+          const res = await axiosInstance.get(`${API_ENDPOINTS.getFacultyBGByFaculty}/${f_id}`);
+          const result = res.data;
+
           if (Array.isArray(result.data)) {
-            const imgRes = await fetch(`${API_ENDPOINTS.getImages}`);
-            const imgData = await imgRes.json();
+            const imgRes = await axiosInstance.get(`${API_ENDPOINTS.getImages}`);
+            const imgData = imgRes.data;
 
             const formatted = result.data.map((item, index) => {
               const matchedImage = Array.isArray(imgData?.data)
@@ -189,8 +190,8 @@ const FacultyFieldBackground = forwardRef(({ formData = {}, setFormData = {}, f_
                 fbg_id: item.fbg_id || null,
                 f_id: f_id,
                 id: String(item.fbg_id || ''),
-                title: `University ${index + 1}`,  // Auto-incremented title
-                fbg_order: index + 1,              // Set proper fbg_order based on index
+                title: `University ${index + 1}`,
+                fbg_order: index + 1,
                 fbg_name: item.fbg_name || "",
                 fbg_img: matchedImage ? `${API}/storage/uploads/${matchedImage.img}` : null,
                 fbg_img_id: item.fbg_img || item.fbg_img_id || null,
@@ -198,22 +199,27 @@ const FacultyFieldBackground = forwardRef(({ formData = {}, setFormData = {}, f_
                 active: Boolean(item.active ?? 1),
               };
             });
+
             if (formatted.length > 0) {
               setBackground(formatted);
             } else {
               setBackground([{
-                  id: "1",
-                  f_id: f_id,
-                  title: `University 1`,
-                  fbg_name: `University 1`,
-                  fbg_img: null,
-                  display: 0,
+                id: "1",
+                f_id: f_id,
+                title: `University 1`,
+                fbg_name: `University 1`,
+                fbg_img: null,
+                display: 0,
               }]);
             }
           }
-        })
-        .catch(err => console.error("❌ Error fetching faculty background data:", err));
-    }
+        }
+      } catch (err) {
+        console.error("❌ Error fetching faculty background data:", err);
+      }
+    };
+
+    fetchBackground();
   }, [f_id]);
 
 

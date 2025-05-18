@@ -54,9 +54,9 @@ const CareerFieldBody = ({ formData, setFormData, subtitleContent, setSubtitleCo
 
     useEffect(() => {
         if (formData.c_img) {
-            fetch(`${API_ENDPOINTS.getImages}`)
-                .then(res => res.json())
-                .then(result => {
+            axiosInstance.get(`${API_ENDPOINTS.getImages}`)
+                .then((res) => {
+                    const result = res.data;
                     const matched = result.data.find(img => img.image_id === formData.c_img);
                     if (matched) {
                         setSelectedImage(matched.image_url);
@@ -100,8 +100,8 @@ const CareerFieldBody = ({ formData, setFormData, subtitleContent, setSubtitleCo
         if (field === "image") {
             setSelectedImage(imageUrl ? `${imageUrl}` : "");
             try {
-                const response = await fetch(`${API_ENDPOINTS.getImages}`);
-                const result = await response.json();
+                const response = await axiosInstance.get(`${API_ENDPOINTS.getImages}`);
+                const result = response.data;
 
                 if (result.status_code === "success" && Array.isArray(result.data)) {
                     const matchedImage = result.data.find(image => image.image_url === imageUrl);

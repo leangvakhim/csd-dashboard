@@ -10,7 +10,7 @@ const PartnershipDashboard = () => {
 
     const fetchImageById = async (id) => {
         try {
-            const response = await axios.get(`${API_ENDPOINTS.getImages}/${id}`);
+            const response = await axiosInstance.get(`${API_ENDPOINTS.getImages}/${id}`);
             return response.data.data;
         } catch (error) {
             console.error(`Failed to fetch image for id ${id}`, error);

@@ -9,8 +9,8 @@ const MediaLibraryModal = ({ onSelect, onClose }) => {
 
     useEffect(() => {
         axiosInstance.get(`${API_ENDPOINTS.getImages}`)
-            .then(response => response.json())
-            .then(data => {
+            .then(response => {
+                const data = response.data;
                 if (data.status === 200 && data.data) {
                     setImages(data.data);
                     setFilteredImages(data.data);

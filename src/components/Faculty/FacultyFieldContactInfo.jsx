@@ -118,9 +118,10 @@ const FacultyFieldContactInfo = forwardRef(({ f_id }, ref) => {
 
     useEffect(() => {
         if (f_id) {
-            fetch(`${API_ENDPOINTS.getFacultyContactByFaculty}/${f_id}`)
-                .then(res => res.json())
-                .then(result => {
+            (async () => {
+                try {
+                    const res = await axiosInstance.get(`${API_ENDPOINTS.getFacultyContactByFaculty}/${f_id}`);
+                    const result = res.data;
                     if (Array.isArray(result.data)) {
                         const formatted = result.data.map((item, index) => ({
                             fc_id: item.fc_id,
@@ -145,8 +146,10 @@ const FacultyFieldContactInfo = forwardRef(({ f_id }, ref) => {
                             }]);
                         }
                     }
-                })
-                .catch(err => console.error("❌ Error fetching faculty contact info:", err));
+                } catch (err) {
+                    console.error("❌ Error fetching faculty contact info:", err);
+                }
+            })();
         }
     }, [f_id]);
 

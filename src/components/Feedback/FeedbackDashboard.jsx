@@ -176,7 +176,7 @@ const FeedbackDashboard = () => {
                                         {item.display ? 'Enable' : 'Disable'}
                                     </span>
                                 </td>
-                                <td className="px-2 py-6 flex gap-2 items-center relative">
+                                <td className="px-2 py-10 flex gap-2 items-center relative">
                                     <button onClick={() => moveItem(index, 'up')} className="font-medium text-gray-900 hover:text-blue-500">
                                         <i className="ti ti-chevron-up text-xl"></i>
                                     </button> |

@@ -128,12 +128,12 @@ const FacultyFieldSocial = forwardRef(({ formData = {}, setFormData = {}, f_id }
     useEffect(() => {
         if (f_id) {
             // Fetch social records first
-            fetch(`${API_ENDPOINTS.getSocialByFaculty}/${f_id}`)
-                .then(res => res.json())
-                .then(async result => {
+            axiosInstance.get(`${API_ENDPOINTS.getSocialByFaculty}/${f_id}`)
+                .then(async res => {
+                    const result = res.data;
                     if (Array.isArray(result.data)) {
-                        const imgRes = await fetch(`${API_ENDPOINTS.getImages}`);
-                        const imgData = await imgRes.json();
+                        const imgRes = await axiosInstance.get(`${API_ENDPOINTS.getImages}`);
+                        const imgData = imgRes.data;
 
                         const formatted = result.data.map((item, index) => {
                             const matched = imgData.data?.find(img => img.image_id === item.social_img);
@@ -150,9 +150,9 @@ const FacultyFieldSocial = forwardRef(({ formData = {}, setFormData = {}, f_id }
                                 social_id: item.social_id
                             };
                         });
-                        if(formatted.length > 0){
+                        if (formatted.length > 0) {
                             setSocial(formatted);
-                        }else{
+                        } else {
                             setSocial([{
                                 id: Date.now().toString(),
                                 title: `Social 1`,
@@ -163,7 +163,7 @@ const FacultyFieldSocial = forwardRef(({ formData = {}, setFormData = {}, f_id }
                                 active: 1,
                                 f_id: f_id,
                                 social_order: social.length + 1,
-                            }])
+                            }]);
                         }
                     }
                 })
@@ -179,7 +179,7 @@ const FacultyFieldSocial = forwardRef(({ formData = {}, setFormData = {}, f_id }
     const handleImageSelect = async (imageUrl, field) => {
         if (field === "social_img") {
             try {
-                const response = await fetch(`${API_ENDPOINTS.getImages}`);
+                const response = await axiosInstance.get(`${API_ENDPOINTS.getImages}`);
                 const result = await response.json();
 
                 if (result.status_code === "success" && Array.isArray(result.data)) {

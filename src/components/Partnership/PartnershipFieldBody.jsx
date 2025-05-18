@@ -12,8 +12,8 @@ const PartnershipFieldBody = ({ formData, setFormData, onImageSelect }) => {
     useEffect(() => {
         if (formData.ps_img) {
             axiosInstance.get(`${API_ENDPOINTS.getImages}`)
-                .then(res => res.json())
-                .then(result => {
+                .then((res) => {
+                const result = res.data;
                     const matched = result.data.find(img => img.image_id === formData.ps_img);
                     if (matched) {
                         setSelectedImage(matched.image_url);
@@ -33,7 +33,7 @@ const PartnershipFieldBody = ({ formData, setFormData, onImageSelect }) => {
             setSelectedImage(imageUrl ? `${imageUrl}` : "");
             try {
                 const response = await axiosInstance.get(`${API_ENDPOINTS.getImages}`);
-                const result = await response.json();
+                const result = response.data;
 
                 if (result.status_code === "success" && Array.isArray(result.data)) {
                     const matchedImage = result.data.find(image => image.image_url === imageUrl);
@@ -97,8 +97,6 @@ const PartnershipFieldBody = ({ formData, setFormData, onImageSelect }) => {
 
                             </div>
                         </div>
-
-
                     </div>
                     {/* Second row */}
                     <div className="w-full flex-1 my-0 sm:my-6">
@@ -191,9 +189,6 @@ const PartnershipFieldBody = ({ formData, setFormData, onImageSelect }) => {
                                     onClose={() => setMediaLibraryOpen(false)}
                                 />
                             )}
-
-
-
                         </div>
                     </div>
                 </div>
