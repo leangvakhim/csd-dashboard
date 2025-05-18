@@ -2,9 +2,8 @@ import React, { useState } from 'react'
 import MediaLibraryModal from '../MediaLibraryModal';
 import JoditEditor from 'jodit-react';
 import 'jodit/es5/jodit.css';
-import { API_ENDPOINTS } from '../../service/APIConfig';
+import { API_ENDPOINTS, axiosInstance } from '../../service/APIConfig';
 import { useEffect } from 'react';
-import axios from 'axios';
 
 const config = {
     readonly: false,  // Set to true for read-only mode
@@ -27,7 +26,7 @@ const NewsFieldBody = ({ formData, setFormData, subtitleContent, setSubtitleCont
         const oppositeLang = currentLang === 1 ? 2 : 1;
 
         try {
-            const response = await axios.get(`${API_ENDPOINTS.getNews}`);
+            const response = await axiosInstance.get(`${API_ENDPOINTS.getNews}`);
             const result = response.data;
             if (result.status_code === "success" && Array.isArray(result.data)) {
             const filtered = result.data.filter(item => item.lang === oppositeLang);

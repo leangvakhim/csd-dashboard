@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import axios from 'axios';
 import Aside from '../Aside';
 import ScholarshipFieldHeader from './ScholarshipFieldHeader';
 import ScholarshipFieldBody from './ScholarshipFieldBody';
-import { API_ENDPOINTS } from '../../service/APIConfig';
+import { API_ENDPOINTS, axiosInstance } from '../../service/APIConfig';
 import Swal from 'sweetalert2';
 
 const ScholarshipField = () => {
@@ -113,11 +112,11 @@ const ScholarshipField = () => {
             let res;
             if (formData.sc_id) {
                 // Update existing scholarship
-                res = await axios.post(`${API_ENDPOINTS.updateScholarship}/${formData.sc_id}`, payload);
+                res = await axiosInstance.post(`${API_ENDPOINTS.updateScholarship}/${formData.sc_id}`, payload);
                 console.log('Update response:', res.data);
             } else {
                 // Create new scholarship
-                res = await axios.post(API_ENDPOINTS.createScholarship, payload);
+                res = await axiosInstance.post(API_ENDPOINTS.createScholarship, payload);
                 console.log('Create response:', res.data);
             }
         } catch (err) {

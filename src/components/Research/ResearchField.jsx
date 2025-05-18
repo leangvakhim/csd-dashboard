@@ -4,8 +4,7 @@ import Aside from '../Aside'
 import ResearchFieldHeader from './ResearchFieldHeader'
 import ResearchFieldBody from './ResearchFieldBody'
 import { useLocation } from 'react-router-dom'
-import { API_ENDPOINTS } from '../../service/APIConfig'
-import axios from 'axios'
+import { API_ENDPOINTS, axiosInstance } from '../../service/APIConfig'
 
 const ResearchField = () => {
     const researchRef = useRef();
@@ -32,7 +31,7 @@ const ResearchField = () => {
 
     const fetchResearchById = async (id) => {
         try {
-            const res = await axios.get(`${API_ENDPOINTS.getResearch}/${id}`);
+            const res = await axiosInstance.get(`${API_ENDPOINTS.getResearch}/${id}`);
             if (res.data && res.data.data) {
                 setFormData(res.data.data);
             }
@@ -63,13 +62,13 @@ const ResearchField = () => {
 
         try {
             if (!isUpdate) {
-                const res = await axios.post(API_ENDPOINTS.createResearch, payload);
+                const res = await axiosInstance.post(API_ENDPOINTS.createResearch, payload);
                 const createdResearch = res.data.data;
                 await fetchResearchById(createdResearch.rsd_id);
                 // await savePageResearch(createdResearch.rsd_id);
                 return createdResearch;
             } else {
-                const res = await axios.post(`${API_ENDPOINTS.updateResearch}/${formData.rsd_id}`, payload);
+                const res = await axiosInstance.post(`${API_ENDPOINTS.updateResearch}/${formData.rsd_id}`, payload);
                 await fetchResearchById(formData.rsd_id);
                 // await savePageResearch(formData.rsd_id);
                 return { rsd_id: formData.rsd_id };
@@ -91,7 +90,7 @@ const ResearchField = () => {
         const filtered = descriptions.filter(desc => parseInt(desc.rsdd_rsdtile) === parseInt(savedSectionId));
 
         if (filtered.length > 0 && savedSectionId) {
-            const existingResponse = await axios.get(`${API_ENDPOINTS.getRsdDescription}?rsdd_rsdtile=${savedSectionId}`);
+            const existingResponse = await axiosInstance.get(`${API_ENDPOINTS.getRsdDescription}?rsdd_rsdtile=${savedSectionId}`);
             const existingItems = existingResponse.data?.data || [];
             const existingIds = existingItems.map(slide => slide.rsdd_id);
             for (const description of filtered) {
@@ -109,11 +108,11 @@ const ResearchField = () => {
                     parseInt(description.rsdd_rsdtile) === parseInt(savedSectionId) &&
                     parseInt(description.rsdId) === parseInt(savedRsdId)
                 ){
-                    await axios.post(`${API_ENDPOINTS.updateRsdDescription}/${description.rsdd_id}`, { research_desc: descriptionPayload });
+                    await axiosInstance.post(`${API_ENDPOINTS.updateRsdDescription}/${description.rsdd_id}`, { research_desc: descriptionPayload });
                 } else {
                     if (description.rsdd_rsdtile) {
                         if (!description.rsdd_id || !existingIds.includes(parseInt(description.rsdd_id))) {
-                            await axios.post(API_ENDPOINTS.createRsdDescription, { research_desc: [descriptionPayload] });
+                            await axiosInstance.post(API_ENDPOINTS.createRsdDescription, { research_desc: [descriptionPayload] });
                         }
                     }
                 }
@@ -126,7 +125,7 @@ const ResearchField = () => {
         const filtered = projects.filter(desc => parseInt(desc.rsdp_rsdtile) === parseInt(savedSectionId));
 
         if (filtered.length > 0 && savedSectionId) {
-            const existingResponse = await axios.get(`${API_ENDPOINTS.getRsdProject}?rsdp_rsdtile=${savedSectionId}`);
+            const existingResponse = await axiosInstance.get(`${API_ENDPOINTS.getRsdProject}?rsdp_rsdtile=${savedSectionId}`);
             const existingItems = existingResponse.data?.data || [];
             const existingIds = existingItems.map(slide => slide.rsdp_id);
             for (const project of filtered) {
@@ -144,11 +143,11 @@ const ResearchField = () => {
                     parseInt(project.rsdp_rsdtile) === parseInt(savedSectionId) &&
                     parseInt(project.rsdId) === parseInt(savedRsdId)
                 ){
-                    await axios.post(`${API_ENDPOINTS.updateRsdProject}/${project.rsdp_id}`, { research_project: projectPayload });
+                    await axiosInstance.post(`${API_ENDPOINTS.updateRsdProject}/${project.rsdp_id}`, { research_project: projectPayload });
                 } else {
                     if (project.rsdp_rsdtile) {
                         if (!project.rsdp_id || !existingIds.includes(parseInt(project.rsdp_id))) {
-                            await axios.post(API_ENDPOINTS.createRsdProject, { research_project: [projectPayload] });
+                            await axiosInstance.post(API_ENDPOINTS.createRsdProject, { research_project: [projectPayload] });
                         }
                     }
                 }
@@ -165,7 +164,7 @@ const ResearchField = () => {
         }));
 
         try {
-            await axios.post(API_ENDPOINTS.updateResearchTitleOrder, sectionPayload);
+            await axiosInstance.post(API_ENDPOINTS.updateResearchTitleOrder, sectionPayload);
         } catch (error) {
             console.error("❌ Failed to reorder section:", error.response?.data || error.message);
         }
@@ -176,7 +175,7 @@ const ResearchField = () => {
         const filtered = meetings.filter(desc => parseInt(desc.rsdm_rsdtitle) === parseInt(savedSectionId));
 
         if (filtered.length > 0 && savedSectionId) {
-            const existingResponse = await axios.get(`${API_ENDPOINTS.getRsdMeeting}?rsdm_rsdtitle=${savedSectionId}`);
+            const existingResponse = await axiosInstance.get(`${API_ENDPOINTS.getRsdMeeting}?rsdm_rsdtitle=${savedSectionId}`);
             const existingItems = existingResponse.data?.data || [];
             const existingIds = existingItems.map(slide => slide.rsdm_id);
             for (const meeting of filtered) {
@@ -195,11 +194,11 @@ const ResearchField = () => {
                     parseInt(meeting.rsdm_rsdtitle) === parseInt(savedSectionId) &&
                     parseInt(meeting.rsdId) === parseInt(savedRsdId)
                 ){
-                    await axios.post(`${API_ENDPOINTS.updateRsdMeeting}/${meeting.rsdm_id}`, { research_meet: meetingtPayload });
+                    await axiosInstance.post(`${API_ENDPOINTS.updateRsdMeeting}/${meeting.rsdm_id}`, { research_meet: meetingtPayload });
                 } else {
                     if (meeting.rsdm_rsdtitle) {
                         if (!meeting.rsdm_id || !existingIds.includes(parseInt(meeting.rsdm_id))) {
-                            await axios.post(API_ENDPOINTS.createRsdMeeting, { research_meet: [meetingtPayload] });
+                            await axiosInstance.post(API_ENDPOINTS.createRsdMeeting, { research_meet: [meetingtPayload] });
                         }
                     }
                 }
@@ -232,7 +231,7 @@ const ResearchField = () => {
             }));
 
             try {
-                await axios.put(API_ENDPOINTS.syncRsdTitle, {
+                await axiosInstance.put(API_ENDPOINTS.syncRsdTitle, {
                     rsdt_text: rsdt_text,
                     research_title: sectionPayload,
                 });
@@ -240,7 +239,7 @@ const ResearchField = () => {
                 await reorderSection();
 
                 // Fetch updated section IDs after sync
-                const updatedSectionRes = await axios.get(`${API_ENDPOINTS.getResearchTitle}?rsdt_text=${rsdt_text}`);
+                const updatedSectionRes = await axiosInstance.get(`${API_ENDPOINTS.getResearchTitle}?rsdt_text=${rsdt_text}`);
                 const updatedSections = updatedSectionRes.data?.data || [];
 
                 const updatedSectionMap = updatedSections.reduce((acc, section) => {

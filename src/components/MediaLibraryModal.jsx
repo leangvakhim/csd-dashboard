@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import { API_ENDPOINTS, axiosInstance } from '../service/APIConfig';
 
 const MediaLibraryModal = ({ onSelect, onClose }) => {

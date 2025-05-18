@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import MediaLibraryModal from '../MediaLibraryModal';
 import { useEffect } from 'react';
-import { API_ENDPOINTS } from '../../service/APIConfig'
+import { API_ENDPOINTS, axiosInstance } from '../../service/APIConfig'
 
 
 const PartnershipFieldBody = ({ formData, setFormData, onImageSelect }) => {
@@ -11,7 +11,7 @@ const PartnershipFieldBody = ({ formData, setFormData, onImageSelect }) => {
 
     useEffect(() => {
         if (formData.ps_img) {
-            fetch(`${API_ENDPOINTS.getImages}`)
+            axiosInstance.get(`${API_ENDPOINTS.getImages}`)
                 .then(res => res.json())
                 .then(result => {
                     const matched = result.data.find(img => img.image_id === formData.ps_img);
@@ -32,7 +32,7 @@ const PartnershipFieldBody = ({ formData, setFormData, onImageSelect }) => {
         if (field === "image") {
             setSelectedImage(imageUrl ? `${imageUrl}` : "");
             try {
-                const response = await fetch(`${API_ENDPOINTS.getImages}`);
+                const response = await axiosInstance.get(`${API_ENDPOINTS.getImages}`);
                 const result = await response.json();
 
                 if (result.status_code === "success" && Array.isArray(result.data)) {
@@ -54,9 +54,6 @@ const PartnershipFieldBody = ({ formData, setFormData, onImageSelect }) => {
 
         setMediaLibraryOpen(false);
     };
-
-
-
 
     return (
         <div className='px-8 py-2 mb-1'>

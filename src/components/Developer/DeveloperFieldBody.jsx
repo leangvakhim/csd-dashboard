@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } from "react";
 import MediaLibraryModal from '../MediaLibraryModal';
 import DeveloperFieldSocial from './DeveloperFieldSocial';
-import { API, API_ENDPOINTS } from '../../service/APIConfig';
-import axios from 'axios';
+import { API, API_ENDPOINTS, axiosInstance } from '../../service/APIConfig';
 
 const DeveloperFieldBody = forwardRef(({ formData, setFormData }, ref) => {
     const [activeTab, setActiveTab] = useState(1);
@@ -21,7 +20,7 @@ const DeveloperFieldBody = forwardRef(({ formData, setFormData }, ref) => {
         const fetchImage = async () => {
             if (formData?.d_img && !selectedImage) {
                 try {
-                    const response = await axios.get(API_ENDPOINTS.getImages);
+                    const response = await axiosInstance.get(API_ENDPOINTS.getImages);
                     const images = Array.isArray(response.data) ? response.data : response.data.data;
                     const matchedImage = images.find(img => img.image_id === formData.d_img);
                     if (matchedImage) {

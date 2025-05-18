@@ -1,8 +1,7 @@
 import React, { forwardRef, useImperativeHandle, useState } from "react";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import MediaLibraryModal from "../MediaLibraryModal";
-import { API_ENDPOINTS } from "../../service/APIConfig";
-import axios from "axios";
+import { API_ENDPOINTS, axiosInstance } from "../../service/APIConfig";
 import { useEffect } from "react";
 import { API } from "../../service/APIConfig";
 
@@ -62,7 +61,7 @@ const FacultyFieldBackground = forwardRef(({ formData = {}, setFormData = {}, f_
       if (!result.isConfirmed) return;
 
       try {
-          await axios.put(`${API_ENDPOINTS.deleteFacultyBG}/${id}`);
+          await axiosInstance.put(`${API_ENDPOINTS.deleteFacultyBG}/${id}`);
           setBackground((prevItems) =>
             prevItems.map((item) =>
               item.id === id ? { ...item, active: item.active ? 0 : 1 } : item
@@ -132,7 +131,7 @@ const FacultyFieldBackground = forwardRef(({ formData = {}, setFormData = {}, f_
   const handleImageSelect = async (imageUrl, field) => {
     if (field === "bg") {
       try {
-        const response = await axios.get(API_ENDPOINTS.getImages);
+        const response = await axiosInstance.get(API_ENDPOINTS.getImages);
 
         const result = response.data;
 

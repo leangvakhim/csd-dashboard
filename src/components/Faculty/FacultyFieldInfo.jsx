@@ -3,8 +3,7 @@ import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import JoditEditor from 'jodit-react';
 import 'jodit/es5/jodit.css';
 import { useEffect } from 'react';
-import { API, API_ENDPOINTS } from '../../service/APIConfig';
-import axios from 'axios';
+import { API, API_ENDPOINTS, axiosInstance } from '../../service/APIConfig';
 
 const config = {
     readonly: false,
@@ -76,7 +75,7 @@ const FacultyFieldInfo = forwardRef(({ f_id }, ref) => {
         if (!result.isConfirmed) return;
 
         try {
-            await axios.put(`${API_ENDPOINTS.deleteFacultyInfo}/${id}`);
+            await axiosInstance.put(`${API_ENDPOINTS.deleteFacultyInfo}/${id}`);
             setInfo(prevInfo =>
                 prevInfo.map(item =>
                     item.id === id

@@ -6,8 +6,7 @@ import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import DescriptionSection from './Description/DescriptionSection';
 import ProjectSection from './Project/ProjectSection';
 import MeetingSection from './Meeting/MeetingSection';
-import axios from "axios";
-import { API_ENDPOINTS } from "../../service/APIConfig";
+import { API_ENDPOINTS, axiosInstance } from "../../service/APIConfig";
 
 const ResearchFieldSection = forwardRef(({formData, setFormData}, ref) => {
     const [showSection, setShowSection] = useState(false);
@@ -35,7 +34,7 @@ const ResearchFieldSection = forwardRef(({formData, setFormData}, ref) => {
                 const rsdId = formData.rsd_id;
                 if (!rsdId) return;
 
-                const response = await axios.get(`${API_ENDPOINTS.getResearchSectionByRsdtitle}/${rsdId}`);
+                const response = await axiosInstance.get(`${API_ENDPOINTS.getResearchSectionByRsdtitle}/${rsdId}`);
 
                 const fetchedSections = response.data.data.map((item) => ({
                     id: item.rsdt_id.toString(),

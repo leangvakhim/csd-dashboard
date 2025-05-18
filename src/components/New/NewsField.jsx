@@ -4,8 +4,7 @@ import Aside from '../Aside'
 import NewsFieldHeader from './NewsFieldHeader'
 import NewsFieldBody from './NewsFieldBody'
 import { useState } from 'react'
-import { API_ENDPOINTS } from '../../service/APIConfig'
-import axios from 'axios';
+import { API_ENDPOINTS, axiosInstance } from '../../service/APIConfig'
 import { useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
 
@@ -79,11 +78,11 @@ const NewsField = () => {
         try {
             if (formData.n_id) {
                 // Perform update
-                res = await axios.post(`${API_ENDPOINTS.updateNews}/${formData.n_id}`, payload);
+                res = await axiosInstance.post(`${API_ENDPOINTS.updateNews}/${formData.n_id}`, payload);
             } else {
                 // Perform create
                 const { n_order, ...createPayload } = payload;
-                res = await axios.post(API_ENDPOINTS.createNews, createPayload);
+                res = await axiosInstance.post(API_ENDPOINTS.createNews, createPayload);
             }
         } catch (err) {
             console.error("Error saving:", err);
@@ -97,7 +96,7 @@ const NewsField = () => {
         if (eventData && eventData.data) {
             const fetchNews = async () => {
                 try {
-                    const response = await axios.get(`${API_ENDPOINTS.getNews}/${newID}`);
+                    const response = await axiosInstance.get(`${API_ENDPOINTS.getNews}/${newID}`);
                     if (response.data && response.data.data) {
                         setFormData(response.data.data);
                         setSubtitleContent(response.data.data.n_detail || "");

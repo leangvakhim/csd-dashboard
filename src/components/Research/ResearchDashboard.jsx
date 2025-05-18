@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { API_ENDPOINTS, API } from '../../service/APIConfig'
-import axios from 'axios';
+import { API_ENDPOINTS, API, axiosInstance } from '../../service/APIConfig'
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 
@@ -14,7 +13,7 @@ const ResearchDashboard = () => {
     useEffect(() => {
         const fetchEvents = async () => {
             try {
-                const response = await axios.get(API_ENDPOINTS.getResearch);
+                const response = await axiosInstance.get(API_ENDPOINTS.getResearch);
                 const result = response.data.data;
                 const normalized = Array.isArray(result) ? result : result ? [result] : [];
                 const sortedReserachs = normalized.sort((a, b) => a.rsd_order - b.rsd_order);
@@ -46,7 +45,7 @@ const ResearchDashboard = () => {
         if (!result.isConfirmed) return;
 
         try {
-            await axios.put(`${API_ENDPOINTS.deleteResearch}/${id}`);
+            await axiosInstance.put(`${API_ENDPOINTS.deleteResearch}/${id}`);
             setResearchItems(prevItems =>
                 prevItems.map(item =>
                     item.rsd_id === id ? { ...item, active: item.active ? 0 : 1 } : item
@@ -84,7 +83,7 @@ const ResearchDashboard = () => {
 
     const handleEdit = async (id) => {
         try {
-            const response = await axios.get(`${API_ENDPOINTS.getResearch}/${id}`);
+            const response = await axiosInstance.get(`${API_ENDPOINTS.getResearch}/${id}`);
             const researchData = response.data;
             navigate(`/research/research-detail`, { state: { researchData } });
         } catch (error) {
@@ -120,12 +119,12 @@ const ResearchDashboard = () => {
             rsd_order: item.rsd_order
         }));
 
-        await axios.put(`${API_ENDPOINTS.updateResearchOrder}`, payload);
+        await axiosInstance.put(`${API_ENDPOINTS.updateResearchOrder}`, payload);
     };
 
     const duplicateItem = async (id) => {
         try {
-            const response = await axios.post(`${API_ENDPOINTS.duplicateResearch}/${id}`);
+            const response = await axiosInstance.post(`${API_ENDPOINTS.duplicateResearch}/${id}`);
             if (response.status === 200) {
                 alert("Research duplicated successfully");
                 window.location.reload();

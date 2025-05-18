@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import axios from 'axios'
-import { API_ENDPOINTS } from '../../service/APIConfig'
+import { API_ENDPOINTS, axiosInstance } from '../../service/APIConfig'
 import { useLoading } from '../Context/LoadingContext'
 import Swal from 'sweetalert2';
 
@@ -31,7 +30,7 @@ const MenuModal = ({ isOpen, onClose, data}) => {
 
         const fetchMenus = async () => {
             try {
-                const res = await axios.get(API_ENDPOINTS.getMenu);
+                const res = await axiosInstance.get(API_ENDPOINTS.getMenu);
                 if (res.data && Array.isArray(res.data.data)) {
                 const filteredMenus = res.data.data.filter(menu =>
                     menu.menup_id === null && menu.menu_id !== data?.menu_id
@@ -47,7 +46,7 @@ const MenuModal = ({ isOpen, onClose, data}) => {
 
         const fetchPages = async () => {
             try {
-                const res = await axios.get(API_ENDPOINTS.getPage);
+                const res = await axiosInstance.get(API_ENDPOINTS.getPage);
                 if (res.data && Array.isArray(res.data.data)) {
                         setPageOptions(res.data.data);
                     } else {
@@ -89,16 +88,16 @@ const MenuModal = ({ isOpen, onClose, data}) => {
             };
             let res;
             if (data?.menu_id) {
-                res = await axios.post(`${API_ENDPOINTS.updateMenu}/${data.menu_id}`, payload);
+                res = await axiosInstance.post(`${API_ENDPOINTS.updateMenu}/${data.menu_id}`, payload);
                 if (formData.p_menu) {
-                    await axios.put(`${API_ENDPOINTS.updatePageByMenu}/${formData.p_menu}`, {
+                    await axiosInstance.put(`${API_ENDPOINTS.updatePageByMenu}/${formData.p_menu}`, {
                         p_menu: res.data?.data?.menu_id || null,
                     });
                 }
             } else {
-                res = await axios.post(API_ENDPOINTS.createMenu, payload);
+                res = await axiosInstance.post(API_ENDPOINTS.createMenu, payload);
                 if (formData.p_menu) {
-                    await axios.put(`${API_ENDPOINTS.updatePageByMenu}/${formData.p_menu}`, {
+                    await axiosInstance.put(`${API_ENDPOINTS.updatePageByMenu}/${formData.p_menu}`, {
                         p_menu: res.data?.data?.menu_id || null,
                     });
                 }
@@ -162,7 +161,7 @@ const MenuModal = ({ isOpen, onClose, data}) => {
 
     const fetchPages = async () => {
         try {
-            const res = await axios.get(API_ENDPOINTS.getPage);
+            const res = await axiosInstance.get(API_ENDPOINTS.getPage);
             if (res.data && Array.isArray(res.data.data)) {
                 const pages = res.data.data;
                 setPageOptions(pages);

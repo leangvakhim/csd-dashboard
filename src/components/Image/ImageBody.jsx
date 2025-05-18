@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { API_ENDPOINTS } from '../../service/APIConfig';
+import { API_ENDPOINTS, axiosInstance } from '../../service/APIConfig';
 import ImageHeader from './ImageHeader';
 import Swal from 'sweetalert2';
 
@@ -14,7 +13,7 @@ const ImageBody = () => {
     useEffect(() => {
         const fetchImages = async () => {
             try {
-                const response = await axios.get(API_ENDPOINTS.getImages);
+                const response = await axiosInstance.get(API_ENDPOINTS.getImages);
                 if (response.data && response.data.data) {
                     setImages(response.data.data); // images
                     setFilteredImages(response.data.data);
@@ -72,14 +71,14 @@ const ImageBody = () => {
                 }
             });
 
-            const response = await axios.post(API_ENDPOINTS.uploadImage, formData, {
+            const response = await axiosInstance.post(API_ENDPOINTS.uploadImage, formData, {
                 headers: {
                     "Content-Type": "multipart/form-data",
                 },
             });
 
             if (response.data && response.data.data) {
-                const updatedImages = await axios.get(API_ENDPOINTS.getImages);
+                const updatedImages = await axiosInstance.get(API_ENDPOINTS.getImages);
                 if (updatedImages.data && updatedImages.data.data) {
                     setImages(updatedImages.data.data);
                     setFilteredImages(updatedImages.data.data); // Update filtered images
@@ -136,7 +135,7 @@ const ImageBody = () => {
         if (!result.isConfirmed) return;
 
         try {
-            const response = await axios.delete(`${API_ENDPOINTS.deleteImage}/${imageId}`);
+            const response = await axiosInstance.delete(`${API_ENDPOINTS.deleteImage}/${imageId}`);
             if (response.status === 200) {
                 setImages(images.filter(image => image.image_id !== imageId));
                 setFilteredImages(filteredImages.filter(image => image.image_id !== imageId));

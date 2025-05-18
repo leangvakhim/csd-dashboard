@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { API_ENDPOINTS } from '../../service/APIConfig';
-import axios from 'axios';
+import { API_ENDPOINTS, axiosInstance } from '../../service/APIConfig';
 import { useNavigate } from 'react-router-dom';
 
 const ScholarshipDashboard = () => {
@@ -11,7 +10,7 @@ const ScholarshipDashboard = () => {
     useEffect(() => {
         const fetchScholarships = async () => {
             try {
-                const response = await axios.get(API_ENDPOINTS.getScholarship);
+                const response = await axiosInstance.get(API_ENDPOINTS.getScholarship);
                 const result = (response.data.data || []);
                 const normalized = Array.isArray(result) ? result : result ? [result] : [];
                 const sortedScholarships = normalized.sort((a, b) => b.sc_orders - a.sc_orders);
@@ -26,7 +25,7 @@ const ScholarshipDashboard = () => {
     }, []);
 
     const handleEdit = async (id) => {
-        const response = await axios.get(`${API_ENDPOINTS.getScholarship}/${id}`);
+        const response = await axiosInstance.get(`${API_ENDPOINTS.getScholarship}/${id}`);
         const eventData = response.data;
         navigate('/scholarship/scholarship-details', { state: { eventData } });
     };
@@ -61,12 +60,12 @@ const ScholarshipDashboard = () => {
             sc_orders: item.sc_orders
         }));
 
-        await axios.post(`${API_ENDPOINTS.updateScholarshipOrder}`, payload);
+        await axiosInstance.post(`${API_ENDPOINTS.updateScholarshipOrder}`, payload);
     };
 
     const duplicateItem = async (id) => {
         try {
-            const response = await axios.post(`${API_ENDPOINTS.duplicateScholarship}/${id}`);
+            const response = await axiosInstance.post(`${API_ENDPOINTS.duplicateScholarship}/${id}`);
             if (response.status === 200) {
                 alert("Scholarship duplicated successfully");
                 window.location.reload();
@@ -95,7 +94,7 @@ const ScholarshipDashboard = () => {
         if (!result.isConfirmed) return;
 
         try {
-            await axios.put(`${API_ENDPOINTS.deleteScholarship}/${id}`);
+            await axiosInstance.put(`${API_ENDPOINTS.deleteScholarship}/${id}`);
             setEventItems(prevItems =>
                 prevItems.map(item =>
                     item.fb_id === id ? { ...item, active: item.active ? 0 : 1 } : item

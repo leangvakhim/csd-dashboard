@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } from "react";
 import JoditEditor from 'jodit-react';
 import 'jodit/es5/jodit.css';
-import { API_ENDPOINTS } from '../../../service/APIConfig';
-import axios from "axios";
+import { API_ENDPOINTS, axiosInstance } from '../../../service/APIConfig';
 import Swal from "sweetalert2";
 
 const config = {
@@ -24,7 +23,7 @@ const ProjectSection = forwardRef(({sectionId, rsdId}, ref) => {
     const handleToggleDisplay = async () => {
         try {
             const newDisplay = displayProject === 1 ? 0 : 1;
-            await axios.post(`${API_ENDPOINTS.updateResearchTitle}/${sectionId}`, {
+            await axiosInstance.post(`${API_ENDPOINTS.updateResearchTitle}/${sectionId}`, {
                 rsdt_id: sectionId,
                 display: newDisplay,
             });
@@ -50,7 +49,7 @@ const ProjectSection = forwardRef(({sectionId, rsdId}, ref) => {
 
         if (result.isConfirmed) {
             try {
-                await axios.put(`${API_ENDPOINTS.deleteResearchTitle}/${sectionId}`);
+                await axiosInstance.put(`${API_ENDPOINTS.deleteResearchTitle}/${sectionId}`);
                 await Swal.fire({
                     icon: 'success',
                     title: 'Deleted!',
@@ -89,7 +88,7 @@ const ProjectSection = forwardRef(({sectionId, rsdId}, ref) => {
     useEffect(() => {
         const fetchProjects = async () => {
         try {
-            const response = await axios.get(`${API_ENDPOINTS.getRsdProject}`);
+            const response = await axiosInstance.get(`${API_ENDPOINTS.getRsdProject}`);
             const projects = response.data.data || [];
             if (projects.length > 0) {
                 const project = projects.find(
@@ -102,7 +101,7 @@ const ProjectSection = forwardRef(({sectionId, rsdId}, ref) => {
                 }
             }
 
-            const sectionRes = await axios.get(`${API_ENDPOINTS.getResearchTitle}/${sectionId}`);
+            const sectionRes = await axiosInstance.get(`${API_ENDPOINTS.getResearchTitle}/${sectionId}`);
             const sectionData = sectionRes.data.data;
             setDisplayProject(sectionData.display || 0);
 

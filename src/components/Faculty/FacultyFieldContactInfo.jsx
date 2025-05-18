@@ -1,7 +1,6 @@
 import React, { forwardRef, useImperativeHandle, useState } from 'react';
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
-import { API, API_ENDPOINTS } from '../../service/APIConfig';
-import axios from 'axios';
+import { API, API_ENDPOINTS, axiosInstance } from '../../service/APIConfig';
 import { useEffect } from 'react';
 
 const FacultyFieldContactInfo = forwardRef(({ f_id }, ref) => {
@@ -61,7 +60,7 @@ const FacultyFieldContactInfo = forwardRef(({ f_id }, ref) => {
         if (!result.isConfirmed) return;
 
         try {
-            await axios.put(`${API_ENDPOINTS.deleteFacultyContact}/${id}`);
+            await axiosInstance.put(`${API_ENDPOINTS.deleteFacultyContact}/${id}`);
             setContactinfo(prevContactinfo =>
                 prevContactinfo.map(contact =>
                     contact.id === id

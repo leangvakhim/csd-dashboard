@@ -3,8 +3,7 @@ import JoditEditor from 'jodit-react';
 import 'jodit/es5/jodit.css';
 import ResearchlabTagSection from './ResearchlabTagSection';
 import MediaLibraryModal from '../MediaLibraryModal';
-import { API, API_ENDPOINTS } from '../../service/APIConfig';
-import axios from 'axios';
+import { API, API_ENDPOINTS, axiosInstance } from '../../service/APIConfig';
 
 const config = {
     readonly: false,  // Set to true for read-only mode
@@ -34,7 +33,7 @@ const ResearchlabFieldBody = ({
         const oppositeLang = currentLang === 1 ? 2 : 1;
 
         try {
-            const response = await axios.get(`${API_ENDPOINTS.getResearchlab}`);
+            const response = await axiosInstance.get(`${API_ENDPOINTS.getResearchlab}`);
             const result = response.data;
             if (Array.isArray(result.data)) {
             const filtered = result.data.filter(item => item.lang === oppositeLang);
@@ -96,7 +95,7 @@ const ResearchlabFieldBody = ({
     useEffect(() => {
         const fetchImages = async () => {
             try {
-                const res = await axios.get(API_ENDPOINTS.getImages);
+                const res = await axiosInstance.get(API_ENDPOINTS.getImages);
                 setAllImages(res.data?.data || []);
             } catch (err) {
                 console.error("Failed to fetch images", err);

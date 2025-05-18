@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } from "react";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import MediaLibraryModal from "../MediaLibraryModal";
-import axios from "axios";
-import { API_ENDPOINTS, API } from "../../service/APIConfig";
+import { API_ENDPOINTS, API, axiosInstance } from "../../service/APIConfig";
 
 const SettingFieldSection = forwardRef(({},ref) => {
   const [currentSliderId, setCurrentSliderId] = useState(null);
@@ -56,7 +55,7 @@ const SettingFieldSection = forwardRef(({},ref) => {
 
   const getImageIdByUrl = async (url) => {
     try {
-      const response = await axios.get(API_ENDPOINTS.getImages);
+      const response = await axiosInstance.get(API_ENDPOINTS.getImages);
       const images = Array.isArray(response.data) ? response.data : response.data.data;
 
       const matchedImage = images.find((img) => img.image_url === url);
@@ -104,7 +103,7 @@ const SettingFieldSection = forwardRef(({},ref) => {
   useEffect(() => {
     const fetchSliderData = async () => {
       try {
-        const response = await axios.get(API_ENDPOINTS.getSocialSetting);
+        const response = await axiosInstance.get(API_ENDPOINTS.getSocialSetting);
         const safeArray = Array.isArray(response.data.data) ? response.data.data : [];
 
         const transformed = safeArray.map(item => ({
@@ -128,7 +127,7 @@ const SettingFieldSection = forwardRef(({},ref) => {
     if (!window.confirm("Are you sure you want to delete this social slider?")) return;
 
     try {
-        await axios.put(`${API_ENDPOINTS.deleteSocialSetting}/${sliderId}`);
+        await axiosInstance.put(`${API_ENDPOINTS.deleteSocialSetting}/${sliderId}`);
         setSlider((prevSlider) => prevSlider.filter((item) => item.id !== sliderId));
     } catch (error) {
         console.error('Failed to delete slider:', error);

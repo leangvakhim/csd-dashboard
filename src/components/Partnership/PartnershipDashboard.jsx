@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { API_ENDPOINTS, API } from '../../service/APIConfig';
-import axios from 'axios';
+import { API_ENDPOINTS, API, axiosInstance } from '../../service/APIConfig';
 import { useNavigate } from 'react-router-dom';
 
 const PartnershipDashboard = () => {
@@ -22,7 +21,7 @@ const PartnershipDashboard = () => {
     useEffect(() => {
         const fetchNews = async () => {
             try {
-                const response = await axios.get(API_ENDPOINTS.getPartnership);
+                const response = await axiosInstance.get(API_ENDPOINTS.getPartnership);
                 let newsArray = response.data.data;
 
                 if (newsArray && !Array.isArray(newsArray)) {
@@ -50,7 +49,7 @@ const PartnershipDashboard = () => {
     }, []);
 
     const handleEdit = async (id) => {
-        const response = await axios.get(`${API_ENDPOINTS.getPartnership}/${id}`);
+        const response = await axiosInstance.get(`${API_ENDPOINTS.getPartnership}/${id}`);
         const eventData = response.data;
         navigate('/partnership/partnership-details', { state: { eventData } });
     };
@@ -85,7 +84,7 @@ const PartnershipDashboard = () => {
             ps_order: item.ps_order
         }));
 
-        await axios.put(`${API_ENDPOINTS.updatePartnershipOrder}`, payload);
+        await axiosInstance.put(`${API_ENDPOINTS.updatePartnershipOrder}`, payload);
     };
 
     const handleDelete = async (id) => {
@@ -107,7 +106,7 @@ const PartnershipDashboard = () => {
         if (!result.isConfirmed) return;
 
         try {
-            await axios.put(`${API_ENDPOINTS.deletePartnership}/${id}`);
+            await axiosInstance.put(`${API_ENDPOINTS.deletePartnership}/${id}`);
             setFacultyItems(prevItems =>
                 prevItems.map(item =>
                     item.ps_id === id ? { ...item, active: item.active ? 0 : 1 } : item

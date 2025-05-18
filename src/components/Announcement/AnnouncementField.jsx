@@ -4,7 +4,6 @@ import Aside from '../Aside';
 import AnnouncementFieldHeader from './AnnouncementFieldHeader';
 import AnnouncementFieldBody from './AnnouncementFieldBody';
 import { API_ENDPOINTS, axiosInstance } from '../../service/APIConfig';
-import axios from 'axios';
 import { useLocation } from 'react-router-dom';
 
 const AnnouncementField = () => {

@@ -3,7 +3,6 @@ import MediaLibraryModal from '../MediaLibraryModal';
 import { API_ENDPOINTS, axiosInstance } from '../../service/APIConfig';
 import AnnouncementFieldImportFile from './AnnouncementFieldImportFile';
 import { useLocation } from 'react-router-dom';
-import axios from 'axios';
 import AnnouncementStudentTable from './AnnouncementStudentTable';
 import Swal from 'sweetalert2';
 

@@ -3,8 +3,7 @@ import Aside from '../Aside'
 import CareerFieldHeader from './CareerFieldHeader'
 import CareerFieldBody from './CareerFieldBody'
 import { useState } from 'react'
-import { API_ENDPOINTS } from '../../service/APIConfig'
-import axios from 'axios';
+import { API_ENDPOINTS, axiosInstance } from '../../service/APIConfig'
 import { useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
 import Swal from 'sweetalert2'

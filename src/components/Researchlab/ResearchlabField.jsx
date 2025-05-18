@@ -1,11 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Swal from 'sweetalert2';
 import { useLocation } from 'react-router-dom';
-import axios from 'axios';
 import Aside from '../Aside';
 import ResearchlabFieldHeader from './ResearchlabFieldHeader';
 import ResearchlabFieldBody from './ResearchlabFieldBody';
-import { API_ENDPOINTS } from '../../service/APIConfig';
+import { API_ENDPOINTS, axiosInstance } from '../../service/APIConfig';
 
 const ResearchlabField = () => {
     const researchlabTagRef = useRef();
@@ -26,7 +25,7 @@ const ResearchlabField = () => {
 
     useEffect(() => {
         if (rsdlID) {
-            axios.get(`${API_ENDPOINTS.getResearchlab}/${rsdlID}`)
+            axiosInstance.get(`${API_ENDPOINTS.getResearchlab}/${rsdlID}`)
                 .then(res => {
                     if (res.data && res.data.data) {
                         setFormData(res.data.data);
@@ -42,7 +41,7 @@ const ResearchlabField = () => {
         const fetchResearchlabTags = async () => {
             if (formData.rsdl_id && researchlabTagRef.current?.setData) {
                 try {
-                    const res = await axios.get(`${API_ENDPOINTS.getResearchlabTag}/${formData.rsdl_id}`);
+                    const res = await axiosInstance.get(`${API_ENDPOINTS.getResearchlabTag}/${formData.rsdl_id}`);
                     const tagList = (res.data.data || []).map(item => ({
                         ...item,
                         rsdlt_id: item.rsdlt_id ?? item.id,
@@ -65,7 +64,7 @@ const ResearchlabField = () => {
 
     const getImageIdByUrl = async (url) => {
         try {
-            const response = await axios.get(API_ENDPOINTS.getImages);
+            const response = await axiosInstance.get(API_ENDPOINTS.getImages);
             const images = Array.isArray(response.data) ? response.data : response.data.data;
 
             const matchedImage = images.find((img) => img.image_url === url);
@@ -93,7 +92,7 @@ const ResearchlabField = () => {
         };
 
         if (!isUpdate) {
-            const res = await axios.post(API_ENDPOINTS.createResearchlab, payload);
+            const res = await axiosInstance.post(API_ENDPOINTS.createResearchlab, payload);
             const createdResearchlab = res.data.data;
             setFormData(prev => ({
                 ...prev,
@@ -101,7 +100,7 @@ const ResearchlabField = () => {
             }));
             return { rsdl_id: createdResearchlab.rsdl_id };
         } else {
-            await axios.post(`${API_ENDPOINTS.updateResearchlab}/${formData.rsdl_id}`, payload);
+            await axiosInstance.post(`${API_ENDPOINTS.updateResearchlab}/${formData.rsdl_id}`, payload);
             return { rsdl_id: formData.rsdl_id };
         }
     };
@@ -127,7 +126,7 @@ const ResearchlabField = () => {
 
         let allTags = [];
         try {
-            const res = await axios.get(API_ENDPOINTS.getResearchlabTag);
+            const res = await axiosInstance.get(API_ENDPOINTS.getResearchlabTag);
             allTags = res.data?.data || [];
         } catch (error) {
             console.error("❌ Failed to fetch all researchlab tags:", error);
@@ -145,27 +144,27 @@ const ResearchlabField = () => {
 
             try {
                 if (item.rsdlt) {
-                    const res = await axios.get(`${API_ENDPOINTS.getResearchlabTag}/${item.rsdlt}`);
+                    const res = await axiosInstance.get(`${API_ENDPOINTS.getResearchlabTag}/${item.rsdlt}`);
                     const existing = res.data?.data;
 
                     if (existing && existing.rsdlt_rsdl == rsdl_id) {
-                        await axios.post(`${API_ENDPOINTS.updateResearchlabTag}/${item.rsdlt}`, { rsdlt_tags: [payload] });
+                        await axiosInstance.post(`${API_ENDPOINTS.updateResearchlabTag}/${item.rsdlt}`, { rsdlt_tags: [payload] });
                     } else {
                         console.warn("Updating skipped due to mismatched rsdl_id. Creating new tag instead.");
-                        await axios.post(API_ENDPOINTS.createResearchlabTag, { rsdl_id, rsdlt_tags: [payload] });
+                        await axiosInstance.post(API_ENDPOINTS.createResearchlabTag, { rsdl_id, rsdlt_tags: [payload] });
                     }
                 } else {
                     const alreadyExists = existingTags.some(t => t.rsdlt_title === item.rsdlt_title);
 
                     if (!alreadyExists) {
-                        await axios.post(API_ENDPOINTS.createResearchlabTag, { rsdl_id, rsdlt_tags: [payload] });
+                        await axiosInstance.post(API_ENDPOINTS.createResearchlabTag, { rsdl_id, rsdlt_tags: [payload] });
                     } else {
                         console.log("Duplicate tag skipped:", item.rsdlt_title);
                     }
                 }
             } catch (error) {
                 if (error.response && error.response.status === 404) {
-                    await axios.post(API_ENDPOINTS.createResearchlabTag, { rsdl_id, rsdlt_tags: [payload] });
+                    await axiosInstance.post(API_ENDPOINTS.createResearchlabTag, { rsdl_id, rsdlt_tags: [payload] });
                 } else {
                     console.error("❌ Error saving tag:", error);
                 }

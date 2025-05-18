@@ -3,7 +3,6 @@ import Aside from '../components/Aside'
 import { useLoading } from "../components/Context/LoadingContext";
 import SettingHeader from '../components/Setting/SettingHeader'
 import SettingField from '../components/Setting/SettingField'
-import axios from 'axios';
 import { API_ENDPOINTS, axiosInstance } from '../service/APIConfig';
 import Swal from 'sweetalert2';
 

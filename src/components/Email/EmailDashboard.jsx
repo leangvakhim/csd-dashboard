@@ -1,7 +1,6 @@
 import React, {useState, useEffect} from 'react'
-import axios from 'axios';
 import Swal from 'sweetalert2';
-import { API_ENDPOINTS, API } from '../../service/APIConfig';
+import { API_ENDPOINTS, API, axiosInstance } from '../../service/APIConfig';
 
 const EmailDashboard = () => {
     const [emails, setEmails] = useState([]);
@@ -17,7 +16,7 @@ const EmailDashboard = () => {
     const currentEmails = emails.slice(indexOfFirstEmail, indexOfLastEmail);
 
     useEffect(() => {
-        axios.get(API_ENDPOINTS.getMail)
+        axiosInstance.get(API_ENDPOINTS.getMail)
             .then(response => {
                 setEmails(response.data.data);
             })
@@ -53,7 +52,7 @@ const EmailDashboard = () => {
             confirmButtonText: 'Yes, delete them!'
         }).then((result) => {
             if (result.isConfirmed) {
-                axios.post(API_ENDPOINTS.deleteMail, { m_id: selectedEmails })
+                axiosInstance.post(API_ENDPOINTS.deleteMail, { m_id: selectedEmails })
                     .then(() => {
                         Swal.fire({
                             title: 'Deleted!',

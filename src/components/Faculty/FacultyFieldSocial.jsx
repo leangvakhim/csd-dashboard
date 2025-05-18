@@ -1,8 +1,7 @@
 import React, { useState, forwardRef, useImperativeHandle, useEffect } from 'react';
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import MediaLibraryModal from '../MediaLibraryModal';
-import { API, API_ENDPOINTS } from '../../service/APIConfig';
-import axios from 'axios';
+import { API, API_ENDPOINTS, axiosInstance } from '../../service/APIConfig';
 
 const FacultyFieldSocial = forwardRef(({ formData = {}, setFormData = {}, f_id }, ref) => {
     const [rotatedStates, setRotatedStates] = useState({});
@@ -61,7 +60,7 @@ const FacultyFieldSocial = forwardRef(({ formData = {}, setFormData = {}, f_id }
         if (!result.isConfirmed) return;
 
         try {
-            await axios.put(`${API_ENDPOINTS.deleteSocial}/${id}`);
+            await axiosInstance.put(`${API_ENDPOINTS.deleteSocial}/${id}`);
             setSocial(prevItems =>
                 prevItems.map(item =>
                     item.id === id ? { ...item, active: item.active ? 0 : 1 } : item

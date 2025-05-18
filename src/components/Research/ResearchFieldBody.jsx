@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } from "react";
 import MediaLibraryModal from '../MediaLibraryModal';
 import ResearchFieldSection from './ResearchFieldSection';
-import { API_ENDPOINTS } from '../../service/APIConfig';
-import axios from 'axios';
+import { API_ENDPOINTS, axiosInstance } from '../../service/APIConfig';
 
 const ResearchFieldBody = forwardRef(({ formData, setFormData, onImageSelect, }, ref) => {
     const [activeTab, setActiveTab] = useState(formData.lang || 1);
@@ -16,7 +15,7 @@ const ResearchFieldBody = forwardRef(({ formData, setFormData, onImageSelect, },
         const oppositeLang = currentLang === 1 ? 2 : 1;
 
         try {
-            const response = await axios.get(`${API_ENDPOINTS.getResearch}`);
+            const response = await axiosInstance.get(`${API_ENDPOINTS.getResearch}`);
             const result = response.data;
             if (result.status_code === "success" && Array.isArray(result.data)) {
             const filtered = result.data.filter(item => item.lang === oppositeLang);

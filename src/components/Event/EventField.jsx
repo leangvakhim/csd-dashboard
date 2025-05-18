@@ -3,8 +3,7 @@ import React, {useState, useEffect} from 'react'
 import Aside from '../Aside'
 import EventsFieldHeader from './EventsFieldHeader'
 import EventsFieldBody from './EventsFieldBody'
-import { API_ENDPOINTS } from '../../service/APIConfig'
-import axios from 'axios';
+import { API_ENDPOINTS, axiosInstance } from '../../service/APIConfig'
 import { useLocation } from 'react-router-dom';
 
 const EventsField = () => {
@@ -28,7 +27,7 @@ const EventsField = () => {
         if (eventData && eventData.data) {
             const fetchEvent = async () => {
                 try {
-                    const response = await axios.get(`${API_ENDPOINTS.getEvent}/${eventID}`);
+                    const response = await axiosInstance.get(`${API_ENDPOINTS.getEvent}/${eventID}`);
                     if (response.data && response.data.data) {
                         setFormData(response.data.data);
                         setSubtitleContent(response.data.data.e_detail || "");
@@ -101,11 +100,11 @@ const EventsField = () => {
         try {
             if (formData.e_id) {
                 // Perform update
-                res = await axios.post(`${API_ENDPOINTS.updateEvent}/${formData.e_id}`, payload);
+                res = await axiosInstance.post(`${API_ENDPOINTS.updateEvent}/${formData.e_id}`, payload);
             } else {
                 // Perform create
                 const { e_order, ...createPayload } = payload;
-                res = await axios.post(API_ENDPOINTS.createEvent, createPayload);
+                res = await axiosInstance.post(API_ENDPOINTS.createEvent, createPayload);
             }
         } catch (err) {
             console.error("Error saving:", err);

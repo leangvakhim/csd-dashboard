@@ -2,8 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import MediaLibraryModal from '../MediaLibraryModal';
 import JoditEditor from 'jodit-react';
 import 'jodit/es5/jodit.css';
-import axios from 'axios';
-import { API_ENDPOINTS } from '../../service/APIConfig';
+import { API_ENDPOINTS, axiosInstance } from '../../service/APIConfig';
 
 const EDITOR_CONFIG = {
     readonly: false,
@@ -28,7 +27,7 @@ const ScholarshipFieldBody = ({ formData, setFormData, onImageSelect }) => {
         const oppositeLang = currentLang === 1 ? 2 : 1;
 
         try {
-            const response = await axios.get(`${API_ENDPOINTS.getScholarship}`);
+            const response = await axiosInstance.get(`${API_ENDPOINTS.getScholarship}`);
             const result = response.data;
             if (result.status_code === "success" && Array.isArray(result.data)) {
             const filtered = result.data.filter(item => item.lang === oppositeLang);

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { API_ENDPOINTS } from '../../service/APIConfig';
+import { API_ENDPOINTS, axiosInstance } from '../../service/APIConfig';
 import Swal from 'sweetalert2';
 
 const EventDashboard = () => {
@@ -13,7 +12,7 @@ const EventDashboard = () => {
     useEffect(() => {
         const fetchEvents = async () => {
             try {
-                const response = await axios.get(API_ENDPOINTS.getEvent);
+                const response = await axiosInstance.get(API_ENDPOINTS.getEvent);
                 const result = (response.data.data || []);
                 const normalized = Array.isArray(result) ? result : result ? [result] : [];
                 const sortedMenus = normalized.sort((a, b) => b.e_order - a.e_order);
@@ -27,7 +26,7 @@ const EventDashboard = () => {
     }, []);
 
     const handleEdit = async (id) => {
-        const response = await axios.get(`${API_ENDPOINTS.getEvent}/${id}`);
+        const response = await axiosInstance.get(`${API_ENDPOINTS.getEvent}/${id}`);
         const eventData = response.data;
         navigate('/event/event-detail', { state: { eventData } });
         // console.log("Passing data: ",response.data);
@@ -63,12 +62,12 @@ const EventDashboard = () => {
             e_order: item.e_order
         }));
 
-        await axios.put(`${API_ENDPOINTS.updateEventOrder}`, payload);
+        await axiosInstance.put(`${API_ENDPOINTS.updateEventOrder}`, payload);
     };
 
     const duplicateItem = async (id) => {
         try {
-            const response = await axios.post(`${API_ENDPOINTS.duplicateEvent}/${id}`);
+            const response = await axiosInstance.post(`${API_ENDPOINTS.duplicateEvent}/${id}`);
             if (response.status === 200) {
                 alert("Event duplicated successfully");
                 window.location.reload();
@@ -96,7 +95,7 @@ const EventDashboard = () => {
     });
         if (!result.isConfirmed) return;
         try {
-            await axios.put(`${API_ENDPOINTS.deleteEvent}/${id}`);
+            await axiosInstance.put(`${API_ENDPOINTS.deleteEvent}/${id}`);
             setEventItems(prevItems =>
                 prevItems.map(item =>
                     item.e_id === id ? { ...item, active: item.active ? 0 : 1 } : item

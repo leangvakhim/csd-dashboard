@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 import { API_ENDPOINTS, axiosInstance } from '../../service/APIConfig';
 
 const AnnouncementStudentTable = ({ onSelectedStudentsChange }) => {

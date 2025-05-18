@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { API_BASEURL, API_ENDPOINTS, API } from '../../service/APIConfig'
-import axios from 'axios';
+import { API_BASEURL, API_ENDPOINTS, API, axiosInstance } from '../../service/APIConfig'
 import { useNavigate } from 'react-router-dom';
 import { useLoading } from '../Context/LoadingContext';
 import Swal from 'sweetalert2';
@@ -15,7 +14,7 @@ const FacultyDashboard = () => {
     useEffect(() => {
         const fetchEvents = async () => {
             try {
-                const response = await axios.get(API_ENDPOINTS.getFaculty);
+                const response = await axiosInstance.get(API_ENDPOINTS.getFaculty);
                 const result = response.data.data;
                 const normalized = Array.isArray(result) ? result : result ? [result] : [];
                 setFacultyItems(normalized);
@@ -44,7 +43,7 @@ const FacultyDashboard = () => {
         if (!result.isConfirmed) return;
 
         try {
-            await axios.put(`${API_ENDPOINTS.deleteFaculty}/${id}`);
+            await axiosInstance.put(`${API_ENDPOINTS.deleteFaculty}/${id}`);
             setFacultyItems(prevItems =>
                 prevItems.map(item =>
                     item.f_id === id ? { ...item, active: item.active ? 0 : 1 } : item
@@ -72,7 +71,7 @@ const FacultyDashboard = () => {
     };
 
     const handleEdit = async (id) => {
-        const response = await axios.get(`${API_ENDPOINTS.getFaculty}/${id}`);
+        const response = await axiosInstance.get(`${API_ENDPOINTS.getFaculty}/${id}`);
         const facultyData = response.data;
         navigate(`/faculty/faculty-detail`, { state: { facultyData } });
         // console.log("Passing data: ",facultyData);
@@ -108,12 +107,12 @@ const FacultyDashboard = () => {
             f_order: item.f_order
         }));
 
-        await axios.put(`${API_ENDPOINTS.updateFacultyOrder}`, payload);
+        await axiosInstance.put(`${API_ENDPOINTS.updateFacultyOrder}`, payload);
     };
 
     const duplicateItem = async (id) => {
         try {
-            const response = await axios.post(`${API_ENDPOINTS.duplicateFaculty}/${id}`);
+            const response = await axiosInstance.post(`${API_ENDPOINTS.duplicateFaculty}/${id}`);
             if (response.status === 200) {
                 alert("Faculty duplicated successfully");
                 window.location.reload();

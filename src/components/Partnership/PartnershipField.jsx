@@ -3,8 +3,7 @@ import Aside from '../Aside'
 import PartnershipFieldHeader from './PartnershipFieldHeader'
 import PartnershipFieldBody from './PartnershipFieldBody'
 import { useState } from 'react'
-import { API_ENDPOINTS } from '../../service/APIConfig'
-import axios from 'axios';
+import { API_ENDPOINTS, axiosInstance } from '../../service/APIConfig'
 import { useEffect } from 'react'
 import { useLocation } from 'react-router-dom';
 import Swal from 'sweetalert2';
@@ -45,11 +44,11 @@ const PartnershipField = () => {
 
             if (formData.ps_id) {
                 // Perform update
-                res = await axios.post(`${API_ENDPOINTS.updatePartnership}/${formData.ps_id}`, payload);
+                res = await axiosInstance.post(`${API_ENDPOINTS.updatePartnership}/${formData.ps_id}`, payload);
             } else {
                 // Perform create
                 const { ps_order, ...createPayload } = payload;
-                res = await axios.post(API_ENDPOINTS.createPartnership, createPayload);
+                res = await axiosInstance.post(API_ENDPOINTS.createPartnership, createPayload);
             }
 
             Swal.close();

@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
-import { API_ENDPOINTS } from '../../service/APIConfig';
-import axios from 'axios';
+import { API_ENDPOINTS, axiosInstance } from '../../service/APIConfig';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -13,7 +12,7 @@ const NewDashboard = () => {
     useEffect(() => {
         const fetchNews = async () => {
             try {
-                const response = await axios.get(API_ENDPOINTS.getNews);
+                const response = await axiosInstance.get(API_ENDPOINTS.getNews);
                 const result = (response.data.data || []);
                 const normalized = Array.isArray(result) ? result : result ? [result] : [];
                 const sortedMenus = normalized.sort((a, b) => b.n_order - a.n_order);
@@ -27,7 +26,7 @@ const NewDashboard = () => {
     }, []);
 
     const handleEdit = async (id) => {
-        const response = await axios.get(`${API_ENDPOINTS.getNews}/${id}`);
+        const response = await axiosInstance.get(`${API_ENDPOINTS.getNews}/${id}`);
         const eventData = response.data;
         navigate('/news/news-details', { state: { eventData } });
     };
@@ -63,12 +62,12 @@ const NewDashboard = () => {
             n_order: item.n_order
         }));
 
-        await axios.put(`${API_ENDPOINTS.updateNewsOrder}`, payload);
+        await axiosInstance.put(`${API_ENDPOINTS.updateNewsOrder}`, payload);
     };
 
     const duplicateItem = async (id) => {
         try {
-            const response = await axios.post(`${API_ENDPOINTS.duplicateNews}/${id}`);
+            const response = await axiosInstance.post(`${API_ENDPOINTS.duplicateNews}/${id}`);
             if (response.status === 200) {
                 alert("News duplicated successfully");
                 window.location.reload();
@@ -97,7 +96,7 @@ const NewDashboard = () => {
         if (!result.isConfirmed) return;
 
         try {
-            await axios.put(`${API_ENDPOINTS.deleteNews}/${id}`);
+            await axiosInstance.put(`${API_ENDPOINTS.deleteNews}/${id}`);
             setEventItems(prevItems =>
                 prevItems.map(item =>
                     item.n_id === id ? { ...item, active: item.active ? 0 : 1 } : item

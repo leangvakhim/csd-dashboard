@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } from "react";
 import JoditEditor from 'jodit-react';
 import 'jodit/es5/jodit.css';
-import { API_ENDPOINTS, API } from '../../../service/APIConfig';
-import axios from "axios";
+import { API_ENDPOINTS, API, axiosInstance } from '../../../service/APIConfig';
 import Swal from "sweetalert2";
 
 const config = {
@@ -24,7 +23,7 @@ const DescriptionSection = forwardRef(({sectionId, rsdId}, ref) => {
     const handleToggleDisplay = async () => {
         try {
             const newDisplay = displayDescription === 1 ? 0 : 1;
-            await axios.post(`${API_ENDPOINTS.updateResearchTitle}/${sectionId}`, {
+            await axiosInstance.post(`${API_ENDPOINTS.updateResearchTitle}/${sectionId}`, {
                 rsdt_id: sectionId,
                 display: newDisplay,
             });
@@ -50,7 +49,7 @@ const DescriptionSection = forwardRef(({sectionId, rsdId}, ref) => {
 
         if (result.isConfirmed) {
             try {
-                await axios.put(`${API_ENDPOINTS.deleteResearchTitle}/${sectionId}`);
+                await axiosInstance.put(`${API_ENDPOINTS.deleteResearchTitle}/${sectionId}`);
                 await Swal.fire({
                     icon: 'success',
                     title: 'Deleted!',
@@ -89,7 +88,7 @@ const DescriptionSection = forwardRef(({sectionId, rsdId}, ref) => {
     useEffect(() => {
         const fetchDescriptions = async () => {
         try {
-            const response = await axios.get(`${API_ENDPOINTS.getRsdDescription}?rsdd_rsdtile=${sectionId}`);
+            const response = await axiosInstance.get(`${API_ENDPOINTS.getRsdDescription}?rsdd_rsdtile=${sectionId}`);
             const descriptions = response.data.data || [];
             if (descriptions.length > 0) {
             const description = descriptions.find(item => item?.title?.rsdt_text === rsdId);
@@ -100,7 +99,7 @@ const DescriptionSection = forwardRef(({sectionId, rsdId}, ref) => {
                 }
             }
 
-            const sectionRes = await axios.get(`${API_ENDPOINTS.getResearchTitle}/${sectionId}`);
+            const sectionRes = await axiosInstance.get(`${API_ENDPOINTS.getResearchTitle}/${sectionId}`);
             const sectionData = sectionRes.data.data;
             setDisplayDescription(sectionData.display || 0);
 

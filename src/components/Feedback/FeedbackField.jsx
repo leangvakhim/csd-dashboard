@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import axios from 'axios';
 import Swal from 'sweetalert2';
-
 import Aside from '../Aside';
 import FeedbackFieldHeader from './FeedbackFieldHeader';
 import FeedbackFieldBody from './FeedbackFieldBody';
-import { API_ENDPOINTS } from '../../service/APIConfig';
+import { API_ENDPOINTS, axiosInstance } from '../../service/APIConfig';
 
 const FeedBackField = () => {
     const location = useLocation();
@@ -36,7 +34,7 @@ const FeedBackField = () => {
             const id = eventData?.data?.fb_id || formData?.fb_id;
             if (!id) return;
 
-            const response = await axios.get(`${API_ENDPOINTS.getFeedback}/${id}`);
+            const response = await axiosInstance.get(`${API_ENDPOINTS.getFeedback}/${id}`);
             setFormData(response.data.data);
             } catch (error) {
             console.error("Error fetching feedback data:", error);
@@ -69,10 +67,10 @@ const FeedBackField = () => {
         try {
             let res;
             if (formData.fb_id) {
-                res = await axios.post(`${API_ENDPOINTS.updateFeedback}/${formData.fb_id}`, payload);
+                res = await axiosInstance.post(`${API_ENDPOINTS.updateFeedback}/${formData.fb_id}`, payload);
             } else {
                 const { fb_order, ...createPayload } = payload;
-                res = await axios.post(API_ENDPOINTS.createFeedback, createPayload);
+                res = await axiosInstance.post(API_ENDPOINTS.createFeedback, createPayload);
             }
             Swal.close();
             Swal.fire({

@@ -1,5 +1,4 @@
 import React from 'react'
-import axios from 'axios';
 import logo from '../img/rupp.png';
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect, useRef } from 'react';

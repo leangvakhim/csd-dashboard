@@ -4,8 +4,7 @@ import FacultyFieldInfo from './FacultyFieldInfo';
 import FacultyFieldContactInfo from './FacultyFieldContactInfo';
 import FacultyFieldSocial from './FacultyFieldSocial';
 import MediaLibraryModal from '../MediaLibraryModal';
-import { API_ENDPOINTS } from '../../service/APIConfig';
-import axios from 'axios';
+import { API_ENDPOINTS, axiosInstance } from '../../service/APIConfig';
 const FacultyFieldBody = ({
         formData,
         setFormData,
@@ -27,7 +26,7 @@ const FacultyFieldBody = ({
         const oppositeLang = currentLang === 1 ? 2 : 1;
 
         try {
-          const response = await axios.get(`${API_ENDPOINTS.getFaculty}`);
+          const response = await axiosInstance.get(`${API_ENDPOINTS.getFaculty}`);
           const result = response.data;
           if (result.status_code === "success" && Array.isArray(result.data)) {
             const filtered = result.data.filter(item => item.lang === oppositeLang);

@@ -1,8 +1,7 @@
 import React, { forwardRef, useImperativeHandle, useState, useEffect } from "react";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import MediaLibraryModal from "../MediaLibraryModal";
-import { API_ENDPOINTS, API } from "../../service/APIConfig";
-import axios from "axios";
+import { API_ENDPOINTS, API, axiosInstance } from "../../service/APIConfig";
 import Swal from 'sweetalert2';
 import 'sweetalert2/dist/sweetalert2.min.css';
 
@@ -56,7 +55,7 @@ const handleDeleteTag = async (id) => {
 
   if (result.isConfirmed) {
     try {
-      await axios.put(`${API_ENDPOINTS.deleteResearchlabTag}/${id}`);
+      await axiosInstance.put(`${API_ENDPOINTS.deleteResearchlabTag}/${id}`);
         setTags((prevItems) =>
           prevItems.map((item) =>
             item.rsdlt === id ? { ...item, active: item.active ? 0 : 1 } : item
@@ -128,7 +127,7 @@ const handleDeleteTag = async (id) => {
 
   const handleImageSelect = async (imageUrl) => {
     try {
-      const response = await axios.get(API_ENDPOINTS.getImages);
+      const response = await axiosInstance.get(API_ENDPOINTS.getImages);
       const result = response.data;
 
       if (result.status_code === "success" && Array.isArray(result.data)) {
@@ -159,7 +158,7 @@ const handleDeleteTag = async (id) => {
   useEffect(() => {
     if (!rsdl_id) return;
 
-    axios.get(`${API_ENDPOINTS.getResearchlabTag}`)
+    axiosInstance.get(`${API_ENDPOINTS.getResearchlabTag}`)
       .then(async (res) => {
         const allTags = res.data?.data || [];
         const filteredTags = allTags.filter(

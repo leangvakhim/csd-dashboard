@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react'
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { API_ENDPOINTS } from '../../service/APIConfig';
+import { API_ENDPOINTS, axiosInstance } from '../../service/APIConfig';
 import { useLoading } from '../Context/LoadingContext';
 
 const DeveloperDashboard = () => {
@@ -42,12 +41,12 @@ const DeveloperDashboard = () => {
             d_order: item.d_order
         }));
 
-        await axios.post(`${API_ENDPOINTS.updateOrderDeveloper}`, payload);
+        await axiosInstance.post(`${API_ENDPOINTS.updateOrderDeveloper}`, payload);
     };
 
     const fetchDeveloper = async () => {
         try {
-            const response = await axios.get(API_ENDPOINTS.getDevelopers);
+            const response = await axiosInstance.get(API_ENDPOINTS.getDevelopers);
             const result = (response.data.data || []);
             const normalized = Array.isArray(result) ? result : result ? [result] : [];
             const sortedDeveloper = normalized.sort((a, b) => b.d_order - a.d_order);
@@ -59,7 +58,7 @@ const DeveloperDashboard = () => {
 
     const fetchImages = async () => {
         try {
-            const response = await axios.get(API_ENDPOINTS.getImages);
+            const response = await axiosInstance.get(API_ENDPOINTS.getImages);
             const data = response.data.data || [];
             setImages(data);
         } catch (err) {
@@ -73,7 +72,7 @@ const DeveloperDashboard = () => {
     };
 
     const handleEdit = async (id) => {
-        const response = await axios.get(`${API_ENDPOINTS.getDevelopers}/${id}`);
+        const response = await axiosInstance.get(`${API_ENDPOINTS.getDevelopers}/${id}`);
         const developData = response.data;
         navigate('/developer/developer-details', { state: { developData } });
     };
@@ -109,7 +108,7 @@ const DeveloperDashboard = () => {
         if (!result.isConfirmed) return;
 
         try {
-            await axios.put(`${API_ENDPOINTS.deleteDeveloper}/${id}`);
+            await axiosInstance.put(`${API_ENDPOINTS.deleteDeveloper}/${id}`);
             setFDeveloperItems(prevItems =>
                 prevItems.map(item =>
                     item.d_id === id ? { ...item, active: item.active ? 0 : 1 } : item

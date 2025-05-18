@@ -1,6 +1,5 @@
 import React, {useState} from 'react'
 import { Link } from 'react-router-dom'
-import axios from 'axios';
 import { API_ENDPOINTS, axiosInstance } from '../../service/APIConfig';
 import Swal from 'sweetalert2';
 
@@ -27,7 +26,7 @@ const AnnouncementFieldImportFile = ({ onDelete, selectedStudents }) => {
         formData.append('file', file);
 
         try {
-            const response = await axios.post(API_ENDPOINTS.ImportAnnouncementFile, formData, {
+            const response = await axiosInstance.post(API_ENDPOINTS.ImportAnnouncementFile, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }

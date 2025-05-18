@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import MediaLibraryModal from '../MediaLibraryModal';
 import JoditEditor from 'jodit-react';
-import { API_ENDPOINTS } from '../../service/APIConfig';
+import { API_ENDPOINTS, axiosInstance } from '../../service/APIConfig';
 import 'jodit/es5/jodit.css';
-import axios from 'axios';
 
 const config = {
     readonly: false,
@@ -26,7 +25,7 @@ const EventsFieldBody = ({ formData, setFormData, subtitleContent, setSubtitleCo
         const oppositeLang = currentLang === 1 ? 2 : 1;
 
         try {
-          const response = await axios.get(`${API_ENDPOINTS.getEvent}`);
+          const response = await axiosInstance.get(`${API_ENDPOINTS.getEvent}`);
           const result = response.data;
           if (result.status_code === "success" && Array.isArray(result.data)) {
             const filtered = result.data.filter(item => item.lang === oppositeLang);

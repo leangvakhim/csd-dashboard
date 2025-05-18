@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } from "react";
-import { API_ENDPOINTS } from "../../service/APIConfig";
+import { API_ENDPOINTS, axiosInstance } from "../../service/APIConfig";
 import MediaLibraryModal from "../MediaLibraryModal";
 import SettingFieldSection from "./SettingFieldSection";
 
@@ -16,7 +16,7 @@ const SettingField = forwardRef(({setFormData, formData}, ref) => {
     const loadImageFromId = async () => {
       if (formData.set_logo) {
         try {
-          const response = await fetch(`${API_ENDPOINTS.getImages}`);
+          const response = await axiosInstance.get(`${API_ENDPOINTS.getImages}`);
           const result = await response.json();
 
           if (result.status_code === "success" && Array.isArray(result.data)) {
@@ -42,7 +42,7 @@ const SettingField = forwardRef(({setFormData, formData}, ref) => {
     if (field === "image") {
       setSelectedImage(imageUrl ? `${imageUrl}` : "");
       try {
-        const response = await fetch(`${API_ENDPOINTS.getImages}`);
+        const response = await axiosInstance.get(`${API_ENDPOINTS.getImages}`);
         const result = await response.json();
 
         if (result.status_code === "success" && Array.isArray(result.data)) {

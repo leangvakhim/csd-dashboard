@@ -2,8 +2,7 @@ import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } f
 import SettingFieldHeader from './SettingFieldHeader'
 import SettingFieldBodyInfo from './SettingFieldBodyInfo'
 import Aside from '../Aside'
-import axios from "axios";
-import { API_ENDPOINTS, API } from "../../service/APIConfig";
+import { API_ENDPOINTS, API, axiosInstance } from "../../service/APIConfig";
 import Swal from 'sweetalert2';
 
 const SettingFieldBody = () => {
@@ -19,16 +18,16 @@ const SettingFieldBody = () => {
         };
 
         try {
-            const checkResponse = await axios.get(`${API_ENDPOINTS.getContactByLang}/${payload.lang}`);
+            const checkResponse = await axiosInstance.get(`${API_ENDPOINTS.getContactByLang}/${payload.lang}`);
                 const id = checkResponse?.data?.data?.con_id;
                 if (id) {
-                    await axios.post(`${API_ENDPOINTS.updateContact }/${id}`, payload);
+                    await axiosInstance.post(`${API_ENDPOINTS.updateContact }/${id}`, payload);
                 } else {
-                    await axios.post(API_ENDPOINTS.createContact, payload);
+                    await axiosInstance.post(API_ENDPOINTS.createContact, payload);
                 }
             } catch (err) {
                 if (err.response?.status === 404) {
-                    await axios.post(API_ENDPOINTS.createContact, payload);
+                    await axiosInstance.post(API_ENDPOINTS.createContact, payload);
                 } else {
                     console.error("Other error while saving:", err);
                 }

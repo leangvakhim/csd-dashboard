@@ -2,8 +2,7 @@ import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } f
 import Aside from '../Aside'
 import DeveloperFieldHeader from './DeveloperFieldHeader'
 import DeveloperFieldBody from './DeveloperFieldBody'
-import axios from 'axios';
-import { API_ENDPOINTS } from '../../service/APIConfig';
+import { API_ENDPOINTS, axiosInstance } from '../../service/APIConfig';
 import { useLocation } from 'react-router-dom';
 import { useLoading } from "../Context/LoadingContext";
 import Swal from 'sweetalert2';
@@ -26,7 +25,7 @@ const DeveloperField = () => {
   useEffect(() => {
     const fetchDeveloper = async (id) => {
       try {
-        const response = await axios.get(`${API_ENDPOINTS.getDevelopers}/${id}`);
+        const response = await axiosInstance.get(`${API_ENDPOINTS.getDevelopers}/${id}`);
         const developer = response.data?.data;
         if (developer) {
           setFormData({
@@ -51,7 +50,7 @@ const DeveloperField = () => {
 
   const fetchDeveloperSocials = async (developerId) => {
     try {
-      const response = await axios.get(`${API_ENDPOINTS.getSocialDeveloper}?ds_developer=${developerId}`);
+      const response = await axiosInstance.get(`${API_ENDPOINTS.getSocialDeveloper}?ds_developer=${developerId}`);
       const socials = response.data?.data || [];
       setFormData(prev => ({
         ...prev,
@@ -77,9 +76,9 @@ const DeveloperField = () => {
       let developerId = formData.d_id;
 
       if (developerId) {
-        await axios.post(`${API_ENDPOINTS.updateDeveloper}/${developerId}`, { developer: payload });
+        await axiosInstance.post(`${API_ENDPOINTS.updateDeveloper}/${developerId}`, { developer: payload });
       } else {
-        const response = await axios.post(API_ENDPOINTS.createDeveloper, { developer: [payload] });
+        const response = await axiosInstance.post(API_ENDPOINTS.createDeveloper, { developer: [payload] });
         developerId = response.data?.data?.[0]?.d_id;
       }
 
@@ -108,23 +107,23 @@ const DeveloperField = () => {
 
         try {
           if (social.ds_id) {
-            const res = await axios.get(`${API_ENDPOINTS.getSocialDeveloper}/${social.ds_id}`);
+            const res = await axiosInstance.get(`${API_ENDPOINTS.getSocialDeveloper}/${social.ds_id}`);
 
               if (res.data && res.data.data) {
                 if(res.data.data.ds_developer === developerId){
-                  await axios.post(`${API_ENDPOINTS.updateSocialDeveloper}/${social.ds_id}`, {developer_social: payload });
+                  await axiosInstance.post(`${API_ENDPOINTS.updateSocialDeveloper}/${social.ds_id}`, {developer_social: payload });
                 }else {
-                  await axios.post(API_ENDPOINTS.createSocialDeveloper, {developer_social: [payload] });
+                  await axiosInstance.post(API_ENDPOINTS.createSocialDeveloper, {developer_social: [payload] });
                 }
               } else {
-                await axios.post(API_ENDPOINTS.createSocialDeveloper, {developer_social: [payload] });
+                await axiosInstance.post(API_ENDPOINTS.createSocialDeveloper, {developer_social: [payload] });
               }
             } else {
-              await axios.post(API_ENDPOINTS.createSocialDeveloper, {developer_social: [payload] });
+              await axiosInstance.post(API_ENDPOINTS.createSocialDeveloper, {developer_social: [payload] });
             }
         } catch (error) {
             if (error.response && error.response.status === 404) {
-              await axios.post(API_ENDPOINTS.createSocialDeveloper, {developer_social: [payload] });
+              await axiosInstance.post(API_ENDPOINTS.createSocialDeveloper, {developer_social: [payload] });
             } else {
               console.error("❌ Error saving developer info:", error);
             }
@@ -147,7 +146,7 @@ const DeveloperField = () => {
         }));
 
         try {
-            await axios.post(API_ENDPOINTS.updateorderSocialDeveloper, socialDeveloperPayload);
+            await axiosInstance.post(API_ENDPOINTS.updateorderSocialDeveloper, socialDeveloperPayload);
         } catch (error) {
             console.error("Failed to reorder slideshow:", error.response?.data || error.message);
         }

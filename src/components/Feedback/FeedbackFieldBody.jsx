@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import MediaLibraryModal from '../MediaLibraryModal';
-import { API_ENDPOINTS } from '../../service/APIConfig';
+import { API_ENDPOINTS, axiosInstance } from '../../service/APIConfig';
 import { useEffect } from 'react';
 
 const FeedbackFieldBody = ({ formData, setFormData, onImageSelect }) => {
@@ -16,7 +16,7 @@ const FeedbackFieldBody = ({ formData, setFormData, onImageSelect }) => {
 
     useEffect(() => {
         if (formData.fb_img) {
-            fetch(`${API_ENDPOINTS.getImages}`)
+            axiosInstance.get(`${API_ENDPOINTS.getImages}`)
                 .then(res => res.json())
                 .then(result => {
                     const matched = result.data.find(img => img.image_id === formData.fb_img);
@@ -37,7 +37,7 @@ const FeedbackFieldBody = ({ formData, setFormData, onImageSelect }) => {
         if (field === "image") {
             setSelectedImage(imageUrl ? `${imageUrl}` : "");
             try {
-                const response = await fetch(`${API_ENDPOINTS.getImages}`);
+                const response = await axiosInstance.get(`${API_ENDPOINTS.getImages}`);
                 const result = await response.json();
 
                 if (result.status_code === "success" && Array.isArray(result.data)) {

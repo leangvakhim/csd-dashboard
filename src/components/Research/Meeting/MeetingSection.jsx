@@ -2,8 +2,7 @@ import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } f
 import MediaLibraryModal from '../../MediaLibraryModal';
 import JoditEditor from 'jodit-react';
 import 'jodit/es5/jodit.css';
-import { API, API_ENDPOINTS } from '../../../service/APIConfig';
-import axios from 'axios';
+import { API, API_ENDPOINTS, axiosInstance } from '../../../service/APIConfig';
 import Swal from "sweetalert2";
 
 const config = {
@@ -38,7 +37,7 @@ const MeetingSection = forwardRef(({sectionId, rsdId}, ref) => {
 
     const getImageIdByUrl = async (url) => {
         try {
-        const response = await axios.get(API_ENDPOINTS.getImages);
+        const response = await axiosInstance.get(API_ENDPOINTS.getImages);
         const images = Array.isArray(response.data) ? response.data : response.data.data;
 
         const matchedImage = images.find((img) => img.image_url === url);
@@ -52,7 +51,7 @@ const MeetingSection = forwardRef(({sectionId, rsdId}, ref) => {
     const handleToggleDisplay = async () => {
         try {
             const newDisplay = displayMeeting === 1 ? 0 : 1;
-            await axios.post(`${API_ENDPOINTS.updateResearchTitle}/${sectionId}`, {
+            await axiosInstance.post(`${API_ENDPOINTS.updateResearchTitle}/${sectionId}`, {
                 rsdt_id: sectionId,
                 display: newDisplay,
             });
@@ -78,7 +77,7 @@ const MeetingSection = forwardRef(({sectionId, rsdId}, ref) => {
 
         if (result.isConfirmed) {
             try {
-                await axios.put(`${API_ENDPOINTS.deleteResearchTitle}/${sectionId}`);
+                await axiosInstance.put(`${API_ENDPOINTS.deleteResearchTitle}/${sectionId}`);
                 await Swal.fire({
                     icon: 'success',
                     title: 'Deleted!',
@@ -119,7 +118,7 @@ const MeetingSection = forwardRef(({sectionId, rsdId}, ref) => {
     useEffect(() => {
         const fetchMeetings = async () => {
         try {
-            const response = await axios.get(`${API_ENDPOINTS.getRsdMeeting}?rsdm_rsdtitle=${sectionId}`);
+            const response = await axiosInstance.get(`${API_ENDPOINTS.getRsdMeeting}?rsdm_rsdtitle=${sectionId}`);
             const meetings = response.data.data || [];
             if (meetings.length > 0) {
                 // const meeting = meetings.find(item => item?.title?.rsdt_text === rsdId);
@@ -134,7 +133,7 @@ const MeetingSection = forwardRef(({sectionId, rsdId}, ref) => {
                 }
             }
 
-            const sectionRes = await axios.get(`${API_ENDPOINTS.getResearchTitle}/${sectionId}`);
+            const sectionRes = await axiosInstance.get(`${API_ENDPOINTS.getResearchTitle}/${sectionId}`);
             const sectionData = sectionRes.data.data;
             setDisplayMeeting(sectionData.display || 0);
 

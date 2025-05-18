@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import { useEffect } from 'react';
-import { API_ENDPOINTS, API } from '../../service/APIConfig';
-import axios from 'axios';
+import { API_ENDPOINTS, API, axiosInstance } from '../../service/APIConfig';
 import { useNavigate } from 'react-router-dom';
 
 const FeedbackDashboard = () => {
@@ -13,7 +12,7 @@ const FeedbackDashboard = () => {
     useEffect(() => {
         const fetchNews = async () => {
             try {
-                const response = await axios.get(API_ENDPOINTS.getFeedback);
+                const response = await axiosInstance.get(API_ENDPOINTS.getFeedback);
                 const result = (response.data.data || []);
                 const normalized = Array.isArray(result) ? result : result ? [result] : [];
                 const sortedFeedback = normalized.sort((a, b) => b.fb_order - a.fb_order);
@@ -27,7 +26,7 @@ const FeedbackDashboard = () => {
     }, []);
 
     const handleEdit = async (id) => {
-        const response = await axios.get(`${API_ENDPOINTS.getFeedback}/${id}`);
+        const response = await axiosInstance.get(`${API_ENDPOINTS.getFeedback}/${id}`);
         const eventData = response.data;
         navigate('/feedback/feedback-details', { state: { eventData } });
     };
@@ -63,12 +62,12 @@ const FeedbackDashboard = () => {
             fb_order: item.fb_order
         }));
 
-        await axios.put(`${API_ENDPOINTS.updateFeedbackOrder}`, payload);
+        await axiosInstance.put(`${API_ENDPOINTS.updateFeedbackOrder}`, payload);
     };
 
     const duplicateItem = async (id) => {
         try {
-            const response = await axios.post(`${API_ENDPOINTS.duplicateFeedback}/${id}`);
+            const response = await axiosInstance.post(`${API_ENDPOINTS.duplicateFeedback}/${id}`);
             if (response.status === 200) {
                 alert("feedback duplicated successfully");
                 window.location.reload();
@@ -97,7 +96,7 @@ const FeedbackDashboard = () => {
         if (!result.isConfirmed) return;
 
         try {
-            await axios.put(`${API_ENDPOINTS.deleteFeedback}/${id}`);
+            await axiosInstance.put(`${API_ENDPOINTS.deleteFeedback}/${id}`);
             setEventItems(prevItems =>
                 prevItems.map(item =>
                     item.fb_id === id ? { ...item, active: item.active ? 0 : 1 } : item

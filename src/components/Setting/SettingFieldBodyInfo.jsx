@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } from "react";
-import { API_ENDPOINTS, API } from "../../service/APIConfig";
+import { API_ENDPOINTS, API, axiosInstance } from "../../service/APIConfig";
 import MediaLibraryModal from "../MediaLibraryModal";
-import axios from "axios";
 
 const SettingFieldBodyInfo = forwardRef(({}, ref) => {
   const [activeTab, setActiveTab] = useState(1);
@@ -32,7 +31,7 @@ const SettingFieldBodyInfo = forwardRef(({}, ref) => {
   useEffect(() => {
     const fetchContactData = async () => {
       try {
-        const response = await axios.get(`${API_ENDPOINTS.getContactByLang}/${activeTab}`);
+        const response = await axiosInstance.get(`${API_ENDPOINTS.getContactByLang}/${activeTab}`);
         const data = response.data?.data;
         if (data) {
           setLang(data.lang || 1);
@@ -81,13 +80,13 @@ const SettingFieldBodyInfo = forwardRef(({}, ref) => {
 
       try {
         if (currentC1Id) {
-          await axios.post(`${API_ENDPOINTS.updateSubContact}/${c1Id}`, {
+          await axiosInstance.post(`${API_ENDPOINTS.updateSubContact}/${c1Id}`, {
             scon_title: firsttitle || null,
             scon_detail: firstsubtitle || null,
             scon_img: selectedImage1 ? await getImageIdByUrl(selectedImage1) : null,
           });
         } else {
-          const res1 = await axios.post(API_ENDPOINTS.createSubContact, {
+          const res1 = await axiosInstance.post(API_ENDPOINTS.createSubContact, {
             scon_title: firsttitle || null,
             scon_detail: firstsubtitle || null,
             scon_img: selectedImage1 ? await getImageIdByUrl(selectedImage1) : null,
@@ -98,13 +97,13 @@ const SettingFieldBodyInfo = forwardRef(({}, ref) => {
         }
 
         if (currentC2Id) {
-          await axios.post(`${API_ENDPOINTS.updateSubContact}/${c2Id}`, {
+          await axiosInstance.post(`${API_ENDPOINTS.updateSubContact}/${c2Id}`, {
             scon_title: secondtitle || null,
             scon_detail: secondsubtitle || null,
             scon_img: selectedImage2 ? await getImageIdByUrl(selectedImage2) : null,
           });
         } else {
-          const res2 = await axios.post(API_ENDPOINTS.createSubContact, {
+          const res2 = await axiosInstance.post(API_ENDPOINTS.createSubContact, {
             scon_title: secondtitle || null,
             scon_detail: secondsubtitle || null,
             scon_img: selectedImage2 ? await getImageIdByUrl(selectedImage2) : null,
@@ -115,13 +114,13 @@ const SettingFieldBodyInfo = forwardRef(({}, ref) => {
         }
 
         if (currentC3Id) {
-          await axios.post(`${API_ENDPOINTS.updateSubContact}/${c3Id}`, {
+          await axiosInstance.post(`${API_ENDPOINTS.updateSubContact}/${c3Id}`, {
             scon_title: thirdtitle || null,
             scon_detail: thirdsubtitle || null,
             scon_img: selectedImage3 ? await getImageIdByUrl(selectedImage3) : null,
           });
         } else {
-          const res3 = await axios.post(API_ENDPOINTS.createSubContact, {
+          const res3 = await axiosInstance.post(API_ENDPOINTS.createSubContact, {
             scon_title: thirdtitle || null,
             scon_detail: thirdsubtitle || null,
             scon_img: selectedImage3 ? await getImageIdByUrl(selectedImage3) : null,
@@ -150,7 +149,7 @@ const SettingFieldBodyInfo = forwardRef(({}, ref) => {
 
   const getImageIdByUrl = async (url) => {
     try {
-      const response = await axios.get(API_ENDPOINTS.getImages);
+      const response = await axiosInstance.get(API_ENDPOINTS.getImages);
       const images = Array.isArray(response.data) ? response.data : response.data.data;
 
       const matchedImage = images.find((img) => img.image_url === url);
@@ -199,7 +198,7 @@ const SettingFieldBodyInfo = forwardRef(({}, ref) => {
                     setActiveTab(langOption.id);
                     setLang(Number(langOption.id));
                     try {
-                      const response = await axios.get(`${API_ENDPOINTS.getContactByLang}/${langOption.id}`);
+                      const response = await axiosInstance.get(`${API_ENDPOINTS.getContactByLang}/${langOption.id}`);
                       const data = response.data?.data;
                       if (data) {
                         setC1Id(data.con_addon || 0);

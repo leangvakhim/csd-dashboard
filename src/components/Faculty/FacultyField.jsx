@@ -4,8 +4,7 @@ import Aside from '../Aside'
 import FacultyFieldHeader from './FacultyFieldHeader'
 import FacultyFieldBody from './FacultyFieldBody'
 import { useLocation } from 'react-router-dom'
-import { API_ENDPOINTS, API } from '../../service/APIConfig'
-import axios from 'axios'
+import { API_ENDPOINTS, API, axiosInstance } from '../../service/APIConfig'
 import { useLoading } from '../Context/LoadingContext'
 
 const FacultyField = () => {
@@ -30,7 +29,7 @@ const FacultyField = () => {
 
     const getImageIdByUrl = async (url) => {
         try {
-        const response = await axios.get(API_ENDPOINTS.getImages);
+        const response = await axiosInstance.get(API_ENDPOINTS.getImages);
         const images = Array.isArray(response.data) ? response.data : response.data.data;
 
         const matchedImage = images.find((img) => img.image_url === url);
@@ -55,7 +54,7 @@ const FacultyField = () => {
         const fetchSocials = async () => {
             if (formData.f_id && socialRef.current?.setData) {
                 try {
-                    const res = await axios.get(`${API_ENDPOINTS.getSocialByFaculty}/${formData.f_id}`);
+                    const res = await axiosInstance.get(`${API_ENDPOINTS.getSocialByFaculty}/${formData.f_id}`);
                     const socialList = (res.data.data || []).map(item => ({
                         ...item,
                         social_id: item.social_id ?? item.id
@@ -91,7 +90,7 @@ const FacultyField = () => {
         };
 
         if (!isUpdate) {
-            const res = await axios.post(API_ENDPOINTS.createFaculty, payload);
+            const res = await axiosInstance.post(API_ENDPOINTS.createFaculty, payload);
             const createdFaculty = res.data.data;
             setFormData(prev => ({
                 ...prev,
@@ -99,7 +98,7 @@ const FacultyField = () => {
             }));
             return createdFaculty;
         } else {
-            await axios.post(`${API_ENDPOINTS.updateFaculty}/${formData.f_id}`, payload);
+            await axiosInstance.post(`${API_ENDPOINTS.updateFaculty}/${formData.f_id}`, payload);
             return { f_id: formData.f_id };
         }
     };
@@ -143,7 +142,7 @@ const FacultyField = () => {
                 active: item.active ?? 1
             };
             // Perform update
-            await axios.post(`${API_ENDPOINTS.updateSocial}/${item.social_id}`, payload);
+            await axiosInstance.post(`${API_ENDPOINTS.updateSocial}/${item.social_id}`, payload);
         }
 
         // Perform create
@@ -152,7 +151,7 @@ const FacultyField = () => {
                 f_id,
                 social_faculty: newSocials
             };
-            await axios.post(API_ENDPOINTS.createSocial, payload);
+            await axiosInstance.post(API_ENDPOINTS.createSocial, payload);
         }
 
         // Perform reorder
@@ -165,7 +164,7 @@ const FacultyField = () => {
 
 
         if (reorderPayload.length > 0) {
-            await axios.post(API_ENDPOINTS.updateSocialOrder, reorderPayload, {
+            await axiosInstance.post(API_ENDPOINTS.updateSocialOrder, reorderPayload, {
                 headers: {
                     'Content-Type': 'application/json',
                     'Accept': 'application/json'
@@ -213,7 +212,7 @@ const FacultyField = () => {
                 fc_f: f_id, // Faculty ID
             };
             try {
-                await axios.post(`${API_ENDPOINTS.updateFacultyContact}/${item.fc_id}`, updatePayload);
+                await axiosInstance.post(`${API_ENDPOINTS.updateFacultyContact}/${item.fc_id}`, updatePayload);
             } catch (error) {
                 console.error("Error updating contact:", error);
             }
@@ -227,7 +226,7 @@ const FacultyField = () => {
                 fc_f: newContacts, // Potential issue: Key name
             };
             try {
-                await axios.post(API_ENDPOINTS.createFacultyContact, createPayload);
+                await axiosInstance.post(API_ENDPOINTS.createFacultyContact, createPayload);
                 console.log("🆕 Create Payload:", createPayload);
             } catch (error) {
                 console.error("Error creating contacts:", error);
@@ -244,7 +243,7 @@ const FacultyField = () => {
 
         if (reorderPayload.length > 0) {
             try {
-                await axios.post(API_ENDPOINTS.updateFacultyContactOrder, reorderPayload, {
+                await axiosInstance.post(API_ENDPOINTS.updateFacultyContactOrder, reorderPayload, {
                     headers: {
                         'Content-Type': 'application/json',
                         'Accept': 'application/json',
@@ -296,21 +295,21 @@ const FacultyField = () => {
                     !String(info.finfo_id).startsWith("temp")
                 ) {
                     try {
-                        const res = await axios.get(`${API_ENDPOINTS.getFacultyInfo}/${info.finfo_id}`);
+                        const res = await axiosInstance.get(`${API_ENDPOINTS.getFacultyInfo}/${info.finfo_id}`);
                         if (res?.data?.data?.faculty?.f_id === f_id) {
-                            await axios.post(`${API_ENDPOINTS.updateFacultyInfo}/${info.finfo_id}`, payload);
+                            await axiosInstance.post(`${API_ENDPOINTS.updateFacultyInfo}/${info.finfo_id}`, payload);
                         } else {
-                            await axios.post(API_ENDPOINTS.createFacultyInfo, { f_id, finfo_f: [payload] });
+                            await axiosInstance.post(API_ENDPOINTS.createFacultyInfo, { f_id, finfo_f: [payload] });
                         }
                     } catch (error) {
                         if (error.response?.status === 404) {
-                            await axios.post(API_ENDPOINTS.createFacultyInfo, { f_id, finfo_f: [payload] });
+                            await axiosInstance.post(API_ENDPOINTS.createFacultyInfo, { f_id, finfo_f: [payload] });
                         } else {
                             console.error("❌ Error validating finfo_id:", error);
                         }
                     }
                 } else {
-                    await axios.post(API_ENDPOINTS.createFacultyInfo, { f_id, finfo_f: [payload] });
+                    await axiosInstance.post(API_ENDPOINTS.createFacultyInfo, { f_id, finfo_f: [payload] });
                 }
             } catch (error) {
                 console.error("❌ Error saving faculty info:", error);
@@ -331,7 +330,7 @@ const FacultyField = () => {
         }));
 
         try {
-            await axios.post(API_ENDPOINTS.updateFacultyInfoOrder, facultyInfoPayload);
+            await axiosInstance.post(API_ENDPOINTS.updateFacultyInfoOrder, facultyInfoPayload);
         } catch (error) {
             console.error("Failed to reorder facultyInfo:", error.response?.data || error.message);
         }
@@ -379,11 +378,11 @@ const FacultyField = () => {
 
         try {
             await Promise.all(updatePayloads.map((payload, i) =>
-                axios.post(`${API_ENDPOINTS.updateFacultyBG}/${existingItems[i].fbg_id}`, payload)
+                axiosInstance.post(`${API_ENDPOINTS.updateFacultyBG}/${existingItems[i].fbg_id}`, payload)
             ));
 
             if (createPayload.length > 0) {
-                await axios.post(API_ENDPOINTS.createFacultyBG, { facultyBG: createPayload });
+                await axiosInstance.post(API_ENDPOINTS.createFacultyBG, { facultyBG: createPayload });
             }
 
             const reorder = existingItems.map(item => ({
@@ -392,7 +391,7 @@ const FacultyField = () => {
             }));
 
             if (reorder.length > 0) {
-                await axios.post(API_ENDPOINTS.updateFacultyBGOrder, reorder, {
+                await axiosInstance.post(API_ENDPOINTS.updateFacultyBGOrder, reorder, {
                     headers: {
                         'Content-Type': 'application/json',
                         'Accept': 'application/json',
