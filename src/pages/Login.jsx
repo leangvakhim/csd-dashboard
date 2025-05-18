@@ -77,7 +77,19 @@ const handleSubmit = async (e) => {
             localStorage.setItem("token", token);
             localStorage.setItem("username", response.data.data.user.username);
             axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-            navigate('/menu');
+            Swal.fire({
+                title: 'Logging in...',
+                text: 'Please wait for a while.',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            setTimeout(() => {
+                Swal.close();
+                navigate('/menu');
+            }, 1000);
         } else {
             Swal.fire({
                 icon: 'error',
