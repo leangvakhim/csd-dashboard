@@ -68,7 +68,7 @@ const handleSubmit = async (e) => {
     }
 
     try {
-        const response = await axios.post(API_ENDPOINTS.login, {
+        const response = await axiosInstance.post(API_ENDPOINTS.login, {
             username,
             password,
         });

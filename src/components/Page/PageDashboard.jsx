@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { API_ENDPOINTS } from '../../service/APIConfig';
-import axios from 'axios';
+import { API_ENDPOINTS, axiosInstance } from '../../service/APIConfig';
 import { useNavigate } from 'react-router-dom';
 import { useLoading } from '../Context/LoadingContext';
 import Swal from 'sweetalert2';
@@ -19,7 +18,7 @@ const PageDashboard = () => {
                 await Promise.all([
                     (async () => {
                         try {
-                            const res = await axios.get(API_ENDPOINTS.getMenu);
+                            const res = await axiosInstance.get(API_ENDPOINTS.getMenu);
                             if (res.data && res.data.data) {
                                 setMenuOptions(res.data.data);
                             }
@@ -29,7 +28,7 @@ const PageDashboard = () => {
                     })(),
                     (async () => {
                         try {
-                            const response = await axios.get(API_ENDPOINTS.getPage);
+                            const response = await axiosInstance.get(API_ENDPOINTS.getPage);
                             const result = (response.data.data || []);
                             const normalized = Array.isArray(result) ? result : result ? [result] : [];
                             setPageItems(normalized);
@@ -48,7 +47,7 @@ const PageDashboard = () => {
     }, []);
 
     const handleEdit = async (id) => {
-        const response = await axios.get(`${API_ENDPOINTS.getPage}/${id}`);
+        const response = await axiosInstance.get(`${API_ENDPOINTS.getPage}/${id}`);
         const pageData = response.data;
         navigate('/page/page-detail', { state: { pageData } });
     };
@@ -73,7 +72,7 @@ const PageDashboard = () => {
 
         if (result.isConfirmed) {
             try {
-                await axios.put(`${API_ENDPOINTS.deletePage}/${id}`);
+                await axiosInstance.put(`${API_ENDPOINTS.deletePage}/${id}`);
                 setPageItems(prevItems =>
                     prevItems.map(item =>
                         item.p_id === id ? { ...item, active: item.active ? 0 : 1 } : item
@@ -100,7 +99,7 @@ const PageDashboard = () => {
 
     const duplicateItem = async (id) => {
         try {
-            const response = await axios.post(`${API_ENDPOINTS.duplicatePage}/${id}`);
+            const response = await axiosInstance.post(`${API_ENDPOINTS.duplicatePage}/${id}`);
             if (response.status === 200) {
                 alert("Page duplicated successfully");
                 window.location.reload();
