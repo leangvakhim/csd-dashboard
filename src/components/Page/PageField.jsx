@@ -2034,7 +2034,7 @@ const PageField = () => {
                 await reorderSection();
 
                 // Fetch updated section IDs after sync
-                const updatedSectionRes = await axios.get(`${API_ENDPOINTS.getSection}?sec_page=${page_id}`);
+                const updatedSectionRes = await axiosInstance.get(`${API_ENDPOINTS.getSection}?sec_page=${page_id}`);
                 const updatedSections = updatedSectionRes.data?.data || [];
 
                 const updatedSectionMap = updatedSections.reduce((acc, section) => {
@@ -2126,12 +2126,11 @@ const PageField = () => {
                 }
             });
 
-            await savePage().then((res) => {
+            const res = await savePage();
             const savedId = res?.p_id;
-                if (savedId) {
-                    syncSection(savedId);
-                }
-            });
+            if (savedId) {
+                await syncSection(savedId);
+            }
 
             Swal.close();
 
@@ -2141,10 +2140,9 @@ const PageField = () => {
                 text: 'Page saved successfully',
                 timer: 1500,
                 showConfirmButton: false,
-                willClose: () => {
-                    setTimeout(() => {
-                        window.location.reload();
-                    }, 500);
+                willClose: async () => {
+                    await new Promise(resolve => setTimeout(resolve, 500));
+                    window.location.reload();
                 }
             });
         } catch (err) {
