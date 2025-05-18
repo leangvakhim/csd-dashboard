@@ -4,7 +4,7 @@ import axios from 'axios';
 import logo from '../img/rupp.png';
 import profile from '../img/profile.svg';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { API_ENDPOINTS } from '../service/APIConfig';
+import { API_ENDPOINTS, axiosInstance } from '../service/APIConfig';
 
 const Aside = ({ username }) => {
   const navigate = useNavigate();
@@ -13,7 +13,7 @@ const Aside = ({ username }) => {
   const handleLogout = async () => {
     const token = localStorage.getItem('token');
     try {
-      await axios.post(API_ENDPOINTS.logout, {}, {
+      await axiosInstance.post(API_ENDPOINTS.logout, {}, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',

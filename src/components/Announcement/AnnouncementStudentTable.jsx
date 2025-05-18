@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { API_ENDPOINTS } from '../../service/APIConfig';
+import { API_ENDPOINTS, axiosInstance } from '../../service/APIConfig';
 
 const AnnouncementStudentTable = ({ onSelectedStudentsChange }) => {
     const [students, setStudents] = useState([]);
@@ -17,7 +17,7 @@ const AnnouncementStudentTable = ({ onSelectedStudentsChange }) => {
     }, [selectedStudents, onSelectedStudentsChange]);
 
     useEffect(() => {
-        axios.get(API_ENDPOINTS.getAnnouncementStudent)
+        axiosInstance.get(API_ENDPOINTS.getAnnouncementStudent)
             .then(response => {
                 setStudents(response.data);
             })

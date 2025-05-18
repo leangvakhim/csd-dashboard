@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { API_ENDPOINTS } from '../service/APIConfig';
+import { API_ENDPOINTS, axiosInstance } from '../service/APIConfig';
 
 const MediaLibraryModal = ({ onSelect, onClose }) => {
     const [images, setImages] = useState([]);
@@ -9,7 +9,7 @@ const MediaLibraryModal = ({ onSelect, onClose }) => {
     const [selectedImageName, setSelectedImageName] = useState(null);
 
     useEffect(() => {
-        fetch(`${API_ENDPOINTS.getImages}`)
+        axiosInstance.get(`${API_ENDPOINTS.getImages}`)
             .then(response => response.json())
             .then(data => {
                 if (data.status === 200 && data.data) {
@@ -30,14 +30,14 @@ const MediaLibraryModal = ({ onSelect, onClose }) => {
         }
 
         try {
-            const response = await axios.post(API_ENDPOINTS.uploadImage, formData, {
+            const response = await axiosInstance.post(API_ENDPOINTS.uploadImage, formData, {
                 headers: {
                     "Content-Type": "multipart/form-data",
                 },
             });
 
             if (response.data && response.data.data) {
-                const updatedImages = await axios.get(API_ENDPOINTS.getImages);
+                const updatedImages = await axiosInstance.get(API_ENDPOINTS.getImages);
                 if (updatedImages.data && updatedImages.data.data) {
                     setImages(updatedImages.data.data);
                     setFilteredImages(updatedImages.data.data);

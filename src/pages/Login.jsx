@@ -3,7 +3,7 @@ import axios from 'axios';
 import logo from '../img/rupp.png';
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect, useRef } from 'react';
-import { API_ENDPOINTS } from '../service/APIConfig';
+import { API_ENDPOINTS, axiosInstance } from '../service/APIConfig';
 import Swal from 'sweetalert2';
 
 const Login = () => {
@@ -77,6 +77,7 @@ const handleSubmit = async (e) => {
         if (token) {
             localStorage.setItem("token", token);
             localStorage.setItem("username", response.data.data.user.username);
+            axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${token}`;
             navigate('/menu');
         } else {
             Swal.fire({

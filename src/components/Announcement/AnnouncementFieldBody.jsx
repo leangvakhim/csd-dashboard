@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import MediaLibraryModal from '../MediaLibraryModal';
-import { API_ENDPOINTS } from '../../service/APIConfig';
+import { API_ENDPOINTS, axiosInstance } from '../../service/APIConfig';
 import AnnouncementFieldImportFile from './AnnouncementFieldImportFile';
 import { useLocation } from 'react-router-dom';
 import axios from 'axios';
@@ -28,7 +28,7 @@ const AnnouncementFieldBody = ({
     const oppositeLang = currentLang === 1 ? 2 : 1;
 
     try {
-        const response = await axios.get(`${API_ENDPOINTS.getAnnouncement}`);
+        const response = await axiosInstance.get(`${API_ENDPOINTS.getAnnouncement}`);
         const result = response.data;
         if (Array.isArray(result.data)) {
         const filtered = result.data.filter(item => item.lang === oppositeLang);
@@ -57,7 +57,7 @@ const AnnouncementFieldBody = ({
   useEffect(() => {
     const fetchAnnouncementById = async () => {
       try {
-        const response = await axios.get(`${API_ENDPOINTS.getAnnouncement}/${announcementData.data.am_id}`);
+        const response = await axiosInstance.get(`${API_ENDPOINTS.getAnnouncement}/${announcementData.data.am_id}`);
 
         const fetchedData = response.data.data;
 
@@ -173,7 +173,7 @@ const AnnouncementFieldBody = ({
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          const response = await axios.post(`${API_ENDPOINTS.DeleteAnnouncementStudentRecord}`, {
+          const response = await axiosInstance.post(`${API_ENDPOINTS.DeleteAnnouncementStudentRecord}`, {
             student_ids: selectedStudents
           });
 

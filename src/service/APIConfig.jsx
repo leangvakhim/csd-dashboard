@@ -1,6 +1,27 @@
+import axios from "axios";
+
 const API = "https://aimostore.shop";
 // const API = "http://127.0.0.1:8000";
 const API_BASEURL = `${API}/api`;
+
+const axiosInstance = axios.create({
+  baseURL: API_BASEURL,
+  headers: {
+    'Accept': 'application/json',
+    'Content-Type': 'application/json',
+  }
+});
+
+axiosInstance.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
 
 const API_ENDPOINTS = {
 
@@ -422,4 +443,4 @@ const API_ENDPOINTS = {
     logout: `${API_BASEURL}/logout`,
 };
 
-export { API_BASEURL, API_ENDPOINTS, API };
+export {axiosInstance, API_BASEURL, API_ENDPOINTS, API };

@@ -1,9 +1,8 @@
 import React, {useState} from 'react'
-import { API_ENDPOINTS } from '../../service/APIConfig';
+import { API_ENDPOINTS, axiosInstance } from '../../service/APIConfig';
 import axios from 'axios';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-
 
 const CareerDashboard = () => {
     const [activeDropdown, setActiveDropdown] = useState(null);
@@ -14,7 +13,7 @@ const CareerDashboard = () => {
     useEffect(() => {
         const fetchNews = async () => {
             try {
-                const response = await axios.get(API_ENDPOINTS.getCareer);
+                const response = await axiosInstance.get(API_ENDPOINTS.getCareer);
                 let newsArray = response.data.data;
 
                 if (newsArray && !Array.isArray(newsArray)) {
@@ -34,7 +33,7 @@ const CareerDashboard = () => {
     }, []);
 
     const handleEdit = async (id) => {
-        const response = await axios.get(`${API_ENDPOINTS.getCareer}/${id}`);
+        const response = await axiosInstance.get(`${API_ENDPOINTS.getCareer}/${id}`);
         const eventData = response.data;
         navigate('/career/career-details', { state: { eventData } });
     };
@@ -70,12 +69,12 @@ const CareerDashboard = () => {
             c_order: item.c_order
         }));
 
-        await axios.put(`${API_ENDPOINTS.updateCareerOrder}`, payload);
+        await axiosInstance.put(`${API_ENDPOINTS.updateCareerOrder}`, payload);
     };
 
     const duplicateItem = async (id) => {
         try {
-            const response = await axios.post(`${API_ENDPOINTS.duplicateCareer}/${id}`);
+            const response = await axiosInstance.post(`${API_ENDPOINTS.duplicateCareer}/${id}`);
             if (response.status === 200) {
                 alert("Career duplicated successfully");
                 window.location.reload();
@@ -104,7 +103,7 @@ const handleDelete = async (id) => {
     if (!result.isConfirmed) return;
 
     try {
-        await axios.put(`${API_ENDPOINTS.deleteCareer}/${id}`);
+        await axiosInstance.put(`${API_ENDPOINTS.deleteCareer}/${id}`);
         setEventItems(prevItems =>
             prevItems.map(item =>
                 item.c_id === id ? { ...item, active: item.active ? 0 : 1 } : item

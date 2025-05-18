@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { API_ENDPOINTS } from '../../service/APIConfig'; // Adjust path as needed
+import { API_ENDPOINTS, axiosInstance } from '../../service/APIConfig'; // Adjust path as needed
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
@@ -12,7 +12,7 @@ const AnnouncementDashboard = () => {
     useEffect(() => {
         const fetchAnnouncements = async () => {
             try {
-                const response = await axios.get(API_ENDPOINTS.getAnnouncement);
+                const response = await axiosInstance.get(API_ENDPOINTS.getAnnouncement);
                 const result = (response.data.data || []);
                 const normalized = Array.isArray(result) ? result : result ? [result] : [];
                 const sortedAnnouncements = normalized.sort((a, b) => b.am_orders - a.am_orders);
@@ -44,7 +44,7 @@ const handleDelete = async (id) => {
     if (!result.isConfirmed) return;
 
     try {
-        await axios.put(`${API_ENDPOINTS.deleteAnnouncement}/${id}`);
+        await axiosInstance.put(`${API_ENDPOINTS.deleteAnnouncement}/${id}`);
         setAnnouncementItems((prevItems) =>
             prevItems.map((item) =>
                 item.a_id === id ? { ...item, display: item.display ? 0 : 1 } : item
@@ -72,7 +72,7 @@ const handleDelete = async (id) => {
 
     const handleEdit = async (id) => {
         try {
-            const response = await axios.get(`${API_ENDPOINTS.getAnnouncement}/${id}`);
+            const response = await axiosInstance.get(`${API_ENDPOINTS.getAnnouncement}/${id}`);
             const announcementData = response.data;
             navigate('/announcement/announcement-details', { state: { announcementData } });
             // console.log("state is: ",announcementData);
@@ -111,12 +111,12 @@ const handleDelete = async (id) => {
             am_orders: item.am_orders,
         }));
 
-        await axios.post(API_ENDPOINTS.updateAnnouncementOrder, payload); // Adjust endpoint
+        await axiosInstance.post(API_ENDPOINTS.updateAnnouncementOrder, payload); // Adjust endpoint
     };
 
     const duplicateItem = async (id) => {
         try {
-            const response = await axios.post(`${API_ENDPOINTS.duplicateAnnouncement}/${id}`); // Adjust endpoint
+            const response = await axiosInstance.post(`${API_ENDPOINTS.duplicateAnnouncement}/${id}`); // Adjust endpoint
             if (response.status === 200) {
                 alert('Announcement duplicated successfully');
                 window.location.reload();

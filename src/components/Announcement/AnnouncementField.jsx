@@ -3,7 +3,7 @@ import Swal from 'sweetalert2';
 import Aside from '../Aside';
 import AnnouncementFieldHeader from './AnnouncementFieldHeader';
 import AnnouncementFieldBody from './AnnouncementFieldBody';
-import { API_ENDPOINTS } from '../../service/APIConfig';
+import { API_ENDPOINTS, axiosInstance } from '../../service/APIConfig';
 import axios from 'axios';
 import { useLocation } from 'react-router-dom';
 
@@ -83,7 +83,7 @@ const handleSave = async () => {
     try {
       let res;
       if (formData.am_id) {
-        res = await axios.post(
+        res = await axiosInstance.post(
           `${API_ENDPOINTS.updateAnnouncement}/${formData.am_id}`,
           payload,
           {
@@ -91,7 +91,7 @@ const handleSave = async () => {
           }
         );
       } else {
-        res = await axios.post(API_ENDPOINTS.createAnnouncement, payload, {
+        res = await axiosInstance.post(API_ENDPOINTS.createAnnouncement, payload, {
           headers: { 'Content-Type': 'application/json' },
         });
       }

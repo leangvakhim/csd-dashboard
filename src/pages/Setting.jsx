@@ -4,7 +4,7 @@ import { useLoading } from "../components/Context/LoadingContext";
 import SettingHeader from '../components/Setting/SettingHeader'
 import SettingField from '../components/Setting/SettingField'
 import axios from 'axios';
-import { API_ENDPOINTS } from '../service/APIConfig';
+import { API_ENDPOINTS, axiosInstance } from '../service/APIConfig';
 import Swal from 'sweetalert2';
 
 const Setting = () => {
@@ -32,7 +32,7 @@ const Setting = () => {
                     }
                 });
 
-                const { data } = await axios.get(`${API_ENDPOINTS.getSettingByLang}/${formData.lang}`);
+                const { data } = await axiosInstance.get(`${API_ENDPOINTS.getSettingByLang}/${formData.lang}`);
                 setFormData({
                     ...data.data,
                 });
@@ -72,16 +72,16 @@ const Setting = () => {
                 set_enroll: parseFloat(formData.set_enroll),
             };
 
-            const checkResponse = await axios.get(`${API_ENDPOINTS.getSettingByLang}/${formData.lang}`);
+            const checkResponse = await axiosInstance.get(`${API_ENDPOINTS.getSettingByLang}/${formData.lang}`);
             const id = checkResponse?.data?.data?.set_id;
             if (id) {
-                await axios.post(`${API_ENDPOINTS.updateSetting}/${id}`, payload);
+                await axiosInstance.post(`${API_ENDPOINTS.updateSetting}/${id}`, payload);
             } else {
-                await axios.post(API_ENDPOINTS.createSetting, payload);
+                await axiosInstance.post(API_ENDPOINTS.createSetting, payload);
             }
         } catch (err) {
              if (err.response?.status === 404) {
-                await axios.post(API_ENDPOINTS.createSetting, payload);
+                await axiosInstance.post(API_ENDPOINTS.createSetting, payload);
             } else {
                 console.error("Other error while saving:", err);
             }
@@ -102,7 +102,7 @@ const Setting = () => {
 
             if (social.setsoc_id) {
                 try {
-                    const check = await axios.get(`${API_ENDPOINTS.getSocialSetting}/${social.setsoc_id}`);
+                    const check = await axiosInstance.get(`${API_ENDPOINTS.getSocialSetting}/${social.setsoc_id}`);
                     if (check?.data?.data) {
                         shouldCreate = false;
                     }
@@ -117,9 +117,9 @@ const Setting = () => {
             }
 
             if (shouldCreate) {
-                await axios.post(API_ENDPOINTS.createSocialSetting, { setting_social: [payload] });
+                await axiosInstance.post(API_ENDPOINTS.createSocialSetting, { setting_social: [payload] });
             } else {
-                await axios.post(`${API_ENDPOINTS.updateSocialSetting}/${social.setsoc_id}`, { setting_social: payload });
+                await axiosInstance.post(`${API_ENDPOINTS.updateSocialSetting}/${social.setsoc_id}`, { setting_social: payload });
             }
         }
 
@@ -139,7 +139,7 @@ const Setting = () => {
         }));
 
         try {
-            await axios.post(API_ENDPOINTS.updateOrderSocialSetting, socialSettingPayload);
+            await axiosInstance.post(API_ENDPOINTS.updateOrderSocialSetting, socialSettingPayload);
         } catch (error) {
             console.error("Failed to reorder slideshow:", error.response?.data || error.message);
         }

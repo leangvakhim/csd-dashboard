@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react'
-import axios from 'axios';
 import Swal from 'sweetalert2';
-import { API_ENDPOINTS } from '../../service/APIConfig';
+import { API_ENDPOINTS, axiosInstance } from '../../service/APIConfig';
 import MenuModal from './MenuModal';
 
 const MenuDashboard = () => {
@@ -20,7 +19,7 @@ const MenuDashboard = () => {
     useEffect(() => {
         const fetchMenuItems = async () => {
             try {
-                const response = await axios.get(API_ENDPOINTS.getMenu);
+                const response = await axiosInstance.get(API_ENDPOINTS.getMenu);
                 const result = (response.data.data || []);
                 const normalized = Array.isArray(result) ? result : result ? [result] : [];
                 const sortedMenus = normalized.sort((a, b) => b.menu_order - a.menu_order);
@@ -32,7 +31,7 @@ const MenuDashboard = () => {
 
         const fetchPages = async () => {
             try {
-                const res = await axios.get(API_ENDPOINTS.getPage);
+                const res = await axiosInstance.get(API_ENDPOINTS.getPage);
                 if (res.data && Array.isArray(res.data.data)) {
                     setPageOptions(res.data.data);
                 } else {
@@ -65,7 +64,7 @@ const MenuDashboard = () => {
         if (!result.isConfirmed) return;
 
         try {
-            await axios.put(`${API_ENDPOINTS.deleteMenu}/${id}`);
+            await axiosInstance.put(`${API_ENDPOINTS.deleteMenu}/${id}`);
             setMenuItems(prevItems =>
                 prevItems.map(item =>
                     item.menu_id === id ? { ...item, active: item.active ? 0 : 1 } : item
@@ -124,12 +123,12 @@ const MenuDashboard = () => {
             menu_order: item.menu_order
         }));
 
-        await axios.put(`${API_ENDPOINTS.updateMenuOrder}`, payload);
+        await axiosInstance.put(`${API_ENDPOINTS.updateMenuOrder}`, payload);
     };
 
     const duplicateItem = async (id) => {
         try {
-            const response = await axios.post(`${API_ENDPOINTS.duplicateMenu}/${id}`);
+            const response = await axiosInstance.post(`${API_ENDPOINTS.duplicateMenu}/${id}`);
             if (response.status === 200) {
                 alert("Menu duplicated successfully");
                 window.location.reload();

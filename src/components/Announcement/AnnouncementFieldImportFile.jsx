@@ -1,7 +1,7 @@
 import React, {useState} from 'react'
 import { Link } from 'react-router-dom'
 import axios from 'axios';
-import { API_ENDPOINTS } from '../../service/APIConfig';
+import { API_ENDPOINTS, axiosInstance } from '../../service/APIConfig';
 import Swal from 'sweetalert2';
 
 const AnnouncementFieldImportFile = ({ onDelete, selectedStudents }) => {
