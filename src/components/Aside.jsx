@@ -37,19 +37,13 @@ const Aside = ({ username }) => {
   }, [location.pathname]);
 
   const handleLogout = async () => {
-    const token = localStorage.getItem('token');
     try {
       await axiosInstance.post(API_ENDPOINTS.logout, {}, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-          Accept: 'application/json',
-        },
+        withCredentials: true
       });
     } catch (error) {
       console.error('Logout failed:', error);
     } finally {
-      localStorage.removeItem('token');
       navigate('/login');
     }
   };

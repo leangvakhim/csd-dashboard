@@ -70,13 +70,11 @@ const handleSubmit = async (e) => {
         const response = await axiosInstance.post(API_ENDPOINTS.login, {
             username,
             password,
+        }, {
+            withCredentials: true
         });
 
-        const token = response.data?.data?.token;
-        if (token) {
-            localStorage.setItem("token", token);
-            localStorage.setItem("username", response.data.data.user.username);
-            axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+        if (response.status === 200) {
             Swal.fire({
                 title: 'Logging in...',
                 text: 'Please wait for a while.',

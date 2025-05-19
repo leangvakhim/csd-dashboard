@@ -6,22 +6,12 @@ const API_BASEURL = `${API}/api`;
 
 const axiosInstance = axios.create({
   baseURL: API_BASEURL,
+  withCredentials: true,
   headers: {
     'Accept': 'application/json',
     'Content-Type': 'application/json',
   }
 });
-
-axiosInstance.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => Promise.reject(error)
-);
 
 // Add a response interceptor to handle expired/invalid JWT tokens
 axiosInstance.interceptors.response.use(
