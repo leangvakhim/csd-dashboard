@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import Swal from 'sweetalert2';
 import logo from '../img/rupp.png';
 import profile from '../img/profile.svg';
@@ -8,6 +8,33 @@ import { API_ENDPOINTS, axiosInstance } from '../service/APIConfig';
 const Aside = ({ username }) => {
   const navigate = useNavigate();
   const location = useLocation();
+
+  const menuItems = [
+    { to: '/menu', icon: 'ti-category-2', label: 'Menu' },
+    { to: '/page', icon: 'ti-file-description', label: 'Page' },
+    { to: '/faculty', icon: 'ti-user', label: 'Faculty' },
+    { to: '/event', icon: 'ti-calendar-event', label: 'Event' },
+    { to: '/news', icon: 'ti-news', label: 'News' },
+    { to: '/announcement', icon: 'ti-speakerphone', label: 'Announcement' },
+    { to: '/career', icon: 'ti-target-arrow', label: 'Career' },
+    { to: '/scholarship', icon: 'ti-school', label: 'Scholarship' },
+    { to: '/research', icon: 'ti-microscope', label: 'Research' },
+    { to: '/lab', icon: 'ti-cell', label: 'Research Lab' },
+    { to: '/feedback', icon: 'ti-brand-hipchat', label: 'Feedback' },
+    { to: '/partnership', icon: 'ti-heart-handshake', label: 'Partnership' },
+    { to: '/image', icon: 'ti-photo', label: 'Image' },
+    { to: '/email', icon: 'ti-mail', label: 'Email' },
+    // { to: '#', icon: 'ti-user-circle', label: 'User', external: true },
+    { to: '/developer', icon: 'ti-user-code', label: 'Developer' },
+    { to: '/setting', icon: 'ti-settings', label: 'Setting'},
+  ];
+
+  useEffect(() => {
+    const currentMenu = menuItems.find(item => location.pathname.startsWith(item.to));
+    if (currentMenu) {
+      document.title = `${currentMenu.label} - Dashboard`;
+    }
+  }, [location.pathname]);
 
   const handleLogout = async () => {
     const token = localStorage.getItem('token');
@@ -48,25 +75,7 @@ const Aside = ({ username }) => {
                 <div class="px-6 mt-1" >
                     <nav class=" w-full flex flex-col sidebar-nav">
                         <ul id="sidebarnav" class="text-gray-600 text-sm">
-                            {[
-                              { to: '/menu', icon: 'ti-category-2', label: 'Menu' },
-                              { to: '/page', icon: 'ti-file-description', label: 'Page' },
-                              { to: '/faculty', icon: 'ti-user', label: 'Faculty' },
-                              { to: '/event', icon: 'ti-calendar-event', label: 'Event' },
-                              { to: '/news', icon: 'ti-news', label: 'News' },
-                              { to: '/announcement', icon: 'ti-speakerphone', label: 'Announcement' },
-                              { to: '/career', icon: 'ti-target-arrow', label: 'Career' },
-                              { to: '/scholarship', icon: 'ti-school', label: 'Scholarship' },
-                              { to: '/research', icon: 'ti-microscope', label: 'Research' },
-                              { to: '/lab', icon: 'ti-cell', label: 'Research Lab' },
-                              { to: '/feedback', icon: 'ti-brand-hipchat', label: 'Feedback' },
-                              { to: '/partnership', icon: 'ti-heart-handshake', label: 'Partnership' },
-                              { to: '/image', icon: 'ti-photo', label: 'Image' },
-                              { to: '/email', icon: 'ti-mail', label: 'Email' },
-                              // { to: '#', icon: 'ti-user-circle', label: 'User', external: true },
-                              { to: '/developer', icon: 'ti-user-code', label: 'Developer' },
-                              { to: '/setting', icon: 'ti-settings', label: 'Setting'},
-                            ].map(({ to, icon, label, external }) => (
+                            {menuItems.map(({ to, icon, label, external }) => (
                               <li key={label} className="sidebar-item mb-2">
                                 {external ? (
                                   <a className="sidebar-link gap-3 py-2 px-3 rounded-md w-full flex items-center hover:text-blue-600 hover:bg-blue-500" href={to}>
