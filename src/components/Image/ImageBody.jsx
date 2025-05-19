@@ -78,6 +78,21 @@ const ImageBody = () => {
             });
 
             if (response.data && response.data.data) {
+                if (response.data.message === "Images already exist." || response.data.data.message === "Images already exist.") {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Duplicate Image',
+                        text: 'Some images name already exist and were not uploaded.',
+                        timer: 2000,
+                        showConfirmButton: false,
+                        buttonsStyling: false,
+                        customClass: {
+                            popup: 'bg-white rounded-lg shadow-lg',
+                            title: 'text-lg font-semibold text-yellow-600',
+                        }
+                    });
+                    return;
+                }
                 const updatedImages = await axiosInstance.get(API_ENDPOINTS.getImages);
                 if (updatedImages.data && updatedImages.data.data) {
                     setImages(updatedImages.data.data);
@@ -188,7 +203,7 @@ const ImageBody = () => {
                         disabled={isUploading}
                     />
                 </label>
-                <span className='ml-2 text-gray-600'>{selectedImageName}</span>
+                {/*  <span className='ml-2 text-gray-600'>{selectedImageName}</span> */}
             </div>
 
             {/* Image Library Grid */}
