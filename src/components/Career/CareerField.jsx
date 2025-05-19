@@ -42,10 +42,9 @@ const CareerField = () => {
                 text: 'Career saved successfully.',
                 timer: 1500,
                 showConfirmButton: false,
-                willClose: () => {
-                    setTimeout(() => {
-                        window.location.reload();
-                    }, 500);
+                willClose: async () => {
+                    await new Promise(resolve => setTimeout(resolve, 500));
+                    // window.location.reload();
                 }
             });
 
@@ -77,11 +76,11 @@ const CareerField = () => {
         try {
             if (formData.c_id) {
                 // Perform update
-                res = await axios.post(`${API_ENDPOINTS.updateCareer}/${formData.c_id}`, payload);
+                res = await axiosInstance.post(`${API_ENDPOINTS.updateCareer}/${formData.c_id}`, payload);
             } else {
                 // Perform create
                 const { c_order, ...createPayload } = payload;
-                res = await axios.post(API_ENDPOINTS.createCareer, createPayload);
+                res = await axiosInstance.post(API_ENDPOINTS.createCareer, createPayload);
             }
         } catch (err) {
             console.error("Error saving:", err);
