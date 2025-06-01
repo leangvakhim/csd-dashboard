@@ -10,6 +10,7 @@ const ScholarshipField = () => {
     const [loading, setLoading] = useState(false);
     const location = useLocation();
     const eventData = location.state?.eventData;
+    const eventID = eventData?.data?.sc_id;
 
     const [formData, setFormData] = useState({
         lang: 1,
@@ -30,7 +31,17 @@ const ScholarshipField = () => {
 
     useEffect(() => {
         if (eventData && eventData.data) {
-            setFormData(eventData.data);
+            const fetchEvent = async () => {
+                try {
+                    const response = await axiosInstance.get(`${API_ENDPOINTS.getScholarship}/${eventID}`);
+                    if (response.data && response.data.data) {
+                        setFormData(response.data.data);
+                    }
+                } catch (error) {
+                    console.error("Failed to fetch news by ID:", error);
+                }
+            };
+            fetchEvent();
         }
     }, [eventData]);
 

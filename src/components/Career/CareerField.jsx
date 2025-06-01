@@ -13,6 +13,7 @@ const CareerField = () => {
     const [subtitleContent, setSubtitleContent] = useState('');
     const location = useLocation();
     const eventData = location.state?.eventData;
+    const eventID = eventData?.data?.c_id;
     const [formData, setFormData] = useState({
         lang: 1,
         c_title: null,
@@ -42,9 +43,10 @@ const CareerField = () => {
                 text: 'Career saved successfully.',
                 timer: 1500,
                 showConfirmButton: false,
-                willClose: async () => {
-                    await new Promise(resolve => setTimeout(resolve, 500));
-                    // window.location.reload();
+                willClose: () => {
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 500);
                 }
             });
 
@@ -92,8 +94,18 @@ const CareerField = () => {
 
     useEffect(() => {
         if (eventData && eventData.data) {
-            setFormData(eventData.data);
-            setSubtitleContent(eventData.data.c_detail || "");
+            const fetchEvent = async () => {
+                try {
+                    const response = await axiosInstance.get(`${API_ENDPOINTS.getCareer}/${eventID}`);
+                    if (response.data && response.data.data) {
+                        setFormData(response.data.data);
+                        setSubtitleContent(response.data.data.c_detail || "");
+                    }
+                } catch (error) {
+                    console.error("Failed to fetch news by ID:", error);
+                }
+            };
+            fetchEvent();
         }
     }, [eventData]);
 

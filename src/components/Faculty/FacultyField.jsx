@@ -16,6 +16,7 @@ const FacultyField = () => {
     const [subtitleContent, setSubtitleContent] = useState('');
     const location = useLocation();
     const facultyData = location.state?.facultyData;
+    const facultyID = facultyData?.data?.f_id;
     const [formData, setFormData] = useState({
         lang: 1,
         f_name: null,
@@ -44,6 +45,17 @@ const FacultyField = () => {
         try{
             if (facultyData && facultyData.data) {
                 setFormData(facultyData.data);
+                const fetchFaculty = async () => {
+                    try {
+                        const response = await axiosInstance.get(`${API_ENDPOINTS.getFaculty}/${facultyID}`);
+                        if (response.data && response.data.data) {
+                            setFormData(response.data.data);
+                        }
+                    } catch (error) {
+                        console.error("Failed to fetch faculty by ID:", error);
+                    }
+                };
+                fetchFaculty();
             }
         }catch(error){
             console.error(error);

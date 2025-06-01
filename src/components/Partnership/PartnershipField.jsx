@@ -11,6 +11,7 @@ import Swal from 'sweetalert2';
 const PartnershipField = () => {
     const location = useLocation();
     const eventData = location.state?.eventData;
+    const eventID = eventData?.data?.ps_id;
     const [formData, setFormData] = useState({
         ps_title: '',
         ps_type: '',
@@ -21,7 +22,17 @@ const PartnershipField = () => {
 
     useEffect(() => {
         if (eventData && eventData.data) {
-            setFormData(eventData.data);
+            const fetchEvent = async () => {
+                try {
+                    const response = await axiosInstance.get(`${API_ENDPOINTS.getPartnership}/${eventID}`);
+                    if (response.data && response.data.data) {
+                        setFormData(response.data.data);
+                    }
+                } catch (error) {
+                    console.error("Failed to fetch news by ID:", error);
+                }
+            };
+            fetchEvent();
         }
     }, [eventData]);
 
