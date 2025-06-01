@@ -239,30 +239,12 @@ const AnnouncementFieldBody = ({
                 />
               </div>
             </div>
-            <div className="flex-1">
-              <label className="block text-xl font-medium leading-6 text-gray-900">
-                Post Date
-              </label>
-              <div className="mt-2">
-                <input
-                  type="date"
-                  value={formData.am_postdate || ''}
-                  onChange={(e) =>
-                    setFormData((prev) => ({
-                      ...prev,
-                      am_postdate: e.target.value,
-                    }))
-                  }
-                  className="block w-full !border-gray-200 border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
-                />
-              </div>
-            </div>
 
             <div className="flex-none">
               <label className="block text-xl font-medium leading-6 text-gray-900">
                 Display
               </label>
-              <div className="mt-2">
+              <div className="mt-4">
                 <label className="toggle-switch">
                   <input
                     type="checkbox"
@@ -281,6 +263,41 @@ const AnnouncementFieldBody = ({
           </div>
 
           {/* Second row */}
+          <div className="grid grid-cols-1 md:!grid-cols-2 gap-4 py-2">
+            <div className="flex-1">
+              <div>
+                <label className="block text-xl font-medium text-gray-700">Tags</label>
+                <input
+                    type="text"
+                    value={formData.am_tag}
+                    onChange={(e) => setFormData({ ...formData, am_tag: e.target.value })}
+                    className="mt-2 w-full py-2 border !border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    placeholder="Enter tags"
+                />
+              </div>
+            </div>
+
+            <div className="flex-1">
+              <label className="block text-xl font-medium leading-6 text-gray-900">
+                Post Date
+              </label>
+              <div className="mt-2">
+                <input
+                  type="date"
+                  value={formData.am_postdate || ''}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      am_postdate: e.target.value,
+                    }))
+                  }
+                  className="block w-full !border-gray-200 border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Third row */}
           <div className="grid grid-cols-1 md:!grid-cols-2 gap-4 py-2">
             <div className="flex-1">
               <label className="block text-xl font-medium leading-6 text-gray-900">
@@ -319,7 +336,7 @@ const AnnouncementFieldBody = ({
 
           </div>
 
-          {/* Third row */}
+          {/* Fourth row */}
           <div className="grid grid-cols-1 md:!grid-cols-2 gap-4 py-2">
             <div className="flex-1">
               <label className="block text-xl font-medium leading-6 text-gray-900">

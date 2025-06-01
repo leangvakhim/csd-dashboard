@@ -10,6 +10,7 @@ const AnnouncementField = () => {
   const [subtitleContent, setSubtitleContent] = useState('');
   const location = useLocation();
   const announcementData = location.state?.announcementData;
+  const announcementID = announcementData?.data?.am_id;
   const [formData, setFormData] = useState({
     am_id: null,
     lang: 1,
@@ -18,51 +19,68 @@ const AnnouncementField = () => {
     display: true,
     am_postdate: '',
     am_fav: false,
+    am_tag: '',
     active: 1,
     am_img: null,
     ref_id: null,
     am_orders: 0,
   });
 
-const handleSave = async () => {
-  try {
-    Swal.fire({
-      title: 'Saving...',
-      allowOutsideClick: false,
-      didOpen: () => {
-        Swal.showLoading();
-      },
-    });
-
-    await saveAnnouncement();
-
-    Swal.fire({
-      icon: 'success',
-      title: 'Saved!',
-      text: 'Announcement saved successfully!',
-      timer: 1500,
-      showConfirmButton: false,
-      willClose: () => {
-        setTimeout(() => {
-            window.location.reload();
-        }, 500);
-      }
-    });
-  } catch (err) {
-    console.error('Error announcement:', err);
-    if (err.response) {
-      console.error('Server response:', err.response.data);
-    } else {
-      console.error('Failed to connect to the server.');
+  useEffect(() => {
+    if (announcementData && announcementData.data) {
+        const fetchAnnouncement = async () => {
+            try {
+                const response = await axiosInstance.get(`${API_ENDPOINTS.getAnnouncement}/${announcementID}`);
+                if (response.data && response.data.data) {
+                    setFormData(response.data.data);
+                }
+            } catch (error) {
+                console.error("Failed to fetch news by ID:", error);
+            }
+        };
+        fetchAnnouncement();
     }
+  }, [announcementData]);
 
-    Swal.fire({
-      icon: 'error',
-      title: 'Error',
-      text: 'Failed to save announcement. Please try again.',
-    });
-  }
-};
+  const handleSave = async () => {
+    try {
+      Swal.fire({
+        title: 'Saving...',
+        allowOutsideClick: false,
+        didOpen: () => {
+          Swal.showLoading();
+        },
+      });
+
+      await saveAnnouncement();
+
+      Swal.fire({
+        icon: 'success',
+        title: 'Saved!',
+        text: 'Announcement saved successfully!',
+        timer: 1500,
+        showConfirmButton: false,
+        willClose: () => {
+          setTimeout(() => {
+              window.location.reload();
+          }, 500);
+        }
+      });
+    } catch (err) {
+      console.error('Error announcement:', err);
+      if (err.response) {
+        console.error('Server response:', err.response.data);
+      } else {
+        console.error('Failed to connect to the server.');
+      }
+
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Failed to save announcement. Please try again.',
+      });
+    }
+  };
 
   const saveAnnouncement = async () => {
     const payload = {
@@ -71,6 +89,7 @@ const handleSave = async () => {
       am_shortdesc: formData.am_shortdesc || null,
       am_postdate: formData.am_postdate,
       am_fav: 1,
+      am_tag: formData.am_tag,
       am_img: formData.am_img || null,
       display: formData.display ? 1 : 0,
       am_detail: subtitleContent,
@@ -114,6 +133,7 @@ const handleSave = async () => {
         display: !!announcementData.display,
         am_postdate: announcementData.am_postdate || '',
         am_fav: 1,
+        am_tag: announcementData.am_tag,
         active: announcementData.active || 1,
         am_img: announcementData.am_img || null,
         am_orders: announcementData.am_orders || 0,

@@ -226,7 +226,7 @@ const handleDelete = async (id) => {
                                                 <div className="py-1">
                                                     <a
                                                         onClick={() => handleEdit(item.am_id)}
-                                                        href="#"
+                                                        // href="#"
                                                         className="cursor-pointer flex gap-2 items-center px-4 py-2 hover:bg-blue-100"
                                                     >
                                                         <i className="ti ti-edit text-gray-500 text-xl"></i>
@@ -234,7 +234,7 @@ const handleDelete = async (id) => {
                                                     </a>
                                                     <a
                                                         onClick={() => handleDelete(item.am_id)}
-                                                        href="#"
+                                                        // href="#"
                                                         className="cursor-pointer flex gap-2 items-center px-4 py-2 hover:bg-blue-100"
                                                     >
                                                         <i className="ti ti-trash text-gray-500 text-xl"></i>
