@@ -252,20 +252,20 @@ const sectionOptions = [
     type: "New",
     component: NewPiece,
     icon: TbNews,
-    label: "New",
+    label: "New & Event",
   },
-  {
-    type: "Event",
-    component: EventsPiece,
-    icon: TbCalendarEvent,
-    label: "Event",
-  },
-  {
-    type: "Announcement",
-    component: AnnouncementPiece,
-    icon: TbSpeakerphone,
-    label: "Announcement",
-  },
+  // {
+  //   type: "Event",
+  //   component: EventsPiece,
+  //   icon: TbCalendarEvent,
+  //   label: "Event",
+  // },
+  // {
+  //   type: "Announcement",
+  //   component: AnnouncementPiece,
+  //   icon: TbSpeakerphone,
+  //   label: "Announcement",
+  // },
   {
     type: "Research",
     component: ResearchPiece,
