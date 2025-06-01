@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { API_ENDPOINTS, axiosInstance } from '../../service/APIConfig';
 
-const AnnouncementStudentTable = ({ onSelectedStudentsChange }) => {
+const AnnouncementStudentTable = ({ onSelectedStudentsChange, amID }) => {
     const [students, setStudents] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -18,16 +18,17 @@ const AnnouncementStudentTable = ({ onSelectedStudentsChange }) => {
     useEffect(() => {
         axiosInstance.get(API_ENDPOINTS.getAnnouncementStudent)
             .then(response => {
-                setStudents(response.data);
+                const filteredStudents = response.data.filter(student => Number(student.student_am) === Number(amID));
+                setStudents(filteredStudents);
             })
             .catch(error => {
                 console.error('Error fetching data:', error);
             });
-    }, []);
+    }, [amID]);
 
     const dynamicSubjects = students.length > 0
     ? Object.keys(students[0]).filter(key =>
-        !['student_id', 'student_identity', 'result'].includes(key)
+        !['student_id', 'student_identity', 'result', 'student_am'].includes(key)
         )
     : [];
 

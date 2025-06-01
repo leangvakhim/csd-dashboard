@@ -438,11 +438,13 @@ const AnnouncementFieldBody = ({
           <AnnouncementFieldImportFile
             onDelete={handleDeleteRecords}
             selectedStudents={selectedStudents}
+            amID={formData.am_id}
           />
         </div>
         <div className='gap-4 py-2'>
           <AnnouncementStudentTable
             onSelectedStudentsChange={setSelectedStudents}
+            amID={formData.am_id}
           />
         </div>
       </div>

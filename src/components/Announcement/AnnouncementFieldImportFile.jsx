@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { API_ENDPOINTS, axiosInstance } from '../../service/APIConfig';
 import Swal from 'sweetalert2';
 
-const AnnouncementFieldImportFile = ({ onDelete, selectedStudents }) => {
+const AnnouncementFieldImportFile = ({ onDelete, selectedStudents, amID }) => {
     const [file, setFile] = useState(null);
     const handleFileUpload = async (e) => {
         const file = e.target.files[0];
@@ -24,6 +24,7 @@ const AnnouncementFieldImportFile = ({ onDelete, selectedStudents }) => {
 
         const formData = new FormData();
         formData.append('file', file);
+        formData.append('amID', amID);
 
         try {
             const response = await axiosInstance.post(API_ENDPOINTS.ImportAnnouncementFile, formData, {
