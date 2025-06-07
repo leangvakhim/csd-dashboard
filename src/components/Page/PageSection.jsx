@@ -10,6 +10,7 @@ import { LuColumns3, LuSchool, LuFileType, LuMessagesSquare, LuBrainCircuit, LuH
 import { FaComputer } from "react-icons/fa6";
 import { AiOutlineUnlock } from "react-icons/ai";
 import { HiOutlineLightBulb } from "react-icons/hi";
+import { FaPeopleGroup } from "react-icons/fa6";
 import { TbBrandDatabricks, TbUsersGroup, TbTax, TbCarouselHorizontal, TbCodeDots, TbBrandHipchat, TbContract, TbDirections, TbCell, TbTargetArrow, TbMicroscope, TbNews, TbSpeakerphone, TbCalendarEvent, TbSchool, TbFocusAuto, TbWorldQuestion, TbBrandCarbon } from "react-icons/tb";
 import { LiaChalkboardTeacherSolid, LiaNewspaperSolid } from "react-icons/lia";
 import { BsExclamationTriangle } from "react-icons/bs";
@@ -62,6 +63,7 @@ import { useLoading } from "../Context/LoadingContext";
 import LoFPiece from "./LoF/LoFPiece";
 import LoRPiece from "./LoR/LoRPiece";
 import LoNEPiece from "./LoNE/LoNEPiece";
+import LoDPiece from "./LoD/LoDPiece";
 const sectionOptions = [
   {
     type: "Slideshow",
@@ -309,6 +311,12 @@ const sectionOptions = [
     icon: LiaNewspaperSolid,
     label: "List of News & Event",
   },
+  {
+    type: "LoD",
+    component: LoDPiece,
+    icon: FaPeopleGroup,
+    label: "List of Developer",
+  },
 ];
 
 const PageSection = forwardRef(({ formData = {}, setFormData = {}, page_id }, ref) => {
@@ -352,6 +360,7 @@ const PageSection = forwardRef(({ formData = {}, setFormData = {}, page_id }, re
   const LoFPieceRef = useRef([]);
   const LoRPieceRef = useRef([]);
   const LoNEPieceRef = useRef([]);
+  const LoDPieceRef = useRef([]);
   const [showSection, setShowSection] = useState(false);
   const [selectedSections, setSelectedSections] = useState([]);
   const {setLoading} = useLoading();
@@ -424,6 +433,7 @@ const PageSection = forwardRef(({ formData = {}, setFormData = {}, page_id }, re
     LoF: LoFPieceRef,
     LoR: LoRPieceRef,
     LoNE: LoNEPieceRef,
+    LoD: LoDPieceRef,
   };
 
   const getDynamicData = async (type, method) => {
@@ -525,6 +535,7 @@ const PageSection = forwardRef(({ formData = {}, setFormData = {}, page_id }, re
     getLoFs: async () => { return await getDynamicData("LoF", "getLoFs"); },
     getLoRs: async () => { return await getDynamicData("LoR", "getLoRs"); },
     getLoNEs: async () => { return await getDynamicData("LoNE", "getLoNEs"); },
+    getLoDs: async () => { return await getDynamicData("LoD", "getLoDs"); },
   }));
 
   const handleAddPage = () => {
@@ -649,6 +660,7 @@ const PageSection = forwardRef(({ formData = {}, setFormData = {}, page_id }, re
                       : section.type === "LoF" ? el => LoFPieceRef.current[index] = el
                       : section.type === "LoR" ? el => LoRPieceRef.current[index] = el
                       : section.type === "LoNE" ? el => LoNEPieceRef.current[index] = el
+                      : section.type === "LoD" ? el => LoDPieceRef.current[index] = el
                       : null
                     }
                   data={section.data}
