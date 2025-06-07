@@ -413,7 +413,6 @@ const PageField = () => {
                     page_id: savedPageId,
                 };
 
-
                 if(
                     introduction.in_sec &&
                     existingIds.includes(parseInt(introduction.in_id)) &&
@@ -443,7 +442,9 @@ const PageField = () => {
             scholarship: 'getScholarships',
             career: 'getCareers',
             partner: 'getPartners',
-            feedback: 'getFeedbacks'
+            feedback: 'getFeedbacks',
+            lor: 'getLoRs',
+            lone: 'getLoNEs',
         };
 
         const dataKey = dataMap[type];
@@ -2050,7 +2051,7 @@ const PageField = () => {
                     const resolvedSecId = updatedSectionMap[`${section.sec_order}_${section.sec_type}`] || section.sec_id;
                     const resolvedPageId = section.sec_page || page_id;
                     const handler = sectionSaveHandlers[section.sec_type];
-                    if (['New', 'Event', 'Announcement', 'Research', 'Faculty', 'Lab', 'Scholarship', 'Career', 'Partner', 'Feedback'].includes(section.sec_type)) {
+                    if (['New', 'Event', 'Announcement', 'Research', 'Faculty', 'Lab', 'Scholarship', 'Career', 'Partner', 'Feedback', 'LoR', 'LoNE'].includes(section.sec_type)) {
                         await saveHeaderSection(section.sec_type.toLowerCase(), resolvedSecId, resolvedPageId);
                     } else if (handler) {
                             // await handler(resolvedSecId, resolvedPageId);
@@ -2140,10 +2141,10 @@ const PageField = () => {
                 text: 'Page saved successfully',
                 timer: 1500,
                 showConfirmButton: false,
-                willClose: async () => {
-                    await new Promise(resolve => setTimeout(resolve, 500));
-                    window.location.reload();
-                }
+                // willClose: async () => {
+                //     await new Promise(resolve => setTimeout(resolve, 500));
+                //     window.location.reload();
+                // }
             });
         } catch (err) {
             Swal.fire({
