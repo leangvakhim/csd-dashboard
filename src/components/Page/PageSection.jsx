@@ -11,7 +11,7 @@ import { FaComputer } from "react-icons/fa6";
 import { AiOutlineUnlock } from "react-icons/ai";
 import { HiOutlineLightBulb } from "react-icons/hi";
 import { FaPeopleGroup } from "react-icons/fa6";
-import { TbBrandDatabricks, TbUsersGroup, TbTax, TbCarouselHorizontal, TbCodeDots, TbBrandHipchat, TbContract, TbDirections, TbCell, TbTargetArrow, TbMicroscope, TbNews, TbSpeakerphone, TbCalendarEvent, TbSchool, TbFocusAuto, TbWorldQuestion, TbBrandCarbon } from "react-icons/tb";
+import { TbSquareRoundedLetterS, TbSquareRoundedLetterD, TbSquareRoundedLetterL, TbBrandDatabricks, TbUsersGroup, TbTax, TbCarouselHorizontal, TbCodeDots, TbBrandHipchat, TbContract, TbDirections, TbCell, TbTargetArrow, TbMicroscope, TbNews, TbSpeakerphone, TbCalendarEvent, TbSchool, TbFocusAuto, TbWorldQuestion, TbBrandCarbon } from "react-icons/tb";
 import { LiaChalkboardTeacherSolid, LiaNewspaperSolid } from "react-icons/lia";
 import { BsExclamationTriangle } from "react-icons/bs";
 import { TfiWrite } from "react-icons/tfi";
@@ -64,258 +64,350 @@ import LoFPiece from "./LoF/LoFPiece";
 import LoRPiece from "./LoR/LoRPiece";
 import LoNEPiece from "./LoNE/LoNEPiece";
 import LoDPiece from "./LoD/LoDPiece";
+import FacultyDetailPiece from "./Faculty/FacultyDetailPiece";
+import ResearchDetailPiece from "./Research/ResearchDetailPiece";
+import ResearchlabDetailPiece from "./Researchlab/ResearchlabDetailPiece";
+import ScholarshipDetailPiece from "./Scholarship/ScholarshipDetailPiece";
+import EventsDetailPiece from "./Events/EventsDetailPiece";
+import NewDetailPiece from "./New/NewDetailPiece";
+import CareerDetailPiece from "./Career/CareerDetailPiece";
+import AnnouncementDetailPiece from "./Announcement/AnnouncementDetailPiece";
 const sectionOptions = [
   {
     type: "Slideshow",
     component: CarouselPiece,
+    option: "Section",
     icon: TbCarouselHorizontal,
     label: "Slideshow",
   },
   {
     type: "Banner",
     component: BannerPiece,
+    option: "Section",
     icon: CgWebsite,
     label: "Banner",
   },
   {
     type: "Service",
     component: ServicePiece,
+    option: "Section",
     icon: LuColumns3,
     label: "Service",
   },
   {
     type: "Programs",
     component: ProgramPiece,
+    option: "Section",
     icon: TbCodeDots,
     label: "Programs",
   },
   {
     type: "Academic",
     component: AcademicPiece,
+    option: "Section",
     icon: HiOutlineAcademicCap,
     label: "Academic",
   },
   {
     type: "Information",
     component: InformationPiece,
+    option: "Section",
     icon: RiInformationLine,
     label: "Information",
   },
   {
     type: "Facilities",
     component: FacilitiesPiece,
+    option: "Section",
     icon: LuSchool,
     label: "Facilities",
   },
   {
     type: "Gallery",
     component: GalleryPiece,
+    option: "Section",
     icon: GrGallery,
     label: "Gallery",
   },
   {
     type: "Specialization",
     component: SpecializationPiece,
+    option: "Section",
     icon: MdAspectRatio,
     label: "Specialization",
   },
   {
     type: "Testimonial",
     component: TestimonialPiece,
+    option: "Section",
     icon: LuMessagesSquare,
     label: "Testimonial",
   },
   {
     type: "Type",
     component: TypePiece,
+    option: "Section",
     icon: LuFileType,
     label: "Type",
   },
   {
     type: "Criteria",
     component: CriteriaPiecce,
+    option: "Section",
     icon: TbBrandCarbon,
     label: "Criteria",
   },
   {
     type: "CSD",
     component: CsdPiece,
+    option: "Section",
     icon: FaComputer,
     label: "CSD",
   },
   {
     type: "Unlock",
     component: UnlockPiece,
+    option: "Section",
     icon: AiOutlineUnlock,
     label: "Unlock",
   },
   {
     type: "Study",
     component: StudyPiece,
+    option: "Section",
     icon: LiaChalkboardTeacherSolid,
     label: "Study",
   },
   {
     type: "Avaialable",
     component: AvailablePiece,
+    option: "Section",
     icon: MdOutlineEventAvailable,
     label: "Available",
   },
   {
     type: "Fee",
     component: FeePiece,
+    option: "Section",
     icon: TbTax,
     label: "Fee",
   },
   {
     type: "Requirement",
     component: RequirementPiece,
+    option: "Section",
     icon: TbContract,
     label: "Requirement",
   },
   {
     type: "Future",
     component: FuturePiece,
+    option: "Section",
     icon: HiOutlineLightBulb,
     label: "Future",
   },
   {
     type: "Potential",
     component: PotentaiPiece,
+    option: "Section",
     icon: GiMountainClimbing,
     label: "Potential",
   },
   {
     type: "Introduction",
     component: IntroductionPiece,
+    option: "Section",
     icon: TbDirections,
     label: "Introduction",
   },
   {
     type: "Innovation",
     component: InnovationPiece,
+    option: "Section",
     icon: LuBrainCircuit,
     label: "Innovation",
   },
   {
     type: "FAQ",
     component: FaqPiece,
+    option: "Section",
     icon: RiQuestionnaireLine,
     label: "FAQ",
   },
   {
     type: "Apply",
     component: ApplyPiece,
+    option: "Section",
     icon: TfiWrite,
     label: "Apply",
   },
   {
     type: "Important",
     component: ImportantPiece,
+    option: "Section",
     icon: BsExclamationTriangle,
     label: "Important",
   },
   {
     type: "Contact",
     component: ContactPiece,
+    option: "Section",
     icon: AiOutlinePhone,
     label: "Contact",
   },
   {
     type: "Question",
     component: QuestionPiece,
+    option: "Section",
     icon: TbWorldQuestion,
     label: "Question",
   },
   {
     type: "About",
     component: AboutPiece,
+    option: "Section",
     icon: TbFocusAuto,
     label: "About",
   },
   {
     type: "New",
     component: NewPiece,
+    option: "Section",
     icon: TbNews,
     label: "New & Event",
   },
-  // {
-  //   type: "Event",
-  //   component: EventsPiece,
-  //   icon: TbCalendarEvent,
-  //   label: "Event",
-  // },
-  // {
-  //   type: "Announcement",
-  //   component: AnnouncementPiece,
-  //   icon: TbSpeakerphone,
-  //   label: "Announcement",
-  // },
   {
     type: "Research",
     component: ResearchPiece,
+    option: "Section",
     icon: TbMicroscope,
     label: "Research",
   },
   {
     type: "Faculty",
     component: FacultyPiece,
+    option: "Section",
     icon: FiUser,
     label: "Faculty",
   },
   {
     type: "Lab",
     component: ResearchlabPiece,
+    option: "Section",
     icon: TbCell,
     label: "Lab",
   },
   {
     type: "Scholarship",
     component: ScholarshipPiece,
+    option: "Section",
     icon: TbSchool,
     label: "Scholarship",
   },
   {
     type: "Career",
     component: CareerPiece,
+    option: "Section",
     icon: TbTargetArrow,
     label: "Career",
   },
   {
     type: "Partner",
     component: PartnerPiece,
+    option: "Section",
     icon: LuHeartHandshake,
     label: "Partner",
   },
   {
     type: "Feedback",
     component: FeedbackPiece,
+    option: "Section",
     icon: TbBrandHipchat,
     label: "Feedback",
   },
   {
     type: "LoF",
     component: LoFPiece,
+    option: "List",
     icon: TbUsersGroup,
     label: "List of Faculty",
   },
   {
     type: "LoR",
     component: LoRPiece,
+    option: "List",
     icon: TbBrandDatabricks,
     label: "List of Research",
   },
   {
     type: "LoNE",
     component: LoNEPiece,
+    option: "List",
     icon: LiaNewspaperSolid,
     label: "List of News & Event",
   },
   {
     type: "LoD",
     component: LoDPiece,
+    option: "List",
     icon: FaPeopleGroup,
     label: "List of Developer",
+  },
+  {
+    type: "FacultyDetail",
+    component: FacultyDetailPiece,
+    option: "Detail",
+    icon: FiUser,
+    label: "Faculty Detail",
+  },
+  {
+    type: "ResearchDetail",
+    component: ResearchDetailPiece,
+    option: "Detail",
+    icon: TbMicroscope,
+    label: "Research Detail",
+  },
+  {
+    type: "ResearchlabDetail",
+    component: ResearchlabDetailPiece,
+    option: "Detail",
+    icon: TbCell,
+    label: "Researchlab Detail",
+  },
+  {
+    type: "ScholarshipDetail",
+    component: ScholarshipDetailPiece,
+    option: "Detail",
+    icon: TbSchool,
+    label: "Scholarship Detail",
+  },
+  {
+    type: "EventDetail",
+    component: EventsDetailPiece,
+    option: "Detail",
+    icon: TbCalendarEvent,
+    label: "Event Detail",
+  },
+  {
+    type: "NewDetail",
+    component: NewDetailPiece,
+    option: "Detail",
+    icon: TbNews,
+    label: "New Detail",
+  },
+  {
+    type: "CareerDetail",
+    component: CareerDetailPiece,
+    option: "Detail",
+    icon: TbTargetArrow,
+    label: "Career Detail",
+  },
+  {
+    type: "AnnouncementDetail",
+    component: AnnouncementDetailPiece,
+    option: "Detail",
+    icon: TbSpeakerphone,
+    label: "Announcement Detail",
   },
 ];
 
@@ -364,6 +456,7 @@ const PageSection = forwardRef(({ formData = {}, setFormData = {}, page_id }, re
   const [showSection, setShowSection] = useState(false);
   const [selectedSections, setSelectedSections] = useState([]);
   const {setLoading} = useLoading();
+  const [viewMode, setViewMode] = useState("Section"); // 'Section', 'List', or 'Detail'
 
   useEffect(() => {
     const fetchSections = async () => {
@@ -571,56 +664,63 @@ const PageSection = forwardRef(({ formData = {}, setFormData = {}, page_id }, re
     });
   }, []);
 
+  // Tab options for section selection
+  const tabOptions = [
+    { label: "Section", icon: TbSquareRoundedLetterS },
+    { label: "List", icon: TbSquareRoundedLetterL },
+    { label: "Detail", icon: TbSquareRoundedLetterD },
+  ];
+
   return (
     <div>
       <DndProvider backend={HTML5Backend}>
-        {selectedSections.map((section, index) => {
-          const SectionComponent = sectionOptions.find((s) => s.type === section.type)?.component;
+        {selectedSections
+          .filter((section) => true)
+          .map((section, index) => {
+            const SectionComponent = sectionOptions.find((s) => s.type === section.type)?.component;
+            if (!SectionComponent) return null;
 
-          if (!SectionComponent) return null;
+            const moveSection = (dragIndex, hoverIndex) => {
+              const newSections = [...selectedSections];
+              const [dragged] = newSections.splice(dragIndex, 1);
+              newSections.splice(hoverIndex, 0, dragged);
+              setSelectedSections(newSections);
+            };
 
-          const moveSection = (dragIndex, hoverIndex) => {
-            const newSections = [...selectedSections];
-            const [dragged] = newSections.splice(dragIndex, 1);
-            newSections.splice(hoverIndex, 0, dragged);
-            setSelectedSections(newSections);
-          };
+            const SectionItem = ({ section, index }) => {
+              const ref = React.useRef(null);
+              const handleRef = React.useRef(null);
+              const [, drop] = useDrop({
+                accept: "SECTION",
+                hover(item) {
+                  if (item.index !== index) {
+                    moveSection(item.index, index);
+                    item.index = index;
+                  }
+                },
+              });
 
-          const SectionItem = ({ section, index }) => {
-            const ref = React.useRef(null);
-            const handleRef = React.useRef(null);
-            const [, drop] = useDrop({
-              accept: "SECTION",
-              hover(item) {
-                if (item.index !== index) {
-                  moveSection(item.index, index);
-                  item.index = index;
-                }
-              },
-            });
+              const [{ isDragging }, drag] = useDrag({
+                type: "SECTION",
+                item: { type: "SECTION", index },
+                collect: (monitor) => ({
+                  isDragging: monitor.isDragging(),
+                }),
+              });
 
-            const [{ isDragging }, drag] = useDrag({
-              type: "SECTION",
-              item: { type: "SECTION", index },
-              collect: (monitor) => ({
-                isDragging: monitor.isDragging(),
-              }),
-            });
+              drop(ref);
+              drag(handleRef);
 
-            // Only allow drag from the handle
-            drop(ref);
-            drag(handleRef);
-
-            return (
-              <div
-                ref={ref}
-                key={section.id}
-                style={{ opacity: isDragging ? 0.5 : 1 }}
-                className="bg-gray-50 rounded-lg border border-gray-300 mx-4 my-2"
-              >
-                <SectionComponent
-                  ref={
-                        section.type === "Programs" ? el => programPieceRef.current[index] = el
+              return (
+                <div
+                  ref={ref}
+                  key={section.id}
+                  style={{ opacity: isDragging ? 0.5 : 1 }}
+                  className="bg-gray-50 rounded-lg border border-gray-300 mx-4 my-2"
+                >
+                  <SectionComponent
+                    ref={
+                      section.type === "Programs" ? el => programPieceRef.current[index] = el
                       : section.type === "Banner" ? el => bannerPieceRef.current[index] = el
                       : section.type === "Slideshow" ? el => slideshowPieceRef.current[index] = el
                       : section.type === "Service" ? el => servicePieceRef.current[index] = el
@@ -663,18 +763,18 @@ const PageSection = forwardRef(({ formData = {}, setFormData = {}, page_id }, re
                       : section.type === "LoD" ? el => LoDPieceRef.current[index] = el
                       : null
                     }
-                  data={section.data}
-                  sectionId={section.data?.sec_id || section.id}
-                  pageId={page_id}
-                  onDataChange={(newData) => handleDataChange(newData, index)}
-                  handleSectionRef={handleRef}
-                />
-              </div>
-            );
-          };
+                    data={section.data}
+                    sectionId={section.data?.sec_id || section.id}
+                    pageId={page_id}
+                    onDataChange={(newData) => handleDataChange(newData, index)}
+                    handleSectionRef={handleRef}
+                  />
+                </div>
+              );
+            };
 
-          return <SectionItem key={section.id} section={section} index={index} />;
-        })}
+            return <SectionItem key={section.id} section={section} index={index} />;
+          })}
       </DndProvider>
 
       {/* Add new section button */}
@@ -696,19 +796,40 @@ const PageSection = forwardRef(({ formData = {}, setFormData = {}, page_id }, re
         {/* Display section options when Add new section is clicked */}
         {showSection && (
           <div className="bg-gray-50 h-auto mx-4 border !border-gray-200 rounded-b-lg overflow-y-auto mb-4">
-            <div className="grid !grid-cols-1 sm:!grid-cols-2 md:!grid-cols-3 lg:!grid-cols-4 gap-8 p-8">
-              {sectionOptions.map((section) => (
-                <div
-                  key={section.type}
-                  className="cursor-pointer hover:!bg-gray-100 bg-white grid-cols-1 h-auto border rounded-xl"
-                  onClick={() => handleAddSection(section.type)}
+            <div className="grid !grid-cols-1 sm:!grid-cols-2 md:!grid-cols-3 gap-8 p-8">
+              {tabOptions.map((tab, index) => (
+                <button
+                  key={index}
+                  className={`cursor-pointer hover:!bg-gray-100 bg-white grid-cols-1 h-auto border rounded-xl ${
+                    viewMode === tab.label ? "border-blue-500 ring-2 ring-blue-400" : ""
+                  }`}
+                  onClick={() => setViewMode(tab.label)}
                 >
-                  <section.icon className="w-24 h-24 mx-auto mt-8" />
-                  <h1 className="text-center text-2xl font-medium !mb-8">
-                    {section.label}
-                  </h1>
-                </div>
+                  <tab.icon className="w-30 h-30 mx-auto mt-8" />
+                  <h1 className="text-center text-2xl font-medium !mb-8">{tab.label}</h1>
+                </button>
               ))}
+            </div>
+            <div className="grid !grid-cols-1 sm:!grid-cols-2 md:!grid-cols-3 lg:!grid-cols-4 gap-8 p-8 !border-t-2">
+              {sectionOptions
+                .filter((section) => {
+                  if (viewMode === "Section") return section.option === "Section";
+                  if (viewMode === "List") return section.option === "List";
+                  if (viewMode === "Detail") return section.option === "Detail";
+                  return false;
+                })
+                .map((section, index) => (
+                  <div
+                    key={section.type}
+                    className="cursor-pointer hover:!bg-gray-100 bg-white grid-cols-1 h-auto border rounded-xl"
+                    onClick={() => handleAddSection(section.type)}
+                  >
+                    <section.icon className="w-24 h-24 mx-auto mt-8" />
+                    <h1 className="text-center text-2xl font-medium !mb-8">
+                      {section.label}
+                    </h1>
+                  </div>
+                ))}
             </div>
           </div>
         )}
