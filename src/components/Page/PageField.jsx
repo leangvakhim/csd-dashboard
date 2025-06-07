@@ -2141,10 +2141,10 @@ const PageField = () => {
                 text: 'Page saved successfully',
                 timer: 1500,
                 showConfirmButton: false,
-                // willClose: async () => {
-                //     await new Promise(resolve => setTimeout(resolve, 500));
-                //     window.location.reload();
-                // }
+                willClose: async () => {
+                    await new Promise(resolve => setTimeout(resolve, 500));
+                    window.location.reload();
+                }
             });
         } catch (err) {
             Swal.fire({
