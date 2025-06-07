@@ -1,43 +1,23 @@
 import React, { useState, forwardRef, useEffect, useRef, useCallback, useImperativeHandle } from "react";
 import { DndProvider, useDrag, useDrop } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
-import { TbCarouselHorizontal, TbCodeDots } from "react-icons/tb";
 import { CgWebsite } from "react-icons/cg";
-import { LuColumns3 } from "react-icons/lu";
 import { HiOutlineAcademicCap } from "react-icons/hi2";
-import { TbBrandHipchat } from "react-icons/tb";
 import { RiInformationLine } from "react-icons/ri";
-import { LuSchool } from "react-icons/lu";
 import { GrGallery } from "react-icons/gr";
-import { MdAspectRatio } from "react-icons/md";
-import { LuFileType } from "react-icons/lu";
-import { LuMessagesSquare } from "react-icons/lu";
-import { TbBrandCarbon } from "react-icons/tb";
+import { MdAspectRatio, MdOutlineEventAvailable } from "react-icons/md";
+import { LuColumns3, LuSchool, LuFileType, LuMessagesSquare, LuBrainCircuit, LuHeartHandshake } from "react-icons/lu";
 import { FaComputer } from "react-icons/fa6";
 import { AiOutlineUnlock } from "react-icons/ai";
-import { MdOutlineEventAvailable } from "react-icons/md";
-import { TbTax } from "react-icons/tb";
 import { HiOutlineLightBulb } from "react-icons/hi";
-import { TbContract } from "react-icons/tb";
-import { TbDirections } from "react-icons/tb";
-import { TbCell } from "react-icons/tb";
-import { TbTargetArrow } from "react-icons/tb";
-import { LiaChalkboardTeacherSolid } from "react-icons/lia";
-import { LuBrainCircuit } from "react-icons/lu";
+import { TbBrandDatabricks, TbUsersGroup, TbTax, TbCarouselHorizontal, TbCodeDots, TbBrandHipchat, TbContract, TbDirections, TbCell, TbTargetArrow, TbMicroscope, TbNews, TbSpeakerphone, TbCalendarEvent, TbSchool, TbFocusAuto, TbWorldQuestion, TbBrandCarbon } from "react-icons/tb";
+import { LiaChalkboardTeacherSolid, LiaNewspaperSolid } from "react-icons/lia";
 import { BsExclamationTriangle } from "react-icons/bs";
 import { TfiWrite } from "react-icons/tfi";
-import { TbMicroscope } from "react-icons/tb";
-import { TbNews } from "react-icons/tb";
 import { GiMountainClimbing } from "react-icons/gi";
 import { FiUser } from "react-icons/fi";
-import { TbSpeakerphone } from "react-icons/tb";
 import { RiQuestionnaireLine } from "react-icons/ri";
-import { TbSchool } from "react-icons/tb";
-import { LuHeartHandshake } from "react-icons/lu";
-import { TbCalendarEvent } from "react-icons/tb";
 import { AiOutlinePhone } from "react-icons/ai";
-import { TbWorldQuestion } from "react-icons/tb";
-import { TbFocusAuto } from "react-icons/tb";
 import EventsPiece from "./Events/EventsPiece";
 import CarouselPiece from "./Carousel/CarouselPiece";
 import BannerPiece from "./Banner/BannerPiece";
@@ -79,6 +59,9 @@ import QuestionPiece from "./Question/QuestionPiece";
 import AboutPiece from "./About/AboutPiece";
 import { useLocation } from "react-router-dom";
 import { useLoading } from "../Context/LoadingContext";
+import LoFPiece from "./LoF/LoFPiece";
+import LoRPiece from "./LoR/LoRPiece";
+import LoNEPiece from "./LoNE/LoNEPiece";
 const sectionOptions = [
   {
     type: "Slideshow",
@@ -308,6 +291,24 @@ const sectionOptions = [
     icon: TbBrandHipchat,
     label: "Feedback",
   },
+  {
+    type: "LoF",
+    component: LoFPiece,
+    icon: TbUsersGroup,
+    label: "List of Faculty",
+  },
+  {
+    type: "LoR",
+    component: LoRPiece,
+    icon: TbBrandDatabricks,
+    label: "List of Research",
+  },
+  {
+    type: "LoNE",
+    component: LoNEPiece,
+    icon: LiaNewspaperSolid,
+    label: "List of News & Event",
+  },
 ];
 
 const PageSection = forwardRef(({ formData = {}, setFormData = {}, page_id }, ref) => {
@@ -348,6 +349,9 @@ const PageSection = forwardRef(({ formData = {}, setFormData = {}, page_id }, re
   const careerPieceRef = useRef([]);
   const partnerPieceRef = useRef([]);
   const feedbackPieceRef = useRef([]);
+  const LoFPieceRef = useRef([]);
+  const LoRPieceRef = useRef([]);
+  const LoNEPieceRef = useRef([]);
   const [showSection, setShowSection] = useState(false);
   const [selectedSections, setSelectedSections] = useState([]);
   const {setLoading} = useLoading();
@@ -417,6 +421,9 @@ const PageSection = forwardRef(({ formData = {}, setFormData = {}, page_id }, re
     Career: careerPieceRef,
     Partner: partnerPieceRef,
     Feedback: feedbackPieceRef,
+    LoF: LoFPieceRef,
+    LoR: LoRPieceRef,
+    LoNE: LoNEPieceRef,
   };
 
   const getDynamicData = async (type, method) => {
@@ -515,6 +522,9 @@ const PageSection = forwardRef(({ formData = {}, setFormData = {}, page_id }, re
     getCareers: async () => { return await getDynamicData("Career", "getCareers"); },
     getPartners: async () => { return await getDynamicData("Partner", "getPartners"); },
     getFeedbacks: async () => { return await getDynamicData("Feedback", "getFeedbacks"); },
+    getLoFs: async () => { return await getDynamicData("LoF", "getLoFs"); },
+    getLoRs: async () => { return await getDynamicData("LoR", "getLoRs"); },
+    getLoNEs: async () => { return await getDynamicData("LoNE", "getLoNEs"); },
   }));
 
   const handleAddPage = () => {
@@ -635,6 +645,10 @@ const PageSection = forwardRef(({ formData = {}, setFormData = {}, page_id }, re
                       : section.type === "Scholarship" ? el => scholarshipPieceRef.current[index] = el
                       : section.type === "Career" ? el => careerPieceRef.current[index] = el
                       : section.type === "Partner" ? el => partnerPieceRef.current[index] = el
+                      : section.type === "Feedback" ? el => feedbackPieceRef.current[index] = el
+                      : section.type === "LoF" ? el => LoFPieceRef.current[index] = el
+                      : section.type === "LoR" ? el => LoRPieceRef.current[index] = el
+                      : section.type === "LoNE" ? el => LoNEPieceRef.current[index] = el
                       : null
                     }
                   data={section.data}
