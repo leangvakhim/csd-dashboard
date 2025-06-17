@@ -85,7 +85,7 @@ const FacultyFieldBody = ({
         setSelectedImage(imageUrl ? `${imageUrl}` : "");
         try {
           const response = await axiosInstance.get(`${API_ENDPOINTS.getImages}`);
-          const result = await response.json();
+          const result = response.data;
           if (result.status_code === "success" && Array.isArray(result.data)) {
             const matchedImage = result.data.find(image => image.image_url === imageUrl);
             if (matchedImage) {
