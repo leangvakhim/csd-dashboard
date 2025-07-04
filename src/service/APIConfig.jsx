@@ -23,7 +23,7 @@ axiosInstance.interceptors.response.use(
       console.warn('🔒 Unauthorized request, redirecting to login.');
       localStorage.removeItem('token');
       window.location.reload();
-      window.location.href = '/login';
+      window.location.href = '/dashboard/login';
     }
     return Promise.reject(error);
   }

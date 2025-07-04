@@ -15,7 +15,8 @@ const PrivateRoute = ({ children }) => {
 
   if (loading) return null; // or loading spinner
 
-  return auth ? children : <Navigate to="/login" replace />;
+  return auth ? children : <Navigate to="/dashboard/login" replace />;
+  // return children ;
 };
 
 export default PrivateRoute;

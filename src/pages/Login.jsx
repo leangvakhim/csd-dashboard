@@ -86,7 +86,7 @@ const handleSubmit = async (e) => {
 
             setTimeout(() => {
                 Swal.close();
-                navigate('/menu');
+                navigate('/dashboard/menu');
             }, 1000);
         } else {
             Swal.fire({

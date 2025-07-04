@@ -10,23 +10,23 @@ const Aside = ({ username }) => {
   const location = useLocation();
 
   const menuItems = [
-    { to: '/menu', icon: 'ti-category-2', label: 'Menu' },
-    { to: '/page', icon: 'ti-file-description', label: 'Page' },
-    { to: '/faculty', icon: 'ti-user', label: 'Faculty' },
-    { to: '/event', icon: 'ti-calendar-event', label: 'Event' },
-    { to: '/news', icon: 'ti-news', label: 'News' },
-    { to: '/announcement', icon: 'ti-speakerphone', label: 'Announcement' },
-    { to: '/career', icon: 'ti-target-arrow', label: 'Career' },
-    { to: '/scholarship', icon: 'ti-school', label: 'Scholarship' },
-    { to: '/research', icon: 'ti-microscope', label: 'Research' },
-    { to: '/lab', icon: 'ti-cell', label: 'Research Lab' },
-    { to: '/feedback', icon: 'ti-brand-hipchat', label: 'Feedback' },
-    { to: '/partnership', icon: 'ti-heart-handshake', label: 'Partnership' },
-    { to: '/image', icon: 'ti-photo', label: 'Image' },
-    { to: '/email', icon: 'ti-mail', label: 'Email' },
+    { to: '/dashboard/menu', icon: 'ti-category-2', label: 'Menu' },
+    { to: '/dashboard/page', icon: 'ti-file-description', label: 'Page' },
+    { to: '/dashboard/faculty', icon: 'ti-user', label: 'Faculty' },
+    { to: '/dashboard/event', icon: 'ti-calendar-event', label: 'Event' },
+    { to: '/dashboard/news', icon: 'ti-news', label: 'News' },
+    { to: '/dashboard/announcement', icon: 'ti-speakerphone', label: 'Announcement' },
+    { to: '/dashboard/career', icon: 'ti-target-arrow', label: 'Career' },
+    { to: '/dashboard/scholarship', icon: 'ti-school', label: 'Scholarship' },
+    { to: '/dashboard/research', icon: 'ti-microscope', label: 'Research' },
+    { to: '/dashboard/lab', icon: 'ti-cell', label: 'Research Lab' },
+    { to: '/dashboard/feedback', icon: 'ti-brand-hipchat', label: 'Feedback' },
+    { to: '/dashboard/partnership', icon: 'ti-heart-handshake', label: 'Partnership' },
+    { to: '/dashboard/image', icon: 'ti-photo', label: 'Image' },
+    { to: '/dashboard/email', icon: 'ti-mail', label: 'Email' },
     // { to: '#', icon: 'ti-user-circle', label: 'User', external: true },
-    { to: '/developer', icon: 'ti-user-code', label: 'Developer' },
-    { to: '/setting', icon: 'ti-settings', label: 'Setting'},
+    { to: '/dashboard/developer', icon: 'ti-user-code', label: 'Developer' },
+    { to: '/dashboard/setting', icon: 'ti-settings', label: 'Setting'},
   ];
 
   useEffect(() => {
@@ -44,7 +44,7 @@ const Aside = ({ username }) => {
     } catch (error) {
       console.error('Logout failed:', error);
     } finally {
-      navigate('/login');
+      navigate('/dashboard/login');
     }
   };
 
