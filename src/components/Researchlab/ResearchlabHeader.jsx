@@ -68,7 +68,7 @@ const ResearchlabHeader = () => {
                 </div>
                 <div className="flex items-center gap-4">
                     <Link
-                    to="/lab/researchlab-details"
+                    to="/dashboard/lab/researchlab-details"
                     className="bg-blue-600 text-white font-medium px-4 py-2 rounded hover:bg-blue-700"
                     aria-current="researchlab"
                     >

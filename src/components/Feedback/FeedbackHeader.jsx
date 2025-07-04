@@ -68,7 +68,7 @@ const FeedbackHeader = () => {
                 </div>
                 <div className="flex items-center gap-4">
                     <Link
-                    to="/feedback/feedback-details"
+                    to="/dashboard/feedback/feedback-details"
                     className="bg-blue-600 text-white font-medium px-4 py-2 rounded hover:bg-blue-700"
                     aria-current="feedback"
                     >

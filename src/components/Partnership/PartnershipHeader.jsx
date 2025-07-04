@@ -68,7 +68,7 @@ const PartnershipHeader = () => {
                 </div>
                 <div className="flex items-center gap-4">
                     <Link
-                    to="/partnership/partnership-details"
+                    to="/dashboard/partnership/partnership-details"
                     className="bg-blue-600 text-white font-medium px-4 py-2 rounded hover:bg-blue-700"
                     aria-current="partnership"
                     >

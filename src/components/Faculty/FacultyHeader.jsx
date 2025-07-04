@@ -67,7 +67,7 @@ const FacultyHeader = () => {
             </div>
             <div className="flex items-center gap-4">
                 <Link
-                to="/faculty/faculty-detail"
+                to="/dashboard/faculty/faculty-detail"
                   className="cursor-pointer bg-blue-600 text-white font-medium px-4 py-2 rounded hover:bg-blue-700"
                   aria-current="faculty"
                 >

@@ -6,7 +6,7 @@ const PageFieldHeader = ({onSave}) => {
     const navigate = useNavigate();
 
     const returntoPage = () => {
-        navigate("/page");
+        navigate("/dashboard/page");
     };
 
     useEffect(() => {

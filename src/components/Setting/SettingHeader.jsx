@@ -5,7 +5,7 @@ const SettingHeader = ({ onSave }) => {
     const navigate = useNavigate();
 
     const gotoContactPage = () => {
-        navigate('/setting/setting-details');
+        navigate('/dashboard/setting/setting-details');
     };
 
     useEffect(() => {

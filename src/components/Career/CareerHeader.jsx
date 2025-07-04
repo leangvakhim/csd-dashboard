@@ -68,7 +68,7 @@ const CareerHeader = () => {
                 </div>
                 <div className="flex items-center gap-4">
                     <Link
-                    to="/career/career-details"
+                    to="/dashboard/career/career-details"
                     className="bg-blue-600 text-white font-medium px-4 py-2 rounded hover:bg-blue-700"
                     aria-current="career"
                     >

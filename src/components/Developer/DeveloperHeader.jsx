@@ -66,7 +66,7 @@ const DeveloperHeader = () => {
                 </div>
                 <div className="flex items-center gap-4">
                     <Link
-                    to="/developer/developer-details"
+                    to="/dashboard/developer/developer-details"
                     className="cursor-pointer bg-blue-600 text-white font-medium px-4 py-2 rounded hover:bg-blue-700"
                     aria-current="faculty"
                     >

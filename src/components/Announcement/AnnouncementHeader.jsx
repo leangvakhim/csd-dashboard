@@ -66,7 +66,7 @@ const AnnouncementHeader = () => {
                 </div>
                 <div className="flex items-center gap-4">
                     <Link
-                    to="/announcement/announcement-details"
+                    to="/dashboard/announcement/announcement-details"
                     className="bg-blue-600 text-white font-medium px-4 py-2 rounded hover:bg-blue-700"
                     aria-current="career"
                     >
