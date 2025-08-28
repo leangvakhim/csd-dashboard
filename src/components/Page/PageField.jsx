@@ -2144,7 +2144,7 @@ const PageField = () => {
                 showConfirmButton: false,
                 willClose: async () => {
                     await new Promise(resolve => setTimeout(resolve, 500));
-                    window.location.reload();
+                    // window.location.reload();
                 }
             });
         } catch (err) {
