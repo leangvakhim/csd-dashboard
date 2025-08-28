@@ -166,7 +166,11 @@ const ImageBody = () => {
                 Swal.fire({
                     icon: 'error',
                     title: 'Error',
-                    text: 'Failed to delete the image.'
+                    text: 'Failed to delete the image.',
+                    buttonsStyling: false,
+                    customClass: {
+                        confirmButton: '!bg-red-600 hover:!bg-red-700 text-white py-2 px-4 rounded',
+                    }
                 });
             }
         } catch (error) {
@@ -174,7 +178,11 @@ const ImageBody = () => {
             Swal.fire({
                 icon: 'error',
                 title: 'Error',
-                text: 'An error occurred while deleting the image.'
+                buttonsStyling: false,
+                text: 'An error occurred while deleting the image.',
+                customClass: {
+                    confirmButton: '!bg-red-600 hover:!bg-red-700 text-white py-2 px-4 rounded',
+                }
             });
         }
     };
