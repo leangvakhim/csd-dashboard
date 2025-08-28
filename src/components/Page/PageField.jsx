@@ -1100,8 +1100,9 @@ const PageField = () => {
                 gca_gc: requirementId,
                 gca_tag: subavailable.gca_tag,
                 gca_btntitle: subavailable.gca_btntitle,
-                gca_btnlink: subavailable.gca_btnlink,
+                gca_btnlink: String(subavailable.gca_btnlink),
             };
+            // console.log(" subAvailablePayload is: ",subAvailablePayload);
             const gcaddonId = subavailable.id || subavailable.gca_id;
             const gcaGC = subavailable.gca_gc;
 

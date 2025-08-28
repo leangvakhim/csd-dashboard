@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { API_ENDPOINTS, axiosInstance } from '../service/APIConfig';
+import { FaRegFilePdf } from 'react-icons/fa6';
 
 const MediaLibraryModal = ({ onSelect, onClose }) => {
     const [images, setImages] = useState([]);
@@ -82,7 +83,7 @@ const MediaLibraryModal = ({ onSelect, onClose }) => {
                     Upload
                     <input
                         type="file"
-                        accept="image/*"
+                        accept="image/*,application/pdf"
                         multiple
                         className="hidden"
                         onChange={handleImageUpload}
@@ -105,10 +106,21 @@ const MediaLibraryModal = ({ onSelect, onClose }) => {
                                     if (onClose) onClose();
                                 }}
                                 >
-                                <img src={`${image.image_url}`}
-                                     alt={`Media ${image.img}`}
-                                    className="mx-auto my-auto object-contain max-h-40 cursor-pointer"
-                                     />
+                                {
+                                  /\.pdf$/i.test((image?.img ?? '') || (image?.image_url ?? ''))
+                                    ? (
+                                      <div className="flex flex-col items-center justify-center py-6">
+                                        <FaRegFilePdf className="text-5xl" />
+                                      </div>
+                                    )
+                                    : (
+                                      <img
+                                        src={image.image_url}
+                                        alt={`Media ${image.img}`}
+                                        className="mx-auto my-auto object-contain max-h-40 cursor-pointer"
+                                      />
+                                    )
+                                }
 
                                      {selectedImageName === image.image_id && (
                                     <div className="absolute bottom-0 left-0 right-0 bg-black !bg-opacity-50 text-white text-center p-1 text-xs !rounded-b-lg">

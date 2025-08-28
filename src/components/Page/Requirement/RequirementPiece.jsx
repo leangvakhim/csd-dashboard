@@ -1,9 +1,22 @@
+
 import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } from "react";
 import MediaLibraryModal from "../../MediaLibraryModal";
 import JoditEditor from 'jodit-react';
 import 'jodit/es5/jodit.css';
 import { API_ENDPOINTS, API, axiosInstance } from "../../../service/APIConfig";
 import Swal from "sweetalert2";
+
+// Helper function to extract filename from URL or path
+const fileNameFromUrl = (value) => {
+  if (!value) return '';
+  try {
+    // remove query/hash, then take the last path segment
+    const clean = value.split('?')[0].split('#')[0];
+    return clean.split('/').pop();
+  } catch {
+    return value;
+  }
+};
 
 const config = {
   readonly: false,  // Set to true for read-only mode
@@ -18,6 +31,7 @@ const RequirementPiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref)
   const [isMediaLibraryOpen, setMediaLibraryOpen] = useState(false);
   const [selectedImage1, setSelectedImage1] = useState("");
   const [selectedImage2, setSelectedImage2] = useState("");
+  const [selectedImage3, setSelectedImage3] = useState("");
   const [currentField, setCurrentField] = useState("");
   const [detail, setDetail] = useState("");
   const [displayRequirement, setDisplayRequirement] = useState(0);
@@ -40,6 +54,8 @@ const RequirementPiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref)
       setSelectedImage1(imageUrl);
     } else if (field === "image2") {
       setSelectedImage2(imageUrl);
+    } else if (field === "image3") {
+      setSelectedImage3(imageUrl);
     }
     setMediaLibraryOpen(false);
   };
@@ -48,7 +64,6 @@ const RequirementPiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref)
     try {
       const response = await axiosInstance.get(API_ENDPOINTS.getImages);
       const images = Array.isArray(response.data) ? response.data : response.data.data;
-
       const matchedImage = images.find((img) => img.image_url === url);
       return matchedImage?.image_id || null;
     } catch (error) {
@@ -61,8 +76,8 @@ const RequirementPiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref)
     getRequirements: async () => {
       const img1Id = await getImageIdByUrl(selectedImage1);
       const img2Id = await getImageIdByUrl(selectedImage2);
-
-      return [
+      const img3Id = await getImageIdByUrl(selectedImage3);
+      const data = [
         {
           gc_id: requirementId,
           gc_title: requirementTitle,
@@ -76,12 +91,16 @@ const RequirementPiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref)
           subrequirements : [{
             gca_id: btnId,
             gca_tag: btnTag,
-            gca_btnlink: btnLink,
+            gca_btnlink: img3Id,
             gca_btntitle: btnTitle,
             gca_gc: requirementId,
           }]
         }
-      ];
+      ]
+
+      // console.log("Data is: ",data);
+
+      return data;
     }
   }));
 
@@ -95,6 +114,19 @@ const RequirementPiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref)
         setDisplayRequirement(newDisplay);
     } catch (error) {
         console.error("Failed to update display:", error);
+    }
+  };
+
+  const getImageNameByID = async (id) => {
+    try {
+      const response = await axiosInstance.get(API_ENDPOINTS.getImages);
+      const images = Array.isArray(response.data) ? response.data : response.data.data;
+      const matchedImage = images.find((img) => img.image_id === id);
+      // console.log("matchedImage?.img is: ",matchedImage?.img)
+      return matchedImage?.img || null;
+    } catch (error) {
+      console.error('❌ Failed to fetch image ID:', error);
+      return null;
     }
   };
 
@@ -117,6 +149,7 @@ const RequirementPiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref)
             fetchSubRequirements(requirement.gc_id);
           }
         }
+
 
         const sectionRes = await axiosInstance.get(`${API_ENDPOINTS.getSection}/${sectionId}`);
         const sectionData = sectionRes.data.data;
@@ -142,11 +175,20 @@ const RequirementPiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref)
             sectionPageId === pageId
           );
 
+          // console.log("subrequirement is; ",subrequirement);
+
           if (subrequirement) {
             setBtnId(subrequirement.gca_id || null);
             setBtnTag(subrequirement.gca_tag || '');
             setBtnTitle(subrequirement.gca_btntitle || '');
-            setBtnLink(subrequirement.gca_btnlink || '');
+            // setBtnLink(subrequirement.gca_btnlink || '');
+            if (subrequirement.gca_btnlink) {
+              const fname = await getImageNameByID(parseInt(subrequirement.gca_btnlink));
+              setSelectedImage3(fname ? `${API}/storage/uploads/${fname}` : '');
+            } else {
+              setSelectedImage3('');
+            }
+            // setSelectedImage3(subrequirement.gca_btnlink ? `${subrequirement.image3.img}` : '');
           }
         }
       } catch (error) {
@@ -158,6 +200,8 @@ const RequirementPiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref)
       fetchRequirements();
     }
   },[sectionId]);
+
+  // console.log("selectedImage3 is; ",selectedImage3);
 
   const handleDeleteSection = async () => {
       const result = await Swal.fire({
@@ -328,7 +372,89 @@ const RequirementPiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref)
           </div>
 
           <div className="flex-1">
-            <label className="block text-xl font-medium leading-6 text-white-900">
+            <div className="flex-1">
+              <label className="block text-xl font-medium leading-6 text-white-900">
+                button link
+              </label>
+              <div className="flex items-center justify-center w-full mt-2 border-1">
+                <label className="flex items-center justify-center w-full h-10 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+                  {selectedImage3 ? (
+                    <div className="flex justify-between w-full px-4">
+                      <img
+                        // src={selectedImage3}
+                        alt={fileNameFromUrl(selectedImage3)}
+                        className="w-[75%] line-clamp-1"
+                      />
+                      <div className="flex gap-2 justify-center w-[25%]">
+                        <svg
+                          onClick={() => openMediaLibrary("image3")}
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          strokeWidth="1.5"
+                          stroke="currentColor"
+                          className="size-6 hover:text-red-700"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M9 8.25H7.5a2.25 2.25 0 0 0-2.25 2.25v9a2.25 2.25 0 0 0 2.25 2.25h9a2.25 2.25 0 0 0 2.25-2.25v-9a2.25 2.25 0 0 0-2.25-2.25H15m0-3-3-3m0 0-3 3m3-3V15"
+                          />
+                        </svg>
+                        <svg
+                          onClick={() => handleImageSelect("", "image3")}
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          strokeWidth="1.5"
+                          stroke="currentColor"
+                          className="size-6 hover:text-red-700"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"
+                          />
+                        </svg>
+                      </div>
+                    </div>
+                  ) : (
+                    <div
+                      onClick={() => openMediaLibrary("image3")}
+                      className="flex gap-2 items-center justify-center pt-5 pb-6 "
+                    >
+                      <svg
+                        className="w-6 h-6  text-gray-500"
+                        aria-hidden="true"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 20 16"
+                      >
+                        <path
+                          stroke="currentColor"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"
+                        />
+                      </svg>
+                      <p className=" text-lg text-gray-500">
+                        <span className="font-semibold">
+                          Click to upload file
+                        </span>
+                      </p>
+                    </div>
+                  )}
+                </label>
+              </div>
+            </div>
+            {isMediaLibraryOpen && currentField === "image3" && (
+              <MediaLibraryModal
+                onSelect={(url) => handleImageSelect(url, "image3")}
+                onClose={() => setMediaLibraryOpen(false)}
+              />
+            )}
+            {/* <label className="block text-xl font-medium leading-6 text-white-900">
               button link
             </label>
             <div className="mt-2">
@@ -338,7 +464,7 @@ const RequirementPiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref)
                 type="text"
                 className="block w-full !border-gray-200 border-0 rounded-md py-2 pl-5 text-gray-900 shadow-sm ring-1 ring-inset !ring-gray-300 placeholder:text-gray-400 focus:ring-2 sm:text-2xl sm:leading-6"
               />
-            </div>
+            </div> */}
           </div>
         </div>
         {/* Row 3 */}

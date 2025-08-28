@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { API_ENDPOINTS, axiosInstance } from '../../service/APIConfig';
 import ImageHeader from './ImageHeader';
 import Swal from 'sweetalert2';
+import { FaRegFilePdf } from "react-icons/fa6";
 
 const ImageBody = () => {
     const [images, setImages] = useState([]);
@@ -115,7 +116,7 @@ const ImageBody = () => {
                 }
             });
         } catch (error) {
-            console.error("🔥 Error uploading images:", error);
+            // console.error("🔥 Error uploading images:", error);
             Swal.fire({
                 icon: 'error',
                 title: 'Upload Failed',
@@ -123,7 +124,8 @@ const ImageBody = () => {
                 buttonsStyling: false,
                 customClass: {
                     popup: 'bg-white rounded-lg shadow-lg',
-                    title: 'text-lg font-semibold text-red-600'
+                    title: 'text-lg font-semibold text-red-600',
+                    confirmButton: '!bg-red-600 hover:!bg-red-700 text-white py-2 px-4 rounded',
                 }
             });
         } finally {
@@ -205,7 +207,7 @@ const ImageBody = () => {
                     {isUploading ? "Uploading..." : "Upload Images"}
                     <input
                         type="file"
-                        accept="image/*"
+                        accept="image/*, application/pdf"
                         multiple
                         className="hidden"
                         onChange={handleImageUpload}
@@ -226,12 +228,41 @@ const ImageBody = () => {
                                 key={image.image_id}
                                 className="relative flex items-center justify-center border rounded-lg"
                             >
-                                <img
-                                    src={image.image_url}
-                                    alt={image.img}
-                                    className="mx-auto my-auto object-contain max-h-40 cursor-pointer"
-                                    onClick={() => {
-                                        Swal.fire({
+
+                                {
+                                  /\.pdf$/i.test((image?.img ?? '') || (image?.image_url ?? ''))
+                                    ? (
+                                      <button
+                                        type="button"
+                                        className="flex flex-col items-center justify-center py-6 cursor-pointer"
+                                        onClick={() => {
+                                          Swal.fire({
+                                            title: image.img,
+                                            html: `<iframe src="${image.image_url}" style="width:100%;height:70vh;border:none;"></iframe>`,
+                                            showCloseButton: true,
+                                            showConfirmButton: false,
+                                            width: '80%',
+                                            padding: '1em',
+                                            background: '#fff',
+                                            customClass: {
+                                              popup: 'rounded-lg shadow-lg',
+                                              title: 'text-lg font-semibold text-gray-700',
+                                            }
+                                          });
+                                          setSelectedImageName(image.img);
+                                        }}
+                                      >
+                                        <FaRegFilePdf className="text-5xl" />
+                                        <span className="mt-2 text-sm text-gray-700 text-center px-2 truncate w-40">{image.img}</span>
+                                      </button>
+                                    )
+                                    : (
+                                      <img
+                                        src={image.image_url}
+                                        alt={image.img}
+                                        className="mx-auto my-auto object-contain max-h-40 cursor-pointer"
+                                        onClick={() => {
+                                          Swal.fire({
                                             title: image.img,
                                             imageUrl: image.image_url,
                                             imageAlt: image.img,
@@ -242,14 +273,15 @@ const ImageBody = () => {
                                             padding: '1em',
                                             background: '#fff',
                                             customClass: {
-                                                popup: 'rounded-lg shadow-lg',
-                                                title: 'text-lg font-semibold text-gray-700',
+                                              popup: 'rounded-lg shadow-lg',
+                                              title: 'text-lg font-semibold text-gray-700',
                                             }
-                                        });
-
-                                        setSelectedImageName(image.img);
-                                    }}
-                                />
+                                          });
+                                          setSelectedImageName(image.img);
+                                        }}
+                                      />
+                                    )
+                                }
                                 <button
                                     className="h-8 w-8 absolute top-1 right-1 bg-red-500 text-white p-1 rounded-full opacity-100 hover:opacity-100 transition"
                                     onClick={() => handleDeleteImage(image.image_id)}
