@@ -150,7 +150,8 @@ const ImageBody = () => {
         if (!result.isConfirmed) return;
 
         try {
-            const response = await axiosInstance.delete(`${API_ENDPOINTS.deleteImage}/${imageId}`);
+            const response = await axiosInstance.post(`${API_ENDPOINTS.deleteImage}/${imageId}`, { _method: 'DELETE' });
+            // const response = await axiosInstance.delete(`${API_ENDPOINTS.deleteImage}/${imageId}`);
             if (response.status === 200) {
                 setImages(images.filter(image => image.image_id !== imageId));
                 setFilteredImages(filteredImages.filter(image => image.image_id !== imageId));
