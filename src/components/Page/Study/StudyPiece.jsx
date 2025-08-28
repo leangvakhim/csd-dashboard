@@ -58,7 +58,7 @@ const StudyPiece = forwardRef(({sectionId, pageId, handleSectionRef}, ref) => {
 
       if (result.isConfirmed) {
       try {
-          await axiosInstance.put(`${API_ENDPOINTS.deleteSection}/${sectionId}`);
+          await axiosInstance.post(`${API_ENDPOINTS.deleteSection}/${sectionId}`, {_method: 'PUT'});
           await Swal.fire({
               icon: 'success',
               title: 'Deleted!',

@@ -1055,11 +1055,14 @@ const PageField = () => {
                     gc_title: requirement.gc_title || '',
                     gc_tag: requirement.gc_tag || '',
                     gc_type: requirement.gc_type || null,
-                    gc_detail: requirement.gc_detail || '',
+                    // gc_detail: requirement.gc_detail || '',
+                    gc_detail: btoa(unescape(encodeURIComponent(requirement.gc_detail))),
                     gc_img1: requirement.gc_img1 || null,
                     gc_img2: requirement.gc_img2 || null,
                     page_id: savedPageId,
                 };
+
+                // console.log("requirementPayload is: ",requirementPayload);
 
                 if(
                     requirement.gc_sec &&
@@ -1076,6 +1079,7 @@ const PageField = () => {
                             const res = await axiosInstance.post(API_ENDPOINTS.createCriteria, { criteria: [requirementPayload] });
                             const createdId = res.data?.data?.[0]?.gc_id;
                             if (createdId) {
+                                // console.log("createdId is: ",createdId);
                                 await saveSubRequirement(requirement.gc_id, requirement.subrequirements || []);
                             }
                         }
@@ -2028,9 +2032,14 @@ const PageField = () => {
 
 
             try {
-                const res = await axiosInstance.put(API_ENDPOINTS.syncSection, {
+                // const res = await axiosInstance.put(API_ENDPOINTS.syncSection, {
+                //     sec_page: page_id,
+                //     sections: Array.isArray(sectionPayload) ? [...sectionPayload] : [],
+                // });
+                await axiosInstance.post(API_ENDPOINTS.syncSection, {
                     sec_page: page_id,
                     sections: Array.isArray(sectionPayload) ? [...sectionPayload] : [],
+                    _method: 'PUT'
                 });
 
                 await reorderSection();
