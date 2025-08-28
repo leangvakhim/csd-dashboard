@@ -85,7 +85,7 @@ const ResearchDashboard = () => {
         try {
             const response = await axiosInstance.get(`${API_ENDPOINTS.getResearch}/${id}`);
             const researchData = response.data;
-            navigate(`/research/research-detail`, { state: { researchData } });
+            navigate(`/dashboard/research/research-detail`, { state: { researchData } });
         } catch (error) {
             console.error("Error fetching research data:", error);
         }

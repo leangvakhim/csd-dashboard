@@ -73,7 +73,7 @@ const FacultyDashboard = () => {
     const handleEdit = async (id) => {
         const response = await axiosInstance.get(`${API_ENDPOINTS.getFaculty}/${id}`);
         const facultyData = response.data;
-        navigate(`/faculty/faculty-detail`, { state: { facultyData } });
+        navigate(`/dashboard/faculty/faculty-detail`, { state: { facultyData } });
         // console.log("Passing data: ",facultyData);
     };
 

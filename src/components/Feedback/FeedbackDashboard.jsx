@@ -28,7 +28,7 @@ const FeedbackDashboard = () => {
     const handleEdit = async (id) => {
         const response = await axiosInstance.get(`${API_ENDPOINTS.getFeedback}/${id}`);
         const eventData = response.data;
-        navigate('/feedback/feedback-details', { state: { eventData } });
+        navigate('/dashboard/feedback/feedback-details', { state: { eventData } });
     };
 
 

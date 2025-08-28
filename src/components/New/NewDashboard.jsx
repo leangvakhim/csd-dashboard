@@ -28,7 +28,7 @@ const NewDashboard = () => {
     const handleEdit = async (id) => {
         const response = await axiosInstance.get(`${API_ENDPOINTS.getNews}/${id}`);
         const eventData = response.data;
-        navigate('/news/news-details', { state: { eventData } });
+        navigate('/dashboard/news/news-details', { state: { eventData } });
     };
 
 

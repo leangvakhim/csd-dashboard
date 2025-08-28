@@ -51,7 +51,7 @@ const PartnershipDashboard = () => {
     const handleEdit = async (id) => {
         const response = await axiosInstance.get(`${API_ENDPOINTS.getPartnership}/${id}`);
         const eventData = response.data;
-        navigate('/partnership/partnership-details', { state: { eventData } });
+        navigate('/dashboard/partnership/partnership-details', { state: { eventData } });
     };
 
     const moveItem = async (index, direction) => {

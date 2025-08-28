@@ -49,7 +49,7 @@ const PageDashboard = () => {
     const handleEdit = async (id) => {
         const response = await axiosInstance.get(`${API_ENDPOINTS.getPage}/${id}`);
         const pageData = response.data;
-        navigate('/page/page-detail', { state: { pageData } });
+        navigate('/dashboard/page/page-detail', { state: { pageData } });
     };
 
     const handleDelete = async (id) => {

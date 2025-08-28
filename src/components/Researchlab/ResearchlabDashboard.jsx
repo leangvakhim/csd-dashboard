@@ -74,7 +74,7 @@ const handleDelete = async (id) => {
     const handleEdit = async (id) => {
         const response = await axiosInstance.get(`${API_ENDPOINTS.getResearchlab}/${id}`);
         const researchlabData = response.data;
-        navigate(`/lab/researchlab-details`, { state: { researchlabData } });
+        navigate(`/dashboard/lab/researchlab-details`, { state: { researchlabData } });
     };
 
     const moveItem = async (index, direction) => {

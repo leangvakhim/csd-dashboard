@@ -74,7 +74,7 @@ const DeveloperDashboard = () => {
     const handleEdit = async (id) => {
         const response = await axiosInstance.get(`${API_ENDPOINTS.getDevelopers}/${id}`);
         const developData = response.data;
-        navigate('/developer/developer-details', { state: { developData } });
+        navigate('/dashboard/developer/developer-details', { state: { developData } });
     };
 
     useEffect(() => {

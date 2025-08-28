@@ -27,7 +27,7 @@ const ScholarshipDashboard = () => {
     const handleEdit = async (id) => {
         const response = await axiosInstance.get(`${API_ENDPOINTS.getScholarship}/${id}`);
         const eventData = response.data;
-        navigate('/scholarship/scholarship-details', { state: { eventData } });
+        navigate('/dashboard/scholarship/scholarship-details', { state: { eventData } });
     };
 
     const moveItem = async (index, direction) => {

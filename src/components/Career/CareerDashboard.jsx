@@ -34,7 +34,7 @@ const CareerDashboard = () => {
     const handleEdit = async (id) => {
         const response = await axiosInstance.get(`${API_ENDPOINTS.getCareer}/${id}`);
         const eventData = response.data;
-        navigate('/career/career-details', { state: { eventData } });
+        navigate('/dashboard/career/career-details', { state: { eventData } });
     };
 
 

@@ -73,7 +73,7 @@ const handleDelete = async (id) => {
         try {
             const response = await axiosInstance.get(`${API_ENDPOINTS.getAnnouncement}/${id}`);
             const announcementData = response.data;
-            navigate('/announcement/announcement-details', { state: { announcementData } });
+            navigate('/dashboard/announcement/announcement-details', { state: { announcementData } });
             // console.log("state is: ",announcementData);
         } catch (error) {
             console.error('Error fetching announcement for edit:', error);

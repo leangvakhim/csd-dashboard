@@ -28,7 +28,7 @@ const EventDashboard = () => {
     const handleEdit = async (id) => {
         const response = await axiosInstance.get(`${API_ENDPOINTS.getEvent}/${id}`);
         const eventData = response.data;
-        navigate('/event/event-detail', { state: { eventData } });
+        navigate('/dashboard/event/event-detail', { state: { eventData } });
         // console.log("Passing data: ",response.data);
     };
 
